@@ -1,0 +1,105 @@
+# AWS and SageMaker settings
+aws:
+  region: us-east-1
+  sagemaker_execution_role: arn:aws:iam::015469603702:role/SageMakerRepoRole  # Replace with your actual role
+
+prompt:
+  template_file: prompt_template.txt
+  all_prompts_file: all_prompts.csv
+
+datasets:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+
+inference_parameters:
+  do_sample: yes
+  temperature: 0.1
+  top_p: 0.92
+  top_k: 120  
+  max_new_tokens: 100
+  truncate: at-prompt-token-length
+
+# Model configurations
+experiments:
+  - name: llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-conc=1-bs=4-tpd=12
+    model_id: meta-textgenerationneuron-llama-2-13b-f
+    model_version: 1.0.0
+    model_name: llama2-13b
+    ep_name: llama-2-13b-inf2-24xlarge
+    instance_type: "ml.inf2.24xlarge"
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.24.0-neuronx-sdk2.14.1'
+    deploy: yes
+    instance_count: 1
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    accept_eula: true
+    env:
+      OPTION_DTYPE: fp16
+      OPTION_MAX_ROLLING_BATCH_SIZE: "4"
+      OPTION_N_POSITIONS: "4096"
+      OPTION_TENSOR_PARALLEL_DEGREE: "12"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+      SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
+      SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
+  - name: llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-conc=1-bs=4-tpd=24
+    model_id: meta-textgenerationneuron-llama-2-13b-f
+    model_version: 1.0.0
+    model_name: llama2-13b
+    ep_name: llama-2-13b-inf2-48xlarge    
+    instance_type: "ml.inf2.48xlarge"    
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.24.0-neuronx-sdk2.14.1'
+    deploy: no
+    instance_count: 1
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    accept_eula: true
+    env:
+      OPTION_DTYPE: fp16
+      OPTION_MAX_ROLLING_BATCH_SIZE: "4"
+      OPTION_N_POSITIONS: "4096"
+      OPTION_TENSOR_PARALLEL_DEGREE: "24"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+      SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
+      SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
+
+results:
+  per_inference_request_file: per_inference_request_results_{datetime}.csv
+  all_metrics_file: all_metrics_{datetime}.csv
