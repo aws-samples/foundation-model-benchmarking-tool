@@ -34,7 +34,8 @@
 
 ### Initialize the globals.py file to use instances across the test harness
 
-<code>import os
+```
+import os
 from enum import Enum
 from pathlib import Path
 CONFIG_FILE: str = "config.yml"
@@ -50,7 +51,8 @@ ENDPOINT_LIST_FPATH:str = os.path.join(MODELS_DIR, "endpoints.json")
 REQUEST_PAYLOAD_FPATH:str = os.path.join(PROMPTS_DIR, "payload.jsonl")
 RESULTS_FPATH:str = os.path.join(METRICS_DIR, "results.csv")
 class TRUNCATE_POLICY(str, Enum):
-    AT_PROMPT_TOKEN_LENGTH = 'at-prompt-token-length'</code>
+    AT_PROMPT_TOKEN_LENGTH = 'at-prompt-token-length'
+```
 
 - We will pygmentize the ***global instances*** in notebooks for variables above including contents of the config file, the prompts, metrics, tokenizer and dataset directories. This is flexible to change based on where your files and data reside.
 
@@ -74,12 +76,14 @@ Form link: - https://l.facebook.com/l.php?u=https%3A%2F%2Fgithub.com%2Ffacebookr
 
 - Install all of the requirements from the requirements.txt file and most of the libraries to import: 
 
-<code>ipywidgets==8.1.1
+```
+ipywidgets==8.1.1
 sagemaker==2.203.0
 transformers==4.36.2
 pandas==2.1.4
 datasets==2.16.1
-seaborn==0.13.1</code>
+seaborn==0.13.1
+```
 
 - ***Initialize the global variables from the globals.py*** file as well as load the aws sagemaker execution role and region into the logger 
 
@@ -99,7 +103,8 @@ seaborn==0.13.1</code>
 
 - Write the prompts into a json file for further processing during invoking the deployed jumpstart models for inference and benchmarking.
 
-<code># convert the prompts into payload we can send to the model
+```
+# convert the prompts into payload we can send to the model
 def construct_request_payload(row, config: Dict) -> Dict:
     parameters = copy.deepcopy(config['inference_parameters'])
     if parameters['truncate'] == TRUNCATE_POLICY.AT_PROMPT_TOKEN_LENGTH:
@@ -108,7 +113,8 @@ def construct_request_payload(row, config: Dict) -> Dict:
 
 df_filtered['request'] = df_filtered.apply(lambda r: construct_request_payload(r, config), axis=1)
 
-logger.info(f"payload request entry looks like this -> {json.dumps(df_filtered['request'].iloc[0], indent=2)}")</code>
+logger.info(f"payload request entry looks like this -> {json.dumps(df_filtered['request'].iloc[0], indent=2)}")
+```
 
 
 #### 3. Now run the notebook: '3_run_inference.ipynb'. While you run this notebook, there are certain tasks being handled: 
@@ -125,7 +131,8 @@ First, we create a predictor object for our endpoints that we have deployed. The
 
 - At the time of the inference, we record all metrics, such as inference latency, transactions per second, token throughput, and other payload metrics we track such as top_k, top_p, temperature and so on. Here is how we are calculating all of our metrics in a series of async. functions:
 
-<code>errors = [r for r in responses if r['completion'] is None]
+```
+errors = [r for r in responses if r['completion'] is None]
     successes = len(chunk) - len(errors)
     all_prompts_token_count = safe_sum([r['prompt_tokens'] for r in responses])
     prompt_token_throughput = round(all_prompts_token_count / elapsed_async, 2)
@@ -135,11 +142,13 @@ First, we create a predictor object for our endpoints that we have deployed. The
     completion_token_count_mean = safe_div(all_completions_token_count, successes)
     transactions_per_second = round(successes / elapsed_async, 2)
     transactions_per_minute = int(transactions_per_second * 60)
-    latency_mean = safe_div(safe_sum([r['latency'] for r in responses]), successes)</code>
+    latency_mean = safe_div(safe_sum([r['latency'] for r in responses]), successes)
+```
 
 #### Once all of the responses are recorded, we store the responses in the form of a dataframe or a csv with a couple of columns of interests as given below:
 
-<code>cols_of_interest = ['experiment_name', 
+```
+cols_of_interest = ['experiment_name', 
                     'instance_type',
                     'endpoint.EndpointName',
                     'model_config.ModelName',
@@ -151,7 +160,8 @@ First, we create a predictor object for our endpoints that we have deployed. The
                     'model_config.PrimaryContainer.Environment.OPTION_N_POSITIONS',
                     'model_config.PrimaryContainer.Environment.OPTION_ROLLING_BATCH',
                     'model_config.PrimaryContainer.Environment.OPTION_TENSOR_PARALLEL_DEGREE',
-                    'model_config.PrimaryContainer.Environment.SAGEMAKER_MODEL_SERVER_WORKERS']</code>
+                    'model_config.PrimaryContainer.Environment.SAGEMAKER_MODEL_SERVER_WORKERS']
+```
 
 You can feel flexible in terms of generating and using new columns based on what you want to track while benchmarking your sagemaker jumpstart model.
 
@@ -163,7 +173,8 @@ All results are stored in the results.csv file in the data/metrics/results.csv f
 
 - In this file, we read the contents of the results.csv file and focus on generating visualizations using the following columns we have:
 
-<code>Index(['endpoint_name', 'prompt', 'do_sample', 'temperature', 'top_p', 'top_k',
+```
+Index(['endpoint_name', 'prompt', 'do_sample', 'temperature', 'top_p', 'top_k',
        'max_new_tokens', 'truncate', 'completion', 'prompt_tokens',
        'completion_tokens', 'latency', 'tps', 'token_throughput',
        'EndpointName', 'ModelName', 'Image', 'S3Uri', 'OPTION_DTYPE',
@@ -171,7 +182,8 @@ All results are stored in the results.csv file in the data/metrics/results.csv f
        'OPTION_N_POSITIONS', 'OPTION_ROLLING_BATCH',
        'OPTION_TENSOR_PARALLEL_DEGREE', 'SAGEMAKER_MODEL_SERVER_WORKERS',
        'concurrency'],
-      dtype='object')</code>
+      dtype='object')
+```
 
 #### - Visualize the prompt tokens and how many prompts are of different context lengths:
 
@@ -188,10 +200,12 @@ This will help us visualize how the benchmarks change in terms of when the promp
 
 #### - Visualize the Effect of token length on inference latency:
 
-<code>plt.xlabel("Prompt length (tokens)")
+```
+plt.xlabel("Prompt length (tokens)")
 plt.ylabel("Latency (seconds)")
 plt.title(f"Effect of token length on inference latency")
-sns.boxplot(data=df_prompt_len_and_latency, x="label", y="latency", hue="concurrency", order=labels)</code>
+sns.boxplot(data=df_prompt_len_and_latency, x="label", y="latency", hue="concurrency", order=labels)
+```
 
 In this notebook, you can visualize how the latency increases or decreases, or remains static as the prompt length increase at a specific concurrency level. You can view this for multiple jumpstart models that you deploy.
 
