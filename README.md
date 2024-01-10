@@ -20,7 +20,7 @@
 
     - **Directory Paths**: This contains directory paths for where your model details, for example the configuration information for your model that you will deploy, and prompts that it will be invoked on be stored. This is flexible based on where you store the files.
 
-    - **Dataset**: Add the name of your dataset which will lie in the data/dataset folder. This will contain the prompts you want to invoke your jumpstart to be deployed on. This dataset can be of various kinds, for text generation, summarization, question answering, based on what you want your models to be benchmarked on.
+    - **Dataset**: Add the name of your dataset which will lie in the data/dataset folder. This will contain the prompts you want to invoke your jumpstart to be deployed on. This dataset can be of various kinds, for text generation, summarization, question answering, based on what you want your models to be benchmarked on. Your dataset in our repository will be segregated into sizes of prompts for better insights into what the best prompt length is for your use case based on latency and other key metric requirements.
 
     - **prompt**: Here, you may or may not have this portion but if your dataset contains for example multiple languages, you can use this section to configure filtering the data, for example have the launguage be english, and configure the minimum and maximum length tokens for these prompts that the deployed models will invoke.
 
@@ -33,7 +33,6 @@
     - **Model Configurations**: This will contain the models you want to deploy while running the first notebook (0_deploy_model.ipynb). This is flexible to change based on what you need the models to be deployed on specific configurations, such as the specific 'OPTION_TENSOR_PARALLEL_DEGREE' you might need, or the 'OPTION_N_POSITIONS', 'instance_type' or the 'image_uri'. You can feel free to change these jumpstart models to different offerings all across sagemaker jumpstart and use the models you want to use in this test harness for the best use of flexibility, cost and performance.
 
 ### Initialize the globals.py file to use instances across the test harness
-
 
 <code>import os
 from enum import Enum
@@ -53,7 +52,6 @@ RESULTS_FPATH:str = os.path.join(METRICS_DIR, "results.csv")
 class TRUNCATE_POLICY(str, Enum):
     AT_PROMPT_TOKEN_LENGTH = 'at-prompt-token-length'</code>
 
-
 - We will pygmentize the ***global instances*** in notebooks for variables above including contents of the config file, the prompts, metrics, tokenizer and dataset directories. This is flexible to change based on where your files and data reside.
 
 ### Install the LLaMa-2 Tokenizer
@@ -62,11 +60,17 @@ class TRUNCATE_POLICY(str, Enum):
    and place the files into a directory named `llama2_tokenizer` in the same 
    directory as this notebook.
 
-If you do not have access to this repository, fill our the Meta form to get approval to download the tokenizer files. Form link: - https://l.facebook.com/l.php?u=https%3A%2F%2Fgithub.com%2Ffacebookresearch%2Fllama&h=AT3hovLGEdz6VUvMRDlyOVw1DnnQM_MikTt01t3pkWzFPcP6GaiQLDoMKRnONq7qXIGY_FN2rRhSHt30N-Nhmlo6vnm4sIs3SwuUOJiAf_-_s8SmzPSCwwUKh9zxx_DvbrNc_t2owGO0Anu_1ENlRY3jDhLmcg
+***If you do not have access to this repository, fill our the Meta form to get approval to download the tokenizer files. ***
+Form link: - https://l.facebook.com/l.php?u=https%3A%2F%2Fgithub.com%2Ffacebookresearch%2Fllama&h=AT3hovLGEdz6VUvMRDlyOVw1DnnQM_MikTt01t3pkWzFPcP6GaiQLDoMKRnONq7qXIGY_FN2rRhSHt30N-Nhmlo6vnm4sIs3SwuUOJiAf_-_s8SmzPSCwwUKh9zxx_DvbrNc_t2owGO0Anu_1ENlRY3jDhLmcg
 
 #### Now that you have the config.yml, globals.py, datasets and llama tokenizer in place, we can start running the three main notebooks: 
 
-### 1. Navigate to the file: `0_deploy_model.ipynb` - this is where we are deploying the models, where you have the ability to configure the model parameters and configurations. We are using ***LLaMa-2-7b, 13b, and chat models*** that are supported by Neuron now on Sagemaker Jumpstart, but you can use any models offered on jumpstart now.
+#### Set up the environment using the code in the setup notebook: `0_setup.ipynb` 
+(https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/0_setup.ipynb) 
+
+#### 1. Navigate to the file: `1_deploy_model.ipynb` 
+
+- This is where we are deploying the models, where you have the ability to configure the model parameters and configurations. We are using ***LLaMa-2-7b, 13b, and chat models*** that are supported by Neuron now on Sagemaker Jumpstart, but you can use any models offered on jumpstart now. (https://github.com/aws-samples jumpstart-models-benchmarking-test-harness/blob/main/1_deploy_model.ipynb)
 
 - Install all of the requirements from the requirements.txt file and most of the libraries to import: 
 
@@ -83,28 +87,13 @@ seaborn==0.13.1</code>
 
 - Once the jumpstart models are deployed, you can view the model configurations and environment information in the data/models/endpoints.json file.
 
-### 2.  Now run the notebook: `1_generate_data.ipynb`: In this file, we will load the dataset, fit the prompt template with the dataset we have. Let's take a look at some steps within this notebook as you run it. You can run this notebook in parallel while the models are being deployed for the interest of time.
+#### 2.  Now run the notebook: `2_generate_data.ipynb`: 
+
+- In this file, we will load the dataset, fit the prompt template with the dataset we have. Let's take a look at some steps within this notebook as you run it. You can run this notebook in parallel while the models are being deployed for the interest of time. (https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/2_generate_data.ipynb)
 
 - Initialize the requirements, libraries to be imported, and global variables along with the logger info.
 
 - Extract the prompt template file.txt from the appropriate file path. This would show the prompt template that you are using which will change based on the prompt format required by the specific jumpstart models that you are deploying. In the case where you are deploying more that a single kind of model, you can create multiple prompt template files and associate it in this ntoebook. 
-
-
- <code>INFO - prompt template from data\prompts\prompt_template.txt ->
-[INST] <<SYS>>
-You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. If you don't know the answer just say that you don't know. Use three sentences maximum and keep the answer concise.
-<</SYS>>
-
-```
-{context}
-```
-
-Question: {question}
-
-[/INST]
-Answer:
-[2024-01-03 07:49:18,880] p38616 {2460264635.py:6} INFO - prompt template length=97 tokens</code>
-
 
 - Once you have loaded your data files from the file and converted it into a dataframe in this notebook, you can fit the data into the prompt template you have for your specific jumpstart model type.
 
@@ -122,21 +111,37 @@ df_filtered['request'] = df_filtered.apply(lambda r: construct_request_payload(r
 logger.info(f"payload request entry looks like this -> {json.dumps(df_filtered['request'].iloc[0], indent=2)}")</code>
 
 
-### 3. Now run the notebook: '2_run_inference.ipynb'. While you run this notebook, there are certain tasks being handled: 
+#### 3. Now run the notebook: '3_run_inference.ipynb'. While you run this notebook, there are certain tasks being handled: 
+
+- Notebook link: https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb
 
 - Here we aggregate the jumpstart models that we deployed asynchronously, along with the dataset we fit into a payload json file based on the data you might have. Now:
 
 - We extract the active endpoints we deployed, initialize a 'payload list' which we will iterate through concurrently on each endpoint to generate inference for benchmarking purposes.
 
-- We will run all requests to the endpoints we deploy concurrently that we will specify in the config.yml file. For example, in this case we are invoking the llama-2 13b on an inf2.48x with a concurrency level of 2 versus of 4. In the same way you can experiment with multiple configurations.
+- We will run all requests to the endpoints we deploy concurrently that we will specify in the config.yml file. For example, in this case we are invoking the llama-2 13b on an inf2.48x and an inf2.24x with a concurrency level of 1 versus 2 versus 4. In the same way you can experiment with multiple configurations.
 
 First, we create a predictor object for our endpoints that we have deployed. Then we asynchronously call the async_get_inference on the get_inference function followed by gather all these async tasks and running them on 'async_get_all_inferences'.
 
-- At the time of the inference, we record all metrics, such as inference latency, transactions per second, token throughput, and other payload metrics we track such as top_k, top_p, temperature and so on. 
+- At the time of the inference, we record all metrics, such as inference latency, transactions per second, token throughput, and other payload metrics we track such as top_k, top_p, temperature and so on. Here is how we are calculating all of our metrics in a series of async. functions:
+
+<code>errors = [r for r in responses if r['completion'] is None]
+    successes = len(chunk) - len(errors)
+    all_prompts_token_count = safe_sum([r['prompt_tokens'] for r in responses])
+    prompt_token_throughput = round(all_prompts_token_count / elapsed_async, 2)
+    prompt_token_count_mean = safe_div(all_prompts_token_count, successes)
+    all_completions_token_count = safe_sum([r['completion_tokens'] for r in responses])
+    completion_token_throughput = round(all_completions_token_count / elapsed_async, 2)
+    completion_token_count_mean = safe_div(all_completions_token_count, successes)
+    transactions_per_second = round(successes / elapsed_async, 2)
+    transactions_per_minute = int(transactions_per_second * 60)
+    latency_mean = safe_div(safe_sum([r['latency'] for r in responses]), successes)</code>
 
 #### Once all of the responses are recorded, we store the responses in the form of a dataframe or a csv with a couple of columns of interests as given below:
 
-<code>cols_of_interest = ['endpoint.EndpointName',
+<code>cols_of_interest = ['experiment_name', 
+                    'instance_type',
+                    'endpoint.EndpointName',
                     'model_config.ModelName',
                     'model_config.PrimaryContainer.Image',   
                     'model_config.PrimaryContainer.ModelDataSource.S3DataSource.S3Uri',
@@ -152,7 +157,9 @@ You can feel flexible in terms of generating and using new columns based on what
 
 All results are stored in the results.csv file in the data/metrics/results.csv file path.
 
-#### 4. Laslt, run the '3_model_metric_analysis.ipynb' to record all of the metrics from the model inference benchmarking that we did and visualize the findings:
+#### 4. Lastly, run the '4_model_metric_analysis.ipynb' to record all of the metrics from the model inference benchmarking that we did and visualize the findings:
+
+- Notebook link: https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb
 
 - In this file, we read the contents of the results.csv file and focus on generating visualizations using the following columns we have:
 
