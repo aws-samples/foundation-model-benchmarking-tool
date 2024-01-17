@@ -1,10 +1,14 @@
-# Benchmarking for Amazon SageMaker JumpStart models
+# Benchmarking for Amazon SageMaker JumpStart models and non-jumpstart (bring your own) models
 
+### Jumpstart Models:
 [Amazon SageMaker JumpStart](https://aws.amazon.com/sagemaker/jumpstart/getting-started/) offers state-of-the-art foundation models for use cases such as content writing, code generation, question answering, copywriting, summarization, classification, information retrieval, and more. A key challenge with FMs is the ability to benchmark their performance in terms of inference latency, throughput and cost so as to determine which model running with what combination of the following is the most optimal option for a given business use-case:
 
 - Inference container and parameters (for example: batch size, degree of tensor parallelism, instance type/size etc.)
 - Runtime inference parameters (for example temperature, top_p etc.)
 - Choice of hardware (for example: `p4d`, `Inf2`, `g5`)  on different size types, for example 24x/48x etc.)
+
+### Bring Your Own Models / Non-Jumpstart Models:
+You can focus on bringing your own model or any non jumpstart model (for example, from hugging face), use your inference script and serving.properties to deploy a model easily and test the model based on metrics specified above. In this repo, we are using the ***"TheBloke/Llama-2-70B-fp16*** from Hugging Face, using an inference script containing an end to end walkthrough of downloading the model snapshot, retrieving the inference uri, and creating the endpoint. In this repo, we will focus on using either of these models in benchmarking for inference latency and visualize the best model offering (and respective configurations) based on our requirements.
 
 #### This repository provides a test harness for doing this benchmarking (note that this is different from benchmarking accuracy of a particular model for a given use-case).
 
