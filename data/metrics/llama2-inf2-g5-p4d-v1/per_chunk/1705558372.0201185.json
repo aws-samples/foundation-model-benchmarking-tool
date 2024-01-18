@@ -1,0 +1,18 @@
+{
+  "experiment_name": "llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=12",
+  "concurrency": 1,
+  "payload_file": "payload_en_500-1000.jsonl",
+  "errors": [],
+  "successes": 1,
+  "error_rate": 0.0,
+  "all_prompts_token_count": 980,
+  "prompt_token_count_mean": 980.0,
+  "prompt_token_throughput": 522.88,
+  "all_completions_token_count": 17,
+  "completion_token_count_mean": 17.0,
+  "completion_token_throughput": 9.07,
+  "transactions": 1,
+  "transactions_per_second": 0.53,
+  "transactions_per_minute": 31,
+  "latency_mean": 1.8680873749999591
+}

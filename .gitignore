@@ -5,3 +5,4 @@ __pycache__/
 **/hf_token.txt
 data/dataset/*
 data/prompts/*
+**/.ipynb_checkpoints/

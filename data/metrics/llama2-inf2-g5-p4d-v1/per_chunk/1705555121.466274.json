@@ -1,0 +1,18 @@
+{
+  "experiment_name": "llama2-70b-chat-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118",
+  "concurrency": 4,
+  "payload_file": "payload_en_1000-2000.jsonl",
+  "errors": [],
+  "successes": 4,
+  "error_rate": 0.0,
+  "all_prompts_token_count": 6114,
+  "prompt_token_count_mean": 1528.5,
+  "prompt_token_throughput": 991.73,
+  "all_completions_token_count": 6266,
+  "completion_token_count_mean": 1566.5,
+  "completion_token_throughput": 1016.39,
+  "transactions": 4,
+  "transactions_per_second": 0.65,
+  "transactions_per_minute": 39,
+  "latency_mean": 4.3487131964999435
+}

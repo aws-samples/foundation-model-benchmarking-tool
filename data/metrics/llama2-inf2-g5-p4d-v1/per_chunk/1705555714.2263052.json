@@ -1,0 +1,18 @@
+{
+  "experiment_name": "llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0",
+  "concurrency": 2,
+  "payload_file": "payload_en_1000-2000.jsonl",
+  "errors": [],
+  "successes": 2,
+  "error_rate": 0.0,
+  "all_prompts_token_count": 2800,
+  "prompt_token_count_mean": 1400.0,
+  "prompt_token_throughput": 714.91,
+  "all_completions_token_count": 204,
+  "completion_token_count_mean": 102.0,
+  "completion_token_throughput": 52.09,
+  "transactions": 2,
+  "transactions_per_second": 0.51,
+  "transactions_per_minute": 30,
+  "latency_mean": 3.906807228499929
+}
