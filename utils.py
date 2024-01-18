@@ -1,7 +1,7 @@
 import yaml
 import logging
 import unicodedata
-from globals import *
+import globals as  g
 from typing import Dict
 from transformers import AutoTokenizer
 
@@ -25,7 +25,7 @@ def _normalize(text, form='NFC'):
 def count_tokens(text: str) -> int:
     global _tokenizer
     if _tokenizer is None:
-        _tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_DIR)
+        _tokenizer = AutoTokenizer.from_pretrained(g.TOKENIZER_DIR)
     return len(_tokenizer.encode(text))
 
 def process_item(item, prompt_fmt: str) -> Dict:
