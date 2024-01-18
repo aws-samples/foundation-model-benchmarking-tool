@@ -112,7 +112,7 @@ experiments:
       SM_NUM_GPUS: "4"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-llama/Llama-2-70b-hf
     model_version: "*"
     model_name: llama2-13b
     ep_name: llama-2-13b-g5-48xlarge
