@@ -17,9 +17,6 @@ HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-## set your model_name here
-model_name: str = "meta-llama/Llama-2-70b-chat-hf"
-
 ## Initialize your S3 client for your model uploading
 s3_client = boto3.client('s3')
 
@@ -61,7 +58,7 @@ def create_hugging_face_model(experiment_config, role_arn):
 
     # Define Model and Endpoint configuration parameter
     model_config = {
-    'HF_MODEL_ID': model_name,
+    'HF_MODEL_ID': experiment_config['model_id'],
     'SM_NUM_GPUS': json.dumps(experiment_config['env']['NUMBER_OF_GPU']), # Number of GPU used per replica
     'MAX_INPUT_LENGTH': json.dumps(4090),  # Max length of input text
     'MAX_TOTAL_TOKENS': json.dumps(4096),  # Max length of the generation (including input text)
