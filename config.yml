@@ -1,5 +1,5 @@
 general:
-  name: "llama2-13b-inf2-g5-p4d-v1"
+  name: "llama2-70b-g5-p4d-v1"
   
 # AWS and SageMaker settings
 aws:
@@ -46,163 +46,11 @@ inference_parameters:
 
 # Model configurations
 experiments:
-  # P4D Based Instance Model Configuration:
-  - name: llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
-    model_id: meta-llama/Llama-2-13b-chat-hf
+  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-70b
     model_version: "*"
-    model_name: meta-llama-Llama-2-13b-chat-hf
-    ep_name: llama-2-13b-p4d-24xlarge    
-    instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
-    deploy: yes
-    instance_count: 1
-    deployment_script: p4d_hf_tgi.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4 
-    accept_eula: true
-    env:
-      MODEL_LOADING_TIMEOUT: "3600"
-      NUMBER_OF_GPU: 8
-      INSTANCE_COUNT: 1
-      HEALTH_CHECK_TIMEOUT: 300
-
-  - name: llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=12
-    model_id: meta-textgenerationneuron-llama-2-13b-f
-    model_version: 1.0.0
-    model_name: llama2-13b
-    ep_name: llama-2-13b-inf2-24xlarge
-    instance_type: "ml.inf2.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-
-    accept_eula: true
-    env:
-      OPTION_DTYPE: fp16
-      OPTION_MAX_ROLLING_BATCH_SIZE: "4"
-      OPTION_N_POSITIONS: "4096"
-      OPTION_TENSOR_PARALLEL_DEGREE: "12"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-      SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
-      SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
-  - name: llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
-    model_id: meta-textgenerationneuron-llama-2-13b-f
-    model_version: 1.0.0
-    model_name: llama2-13b
-    ep_name: llama-2-13b-inf2-48xlarge    
-    instance_type: "ml.inf2.48xlarge"    
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    accept_eula: true
-    env:
-      OPTION_DTYPE: fp16
-      OPTION_MAX_ROLLING_BATCH_SIZE: "4"
-      OPTION_N_POSITIONS: "4096"
-      OPTION_TENSOR_PARALLEL_DEGREE: "24"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-      SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
-      SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
-  - name: llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
-    model_version: "*"
-    model_name: llama2-13b
-    ep_name: llama-2-13b-g5-12xlarge
-    instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "4"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  - name: llama2-13b-g5.24xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
-    model_version: "*"
-    model_name: llama2-13b
-    ep_name: llama-2-13b-g5-24xlarge
-    instance_type: "ml.g5.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "4"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  - name: llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
-    model_version: "*"
-    model_name: llama2-13b
-    ep_name: llama-2-13b-g5-48xlarge
+    model_name: llama2-70b
+    ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
@@ -229,6 +77,33 @@ experiments:
       MAX_TOTAL_TOKENS: "4096"
       SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+  # P4D Based Instance Model Configuration:
+  - name: llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
+    model_id: meta-llama/Llama-2-70b-chat-hf
+    model_version: "*"
+    model_name: meta-llama-Llama-2-70b-chat-hf
+    ep_name: llama-2-13b-p4d-24xlarge    
+    instance_type: "ml.p4d.24xlarge"    
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    deploy: yes
+    instance_count: 1
+    deployment_script: p4d_hf_tgi.py
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4 
+    accept_eula: true
+    env:
+      MODEL_LOADING_TIMEOUT: "3600"
+      NUMBER_OF_GPU: 8
+      INSTANCE_COUNT: 1
+      HEALTH_CHECK_TIMEOUT: 300
 
 
 results:
