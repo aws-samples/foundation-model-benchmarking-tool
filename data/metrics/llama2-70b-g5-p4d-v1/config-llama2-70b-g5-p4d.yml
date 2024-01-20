@@ -32,6 +32,8 @@ experiments:
   - 1
   - 2
   - 4
+  - 6
+  - 8
   deploy: true
   deployment_script: jumpstart.py
   env:
@@ -63,6 +65,8 @@ experiments:
   - 1
   - 2
   - 4
+  - 6
+  - 8
   deploy: true
   deployment_script: p4d_hf_tgi.py
   env:
