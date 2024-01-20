@@ -1,0 +1,7 @@
+experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute
+llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118,payload_en_3000-4000.jsonl,ml.p4d.24xlarge,1,0.0,3478,1474,3503,1481,2.66,25
+llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118,payload_en_3000-4000.jsonl,ml.p4d.24xlarge,2,0.0,3482,1680,3507,1690,3.97,28
+llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118,payload_en_3000-4000.jsonl,ml.p4d.24xlarge,4,0.0,3482,1665,3507,1676,6.34,28
+llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.48xlarge,1,0.0,3478,242,65,3,15.22,3
+llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.48xlarge,2,0.0,3482,252,72,5,26.32,4
+llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.48xlarge,4,0.0,3482,267,78,5,45.43,4

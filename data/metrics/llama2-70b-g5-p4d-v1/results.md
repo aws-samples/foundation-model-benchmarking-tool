@@ -1,9 +1,36 @@
 
 # Results for performance benchmarking
 
-**Last modified (UTC): 2024-01-19 15:37:07.394596**
+**Last modified (UTC): 2024-01-20 16:19:02.241122**
 
 ## Summary
+
+We did performance benchmarking for the `Llama2-70b` model on "`ml.p4d.24xlarge`, `ml.g5.48xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.p4d.24xlarge` instance type.  
+| Information | Value |
+|-----|-----|
+| experiment_name | llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118 |
+| payload_file | payload_en_3000-4000.jsonl |
+| instance_type | ml.p4d.24xlarge |
+| concurrency | 2 |
+| error_rate | 0.0 |
+| prompt_token_count_mean | 3482 |
+| prompt_token_throughput | 1680 |
+| completion_token_count_mean | 3507 |
+| completion_token_throughput | 1690 |
+| latency_mean | 3.97 |
+| transactions_per_minute | 28 |
+| price_per_hour | 37.688 |
+| price_per_txn | 0.0224 |
+
+
+The price performance comparison for different instance types is presented below:
+
+![Price performance comparison](business_summary.png)
+
+The configuration used for these tests is available in the [`config`](config-llama2-70b-g5-p4d.yml) file.
+
+
+## Per instance results
 
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
 |Dataset   | Instance type   | Recommendation   |
@@ -26,3 +53,5 @@ The following plots provide insights into the results from the different experim
 ![Error rates for different concurrency levels and instance types](error_rates.png)
 
 ![Tokens vs latency for different concurrency levels and instance types](tokens_vs_latency.png)
+
+![Concurrency Vs latency for different instance type for selected dataset](concurrency_vs_inference_latency.png)

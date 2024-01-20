@@ -1,9 +1,36 @@
 
 # Results for performance benchmarking
 
-**Last modified (UTC): 2024-01-19 13:24:40.940713**
+**Last modified (UTC): 2024-01-20 16:17:48.402896**
 
 ## Summary
+
+We did performance benchmarking for the `Llama2-13b` model on "`ml.g5.12xlarge`, `ml.g5.24xlarge`, `ml.g5.48xlarge`, `ml.inf2.24xlarge`, `ml.inf2.48xlarge`, `ml.p4d.24xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.inf2.48xlarge` instance type.  
+| Information | Value |
+|-----|-----|
+| experiment_name | llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24 |
+| payload_file | payload_en_3000-4000.jsonl |
+| instance_type | ml.inf2.48xlarge |
+| concurrency | 2 |
+| error_rate | 0.0 |
+| prompt_token_count_mean | 3482 |
+| prompt_token_throughput | 3453 |
+| completion_token_count_mean | 37 |
+| completion_token_throughput | 33 |
+| latency_mean | 1.85 |
+| transactions_per_minute | 59 |
+| price_per_hour | 15.58 |
+| price_per_txn | 0.0044 |
+
+
+The price performance comparison for different instance types is presented below:
+
+![Price performance comparison](business_summary.png)
+
+The configuration used for these tests is available in the [`config`](config-llama2-13b-inf2-g5-p4d-v1.yml) file.
+
+
+## Per instance results
 
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
 |Dataset   | Instance type   | Recommendation   |
@@ -45,3 +72,5 @@ The following plots provide insights into the results from the different experim
 ![Error rates for different concurrency levels and instance types](error_rates.png)
 
 ![Tokens vs latency for different concurrency levels and instance types](tokens_vs_latency.png)
+
+![Concurrency Vs latency for different instance type for selected dataset](concurrency_vs_inference_latency.png)

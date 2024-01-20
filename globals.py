@@ -33,12 +33,20 @@ PLACE_HOLDER: int = -1705338041
 COUNTS_FNAME: str = "experiment_counts.csv"
 ERROR_RATES_FNAME: str = "error_rates.csv"
 RESULTS_DESC_MD_FNAME: str = "results.md"
+SUMMARY_METRICS_W_PRICING_FNAME: str = "summary_metrics_w_pricing.csv"
+INSTANCE_PRICING_PER_HOUR_FNAME: str = "instance_pricing_per_hour.csv"
+SUMMARY_METRICS_FOR_DATASET_W_SCORES_FNAME: str = "summary_metrics_for_dataset_w_scores.csv"
+SUMMARY_METRICS_FOR_DATASET_W_SCORES_BEST_OPTION_FNAME: str = "summary_metrics_for_dataset_best_option.csv"
+SUMMARY_METRICS_FOR_DATASET_W_SCORES_BEST_OPTION_EACH_INSTANCE_TYPE_FNAME: str = "summary_metrics_for_dataset_best_option_each_instance_type.csv"
+BUSINESS_SUMMARY_PLOT_FNAME: str = "business_summary.png"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
 ERROR_RATES_PLOT_FNAME: str = "error_rates.png"
 TOKENS_VS_LATENCY_PLOT_TEXT: str = "Tokens vs latency for different concurrency levels and instance types"
 TOKENS_VS_LATENCY_PLOT_FNAME: str = "tokens_vs_latency.png"
+CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_FNAME: str = "concurrency_vs_inference_latency.png"
+CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_TEXT: str = "Concurrency Vs latency for different instance type for selected dataset"
 
 
 LATENCY_BUDGET: int = 20
@@ -49,6 +57,10 @@ OVERALL_RESULTS_MD: str = """
 **Last modified (UTC): {dttm}**
 
 ## Summary
+
+{business_summary}
+
+## Per instance results
 
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
 |Dataset   | Instance type   | Recommendation   |

@@ -1,5 +1,8 @@
 general:
   name: "llama2-70b-g5-p4d-v1"
+  config_file_name: config-llama2-70b-g5-p4d.yml
+  model_name: "Llama2-70b"
+
   
 # AWS and SageMaker settings
 aws:
@@ -36,6 +39,20 @@ datasets:
     max_length_in_tokens: 3997
     payload_file: payload_{lang}_{min}-{max}.jsonl
 
+metrics:
+  dataset_of_interest: en_3000-4000
+  weights:
+    price_per_tx_wt: 0.65
+    latenct_wt: 0.35
+  
+pricing:
+  ml.g5.12xlarge: 7.09
+  ml.g5.24xlarge: 10.18
+  ml.g5.48xlarge: 20.36
+  ml.inf2.24xlarge: 7.79
+  ml.inf2.48xlarge: 15.58
+  ml.p4d.24xlarge: 37.688
+  
 inference_parameters:
   do_sample: yes
   temperature: 0.1
@@ -78,10 +95,10 @@ experiments:
       SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   # P4D Based Instance Model Configuration:
-  - name: llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
-    model_id: meta-llama/Llama-2-70b
+  - name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
+    model_id: meta-llama/Llama-2-70b-chat-hf
     model_version: "*"
-    model_name: meta-llama-Llama-2-70b
+    model_name: meta-llama-Llama-2-70b-chat-hf
     ep_name: llama-2-13b-p4d-24xlarge    
     instance_type: "ml.p4d.24xlarge"    
     image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
