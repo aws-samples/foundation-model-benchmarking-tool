@@ -1,6 +1,7 @@
 __pycache__/
 e.json
 .DS_Store
+./data/models/*/endpoints.json
 **/metrics/*/per_chunk/*
 **/metrics/*/per_inference/*
 **/hf_token.txt
