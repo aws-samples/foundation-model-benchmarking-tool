@@ -1,18 +1,18 @@
 [
   {
-    "experiment_name": "llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0",
+    "experiment_name": "llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118",
     "endpoint": {
-      "EndpointName": "llama-2-70b-g5-48xlarge-1705773235",
-      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-70b-g5-48xlarge-1705773235",
-      "EndpointConfigName": "llama-2-70b-g5-48xlarge-1705773235",
+      "EndpointName": "huggingface-pytorch-tgi-inference-2024-01-21-01-43-23-143",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/huggingface-pytorch-tgi-inference-2024-01-21-01-43-23-143",
+      "EndpointConfigName": "huggingface-pytorch-tgi-inference-2024-01-21-01-43-23-143",
       "ProductionVariants": [
         {
           "VariantName": "AllTraffic",
           "DeployedImages": [
             {
-              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
-              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:2739b630b95d8a95e6b4665e66d8243dd43b99c4fdb865feff13aab9c1da06eb",
-              "ResolutionTime": "2024-01-20 17:53:58.429000+00:00"
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:947399ae8b3fa131fc6d2da99f56c9c41195c7ce7cbd890e1e6c0dc328d238cd",
+              "ResolutionTime": "2024-01-21 01:43:24.750000+00:00"
             }
           ],
           "CurrentWeight": 1.0,
@@ -22,27 +22,584 @@
         }
       ],
       "EndpointStatus": "InService",
-      "CreationTime": "2024-01-20 17:53:57.406000+00:00",
-      "LastModifiedTime": "2024-01-20 18:00:13.628000+00:00",
+      "CreationTime": "2024-01-21 01:43:23.838000+00:00",
+      "LastModifiedTime": "2024-01-21 01:49:38.783000+00:00",
       "ResponseMetadata": {
-        "RequestId": "f3646c24-b670-4e64-8e6f-7569143b4a12",
+        "RequestId": "b576ca26-1285-43e9-8934-c3a0dcfd10f0",
         "HTTPStatusCode": 200,
         "HTTPHeaders": {
-          "x-amzn-requestid": "f3646c24-b670-4e64-8e6f-7569143b4a12",
+          "x-amzn-requestid": "b576ca26-1285-43e9-8934-c3a0dcfd10f0",
           "content-type": "application/x-amz-json-1.1",
-          "content-length": "815",
-          "date": "Sat, 20 Jan 2024 18:01:58 GMT"
+          "content-length": "883",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
         },
         "RetryAttempts": 0
       }
     },
     "endpoint_config": {
-      "EndpointConfigName": "llama-2-70b-g5-48xlarge-1705773235",
-      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-70b-g5-48xlarge-1705773235",
+      "EndpointConfigName": "huggingface-pytorch-tgi-inference-2024-01-21-01-43-23-143",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/huggingface-pytorch-tgi-inference-2024-01-21-01-43-23-143",
       "ProductionVariants": [
         {
           "VariantName": "AllTraffic",
-          "ModelName": "meta-textgeneration-llama-2-70b-2024-01-20-17-53-55-754",
+          "ModelName": "huggingface-pytorch-tgi-inference-2024-01-21-01-43-16-526",
+          "InitialInstanceCount": 1,
+          "InstanceType": "ml.p4d.24xlarge",
+          "InitialVariantWeight": 1.0,
+          "ContainerStartupHealthCheckTimeoutInSeconds": 300
+        }
+      ],
+      "CreationTime": "2024-01-21 01:43:23.451000+00:00",
+      "EnableNetworkIsolation": false,
+      "ResponseMetadata": {
+        "RequestId": "38e36580-3377-46d4-820d-30fc23972c7b",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "38e36580-3377-46d4-820d-30fc23972c7b",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "541",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "model_config": {
+      "ModelName": "huggingface-pytorch-tgi-inference-2024-01-21-01-43-16-526",
+      "PrimaryContainer": {
+        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04",
+        "Mode": "SingleModel",
+        "Environment": {
+          "HF_MODEL_ID": "meta-llama/Llama-2-13b-chat-hf",
+          "HUGGING_FACE_HUB_TOKEN": "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",
+          "MAX_BATCH_TOTAL_TOKENS": "8192",
+          "MAX_INPUT_LENGTH": "4090",
+          "MAX_TOTAL_TOKENS": "4096",
+          "SAGEMAKER_CONTAINER_LOG_LEVEL": "20",
+          "SAGEMAKER_REGION": "us-east-1",
+          "SM_NUM_GPUS": "8"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
+      "CreationTime": "2024-01-21 01:43:23.005000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/huggingface-pytorch-tgi-inference-2024-01-21-01-43-16-526",
+      "EnableNetworkIsolation": false,
+      "DeploymentRecommendation": {
+        "RecommendationStatus": "COMPLETED",
+        "RealTimeInferenceRecommendations": []
+      },
+      "ResponseMetadata": {
+        "RequestId": "b5103e39-341d-4274-bcc9-e70aaa942173",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "b5103e39-341d-4274-bcc9-e70aaa942173",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "897",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    }
+  },
+  {
+    "experiment_name": "llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=12",
+    "endpoint": {
+      "EndpointName": "llama-2-13b-inf2-24xlarge-1705801395",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-13b-inf2-24xlarge-1705801395",
+      "EndpointConfigName": "llama-2-13b-inf2-24xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "DeployedImages": [
+            {
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference@sha256:5fb0cb418f37363633907270e3f28bf19f5bb3f44a30290d09edf66629bdf4d4",
+              "ResolutionTime": "2024-01-21 01:43:18.542000+00:00"
+            }
+          ],
+          "CurrentWeight": 1.0,
+          "DesiredWeight": 1.0,
+          "CurrentInstanceCount": 1,
+          "DesiredInstanceCount": 1
+        }
+      ],
+      "EndpointStatus": "InService",
+      "CreationTime": "2024-01-21 01:43:17.494000+00:00",
+      "LastModifiedTime": "2024-01-21 02:09:36.427000+00:00",
+      "ResponseMetadata": {
+        "RequestId": "83ee5811-604e-40f7-8c42-96d697dd53ec",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "83ee5811-604e-40f7-8c42-96d697dd53ec",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "764",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "endpoint_config": {
+      "EndpointConfigName": "llama-2-13b-inf2-24xlarge-1705801395",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-13b-inf2-24xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "ModelName": "meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-819",
+          "InitialInstanceCount": 1,
+          "InstanceType": "ml.inf2.24xlarge",
+          "InitialVariantWeight": 1.0,
+          "VolumeSizeInGB": 256,
+          "ModelDataDownloadTimeoutInSeconds": 3600,
+          "ContainerStartupHealthCheckTimeoutInSeconds": 3600
+        }
+      ],
+      "CreationTime": "2024-01-21 01:43:16.991000+00:00",
+      "EnableNetworkIsolation": false,
+      "ResponseMetadata": {
+        "RequestId": "5ac5a1ae-7a93-42fb-97ef-2d1c381fd9bf",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "5ac5a1ae-7a93-42fb-97ef-2d1c381fd9bf",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "569",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "model_config": {
+      "ModelName": "meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-819",
+      "PrimaryContainer": {
+        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0",
+        "Mode": "SingleModel",
+        "ModelDataSource": {
+          "S3DataSource": {
+            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgenerationneuron/meta-textgenerationneuron-llama-2-13b-f/artifacts/inference-prepack/v1.0.0/",
+            "S3DataType": "S3Prefix",
+            "CompressionType": "None",
+            "ModelAccessConfig": {
+              "AcceptEula": true
+            }
+          }
+        },
+        "Environment": {
+          "OPTION_DTYPE": "fp16",
+          "OPTION_MAX_ROLLING_BATCH_SIZE": "4",
+          "OPTION_NEURON_OPTIMIZE_LEVEL": "2",
+          "OPTION_N_POSITIONS": "4096",
+          "OPTION_ROLLING_BATCH": "auto",
+          "OPTION_TENSOR_PARALLEL_DEGREE": "12",
+          "SAGEMAKER_MODEL_SERVER_TIMEOUT": "120",
+          "SAGEMAKER_MODEL_SERVER_WORKERS": "1",
+          "SAGEMAKER_PROGRAM": "inference.py",
+          "SAGEMAKER_TS_RESPONSE_TIMEOUT": "120"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
+      "CreationTime": "2024-01-21 01:43:16.462000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-819",
+      "EnableNetworkIsolation": true,
+      "DeploymentRecommendation": {
+        "RecommendationStatus": "COMPLETED",
+        "RealTimeInferenceRecommendations": []
+      },
+      "ResponseMetadata": {
+        "RequestId": "1c1ab2e8-5669-4fac-8d24-22379e162da7",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "1c1ab2e8-5669-4fac-8d24-22379e162da7",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "1208",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    }
+  },
+  {
+    "experiment_name": "llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24",
+    "endpoint": {
+      "EndpointName": "llama-2-13b-inf2-48xlarge-1705801395",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-13b-inf2-48xlarge-1705801395",
+      "EndpointConfigName": "llama-2-13b-inf2-48xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "DeployedImages": [
+            {
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference@sha256:5fb0cb418f37363633907270e3f28bf19f5bb3f44a30290d09edf66629bdf4d4",
+              "ResolutionTime": "2024-01-21 01:43:18.168000+00:00"
+            }
+          ],
+          "CurrentWeight": 1.0,
+          "DesiredWeight": 1.0,
+          "CurrentInstanceCount": 1,
+          "DesiredInstanceCount": 1
+        }
+      ],
+      "EndpointStatus": "InService",
+      "CreationTime": "2024-01-21 01:43:17.325000+00:00",
+      "LastModifiedTime": "2024-01-21 01:58:17.048000+00:00",
+      "ResponseMetadata": {
+        "RequestId": "4587d2c6-6ecc-4a70-94c7-568897dfecbc",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "4587d2c6-6ecc-4a70-94c7-568897dfecbc",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "764",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "endpoint_config": {
+      "EndpointConfigName": "llama-2-13b-inf2-48xlarge-1705801395",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-13b-inf2-48xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "ModelName": "meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-774",
+          "InitialInstanceCount": 1,
+          "InstanceType": "ml.inf2.48xlarge",
+          "InitialVariantWeight": 1.0,
+          "VolumeSizeInGB": 256,
+          "ModelDataDownloadTimeoutInSeconds": 3600,
+          "ContainerStartupHealthCheckTimeoutInSeconds": 3600
+        }
+      ],
+      "CreationTime": "2024-01-21 01:43:16.920000+00:00",
+      "EnableNetworkIsolation": false,
+      "ResponseMetadata": {
+        "RequestId": "efe2b137-92bc-4079-a318-59f9e334af4a",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "efe2b137-92bc-4079-a318-59f9e334af4a",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "568",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "model_config": {
+      "ModelName": "meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-774",
+      "PrimaryContainer": {
+        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0",
+        "Mode": "SingleModel",
+        "ModelDataSource": {
+          "S3DataSource": {
+            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgenerationneuron/meta-textgenerationneuron-llama-2-13b-f/artifacts/inference-prepack/v1.0.0/",
+            "S3DataType": "S3Prefix",
+            "CompressionType": "None",
+            "ModelAccessConfig": {
+              "AcceptEula": true
+            }
+          }
+        },
+        "Environment": {
+          "OPTION_DTYPE": "fp16",
+          "OPTION_MAX_ROLLING_BATCH_SIZE": "4",
+          "OPTION_NEURON_OPTIMIZE_LEVEL": "2",
+          "OPTION_N_POSITIONS": "4096",
+          "OPTION_ROLLING_BATCH": "auto",
+          "OPTION_TENSOR_PARALLEL_DEGREE": "24",
+          "SAGEMAKER_MODEL_SERVER_TIMEOUT": "120",
+          "SAGEMAKER_MODEL_SERVER_WORKERS": "1",
+          "SAGEMAKER_PROGRAM": "inference.py",
+          "SAGEMAKER_TS_RESPONSE_TIMEOUT": "120"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
+      "CreationTime": "2024-01-21 01:43:16.451000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgenerationneuron-llama-2-13b-f-2024-01-21-01-43-15-774",
+      "EnableNetworkIsolation": true,
+      "DeploymentRecommendation": {
+        "RecommendationStatus": "COMPLETED",
+        "RealTimeInferenceRecommendations": []
+      },
+      "ResponseMetadata": {
+        "RequestId": "9a599ba9-b9e8-4200-95ab-ff1b3d577194",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "9a599ba9-b9e8-4200-95ab-ff1b3d577194",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "1208",
+          "date": "Sun, 21 Jan 2024 02:15:55 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    }
+  },
+  {
+    "experiment_name": "llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0",
+    "endpoint": {
+      "EndpointName": "llama-2-13b-g5-12xlarge-1705801395",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-13b-g5-12xlarge-1705801395",
+      "EndpointConfigName": "llama-2-13b-g5-12xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "DeployedImages": [
+            {
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:2739b630b95d8a95e6b4665e66d8243dd43b99c4fdb865feff13aab9c1da06eb",
+              "ResolutionTime": "2024-01-21 01:43:18.731000+00:00"
+            }
+          ],
+          "CurrentWeight": 1.0,
+          "DesiredWeight": 1.0,
+          "CurrentInstanceCount": 1,
+          "DesiredInstanceCount": 1
+        }
+      ],
+      "EndpointStatus": "InService",
+      "CreationTime": "2024-01-21 01:43:17.371000+00:00",
+      "LastModifiedTime": "2024-01-21 01:47:32.561000+00:00",
+      "ResponseMetadata": {
+        "RequestId": "b1a8eb2d-bc59-4b2a-826b-39a9e1bf6749",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "b1a8eb2d-bc59-4b2a-826b-39a9e1bf6749",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "815",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "endpoint_config": {
+      "EndpointConfigName": "llama-2-13b-g5-12xlarge-1705801395",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-13b-g5-12xlarge-1705801395",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-01-43-15-759",
+          "InitialInstanceCount": 1,
+          "InstanceType": "ml.g5.12xlarge",
+          "InitialVariantWeight": 1.0,
+          "ModelDataDownloadTimeoutInSeconds": 1200,
+          "ContainerStartupHealthCheckTimeoutInSeconds": 1200
+        }
+      ],
+      "CreationTime": "2024-01-21 01:43:16.893000+00:00",
+      "EnableNetworkIsolation": false,
+      "ResponseMetadata": {
+        "RequestId": "83a54ef9-2127-42ec-8552-a7c9cd685990",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "83a54ef9-2127-42ec-8552-a7c9cd685990",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "534",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "model_config": {
+      "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-01-43-15-759",
+      "PrimaryContainer": {
+        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
+        "Mode": "SingleModel",
+        "ModelDataSource": {
+          "S3DataSource": {
+            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgeneration/meta-textgeneration-llama-2-13b/artifacts/inference-prepack/v1.0.0/",
+            "S3DataType": "S3Prefix",
+            "CompressionType": "None",
+            "ModelAccessConfig": {
+              "AcceptEula": true
+            }
+          }
+        },
+        "Environment": {
+          "ENDPOINT_SERVER_TIMEOUT": "3600",
+          "HF_MODEL_ID": "/opt/ml/model",
+          "MAX_INPUT_LENGTH": "4095",
+          "MAX_TOTAL_TOKENS": "4096",
+          "MODEL_CACHE_ROOT": "/opt/ml/model",
+          "SAGEMAKER_ENV": "1",
+          "SAGEMAKER_MODEL_SERVER_WORKERS": "1",
+          "SAGEMAKER_PROGRAM": "inference.py",
+          "SM_NUM_GPUS": "4"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
+      "CreationTime": "2024-01-21 01:43:16.396000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgeneration-llama-2-13b-2024-01-21-01-43-15-759",
+      "EnableNetworkIsolation": true,
+      "DeploymentRecommendation": {
+        "RecommendationStatus": "COMPLETED",
+        "RealTimeInferenceRecommendations": []
+      },
+      "ResponseMetadata": {
+        "RequestId": "fa62ab0a-4cfa-468c-ac30-5556ccd565aa",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "fa62ab0a-4cfa-468c-ac30-5556ccd565aa",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "1138",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    }
+  },
+  {
+    "experiment_name": "llama2-13b-g5.24xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0",
+    "endpoint": {
+      "EndpointName": "llama-2-13b-g5-24xlarge-1705802992",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-13b-g5-24xlarge-1705802992",
+      "EndpointConfigName": "llama-2-13b-g5-24xlarge-1705802992",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "DeployedImages": [
+            {
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:2739b630b95d8a95e6b4665e66d8243dd43b99c4fdb865feff13aab9c1da06eb",
+              "ResolutionTime": "2024-01-21 02:09:55.066000+00:00"
+            }
+          ],
+          "CurrentWeight": 1.0,
+          "DesiredWeight": 1.0,
+          "CurrentInstanceCount": 1,
+          "DesiredInstanceCount": 1
+        }
+      ],
+      "EndpointStatus": "InService",
+      "CreationTime": "2024-01-21 02:09:54.303000+00:00",
+      "LastModifiedTime": "2024-01-21 02:14:15.267000+00:00",
+      "ResponseMetadata": {
+        "RequestId": "2da7d28b-9678-4363-8774-2540d18879df",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "2da7d28b-9678-4363-8774-2540d18879df",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "815",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "endpoint_config": {
+      "EndpointConfigName": "llama-2-13b-g5-24xlarge-1705802992",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-13b-g5-24xlarge-1705802992",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-770",
+          "InitialInstanceCount": 1,
+          "InstanceType": "ml.g5.24xlarge",
+          "InitialVariantWeight": 1.0,
+          "ModelDataDownloadTimeoutInSeconds": 1200,
+          "ContainerStartupHealthCheckTimeoutInSeconds": 1200
+        }
+      ],
+      "CreationTime": "2024-01-21 02:09:53.843000+00:00",
+      "EnableNetworkIsolation": false,
+      "ResponseMetadata": {
+        "RequestId": "f06f2f67-545b-4bb8-89f4-eef780d17e4e",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "f06f2f67-545b-4bb8-89f4-eef780d17e4e",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "534",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "model_config": {
+      "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-770",
+      "PrimaryContainer": {
+        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
+        "Mode": "SingleModel",
+        "ModelDataSource": {
+          "S3DataSource": {
+            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgeneration/meta-textgeneration-llama-2-13b/artifacts/inference-prepack/v1.0.0/",
+            "S3DataType": "S3Prefix",
+            "CompressionType": "None",
+            "ModelAccessConfig": {
+              "AcceptEula": true
+            }
+          }
+        },
+        "Environment": {
+          "ENDPOINT_SERVER_TIMEOUT": "3600",
+          "HF_MODEL_ID": "/opt/ml/model",
+          "MAX_INPUT_LENGTH": "4095",
+          "MAX_TOTAL_TOKENS": "4096",
+          "MODEL_CACHE_ROOT": "/opt/ml/model",
+          "SAGEMAKER_ENV": "1",
+          "SAGEMAKER_MODEL_SERVER_WORKERS": "1",
+          "SAGEMAKER_PROGRAM": "inference.py",
+          "SM_NUM_GPUS": "4"
+        }
+      },
+      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
+      "CreationTime": "2024-01-21 02:09:53.327000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-770",
+      "EnableNetworkIsolation": true,
+      "DeploymentRecommendation": {
+        "RecommendationStatus": "COMPLETED",
+        "RealTimeInferenceRecommendations": []
+      },
+      "ResponseMetadata": {
+        "RequestId": "d40edbb6-e86a-4858-87e6-8f77be81a719",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "d40edbb6-e86a-4858-87e6-8f77be81a719",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "1138",
+          "date": "Sun, 21 Jan 2024 02:15:56 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    }
+  },
+  {
+    "experiment_name": "llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0",
+    "endpoint": {
+      "EndpointName": "llama-2-13b-g5-48xlarge-1705802992",
+      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/llama-2-13b-g5-48xlarge-1705802992",
+      "EndpointConfigName": "llama-2-13b-g5-48xlarge-1705802992",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "DeployedImages": [
+            {
+              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
+              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:2739b630b95d8a95e6b4665e66d8243dd43b99c4fdb865feff13aab9c1da06eb",
+              "ResolutionTime": "2024-01-21 02:09:55.058000+00:00"
+            }
+          ],
+          "CurrentWeight": 1.0,
+          "DesiredWeight": 1.0,
+          "CurrentInstanceCount": 1,
+          "DesiredInstanceCount": 1
+        }
+      ],
+      "EndpointStatus": "InService",
+      "CreationTime": "2024-01-21 02:09:54.374000+00:00",
+      "LastModifiedTime": "2024-01-21 02:15:32.368000+00:00",
+      "ResponseMetadata": {
+        "RequestId": "207f7759-7532-499e-80d6-b83abf4ee412",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+          "x-amzn-requestid": "207f7759-7532-499e-80d6-b83abf4ee412",
+          "content-type": "application/x-amz-json-1.1",
+          "content-length": "815",
+          "date": "Sun, 21 Jan 2024 02:15:57 GMT"
+        },
+        "RetryAttempts": 0
+      }
+    },
+    "endpoint_config": {
+      "EndpointConfigName": "llama-2-13b-g5-48xlarge-1705802992",
+      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/llama-2-13b-g5-48xlarge-1705802992",
+      "ProductionVariants": [
+        {
+          "VariantName": "AllTraffic",
+          "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-767",
           "InitialInstanceCount": 1,
           "InstanceType": "ml.g5.48xlarge",
           "InitialVariantWeight": 1.0,
@@ -50,28 +607,28 @@
           "ContainerStartupHealthCheckTimeoutInSeconds": 1200
         }
       ],
-      "CreationTime": "2024-01-20 17:53:56.916000+00:00",
+      "CreationTime": "2024-01-21 02:09:53.936000+00:00",
       "EnableNetworkIsolation": false,
       "ResponseMetadata": {
-        "RequestId": "0162e64f-8c75-47bd-90d4-861de5c568ad",
+        "RequestId": "e0e095ae-d3b4-4788-9a20-c14afc2a728b",
         "HTTPStatusCode": 200,
         "HTTPHeaders": {
-          "x-amzn-requestid": "0162e64f-8c75-47bd-90d4-861de5c568ad",
+          "x-amzn-requestid": "e0e095ae-d3b4-4788-9a20-c14afc2a728b",
           "content-type": "application/x-amz-json-1.1",
           "content-length": "534",
-          "date": "Sat, 20 Jan 2024 18:01:58 GMT"
+          "date": "Sun, 21 Jan 2024 02:15:57 GMT"
         },
         "RetryAttempts": 0
       }
     },
     "model_config": {
-      "ModelName": "meta-textgeneration-llama-2-70b-2024-01-20-17-53-55-754",
+      "ModelName": "meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-767",
       "PrimaryContainer": {
         "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04",
         "Mode": "SingleModel",
         "ModelDataSource": {
           "S3DataSource": {
-            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgeneration/meta-textgeneration-llama-2-70b/artifacts/inference-prepack/v1.0.0/",
+            "S3Uri": "s3://jumpstart-private-cache-prod-us-east-1/meta-textgeneration/meta-textgeneration-llama-2-13b/artifacts/inference-prepack/v1.0.0/",
             "S3DataType": "S3Prefix",
             "CompressionType": "None",
             "ModelAccessConfig": {
@@ -92,122 +649,21 @@
         }
       },
       "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
-      "CreationTime": "2024-01-20 17:53:56.387000+00:00",
-      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgeneration-llama-2-70b-2024-01-20-17-53-55-754",
+      "CreationTime": "2024-01-21 02:09:53.425000+00:00",
+      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/meta-textgeneration-llama-2-13b-2024-01-21-02-09-52-767",
       "EnableNetworkIsolation": true,
       "DeploymentRecommendation": {
         "RecommendationStatus": "COMPLETED",
         "RealTimeInferenceRecommendations": []
       },
       "ResponseMetadata": {
-        "RequestId": "7768399d-4166-446c-b4f2-87b844884a15",
+        "RequestId": "fb0e7427-30c8-4ce0-9b06-5d5a25347623",
         "HTTPStatusCode": 200,
         "HTTPHeaders": {
-          "x-amzn-requestid": "7768399d-4166-446c-b4f2-87b844884a15",
+          "x-amzn-requestid": "fb0e7427-30c8-4ce0-9b06-5d5a25347623",
           "content-type": "application/x-amz-json-1.1",
           "content-length": "1138",
-          "date": "Sat, 20 Jan 2024 18:01:58 GMT"
-        },
-        "RetryAttempts": 0
-      }
-    }
-  },
-  {
-    "experiment_name": "llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118",
-    "endpoint": {
-      "EndpointName": "huggingface-pytorch-tgi-inference-2024-01-20-17-53-57-009",
-      "EndpointArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint/huggingface-pytorch-tgi-inference-2024-01-20-17-53-57-009",
-      "EndpointConfigName": "huggingface-pytorch-tgi-inference-2024-01-20-17-53-57-009",
-      "ProductionVariants": [
-        {
-          "VariantName": "AllTraffic",
-          "DeployedImages": [
-            {
-              "SpecifiedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04",
-              "ResolvedImage": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference@sha256:947399ae8b3fa131fc6d2da99f56c9c41195c7ce7cbd890e1e6c0dc328d238cd",
-              "ResolutionTime": "2024-01-20 17:53:58.504000+00:00"
-            }
-          ],
-          "CurrentWeight": 1.0,
-          "DesiredWeight": 1.0,
-          "CurrentInstanceCount": 1,
-          "DesiredInstanceCount": 1
-        }
-      ],
-      "EndpointStatus": "InService",
-      "CreationTime": "2024-01-20 17:53:57.729000+00:00",
-      "LastModifiedTime": "2024-01-20 18:01:58.813000+00:00",
-      "ResponseMetadata": {
-        "RequestId": "71eab07e-9355-47df-ae01-71d2b9f1124c",
-        "HTTPStatusCode": 200,
-        "HTTPHeaders": {
-          "x-amzn-requestid": "71eab07e-9355-47df-ae01-71d2b9f1124c",
-          "content-type": "application/x-amz-json-1.1",
-          "content-length": "884",
-          "date": "Sat, 20 Jan 2024 18:01:59 GMT"
-        },
-        "RetryAttempts": 0
-      }
-    },
-    "endpoint_config": {
-      "EndpointConfigName": "huggingface-pytorch-tgi-inference-2024-01-20-17-53-57-009",
-      "EndpointConfigArn": "arn:aws:sagemaker:us-east-1:015469603702:endpoint-config/huggingface-pytorch-tgi-inference-2024-01-20-17-53-57-009",
-      "ProductionVariants": [
-        {
-          "VariantName": "AllTraffic",
-          "ModelName": "huggingface-pytorch-tgi-inference-2024-01-20-17-53-56-406",
-          "InitialInstanceCount": 1,
-          "InstanceType": "ml.p4d.24xlarge",
-          "InitialVariantWeight": 1.0,
-          "ContainerStartupHealthCheckTimeoutInSeconds": 300
-        }
-      ],
-      "CreationTime": "2024-01-20 17:53:57.313000+00:00",
-      "EnableNetworkIsolation": false,
-      "ResponseMetadata": {
-        "RequestId": "79be082a-b24f-41dd-9c06-5b34e2bcf445",
-        "HTTPStatusCode": 200,
-        "HTTPHeaders": {
-          "x-amzn-requestid": "79be082a-b24f-41dd-9c06-5b34e2bcf445",
-          "content-type": "application/x-amz-json-1.1",
-          "content-length": "541",
-          "date": "Sat, 20 Jan 2024 18:01:59 GMT"
-        },
-        "RetryAttempts": 0
-      }
-    },
-    "model_config": {
-      "ModelName": "huggingface-pytorch-tgi-inference-2024-01-20-17-53-56-406",
-      "PrimaryContainer": {
-        "Image": "763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04",
-        "Mode": "SingleModel",
-        "Environment": {
-          "HF_MODEL_ID": "meta-llama/Llama-2-70b-chat-hf",
-          "HUGGING_FACE_HUB_TOKEN": "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",
-          "MAX_BATCH_TOTAL_TOKENS": "8192",
-          "MAX_INPUT_LENGTH": "4090",
-          "MAX_TOTAL_TOKENS": "4096",
-          "SAGEMAKER_CONTAINER_LOG_LEVEL": "20",
-          "SAGEMAKER_REGION": "us-east-1",
-          "SM_NUM_GPUS": "8"
-        }
-      },
-      "ExecutionRoleArn": "arn:aws:iam::015469603702:role/SageMakerRepoRole",
-      "CreationTime": "2024-01-20 17:53:56.883000+00:00",
-      "ModelArn": "arn:aws:sagemaker:us-east-1:015469603702:model/huggingface-pytorch-tgi-inference-2024-01-20-17-53-56-406",
-      "EnableNetworkIsolation": false,
-      "DeploymentRecommendation": {
-        "RecommendationStatus": "COMPLETED",
-        "RealTimeInferenceRecommendations": []
-      },
-      "ResponseMetadata": {
-        "RequestId": "0c4aabdf-977a-4a05-a819-53ab906fbbb6",
-        "HTTPStatusCode": 200,
-        "HTTPHeaders": {
-          "x-amzn-requestid": "0c4aabdf-977a-4a05-a819-53ab906fbbb6",
-          "content-type": "application/x-amz-json-1.1",
-          "content-length": "897",
-          "date": "Sat, 20 Jan 2024 18:01:59 GMT"
+          "date": "Sun, 21 Jan 2024 02:15:57 GMT"
         },
         "RetryAttempts": 0
       }

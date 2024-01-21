@@ -16,8 +16,9 @@ from huggingface_hub import snapshot_download
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-## set your model_name here
-model_name: str = "TheBloke/Llama-2-70B-fp16"
+
+# globals
+HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
 ## Initialize your S3 client for your model uploading
 s3_client = boto3.client('s3')
@@ -44,7 +45,7 @@ smr_client = boto3.client("sagemaker-runtime")
 ## ---------------------------------------------------------------------------------------------------------
 
 ## Download the model snapshot
-def download_model(model_name, local_model_path, allow_patterns):
+def download_model(experiment_config, model_name, local_model_path, allow_patterns):
     
     local_model_path = Path(local_model_path)
     print(f"Local model path: {local_model_path}")
@@ -54,11 +55,12 @@ def download_model(model_name, local_model_path, allow_patterns):
     model_download_path = snapshot_download(
         repo_id=model_name,
         cache_dir=local_model_path,
-        allow_patterns=allow_patterns
+        allow_patterns=allow_patterns,
+        use_auth_token= Path(HF_TOKEN_FNAME).read_text().strip()
     )
-    print(f"Model downloaded to path: {model_download_path}")
-    
-    return model_download_path
+    model_artifact = experiment_config['s3_path']
+    print(f"Uncompressed model downloaded into ... -> {model_artifact}")
+    return model_artifact
 
 ## Create the model artifact with the updated serving properties within the directory
 def create_and_upload_model_artifact(serving_properties_path, bucket, key):
@@ -77,7 +79,7 @@ def create_and_upload_model_artifact(serving_properties_path, bucket, key):
 
 # Function to create the SageMaker model
 def create_model(experiment_config, inference_image_uri, s3_model_artifact, role_arn):
-    model_name = name_from_base(experiment_config['model_id'])
+    model_name = name_from_base(experiment_config['model_name'])
     create_model_response = sm_client.create_model(
         ModelName=model_name,
         ExecutionRoleArn=role_arn,
@@ -125,6 +127,10 @@ def check_endpoint_status(endpoint_name):
 
 # Function to deploy the model and create the endpoint
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
+    
+    model_artifact = experiment_config['s3_path']
+    print(f"Uncompressed model downloaded into ... -> {model_artifact}")
+    
     logger.info("preparing model artifact...")
 
     # Set path to serving.properties (update this to the correct path)
@@ -136,9 +142,15 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     serving_properties_path: str = os.path.join(dir_path, "serving.properties")
     Path(serving_properties_path).write_text(properties)
 
-    o = urlparse(experiment_config['s3_path'], allow_fragments=False)
-    bucket = o.netloc
-    key = o.path
+    # o = urlparse(experiment_config['s3_path'], allow_fragments=False)
+    # bucket = o.netloc
+    # logger.info(f"bucket name is -> {bucket}")
+    # key = o.path
+    # logger.info(f"key name is -> {key}")
+    bucket = experiment_config['bucket_name']
+    logger.info(f"bucket name is -> {bucket}")
+    key = experiment_config['key_name']
+    logger.info(f"key name is -> {key}")
     logger.info(f"uploading model to S3...bucket={bucket}, key={key}")
     model_artifact = create_and_upload_model_artifact(serving_properties_path, bucket, key)
 
