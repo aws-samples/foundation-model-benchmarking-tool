@@ -1,6 +1,5 @@
 aws:
   region: us-east-1
-  sagemaker_execution_role: arn:aws:iam::015469603702:role/SageMakerRepoRole
 datasets:
 - language: en
   max_length_in_tokens: 500

@@ -1,6 +1,0 @@
-experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.12xlarge,8,0.0,3455,1410,85,34,12.9,24,7.09,0.004923611111111111,101.5902406490198
-llama2-13b-g5.24xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.24xlarge,8,0.0,3455,1418,82,33,12.91,24,10.18,0.007069444444444444,70.76564518755355
-llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.48xlarge,6,0.0,3454,902,82,21,20.05,15,20.36,0.02262222222222222,22.127098756056814
-llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24,payload_en_3000-4000.jsonl,ml.inf2.48xlarge,8,0.0,3455,3867,43,46,4.51,66,15.58,0.003934343434343434,127.19687244719337
-llama2-13b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118,payload_en_3000-4000.jsonl,ml.p4d.24xlarge,8,0.0,3455,3870,3485,3900,3.87,67,37.688,0.009375124378109452,53.461824735883965

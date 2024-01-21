@@ -1,0 +1,136 @@
+general:
+  name: "llama2-70b-g5-p4d-v1"
+  config_file_name: config-llama2-70b-g5-p4d.yml
+  model_name: "Llama2-70b"
+
+  
+# AWS and SageMaker settings
+aws:
+  region: us-east-1
+  # uncomment and set the Role ARN if not running on SageMaker
+  # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+
+
+prompt:
+  template_file: prompt_template.txt
+  all_prompts_file: all_prompts.csv
+
+datasets:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+
+metrics:
+  dataset_of_interest: en_3000-4000
+  weights:
+    price_per_tx_wt: 0.65
+    latenct_wt: 0.35
+  
+pricing:
+  ml.g5.12xlarge: 7.09
+  ml.g5.24xlarge: 10.18
+  ml.g5.48xlarge: 20.36
+  ml.inf2.24xlarge: 7.79
+  ml.inf2.48xlarge: 15.58
+  ml.p4d.24xlarge: 37.688
+  
+inference_parameters:
+  do_sample: yes
+  temperature: 0.1
+  top_p: 0.92
+  top_k: 120  
+  max_new_tokens: 100
+  truncate: at-prompt-token-length
+
+# Model configurations
+experiments:
+  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-70b
+    model_version: "*"
+    model_name: llama2-70b
+    ep_name: llama-2-70b-g5-48xlarge
+    instance_type: "ml.g5.48xlarge"
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    deploy: no
+    instance_count: 1
+    deployment_script: jumpstart.py
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    accept_eula: true
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      HF_MODEL_ID: "/opt/ml/model"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "8"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+  - name: llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122
+    model_id: meta-llama/Llama-2-70b-hf # change this to meta chat model
+    model_version: "*"
+    model_name: llama2-70bdjl
+    bucket_name: sagemaker-us-east-1-015469603702
+    key_name: hf-large-model-djl/code_llama2 ## where you want your model.tar.gz to be located
+    s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/ ## S3 path to your uncompressed model
+    ep_name: llama-2-70b-chat-p4d-24xlarge    
+    ## allow_patterns: [] use if you are downloading the model first for the first time
+    instance_type: "ml.p4d.24xlarge"    
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
+    deploy: yes
+    instance_count: 1
+    deployment_script: p4d_djl.py
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    accept_eula: true
+    env:
+      MODEL_LOADING_TIMEOUT: "3600"
+      NUMBER_OF_GPU: "8"
+      INSTANCE_COUNT: "1"
+      HEALTH_CHECK_TIMOUT: "300"
+
+
+
+results:
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv

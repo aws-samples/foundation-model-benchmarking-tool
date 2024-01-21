@@ -3,7 +3,10 @@ import yaml
 from enum import Enum
 from pathlib import Path
 
-CONFIG_FILE: str = "config.yml"
+CONFIG_FILEPATH_FILE: str = "config_filepath.txt"
+
+CONFIG_FILE: str = Path(CONFIG_FILEPATH_FILE).read_text()
+print(f"CONFIG_FILE={CONFIG_FILE}")
 with open(CONFIG_FILE, 'r') as file:
     config = yaml.safe_load(file)
 

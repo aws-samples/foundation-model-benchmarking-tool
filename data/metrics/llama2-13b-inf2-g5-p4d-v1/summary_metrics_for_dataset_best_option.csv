@@ -1,2 +1,2 @@
 experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24,payload_en_3000-4000.jsonl,ml.inf2.48xlarge,2,0.0,3482,3453,37,33,1.85,59,15.58,0.004401129943502825,113.87745897373627
+llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24,payload_en_3000-4000.jsonl,ml.inf2.48xlarge,2,0.0,3474,3420,29,26,1.9,58,15.58,0.004477011494252873,111.94480102695763
