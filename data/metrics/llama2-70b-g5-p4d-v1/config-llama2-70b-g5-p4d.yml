@@ -60,6 +60,7 @@ experiments:
   - payload_en_2000-3000.jsonl
   - payload_en_3000-4000.jsonl
 - accept_eula: true
+  bucket_name: sagemaker-us-east-1-015469603702
   concurrency_levels:
   - 1
   - 2
@@ -67,26 +68,28 @@ experiments:
   - 6
   - 8
   deploy: true
-  deployment_script: p4d_hf_tgi.py
+  deployment_script: p4d_djl.py
   env:
-    HEALTH_CHECK_TIMEOUT: 300
-    INSTANCE_COUNT: 1
+    HEALTH_CHECK_TIMOUT: '300'
+    INSTANCE_COUNT: '1'
     MODEL_LOADING_TIMEOUT: '3600'
-    NUMBER_OF_GPU: 8
-  ep_name: llama-2-13b-p4d-24xlarge
-  image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    NUMBER_OF_GPU: '8'
+  ep_name: llama-2-70b-chat-p4d-24xlarge
+  image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122
   instance_count: 1
   instance_type: ml.p4d.24xlarge
-  model_id: meta-llama/Llama-2-70b-chat-hf
-  model_name: meta-llama-Llama-2-70b-chat-hf
+  key_name: hf-large-model-djl/code_llama2
+  model_id: meta-llama/Llama-2-70b-hf
+  model_name: llama2-70bdjl
   model_version: '*'
-  name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
+  name: llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122
   payload_files:
   - payload_en_1-500.jsonl
   - payload_en_500-1000.jsonl
   - payload_en_1000-2000.jsonl
   - payload_en_2000-3000.jsonl
   - payload_en_3000-4000.jsonl
+  s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/
 general:
   config_file_name: config-llama2-70b-g5-p4d.yml
   model_name: Llama2-70b

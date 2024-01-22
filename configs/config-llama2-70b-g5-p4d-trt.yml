@@ -72,7 +72,7 @@ experiments:
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: no
+    deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
     payload_files:
@@ -120,8 +120,10 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
+    - 2
+    - 4
+    - 6
+    - 8
     accept_eula: true
     env:
       MODEL_LOADING_TIMEOUT: "3600"
