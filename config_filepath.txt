@@ -1,1 +1,1 @@
-configs/config-llama2-70b-g5-p4d-trt.yml
+configs/config-llama2-70b-g5-p4d-tgi.yml

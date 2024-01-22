@@ -1,6 +1,5 @@
 general:
-  name: "llama2-70b-g5-p4d-v1"
-  config_file_name: config-llama2-70b-g5-p4d.yml
+  name: "llama2-70b-g5-p4d-trt-v1"
   model_name: "Llama2-70b"
 
   
