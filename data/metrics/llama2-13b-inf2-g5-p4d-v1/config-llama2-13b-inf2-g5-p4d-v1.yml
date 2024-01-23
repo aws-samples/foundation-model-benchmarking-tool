@@ -203,7 +203,6 @@ experiments:
   - payload_en_2000-3000.jsonl
   - payload_en_3000-4000.jsonl
 general:
-  config_file_name: config-llama2-13b-inf2-g5-p4d-v1.yml
   model_name: Llama2-13b
   name: llama2-13b-inf2-g5-p4d-v1
 inference_parameters:

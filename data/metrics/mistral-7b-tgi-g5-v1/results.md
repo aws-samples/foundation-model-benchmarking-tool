@@ -1,26 +1,26 @@
 
 # Results for performance benchmarking
 
-**Last modified (UTC): 2024-01-23 21:35:53.402443**
+**Last modified (UTC): 2024-01-23 22:40:56.739490**
 
 ## Summary
 
-We did performance benchmarking for the `mistral7b` model on "`ml.g5.2xlarge`" instance on multiple datasets and based on the test results the best price performance for dataset `en_2000-3000` is provided by the `ml.g5.2xlarge` instance type.  
+We did performance benchmarking for the `mistral7b` model on "`ml.g5.2xlarge`" instance on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.g5.2xlarge` instance type.  
 | Information | Value |
 |-----|-----|
 | experiment_name | mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0 |
-| payload_file | payload_en_2000-3000.jsonl |
+| payload_file | payload_en_3000-4000.jsonl |
 | instance_type | ml.g5.2xlarge |
 | concurrency | 8 |
 | error_rate | 0.0 |
-| prompt_token_count_mean | 2503 |
-| prompt_token_throughput | 1908 |
-| completion_token_count_mean | 63 |
-| completion_token_throughput | 46 |
-| latency_mean | 6.46 |
-| transactions_per_minute | 45 |
+| prompt_token_count_mean | 3455 |
+| prompt_token_throughput | 2158 |
+| completion_token_count_mean | 50 |
+| completion_token_throughput | 30 |
+| latency_mean | 7.56 |
+| transactions_per_minute | 37 |
 | price_per_hour | 1.515 |
-| price_per_txn | 0.0006 |
+| price_per_txn | 0.0007 |
 
 
 The price performance comparison for different instance types is presented below:

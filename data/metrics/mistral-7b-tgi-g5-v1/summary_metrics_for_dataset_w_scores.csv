@@ -1,6 +1,6 @@
 experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,8,0.0,2503,1908,63,46,6.46,45,1.515,0.0005611111111111111,891.1665082916961
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,6,0.0,2515,1768,59,41,6.16,41,1.515,0.0006158536585365854,811.9623569499807
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,2,0.0,2503,1633,46,19,3.11,39,1.515,0.0006474358974358974,772.4379994269524
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,1,0.0,2503,1454,63,15,3.21,34,1.515,0.0007426470588235293,673.4230899725487
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,4,0.0,2503,1476,64,37,5.21,34,1.515,0.0007426470588235293,673.3632960225007
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,8,0.0,3455,2158,50,30,7.56,37,1.515,0.0006824324324324324,732.7394048928702
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,6,0.0,3454,1986,54,30,7.42,34,1.515,0.0007426470588235293,673.3347121774174
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,1,0.0,3478,1786,51,12,3.16,30,1.515,0.0008416666666666666,594.2176337886955
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,4,0.0,3468,1739,66,30,6.55,29,1.515,0.0008706896551724137,574.3337616204369
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,2,0.0,3474,1297,69,22,4.85,21,1.515,0.0012023809523809524,415.944676941921

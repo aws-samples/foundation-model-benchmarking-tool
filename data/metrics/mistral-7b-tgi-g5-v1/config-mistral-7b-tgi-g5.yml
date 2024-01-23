@@ -71,7 +71,7 @@ inference_parameters:
   top_p: 0.92
   truncate: at-prompt-token-length
 metrics:
-  dataset_of_interest: en_2000-3000
+  dataset_of_interest: en_3000-4000
   weights:
     latenct_wt: 0.35
     price_per_tx_wt: 0.65

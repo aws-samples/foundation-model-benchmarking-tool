@@ -1,6 +1,6 @@
 experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,1,0.0,2503,1454,63,15,3.21,34
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,2,0.0,2503,1633,46,19,3.11,39
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,4,0.0,2503,1476,64,37,5.21,34
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,6,0.0,2515,1768,59,41,6.16,41
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_2000-3000.jsonl,ml.g5.2xlarge,8,0.0,2503,1908,63,46,6.46,45
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,1,0.0,3478,1786,51,12,3.16,30
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,2,0.0,3474,1297,69,22,4.85,21
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,4,0.0,3468,1739,66,30,6.55,29
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,6,0.0,3454,1986,54,30,7.42,34
+mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,8,0.0,3455,2158,50,30,7.56,37
