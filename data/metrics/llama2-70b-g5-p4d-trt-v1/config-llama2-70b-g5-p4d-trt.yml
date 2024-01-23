@@ -58,6 +58,7 @@ experiments:
   - payload_en_500-1000.jsonl
   - payload_en_1000-2000.jsonl
   - payload_en_2000-3000.jsonl
+  - payload_en_3000-4000.jsonl
 - accept_eula: true
   bucket_name: sagemaker-us-east-1-015469603702
   concurrency_levels:
@@ -87,6 +88,7 @@ experiments:
   - payload_en_500-1000.jsonl
   - payload_en_1000-2000.jsonl
   - payload_en_2000-3000.jsonl
+  - payload_en_3000-4000.jsonl
   remove_truncate: true
   s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/
 general:

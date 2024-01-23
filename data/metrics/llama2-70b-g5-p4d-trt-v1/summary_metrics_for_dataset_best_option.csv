@@ -1,2 +1,2 @@
 experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122,payload_en_2000-3000.jsonl,ml.p4d.24xlarge,8,0.0,2503,3473,67,92,3.77,82,37.688,0.007660162601626016,65.40539186181446
+llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122,payload_en_2000-3000.jsonl,ml.p4d.24xlarge,8,0.0,2503,3168,73,89,3.9,75,37.688,0.008375111111111111,59.828905616424194

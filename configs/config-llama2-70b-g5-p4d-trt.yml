@@ -79,6 +79,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -115,6 +116,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2

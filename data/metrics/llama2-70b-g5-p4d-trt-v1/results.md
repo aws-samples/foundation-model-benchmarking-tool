@@ -1,7 +1,7 @@
 
 # Results for performance benchmarking
 
-**Last modified (UTC): 2024-01-23 11:43:52.475637**
+**Last modified (UTC): 2024-01-23 17:29:31.663151**
 
 ## Summary
 
@@ -14,13 +14,13 @@ We did performance benchmarking for the `Llama2-70b` model on "`ml.p4d.24xlarge`
 | concurrency | 8 |
 | error_rate | 0.0 |
 | prompt_token_count_mean | 2503 |
-| prompt_token_throughput | 3473 |
-| completion_token_count_mean | 67 |
-| completion_token_throughput | 92 |
-| latency_mean | 3.77 |
-| transactions_per_minute | 82 |
+| prompt_token_throughput | 3168 |
+| completion_token_count_mean | 73 |
+| completion_token_throughput | 89 |
+| latency_mean | 3.9 |
+| transactions_per_minute | 75 |
 | price_per_hour | 37.688 |
-| price_per_txn | 0.0077 |
+| price_per_txn | 0.0084 |
 
 
 The price performance comparison for different instance types is presented below:
@@ -35,14 +35,16 @@ The configuration used for these tests is available in the [`config`](config-lla
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
 |Dataset   | Instance type   | Recommendation   |
 |---|---|---|
-|`payload_en_1-500.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 2.81 seconds`, for an `average prompt size of 304 tokens` and `completion size of 90 tokens` with `82 transactions/minute`.|
-|`payload_en_1000-2000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_1000-2000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.78 seconds`, for an `average prompt size of 1630 tokens` and `completion size of 89 tokens` with `81 transactions/minute`.|
-|`payload_en_2000-3000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_2000-3000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.77 seconds`, for an `average prompt size of 2503 tokens` and `completion size of 67 tokens` with `82 transactions/minute`.|
-|`payload_en_500-1000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_500-1000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.2 seconds`, for an `average prompt size of 980 tokens` and `completion size of 83 tokens` with `85 transactions/minute`.|
-|`payload_en_1-500.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 10.73 seconds`, for an `average prompt size of 304 tokens` and `completion size of 102 tokens` with `25 transactions/minute`.|
-|`payload_en_1000-2000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_1000-2000.jsonl` dataset is a `concurrency level of 2`. A concurrency level of 2 achieves an `average latency of 16.34 seconds`, for an `average prompt size of 1643 tokens` and `completion size of 97 tokens` with `6 transactions/minute`.|
-|`payload_en_2000-3000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_2000-3000.jsonl` dataset is a `concurrency level of 1`. A concurrency level of 1 achieves an `average latency of 12.54 seconds`, for an `average prompt size of 2503 tokens` and `completion size of 78 tokens` with `4 transactions/minute`.|
-|`payload_en_500-1000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_500-1000.jsonl` dataset is a `concurrency level of 4`. A concurrency level of 4 achieves an `average latency of 18.11 seconds`, for an `average prompt size of 980 tokens` and `completion size of 102 tokens` with `13 transactions/minute`.|
+|`payload_en_1-500.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.02 seconds`, for an `average prompt size of 304 tokens` and `completion size of 101 tokens` with `82 transactions/minute`.|
+|`payload_en_1000-2000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_1000-2000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.46 seconds`, for an `average prompt size of 1630 tokens` and `completion size of 78 tokens` with `81 transactions/minute`.|
+|`payload_en_2000-3000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_2000-3000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.9 seconds`, for an `average prompt size of 2503 tokens` and `completion size of 73 tokens` with `75 transactions/minute`.|
+|`payload_en_3000-4000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_3000-4000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 4.59 seconds`, for an `average prompt size of 3455 tokens` and `completion size of 70 tokens` with `70 transactions/minute`.|
+|`payload_en_500-1000.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_500-1000.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.3 seconds`, for an `average prompt size of 980 tokens` and `completion size of 90 tokens` with `73 transactions/minute`.|
+|`payload_en_1-500.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 15.14 seconds`, for an `average prompt size of 304 tokens` and `completion size of 90 tokens` with `19 transactions/minute`.|
+|`payload_en_1000-2000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_1000-2000.jsonl` dataset is a `concurrency level of 2`. A concurrency level of 2 achieves an `average latency of 15.7 seconds`, for an `average prompt size of 1643 tokens` and `completion size of 83 tokens` with `6 transactions/minute`.|
+|`payload_en_2000-3000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_2000-3000.jsonl` dataset is a `concurrency level of 1`. A concurrency level of 1 achieves an `average latency of 12.3 seconds`, for an `average prompt size of 2503 tokens` and `completion size of 73 tokens` with `4 transactions/minute`.|
+|`payload_en_3000-4000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_3000-4000.jsonl` dataset is a `concurrency level of 1`. A concurrency level of 1 achieves an `average latency of 16.38 seconds`, for an `average prompt size of 3478 tokens` and `completion size of 80 tokens` with `3 transactions/minute`.|
+|`payload_en_500-1000.jsonl`|`ml.g5.48xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.48xlarge` for the `payload_en_500-1000.jsonl` dataset is a `concurrency level of 4`. A concurrency level of 4 achieves an `average latency of 18.14 seconds`, for an `average prompt size of 980 tokens` and `completion size of 102 tokens` with `13 transactions/minute`.|
 
 ## Plots
 
