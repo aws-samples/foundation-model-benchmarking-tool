@@ -2,6 +2,7 @@ __pycache__/
 e.json
 .DS_Store
 .locks/*
+./scripts/model.tar.gz
 ./data/models/*/endpoints.json
 **/metrics/*/per_chunk/*
 **/metrics/*/per_inference/*
