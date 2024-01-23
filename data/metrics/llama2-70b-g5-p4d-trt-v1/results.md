@@ -1,26 +1,26 @@
 
 # Results for performance benchmarking
 
-**Last modified (UTC): 2024-01-23 17:29:31.663151**
+**Last modified (UTC): 2024-01-23 18:09:15.189469**
 
 ## Summary
 
-We did performance benchmarking for the `Llama2-70b` model on "`ml.p4d.24xlarge`, `ml.g5.48xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_2000-3000` is provided by the `ml.p4d.24xlarge` instance type.  
+We did performance benchmarking for the `Llama2-70b` model on "`ml.p4d.24xlarge`, `ml.g5.48xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.p4d.24xlarge` instance type.  
 | Information | Value |
 |-----|-----|
 | experiment_name | llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122 |
-| payload_file | payload_en_2000-3000.jsonl |
+| payload_file | payload_en_3000-4000.jsonl |
 | instance_type | ml.p4d.24xlarge |
 | concurrency | 8 |
 | error_rate | 0.0 |
-| prompt_token_count_mean | 2503 |
-| prompt_token_throughput | 3168 |
-| completion_token_count_mean | 73 |
-| completion_token_throughput | 89 |
-| latency_mean | 3.9 |
-| transactions_per_minute | 75 |
+| prompt_token_count_mean | 3455 |
+| prompt_token_throughput | 4089 |
+| completion_token_count_mean | 70 |
+| completion_token_throughput | 83 |
+| latency_mean | 4.59 |
+| transactions_per_minute | 70 |
 | price_per_hour | 37.688 |
-| price_per_txn | 0.0084 |
+| price_per_txn | 0.009 |
 
 
 The price performance comparison for different instance types is presented below:
