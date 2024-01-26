@@ -40,8 +40,12 @@ PROMPT_TEMPLATE_S3_PREFIX = config['aws']['prompt_template']
 DATASET_DIR = os.path.join(DATA_DIR, "dataset")
 SCRIPTS_DIR: str = "scripts"
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, DATASET_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
-TOKENIZER_DIR = 'llama2_tokenizer'
-# TOKENIZER_DIR_S3 = config['aws']['custom_tokenizer']
+# TOKENIZER_DIR = 'llama2_tokenizer'
+
+## this is for custom tokenizers
+TOKENIZER_DIR_S3 = config['aws']['custom_tokenizer']
+LOCAL_CUSTOM_TOKENIZER = 'custom_tokenizer'
+
 
 _ = list(map(lambda x: os.makedirs(x, exist_ok=True), DIR_LIST))
 

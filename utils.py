@@ -7,13 +7,35 @@ from transformers import AutoTokenizer
 import boto3
 import os
 from botocore.exceptions import NoCredentialsError
-import tempfile
 
 
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-# globals
 _tokenizer = None
+
+# initializing tokenizer in case it is encoded as none type 
+def initialize_tokenizer():
+    global _tokenizer
+    try:
+        if _tokenizer is None:
+            local_dir = g.LOCAL_CUSTOM_TOKENIZER
+            # Check if the tokenizer files exist locally
+            if not os.path.exists(local_dir):
+                # If not, download from S3
+                bucket_name = g.BUCKET_NAME  
+                prefix = g.TOKENIZER_DIR_S3
+                download_from_s3(bucket_name, prefix, local_dir)
+            # Load the tokenizer from the local directory
+            _tokenizer = AutoTokenizer.from_pretrained(local_dir)
+    except Exception as e:
+        logger.error(f"An error occurred while initializing the tokenizer: {e}")
+        # If there's an error (e.g., corrupted local files), download from S3 again
+        bucket_name = g.BUCKET_NAME  
+        prefix = g.TOKENIZER_DIR_S3
+        download_from_s3(bucket_name, prefix, local_dir)
+        _tokenizer = AutoTokenizer.from_pretrained(local_dir)
+
 
 # utility functions
 def load_config(config_file) -> Dict:
@@ -26,56 +48,44 @@ def load_config(config_file) -> Dict:
 def _normalize(text, form='NFC'):
     return unicodedata.normalize(form, text)
 
-import boto3
-import os
-import logging
-from transformers import AutoTokenizer
 
-# Initialize logger
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+def download_from_s3(bucket_name, prefix, local_dir):
+    """Downloads files from an S3 bucket and a specified prefix to a local directory."""
+    s3_client = boto3.client('s3')
 
-# def download_from_s3(bucket_name, prefix, local_dir):
-#     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
-#     s3_client = boto3.client('s3')
+    # Ensure the local directory exists
+    if not os.path.exists(local_dir):
+        os.makedirs(local_dir)
 
-#     # Ensure the local directory exists
-#     if not os.path.exists(local_dir):
-#         os.makedirs(local_dir)
-
-#     # List and download files
-#     try:
-#         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-#         if 'Contents' in response:
-#             for obj in response['Contents']:
-#                 file_key = obj['Key']
-#                 if file_key.endswith('/'):  
-#                     continue
-#                 local_file_path = os.path.join(local_dir, os.path.basename(file_key))
-#                 s3_client.download_file(bucket_name, file_key, local_file_path)
-#                 logger.info(f"Downloaded: {local_file_path}")
-#         else:
-#             logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
-#     except Exception as e:
-#         logger.error(f"An error occurred while downloading from S3: {e}")
+    # List and download files
+    try:
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                file_key = obj['Key']
+                if file_key.endswith('/'):  
+                    continue
+                local_file_path = os.path.join(local_dir, os.path.basename(file_key))
+                s3_client.download_file(bucket_name, file_key, local_file_path)
+                logger.info(f"Downloaded: {local_file_path}")
+        else:
+            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
+    except Exception as e:
+        logger.error(f"An error occurred while downloading from S3: {e}")
 
 
-# def count_tokens(text: str, local_dir="custom_directory") -> int:
-#     """Counts the number of tokens in a given text using a tokenizer."""
-#     bucket_name = g.BUCKET_NAME  
-#     prefix = g.TOKENIZER_DIR_S3  
-#     download_from_s3(bucket_name, prefix, local_dir)
-#     # Load the tokenizer from the local directory
-#     _tokenizer = AutoTokenizer.from_pretrained(local_dir)
-#     return len(_tokenizer.encode(text))
+def count_tokens(text: str) -> int:
+    """Counts the number of tokens in a given text using a tokenizer."""
+    initialize_tokenizer()
+    return len(_tokenizer.encode(text))
 
 
 ## Run this if you have the llama2_tokenizer already within your environment
-def count_tokens(text: str) -> int:
-    global _tokenizer
-    if _tokenizer is None:
-        _tokenizer = AutoTokenizer.from_pretrained(g.TOKENIZER_DIR)
-    return len(_tokenizer.encode(text))
+# def count_tokens(text: str) -> int:
+#     global _tokenizer
+#     if _tokenizer is None:
+#         _tokenizer = AutoTokenizer.from_pretrained(g.TOKENIZER_DIR)
+#     return len(_tokenizer.encode(text))
 
 def process_item(item, prompt_fmt: str) -> Dict:
     question = _normalize(item.input)
