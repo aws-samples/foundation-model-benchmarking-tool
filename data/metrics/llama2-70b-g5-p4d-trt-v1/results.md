@@ -6,6 +6,7 @@
 ## Summary
 
 We did performance benchmarking for the `Llama2-70b` model on "`ml.p4d.24xlarge`, `ml.g5.48xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.p4d.24xlarge` instance type.  
+
 | Information | Value |
 |-----|-----|
 | experiment_name | llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122 |
@@ -33,6 +34,7 @@ The configuration used for these tests is available in the [`config`](config-lla
 ## Per instance results
 
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
+
 |Dataset   | Instance type   | Recommendation   |
 |---|---|---|
 |`payload_en_1-500.jsonl`|`ml.p4d.24xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.p4d.24xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 8`. A concurrency level of 8 achieves an `average latency of 3.02 seconds`, for an `average prompt size of 304 tokens` and `completion size of 101 tokens` with `82 transactions/minute`.|

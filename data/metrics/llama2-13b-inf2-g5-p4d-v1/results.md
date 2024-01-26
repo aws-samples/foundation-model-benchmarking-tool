@@ -6,6 +6,7 @@
 ## Summary
 
 We did performance benchmarking for the `Llama2-13b` model on "`ml.g5.12xlarge`, `ml.g5.24xlarge`, `ml.g5.48xlarge`, `ml.inf2.24xlarge`, `ml.inf2.48xlarge`, `ml.p4d.24xlarge`" instances on multiple datasets and based on the test results the best price performance for dataset `en_3000-4000` is provided by the `ml.inf2.48xlarge` instance type.  
+
 | Information | Value |
 |-----|-----|
 | experiment_name | llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24 |
@@ -33,6 +34,7 @@ The configuration used for these tests is available in the [`config`](config-lla
 ## Per instance results
 
 The following table provides the best combinations for running inference for different sizes prompts on different instance types.
+
 |Dataset   | Instance type   | Recommendation   |
 |---|---|---|
 |`payload_en_1-500.jsonl`|`ml.g5.12xlarge`|The best option for staying within a latency budget of `20 seconds` on a `ml.g5.12xlarge` for the `payload_en_1-500.jsonl` dataset is a `concurrency level of 4`. A concurrency level of 4 achieves an `average latency of 1.73 seconds`, for an `average prompt size of 304 tokens` and `completion size of 55 tokens` with `87 transactions/minute`.|
