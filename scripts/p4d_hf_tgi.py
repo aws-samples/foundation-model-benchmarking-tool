@@ -101,7 +101,7 @@ def deploy_hugging_face_model(experiment_config: Dict, llm_model):
     return endpoint_name
 
 # Function to deploy the model and create the endpoint
-def deploy(experiment_config: Dict, role_arn: str) -> Dict:
+def deploy(experiment_config: Dict, role_arn: str) -> Dict[str, str]:
     logger.info("deploying the model using the llm_model and the configurations ....")
 
     print(f"first, retrieving the hugging face image uri .....")

@@ -8,5 +8,6 @@ e.json
 **/metrics/*/per_inference/*
 **/hf_token.txt
 data/dataset/*
+!data/dataset/.gitkeep
 data/prompts/*
 **/.ipynb_checkpoints/
