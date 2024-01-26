@@ -78,49 +78,51 @@ Follow the prerequisites below to set up your environment before running the cod
         * `triviaqa`
 
 1. `Deploying models not natively available via SageMaker JumpStart`: for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
-    1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
+    1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
 
     1. Place your deployment script in the `scripts` directory. Add any associated `settings.properties` file in the same directory. 
         * If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo.
 
 ### Steps to run
 
-1. The FMBT is currently intended to run on SageMaker (or any other compute platform where Python 3.11 and JupyterLab can be installed).
+1. The `FMBT` is currently intended to run on SageMaker (or any other compute platform where Python 3.11 and JupyterLab can be installed).
     1. While the solution can technically run anywhere (including on a non-AWS environment for development and testing) but we do want to run it on AWS compute in order to avoid counting internet round trip time as part of the model latency.
 
-1. Clone the [FMBT code repo](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness.git) (you would likely want to fork the repo to create your own copy).
+1. Clone the [`FMBT`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness.git) code repo (you would likely want to fork the repo to create your own copy).
 
 1. Create a config file in the [configs](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/configs) directory.
     1. The configuration file is a YAML file containing configuration for all steps of the benchmarking process. It is recommended to create a copy of an existing config file and tweak it as necessary to create a new one for your experiment.
     1. Change the config file name in the [config_filename.txt](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/config_filepath.txt) to point to your config file.
 
-1. Run the [setup notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/0_setup.ipynb) to install the required [Python packages](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/requirements.txt).
+1. Run the [`0_setup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/0_setup.ipynb) to install the required [Python packages](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/requirements.txt).
 
 1. Setup the Llama tokenizer and datasets needed for download as per instructions in this [README](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main?tab=readme-ov-file#solution-prerequisites).
 
-1. Run the [dataset preparation notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/2_generate_data.ipynb) to create the prompt payloads ready for testing.
+1. Run the [`1_generate_data.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/1_generate_data.ipynb) to create the prompt payloads ready for testing.
 
-1. Run the [model deployment notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/1_deploy_model.ipynb) to deploy models on different endpoints with the desired configuration as per the configuration file.
-    1. If you are using a model not supported through JumpStart than you can place your deployment script in the [scripts](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/scripts)directory and set the deployment script name in the configuration file. Your deployment script needs to have a `deploy_model` that the FMBT code will call to deploy the model (refer to existing scripts in the scripts director for reference).
+1. Run the [`2_deploy_model.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/2_deploy_model.ipynb) to deploy models on different endpoints with the desired configuration as per the configuration file.
+    1. If you are using a model not supported through JumpStart than you can place your deployment script in the [scripts](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/scripts)directory and set the deployment script name in the configuration file. Your deployment script needs to have a `deploy_model` that the `FMBT` code will call to deploy the model (refer to existing scripts in the scripts director for reference).
 
-1. Run the [inference notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb) to run inference on the deployed endpoints and collect metrics. These metrics are saved in the metrics directory (these raw metrics are not checked in back into the repo).
+1. Run the [`3_run_inference.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb) to run inference on the deployed endpoints and collect metrics. These metrics are saved in the metrics directory (these raw metrics are not checked in back into the repo).
 
-1. Run the [report generation notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb) to create statistical summaries, plots, tables and a [final report](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/data/metrics/llama2-13b-inf2-g5-p4d-v1/results.md) for the test results.
+1. Run the [`4_model_metric_analysis.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb) to create statistical summaries, plots, tables and a [final report](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/data/metrics/llama2-13b-inf2-g5-p4d-v1/results.md) for the test results.
 
-1. Run the [cleanup notebook](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/5_cleanup.ipynb) to delete the deployed endpoints.
+1. Run the [`5_cleanup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/5_cleanup.ipynb) to delete the deployed endpoints.
 
 1. Commit and push your code (this will include the results) into the GitHub repo once you are done with your experiment.
 
 ## Results
 
-Here is a screenshot of the `report.md` file generated b FMBT.
+Here is a screenshot of the `report.md` file generated b `FMBT`.
 ![Report](./img/results.gif)
 
 ## Pending enhancements
 
-The following enhancements are identified as next steps for FMBT.
+The following enhancements are identified as next steps for `FMBT`.
 
 1. [**Highest priority**] Add support for reading and writing files (configuration, metrics, bring your own model scripts) from Amazon S3.
+
+1. Add code to determine the cost of running an entire experiment and include it in the final report. This would only include the cost of running the SageMaker endpoints based on hourly public pricing (the cost of running this code on a notebook or a EC2 is trivial in comparison and can be ignored).
 
 1. Containerize `FMBT` and provide instructions for running the container on EC2.
 
