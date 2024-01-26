@@ -7,7 +7,12 @@ general:
 aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
-  # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+  sagemaker_execution_role: arn:aws:iam::218208277580:role/service-role/AmazonSageMaker-ExecutionRole-20230807T175994
+  bucket: fmbt ## add the name of your desired bucket
+  prefix: data ## add the prefix for all your data management/storage
+  source_data_bucket_prefix: source_data
+  prompt_template: prompt_template/prompt_template.txt
+  custom_tokenizer: tokenizer
 
 
 prompt:
@@ -41,7 +46,7 @@ datasets:
     payload_file: payload_{lang}_{min}-{max}.jsonl
 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_2000-3000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35

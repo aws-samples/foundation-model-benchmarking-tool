@@ -8,6 +8,11 @@ aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+  bucket: fmbt ## add the name of your desired bucket
+  prefix: data ## add the prefix for all your data management/storage
+  source_data_bucket_prefix: source_data
+  prompt_template: prompt_template/prompt_template.txt
+  custom_tokenizer: tokenizer
 
 
 prompt:

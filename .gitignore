@@ -10,3 +10,6 @@ e.json
 data/dataset/*
 data/prompts/*
 **/.ipynb_checkpoints/
+data/metrics/*
+data/models*
+llama2_tokenizer/*

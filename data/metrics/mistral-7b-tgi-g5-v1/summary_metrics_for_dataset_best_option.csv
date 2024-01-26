@@ -1,2 +1,0 @@
-experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_3000-4000.jsonl,ml.g5.2xlarge,8,0.0,3455,2158,50,30,7.56,37,1.515,0.0006824324324324324,732.7394048928702

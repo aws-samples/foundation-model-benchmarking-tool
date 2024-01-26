@@ -2,8 +2,12 @@ import os
 import yaml
 from enum import Enum
 from pathlib import Path
+import boto3
 
 CONFIG_FILEPATH_FILE: str = "config_filepath.txt"
+
+# S3 client initialization
+s3_client = boto3.client('s3')
 
 CONFIG_FILE: str = Path(CONFIG_FILEPATH_FILE).read_text()
 print(f"CONFIG_FILE={CONFIG_FILE}")
@@ -15,11 +19,29 @@ PROMPTS_DIR = os.path.join(DATA_DIR, "prompts")
 METRICS_DIR = os.path.join(DATA_DIR, "metrics", config['general']['name'])
 METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
-MODELS_DIR = os.path.join(DATA_DIR, "models", config['general']['name'])
+
+# MODELS_DIR = os.path.join(DATA_DIR, "models", config['general']['name'])
+MODELS_DIR = config['aws']['prefix'] + "/models"
+
+## DEFINE THE S3 PATH FOR ENDPOINTS TO READ FROM DURING RUN INFERENCE
+ENDPOINT_S3_PATH = f"{MODELS_DIR}/{config['general']['name']}/endpoints.json"
+
+## Use this to upload to the s3 bucket (extracted from the config file)
+BUCKET_NAME = config['aws']['bucket']
+
+## S3 prefix
+PREFIX_NAME = config['aws']['prefix']
+
+## SOURCE data is where your actual data resides in s3
+SOURCE_DATA = config['aws']['source_data_bucket_prefix']
+
+## Read the prompt template that the user uploads
+PROMPT_TEMPLATE_S3_PREFIX = config['aws']['prompt_template']
 DATASET_DIR = os.path.join(DATA_DIR, "dataset")
 SCRIPTS_DIR: str = "scripts"
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, DATASET_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 TOKENIZER_DIR = 'llama2_tokenizer'
+# TOKENIZER_DIR_S3 = config['aws']['custom_tokenizer']
 
 _ = list(map(lambda x: os.makedirs(x, exist_ok=True), DIR_LIST))
 
