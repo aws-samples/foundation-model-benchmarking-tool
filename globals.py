@@ -46,6 +46,7 @@ DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, DATASET_DIR, METRICS
 TOKENIZER_DIR_S3 = config['aws']['custom_tokenizer']
 LOCAL_CUSTOM_TOKENIZER = 'custom_tokenizer'
 
+DEPLOYMENT_SCRIPT_S3 = config['aws']['bring_your_script']
 
 _ = list(map(lambda x: os.makedirs(x, exist_ok=True), DIR_LIST))
 

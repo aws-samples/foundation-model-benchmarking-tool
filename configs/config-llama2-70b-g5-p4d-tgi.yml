@@ -13,6 +13,7 @@ aws:
   source_data_bucket_prefix: source_data
   prompt_template: prompt_template/prompt_template.txt
   custom_tokenizer: tokenizer
+  bring_your_script: byo_script
 
 
 prompt:

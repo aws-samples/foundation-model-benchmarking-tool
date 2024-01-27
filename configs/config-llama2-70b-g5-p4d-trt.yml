@@ -13,7 +13,7 @@ aws:
   source_data_bucket_prefix: source_data ## add the bucket name where you insert your source data
   prompt_template: prompt_template/prompt_template.txt ## add the s3 path for your prompt template for your model
   custom_tokenizer: tokenizer ## specify the directory where your tokenizer files reside
-
+  bring_your_script: byo_script
 
 prompt:
   template_file: prompt_template.txt
