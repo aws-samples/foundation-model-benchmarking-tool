@@ -8,7 +8,6 @@ aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
-  sagemaker_execution_role: arn:aws:iam::015469603702:role/service-role/SageMaker-ExecutionRole-20240111T084686
   ## these are the buckets/resources you will create in your account below:
   bucket: fmbt2039 ## add the name of your desired bucket
   prefix: data
