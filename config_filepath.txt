@@ -1,1 +1,1 @@
-configs/config-mistral-7b-tgi-g5.yml
+configs/config-llama2-70b-g5-p4d-trt.yml

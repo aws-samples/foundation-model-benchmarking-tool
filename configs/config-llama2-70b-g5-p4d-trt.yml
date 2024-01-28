@@ -8,12 +8,14 @@ aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
-  bucket: fmbt ## add the name of your desired bucket
-  prefix: data ## add the prefix for all your data management/storage
-  source_data_bucket_prefix: source_data ## add the bucket name where you insert your source data
-  prompt_template: prompt_template/prompt_template.txt ## add the s3 path for your prompt template for your model
-  custom_tokenizer: tokenizer ## specify the directory where your tokenizer files reside
-  bring_your_script: byo_script
+  sagemaker_execution_role: arn:aws:iam::015469603702:role/service-role/SageMaker-ExecutionRole-20240111T084686
+  ## these are the buckets/resources you will create in your account below:
+  bucket: fmbt2039 ## add the name of your desired bucket
+  prefix: data
+  source_data_bucket_prefix: source_data ## Add a source_data folder to store your raw data
+  prompt_template: prompt_template/prompt_template.txt ## add your desired prompt template type
+  custom_tokenizer: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+  bring_your_script: byo_script ## add your own scripts in case you are using anything that is not on jumpstart
 
 prompt:
   template_file: prompt_template.txt
