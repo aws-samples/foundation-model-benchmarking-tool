@@ -61,13 +61,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
 1. **Llama 2 Tokenizer** : We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. While support for bring your own tokenizer would be added soon but as of this writing you would need to download the `Llama 2 Tokenizer` from HuggingFace. The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). Once you have been approved, create the `llama2_tokenizer` directory and download the following files from [Hugging Face website](https://huggingface.co/meta-llama/Llama-2-7b/tree/main) into this directory:
 
-    * `tokenizer_config.json`
-    * `tokenizer.model`
     * `tokenizer.json`
-    * `special_tokens_map.json`
-    * `pytorch_model.bin.index.json`
-    * `model.safetensors.index.json`
-    * `generation_config.json`
     * `config.json`
 
 1. **Data Ingestion** : `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
