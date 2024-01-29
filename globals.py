@@ -3,6 +3,7 @@ import yaml
 from enum import Enum
 from pathlib import Path
 import boto3
+from datetime import datetime
 
 CONFIG_FILEPATH_FILE: str = "config_filepath.txt"
 
@@ -14,39 +15,45 @@ print(f"CONFIG_FILE={CONFIG_FILE}")
 with open(CONFIG_FILE, 'r') as file:
     config = yaml.safe_load(file)
 
-DATA_DIR: str = "data"
-PROMPTS_DIR = os.path.join(DATA_DIR, "prompts")
-METRICS_DIR = os.path.join(DATA_DIR, "metrics", config['general']['name'])
+DATA_DIR: str = config['dir_paths']['data_prefix']
+PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
+
+## --------------------- Metrics directory based on date and time ---------------------------
+current_time = datetime.now()
+formatted_time = current_time.strftime("%Y/%m/%d/%H")
+METRICS_DIR = f"{config['dir_paths']['data_prefix']}/metrics/{formatted_time}/{config['general']['name']}"
+
 METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
 
-# MODELS_DIR = os.path.join(DATA_DIR, "models", config['general']['name'])
-MODELS_DIR = config['aws']['prefix'] + "/models"
+
+## --------------------- Models directory based on date and time ---------------------------
+MODELS_DIR = f"{config['dir_paths']['data_prefix']}/models/{formatted_time}/{config['general']['name']}"
 
 ## DEFINE THE S3 PATH FOR ENDPOINTS TO READ FROM DURING RUN INFERENCE
-ENDPOINT_S3_PATH = f"{MODELS_DIR}/{config['general']['name']}/endpoints.json"
+ENDPOINT_S3_PATH = f"{MODELS_DIR}/endpoints.json"
 
 ## Use this to upload to the s3 bucket (extracted from the config file)
 BUCKET_NAME = config['aws']['bucket']
 
 ## S3 prefix
-PREFIX_NAME = config['aws']['prefix']
+PREFIX_NAME = config['dir_paths']['data_prefix']
 
 ## SOURCE data is where your actual data resides in s3
-SOURCE_DATA = config['aws']['source_data_bucket_prefix']
+SOURCE_DATA = config['dir_paths']['source_data_prefix']
 
 ## Read the prompt template that the user uploads
-PROMPT_TEMPLATE_S3_PREFIX = config['aws']['prompt_template']
+PROMPT_TEMPLATE_S3_PREFIX = config['dir_paths']['prompt_template_dir']
 DATASET_DIR = os.path.join(DATA_DIR, "dataset")
 SCRIPTS_DIR: str = "scripts"
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, DATASET_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 # TOKENIZER_DIR = 'llama2_tokenizer'
 
 ## this is for custom tokenizers
-TOKENIZER_DIR_S3 = config['aws']['custom_tokenizer']
-LOCAL_CUSTOM_TOKENIZER = 'custom_tokenizer'
+TOKENIZER_DIR_S3 = config['dir_paths']['tokenizer_prefix']
+TOKENIZER = 'tokenizer'
 
-DEPLOYMENT_SCRIPT_S3 = config['aws']['bring_your_script']
+DEPLOYMENT_SCRIPT_S3 = config['dir_paths']['scripts_prefix']
 
 _ = list(map(lambda x: os.makedirs(x, exist_ok=True), DIR_LIST))
 

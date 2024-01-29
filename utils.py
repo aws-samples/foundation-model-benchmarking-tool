@@ -15,26 +15,22 @@ logger.setLevel(logging.INFO)
 _tokenizer = None
 
 # initializing tokenizer in case it is encoded as none type 
-def initialize_tokenizer():
+def _initialize_tokenizer():
     global _tokenizer
     try:
         if _tokenizer is None:
-            local_dir = g.LOCAL_CUSTOM_TOKENIZER
+            ## use normal tokenizer -- change this variable LOCAL_TOKENIZER_DIR
+            local_dir = g.TOKENIZER
             # Check if the tokenizer files exist locally
             if not os.path.exists(local_dir):
                 # If not, download from S3
-                bucket_name = g.BUCKET_NAME  
+                bucket_name = g.BUCKET_NAME  ## DO IT from config 
                 prefix = g.TOKENIZER_DIR_S3
                 download_from_s3(bucket_name, prefix, local_dir)
             # Load the tokenizer from the local directory
             _tokenizer = AutoTokenizer.from_pretrained(local_dir)
     except Exception as e:
         logger.error(f"An error occurred while initializing the tokenizer: {e}")
-        # If there's an error (e.g., corrupted local files), download from S3 again
-        bucket_name = g.BUCKET_NAME  
-        prefix = g.TOKENIZER_DIR_S3
-        download_from_s3(bucket_name, prefix, local_dir)
-        _tokenizer = AutoTokenizer.from_pretrained(local_dir)
 
 
 # utility functions
@@ -75,8 +71,7 @@ def download_from_s3(bucket_name, prefix, local_dir):
 
 
 def count_tokens(text: str) -> int:
-    """Counts the number of tokens in a given text using a tokenizer."""
-    initialize_tokenizer()
+    _initialize_tokenizer()
     return len(_tokenizer.encode(text))
 
 
