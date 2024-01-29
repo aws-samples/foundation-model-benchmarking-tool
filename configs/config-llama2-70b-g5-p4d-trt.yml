@@ -9,8 +9,9 @@ aws:
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
   ## these are the buckets/resources you will create in your account below:
-  bucket: fmbt2039 ## add the name of your desired bucket
-  prefix: data
+  sagemaker_execution_role: arn:aws:iam::015469603702:role/service-role/AmazonSageMaker-ExecutionRole-20220504T122644
+  bucket: fmbttest ## add the name of your desired bucket
+  prefix: data ## add the prefix for all your data management/storage
   source_data_bucket_prefix: source_data ## Add a source_data folder to store your raw data
   prompt_template: prompt_template/prompt_template.txt ## add your desired prompt template type
   custom_tokenizer: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
@@ -47,7 +48,7 @@ datasets:
     payload_file: payload_{lang}_{min}-{max}.jsonl
 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_500-1000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
@@ -83,9 +84,9 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -120,9 +121,9 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2

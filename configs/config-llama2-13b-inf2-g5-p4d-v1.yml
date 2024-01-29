@@ -7,12 +7,12 @@ aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
-  bucket: fmbt2039 ## add the name of your desired bucket
+  bucket: fmbttest ## add the name of your desired bucket
   prefix: data ## add the prefix for all your data management/storage
-  source_data_bucket_prefix: source_data
-  prompt_template: prompt_template/prompt_template.txt
-  custom_tokenizer: tokenizer
-  bring_your_script: byo_script
+  source_data_bucket_prefix: source_data ## Add a source_data folder to store your raw data
+  prompt_template: prompt_template/prompt_template.txt ## add your desired prompt template type
+  custom_tokenizer: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+  bring_your_script: byo_script ## add your own scripts in case you are using anything that is not on jumpstart
 
 prompt:
   template_file: prompt_template.txt
