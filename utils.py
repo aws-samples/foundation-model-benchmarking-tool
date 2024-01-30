@@ -25,7 +25,7 @@ def _initialize_tokenizer():
             # Check if the tokenizer files exist locally
             if not os.path.exists(local_dir):
                 # If not, download from S3
-                bucket_name = g.BUCKET_NAME  ## DO IT from config 
+                bucket_name = g.READ_BUCKET_NAME ## DO IT from config 
                 prefix = g.TOKENIZER_DIR_S3
                 _download_from_s3(bucket_name, prefix, local_dir)
             # Load the tokenizer from the local directory
@@ -72,6 +72,7 @@ def _download_from_s3(bucket_name, prefix, local_dir):
 
 
 def count_tokens(text: str) -> int:
+    global _tokenizer
     _initialize_tokenizer()
     return len(_tokenizer.encode(text))
 
