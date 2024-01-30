@@ -15,12 +15,16 @@ print(f"CONFIG_FILE={CONFIG_FILE}")
 with open(CONFIG_FILE, 'r') as file:
     config = yaml.safe_load(file)
 
+## data directory and prompts
 DATA_DIR: str = config['dir_paths']['data_prefix']
 PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
 ## --------------------- Metrics directory based on date and time ---------------------------
 current_time = datetime.now()
+
+## Adding minutes for greater detail of when and how the results/endpoint was deployed
 formatted_time = current_time.strftime("%Y/%m/%d/%H/%M")
+
 METRICS_DIR = f"{config['dir_paths']['data_prefix']}/metrics/{formatted_time}/{config['general']['name']}"
 
 
@@ -29,7 +33,6 @@ METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
 
 
 ## --------------------- Models directory based on date and time ---------------------------
-# MODELS_DIR = f"{config['dir_paths']['data_prefix']}/models/{config['general']['name']}"
 MODELS_DIR = f"{config['dir_paths']['data_prefix']}/models/{formatted_time}/{config['general']['name']}"
 
 ## Use this to upload to the s3 bucket (extracted from the config file)
@@ -43,10 +46,11 @@ SOURCE_DATA = config['dir_paths']['source_data_prefix']
 
 ## Read the prompt template that the user uploads
 PROMPT_TEMPLATE_S3_PREFIX = config['dir_paths']['prompt_template_dir']
-DATASET_DIR = os.path.join(DATA_DIR, "dataset")
+
+## Initialize the scripts directory
 SCRIPTS_DIR: str = "scripts"
-DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, DATASET_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
-# TOKENIZER_DIR = 'llama2_tokenizer'
+
+DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 
 ## this is for custom tokenizers
 TOKENIZER_DIR_S3 = config['dir_paths']['tokenizer_prefix']

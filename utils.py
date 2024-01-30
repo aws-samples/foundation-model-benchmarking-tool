@@ -27,7 +27,7 @@ def _initialize_tokenizer():
                 # If not, download from S3
                 bucket_name = g.BUCKET_NAME  ## DO IT from config 
                 prefix = g.TOKENIZER_DIR_S3
-                download_from_s3(bucket_name, prefix, local_dir)
+                _download_from_s3(bucket_name, prefix, local_dir)
             # Load the tokenizer from the local directory
             _tokenizer = AutoTokenizer.from_pretrained(local_dir)
     except Exception as e:
@@ -46,7 +46,7 @@ def _normalize(text, form='NFC'):
     return unicodedata.normalize(form, text)
 
 
-def download_from_s3(bucket_name, prefix, local_dir):
+def _download_from_s3(bucket_name, prefix, local_dir):
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
     s3_client = boto3.client('s3')
 
@@ -74,14 +74,6 @@ def download_from_s3(bucket_name, prefix, local_dir):
 def count_tokens(text: str) -> int:
     _initialize_tokenizer()
     return len(_tokenizer.encode(text))
-
-
-## Run this if you have the llama2_tokenizer already within your environment
-# def count_tokens(text: str) -> int:
-#     global _tokenizer
-#     if _tokenizer is None:
-#         _tokenizer = AutoTokenizer.from_pretrained(g.TOKENIZER_DIR)
-#     return len(_tokenizer.encode(text))
 
 def process_item(item, prompt_fmt: str) -> Dict:
     question = _normalize(item.input)

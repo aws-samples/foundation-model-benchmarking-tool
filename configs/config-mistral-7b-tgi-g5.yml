@@ -9,8 +9,7 @@ aws:
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
   ## these are the buckets/resources you will create in your account below:
-  sagemaker_execution_role: arn:aws:iam::218208277580:role/service-role/AmazonSageMaker-ExecutionRole-20230807T175994
-  bucket: fmbt ## add the name of your desired bucket
+  bucket: fmbttest ## add the name of your desired bucket
 
 dir_paths:
     data_prefix: data ## add the prefix for all your data management/storage
@@ -51,7 +50,7 @@ datasets:
     payload_file: payload_{lang}_{min}-{max}.jsonl
 
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_3000-4000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
@@ -87,13 +86,13 @@ experiments:
     deployment_script: jumpstart.py
     payload_files:
     - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
+    # - payload_en_500-1000.jsonl
+    # - payload_en_1000-2000.jsonl
     # - payload_en_2000-3000.jsonl
     # - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
+    - 2
     # - 4
     # - 6
     # - 8
