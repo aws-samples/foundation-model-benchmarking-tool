@@ -7,6 +7,7 @@ from transformers import AutoTokenizer
 import boto3
 import os
 from botocore.exceptions import NoCredentialsError
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -110,7 +111,7 @@ def write_to_s3(json_data, bucket_name, models_dir, model_name, file_name):
     try:
         # Write the JSON data to the S3 bucket
         s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=json_data)
-        print(f"Data successfully written to s3://{bucket_name}/{s3_file_path}")
+        return (f"s3://{bucket_name}/{s3_file_path}")
     except NoCredentialsError:
         print("Error: AWS credentials not found.")
     except Exception as e:
@@ -137,3 +138,22 @@ def read_from_s3(bucket_name, file_name):
     except Exception as e:
         print(f"An error occurred: {e}")
         return None
+
+def get_s3_object(s3_path):
+    # Regular expression to extract bucket name and key from the full S3 path
+    match = re.match(r's3://([^/]+)/(.+)', s3_path)
+    if not match:
+        raise ValueError("Invalid S3 path")
+
+    bucket_name, key = match.groups()
+
+    # Create an S3 client
+    s3_client = boto3.client('s3')
+
+    # Retrieve the object from S3
+    response = s3_client.get_object(Bucket=bucket_name, Key=key)
+
+    # Read the content of the file
+    content = response['Body'].read().decode('utf-8')
+
+    return content

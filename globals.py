@@ -20,18 +20,17 @@ PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
 ## --------------------- Metrics directory based on date and time ---------------------------
 current_time = datetime.now()
-formatted_time = current_time.strftime("%Y/%m/%d/%H")
+formatted_time = current_time.strftime("%Y/%m/%d/%H/%M")
 METRICS_DIR = f"{config['dir_paths']['data_prefix']}/metrics/{formatted_time}/{config['general']['name']}"
+
 
 METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
 
 
 ## --------------------- Models directory based on date and time ---------------------------
+# MODELS_DIR = f"{config['dir_paths']['data_prefix']}/models/{config['general']['name']}"
 MODELS_DIR = f"{config['dir_paths']['data_prefix']}/models/{formatted_time}/{config['general']['name']}"
-
-## DEFINE THE S3 PATH FOR ENDPOINTS TO READ FROM DURING RUN INFERENCE
-ENDPOINT_S3_PATH = f"{MODELS_DIR}/endpoints.json"
 
 ## Use this to upload to the s3 bucket (extracted from the config file)
 BUCKET_NAME = config['aws']['bucket']

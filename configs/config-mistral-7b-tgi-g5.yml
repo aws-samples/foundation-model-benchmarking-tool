@@ -9,8 +9,7 @@ aws:
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
   ## these are the buckets/resources you will create in your account below:
-  sagemaker_execution_role: arn:aws:iam::015469603702:role/service-role/AmazonSageMaker-ExecutionRole-20220504T122644
-  bucket: fmbttest ## add the name of your desired bucket
+  bucket: fmbt ## add the name of your desired bucket
 
 dir_paths:
     data_prefix: data ## add the prefix for all your data management/storage
