@@ -13,3 +13,5 @@ data/prompts/*
 data/metrics/*
 data/models*
 llama2_tokenizer/*
+**/endpoint_path.txt
+**/results_path.txt
