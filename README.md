@@ -88,7 +88,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
         * Once you have uploaded this data and started the run, `FMBT` will read this data from the ***read bucket*** and create payloads of different sizes (that can be configured by you) and write those processed payloads in the ***write bucket*** for further steps.
 
-    3. **Prompt Template Directory**: Create a `prompt template` directory storing a `prompt_template.txt` file (configurable via the config files). This file will contain the prompt template that your specific model supports and prepare the payloads with this prompt template for inference purposes. `FMBT` already supports prompts compatible with the `Llama` models.
+    3. **Prompt Template Directory**: Create a `prompt template` directory storing a `prompt_template.txt` file (configurable via the config files). This file will contain the prompt template that your specific model supports and prepare the payloads with this prompt template for inference purposes. `FMBT` already supports prompts compatible with the `Llama` models as shown [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/s3_metrics/prompt_template/prompt_template.txt)
 
     4. **Scripts Directory** (`Deploying models not natively available via SageMaker JumpStart`): for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
 
@@ -99,6 +99,8 @@ Follow the prerequisites below to set up your environment before running the cod
             * All models deployable via `SageMaker Jumpstart`
             * Models deployable via the `HF TGI container`
             * Models deployable via the `Deep Java Library container`
+
+            View configured inference scripts for the options above in the [SCRIPTS](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/s3_metrics/scripts) directory.
 
     
 * **The ***write bucket*** will be created by you, and all metrics, reports and results will be generated in your account.** Once you have configured both buckets, your environment structure should be as follows:
