@@ -29,13 +29,13 @@ PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 current_time = datetime.now()
 
 # Assuming current_time is a datetime object
-formatted_time = current_time.strftime("%Y/%m/%d/%H/%M")
+formatted_time = current_time.strftime("%Y/%m/%d/%H")
 
 # Split the formatted_time into components
-year, month, day, hour, minute = formatted_time.split('/')
+year, month, day, hour = formatted_time.split('/')
 
 # Construct the METRICS_DIR path
-METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}/mm={minute}"
+METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}"
 
 METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
