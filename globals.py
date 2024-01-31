@@ -10,8 +10,9 @@ CONFIG_FILEPATH_FILE: str = "config_filepath.txt"
 # S3 client initialization
 s3_client = boto3.client('s3')
 
-## Configuring the role ARN
-ROLE_ARN = boto3.client('sts').get_caller_identity().get('Arn').replace('user/', 'user-')
+## Configuring the role ARN -- extract the role name
+arn_string = boto3.client('sts').get_caller_identity().get('Arn')
+ROLE_ARN = arn_string.split('/')[-1]
 
 CONFIG_FILE: str = Path(CONFIG_FILEPATH_FILE).read_text()
 print(f"CONFIG_FILE={CONFIG_FILE}")
@@ -24,20 +25,27 @@ DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix']
 PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
 ## --------------------- Metrics directory based on date and time ---------------------------
+
 current_time = datetime.now()
 
-## Adding minutes for greater detail of when and how the results/endpoint was deployed
+# Assuming current_time is a datetime object
 formatted_time = current_time.strftime("%Y/%m/%d/%H/%M")
 
-# METRICS_DIR = f"{config['dir_paths']['data_prefix']}/metrics/{formatted_time}/{config['general']['name']}-{ROLE_ARN}"
-METRICS_DIR = f"{DATA_DIR}/metrics/{formatted_time}/{config['general']['name']}"
+# Split the formatted_time into components
+year, month, day, hour, minute = formatted_time.split('/')
+
+# Construct the METRICS_DIR path
+METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}/mm={minute}"
+
+METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
+METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
 
 METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
 
 
 ## --------------------- Models directory based on date and time ---------------------------
-MODELS_DIR = f"{DATA_DIR}/models/{config['general']['name']}"
+MODELS_DIR = f"{DATA_DIR}/models"
 
 ## Use this to upload to the s3 bucket (extracted from the config file)
 BUCKET_NAME = config['aws']['bucket']
@@ -54,6 +62,9 @@ PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 
 ## Initialize the scripts directory
 SCRIPTS_DIR: str = "scripts"
+
+## METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
+METADATA_DIR:str = config['dir_paths']['metadata_dir']
 
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 

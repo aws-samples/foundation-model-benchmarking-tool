@@ -11,14 +11,16 @@ aws:
   ## these are the buckets/resources you will create in your account below:
   bucket: fmbttest ## add the name of your desired bucket
 
+## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
 dir_paths:
     data_prefix: data ## add the prefix for all your data management/storage
     prompts_prefix: prompts
     all_prompts_file: all_prompts.csv
     metrics_dir: metrics_{datetime}
     models_dir: models_{datetime}
+    metadata_dir: metadata ## add a file here to dynamically track the metrics dir
 
-## Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
+## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
     read_bucket: fmbt-read
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
@@ -26,6 +28,15 @@ s3_read_data:
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template.txt ## add your desired prompt template type
+
+## add a section: steps (running files)
+run_steps:
+    0_setup.ipynb: no
+    1_deploy_model.ipynb: no
+    2_generate_data.ipynb: no
+    3_run_inference.ipynb: no
+    4_model_metrics_analysis.ipynb: no
+    5_cleanup.ipynb: no
 
   
 
@@ -56,7 +67,7 @@ datasets:
     payload_file: payload_{lang}_{min}-{max}.jsonl
 
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_3000-4000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35

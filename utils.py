@@ -132,6 +132,7 @@ def read_from_s3(bucket_name, file_name):
         print(f"An error occurred: {e}")
         return None
 
+## gets a single s3 file
 def get_s3_object(s3_path):
     # Regular expression to extract bucket name and key from the full S3 path
     match = re.match(r's3://([^/]+)/(.+)', s3_path)
