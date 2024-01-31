@@ -29,7 +29,7 @@ s3_read_data:
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template.txt ## add your desired prompt template type
 
-## add a section: steps (running files)
+## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: no
     1_deploy_model.ipynb: no

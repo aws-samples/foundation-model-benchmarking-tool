@@ -61,20 +61,20 @@ Follow the prerequisites below to set up your environment before running the cod
 
 1. **Data Ingestion via S3** : Configure two buckets within your aws account: 
 
-    * A ***read bucket*** that will contain the `tokenizer files`, `prompt template`, `source/raw data` and `scripts` (in bring your own model case). This bucket will be responsible only for read actions on data that needs to be used in writing metrics and results to the second ***write bucket***. 
+    * ***S3 read bucket***: This bucket will contain the `tokenizer files`, `prompt template`, `source/raw data` and `scripts` (in bring your own model case). This bucket will be responsible only for read actions on data that needs to be used in writing metrics and results to the second ***write bucket***. 
     
-    * With the ***write bucket***, as you run the harness, all data will be read from the read bucket and tests, metrics and reports will automatically be generated in an organized way within the write bucket after each run. 
+    * ***S3 write bucket***: As you run the harness, all data will be read from the read bucket and tests, metrics and reports will automatically be generated in an organized way within the write bucket after each run. 
 
 * **The ***read bucket*** will have the following contents**: 
 
-    1. **Tokenizer Directory**:  We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. Now you can also use your own custom tokenizer by downloading the  tokenizer files and running it using the `autotokenizer` function from hugging face. 
+    1. **Tokenizer Directory**:  We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/).    
     
-    The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/).   
+    * Now you can also use your own custom tokenizer by downloading the  tokenizer files and running it using the `autotokenizer` function from hugging face. 
 
-    * Create a directory called "Tokenizer" (flexible to change) in your ***S3 read bucket***. Bring the tokenizer files for your specific model.  Once you have configured these files in this directory, the `FMBT` harness will execute and process your custom tokenizer logic for you. This directory should contain the files below:
+        1. Create a directory called "Tokenizer" (flexible to change) in your ***S3 read bucket***. Bring the tokenizer files for your specific model.  Once you have configured these files in this directory, the `FMBT` harness will execute and process your custom tokenizer logic for you. This directory should contain the files below:
 
-        * `tokenizer.json`
-        * `config.json`
+            * `tokenizer.json`
+            * `config.json`
 
 
     2. **Source Data Directory**: Create a `source data` directory storing the dataset you want to use to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
@@ -90,23 +90,21 @@ Follow the prerequisites below to set up your environment before running the cod
 
     3. **Prompt Template Directory**: Create a `prompt template` directory storing a `prompt_template.txt` file (configurable via the config files). This file will contain the prompt template that your specific model supports and prepare the payloads with this prompt template for inference purposes. `FMBT` already supports prompts compatible with the `Llama` models.
 
-    4. **Scripts Directory**: `Deploying models not natively available via SageMaker JumpStart` - for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
+    4. **Scripts Directory** (`Deploying models not natively available via SageMaker JumpStart`): for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
 
         1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
 
-        1. Place your deployment script in the `scripts` directory within your ***read bucket***. Add any associated `settings.properties` file in the same directory. 
+        1. Place your deployment script in the `scripts` directory within your ***read bucket***. If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. `FMBT` is already compatible with:
 
-            * If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. `FMBT` is already compatible with:
-
-                * All models deployable via SageMaker Jumpstart
-                * Models deployable via the `HF TGI container`
-                * Models deployable via the `Deep Java Library container`
+            * All models deployable via `SageMaker Jumpstart`
+            * Models deployable via the `HF TGI container`
+            * Models deployable via the `Deep Java Library container`
 
     
 * **The ***write bucket*** will be created by you, and all metrics, reports and results will be generated in your account.** Once you have configured both buckets, your environment structure should be as follows:
 
 ```
-Create S3 Read Bucket - Configurable from the Config files
+S3 Read Bucket 
         |
         |-----> Create directories for: (i)Tokenizer (contains tokenizer.json, config.json), (ii)Source data, (iii)Scripts, (iv)Prompt Template
         
@@ -116,7 +114,7 @@ Create S3 Read Bucket - Configurable from the Config files
         V
         
 
-S3 Write Bucket - Configurable from the Config files       
+S3 Write Bucket    
         |
         |-----> Your test run's name directory (generated programmatically with metrics)
             |

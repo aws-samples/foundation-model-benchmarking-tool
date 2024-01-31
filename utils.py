@@ -41,7 +41,6 @@ def load_config(config_file) -> Dict:
     
 # The files in LongBench contain nonstandard or irregular Unicode.
 # For compatibility and safety we normalize them.
-
 def _normalize(text, form='NFC'):
     return unicodedata.normalize(form, text)
 
