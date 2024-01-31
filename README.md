@@ -29,7 +29,7 @@ Create configuration file
                     |
                     |-----> Run inference against deployed endpoint(s)
                                      |
-                                     |------> Run code for report creation
+                                     |------> Run code for report creation within your s3 bucket automatically
 ```
 
 
@@ -43,15 +43,15 @@ Create configuration file
 1. Benchmark FM performance in terms of inference latency, transactions per minute and dollar cost per transaction for any FM that can be deployed on SageMaker.
     1. Tests are run for each combination of the configured concurrency levels i.e. transactions (inference requests) sent to the endpoint in parallel and dataset. For example, run multiple datasets of say prompt sizes between 3000 to 4000 tokens at concurrency levels of 1, 2, 4, 6, 8 etc. so as to test how many transactions of what token length can the endpoint handle while still maintaining an acceptable level of inference latency.
 
-1. Generate a report comparing and contrasting the performance of the models over different test configurations.
-    1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
+1. Generate a report comparing and contrasting the performance of the models over different test configurations within your aws s3 bucket.
+    1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format within your s3 bucket and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
     1. The report is created as an artifact of reproducible research so that anyone having access to the model, instance type and serving stack can run the code and recreate the same results and report.
 
 1. Multiple [configuration files](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/configs) that can be used as reference for benchmarking new models and instance types.
 
 ## Getting started
 
-The code is a collection of Jupyter Notebooks that are run in a sequence to benchmark a desired model on a desired set of instance types.
+The code is a collection of Jupyter Notebooks that are run in a sequence to benchmark a desired model on a desired set of instance types. All data, metrics and results are managed and configured via s3 automatically.
 
 ### Prerequisites
 
@@ -59,25 +59,71 @@ Follow the prerequisites below to set up your environment before running the cod
 
 1. This code requires Python 3.11. If you are using SageMaker for running this code then select `Data Science 3.0` kernel for your SageMaker notebooks.
 
-1. **Llama 2 Tokenizer** : We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. While support for bring your own tokenizer would be added soon but as of this writing you would need to download the `Llama 2 Tokenizer` from HuggingFace. The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). Once you have been approved, create the `llama2_tokenizer` directory and download the following files from [Hugging Face website](https://huggingface.co/meta-llama/Llama-2-7b/tree/main) into this directory:
+1. **Data Ingestion via S3** : Configure two buckets within your aws account: 
 
-    * `tokenizer.json`
-    * `config.json`
+    * A ***read bucket*** that will contain the `tokenizer files`, `prompt template`, `source/raw data` and `scripts` (in bring your own model case). This bucket will be responsible only for read actions on data that needs to be used in writing metrics and results to the second ***write bucket***. 
+    
+    * With the ***write bucket***, as you run the harness, all data will be read from the read bucket and tests, metrics and reports will automatically be generated in an organized way within the write bucket after each run. 
 
-1. **Data Ingestion** : `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
+* **The ***read bucket*** will have the following contents**: 
 
-    * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `data/dataset` directory. Following is a good list to get started with:
+    1. **Tokenizer Directory**:  We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. Now you can also use your own custom tokenizer by downloading the  tokenizer files and running it using the `autotokenizer` function from hugging face. 
+    
+    The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/).   
 
-        * `2wikimqa`
-        * `hotpotqa`
-        * `narrativeqa`
-        * `triviaqa`
+    * Create a directory called "Tokenizer" (flexible to change) in your ***S3 read bucket***. Bring the tokenizer files for your specific model.  Once you have configured these files in this directory, the `FMBT` harness will execute and process your custom tokenizer logic for you. This directory should contain the files below:
 
-1. `Deploying models not natively available via SageMaker JumpStart`: for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
-    1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
+        * `tokenizer.json`
+        * `config.json`
 
-    1. Place your deployment script in the `scripts` directory. Add any associated `settings.properties` file in the same directory. 
-        * If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo.
+
+    2. **Source Data Directory**: Create a `source data` directory storing the dataset you want to use to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
+
+        * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `data/dataset` directory. Following is a good list to get started with:
+
+            * `2wikimqa`
+            * `hotpotqa`
+            * `narrativeqa`
+            * `triviaqa`
+
+        * Once you have uploaded this data and started the run, `FMBT` will read this data from the ***read bucket*** and create payloads of different sizes (that can be configured by you) and write those processed payloads in the ***write bucket*** for further steps.
+
+    3. **Prompt Template Directory**: Create a `prompt template` directory storing a `prompt_template.txt` file (configurable via the config files). This file will contain the prompt template that your specific model supports and prepare the payloads with this prompt template for inference purposes. `FMBT` already supports prompts compatible with the `Llama` models.
+
+    4. **Scripts Directory**: `Deploying models not natively available via SageMaker JumpStart` - for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
+
+        1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
+
+        1. Place your deployment script in the `scripts` directory within your ***read bucket***. Add any associated `settings.properties` file in the same directory. 
+
+            * If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. `FMBT` is already compatible with:
+
+                * All models deployable via SageMaker Jumpstart
+                * Models deployable via the `HF TGI container`
+                * Models deployable via the `Deep Java Library container`
+
+    
+* **The ***write bucket*** will be created by you, and all metrics, reports and results will be generated in your account.** Once you have configured both buckets, your environment structure should be as follows:
+
+```
+Create S3 Read Bucket - Configurable from the Config files
+        |
+        |-----> Create directories for: (i)Tokenizer (contains tokenizer.json, config.json), (ii)Source data, (iii)Scripts, (iv)Prompt Template
+        
+
+        |
+        | Execute the code
+        V
+        
+
+S3 Write Bucket - Configurable from the Config files       
+        |
+        |-----> Your test run's name directory (generated programmatically with metrics)
+            |
+            |-----> Data/
+                |
+                |-----> (i) Metrics (year (yyyy), month (mm), date (dd), hour (hh) format), (ii) Prompts (contains payloads of varying sizes), (iii) Models(deployed endpoint configurations)
+```
 
 ### Steps to run
 
@@ -89,18 +135,21 @@ Follow the prerequisites below to set up your environment before running the cod
     1. The configuration file is a YAML file containing configuration for all steps of the benchmarking process. It is recommended to create a copy of an existing config file and tweak it as necessary to create a new one for your experiment.
     1. Change the config file name in the [config_filename.txt](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/config_filepath.txt) to point to your config file.
 
+1. Create the read and write buckets as mentioned above. Mention the respective directories for your read and write buckets within the `configs` files. 
+
 1. Run the [`0_setup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/0_setup.ipynb) to install the required [Python packages](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/requirements.txt).
 
-1. Setup the Llama tokenizer and datasets needed for download as per instructions in this [README](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main?tab=readme-ov-file#solution-prerequisites).
+1. Setup your custom tokenizer and datasets needed for download as per instructions in this [README](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main?tab=readme-ov-file#solution-prerequisites).
 
-1. Run the [`1_generate_data.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/1_generate_data.ipynb) to create the prompt payloads ready for testing.
+1. Run the [`1_generate_data.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/1_generate_data.ipynb) to create the prompt payloads ready for testing. The generated prompt payloads will be written within the `metrics` directory in your ***write s3 bucket***.
 
 1. Run the [`2_deploy_model.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/2_deploy_model.ipynb) to deploy models on different endpoints with the desired configuration as per the configuration file.
-    1. If you are using a model not supported through JumpStart than you can place your deployment script in the [scripts](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/scripts)directory and set the deployment script name in the configuration file. Your deployment script needs to have a `deploy_model` that the `FMBT` code will call to deploy the model (refer to existing scripts in the scripts director for reference).
+    1. If you are using a model not supported through JumpStart than you can place your deployment script in the [scripts] directory within your `scripts` directory in the ***read bucket*** within s3 and set the deployment script name in the configuration file. Your deployment script needs to have a `deploy_model` that the `FMBT` code will call to deploy the model (refer to existing scripts in the scripts director for reference).
+    1. Information on deployed model endpoints will be recorded within the `model` directory in your s3 ***write bucket***.
 
-1. Run the [`3_run_inference.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb) to run inference on the deployed endpoints and collect metrics. These metrics are saved in the metrics directory (these raw metrics are not checked in back into the repo).
+1. Run the [`3_run_inference.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb) to run inference on the deployed endpoints and collect metrics. These metrics are saved in the metrics directory (these raw metrics are not checked in back into the repo) within your configured s3 ***write bucket*** `metrics` file in your aws account.
 
-1. Run the [`4_model_metric_analysis.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb) to create statistical summaries, plots, tables and a [final report](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/data/metrics/llama2-13b-inf2-g5-p4d-v1/results.md) for the test results.
+1. Run the [`4_model_metric_analysis.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb) to create statistical summaries, plots, tables and a `final report` for the test results. The reports, metrics and plots will be generated within your `metrics` directory in your ***write bucket***.
 
 1. Run the [`5_cleanup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/5_cleanup.ipynb) to delete the deployed endpoints.
 
@@ -113,17 +162,17 @@ Here is a screenshot of the `report.md` file generated by `FMBT`.
 
 The following enhancements are identified as next steps for `FMBT`.
 
-1. [**Highest priority**] Add support for reading and writing files (configuration, metrics, bring your own model scripts) from Amazon S3.
+1. [**Highest priority**] Containerize `FMBT` and provide instructions for running the container on EC2.
 
 1. Add code to determine the cost of running an entire experiment and include it in the final report. This would only include the cost of running the SageMaker endpoints based on hourly public pricing (the cost of running this code on a notebook or a EC2 is trivial in comparison and can be ignored).
-
-1. Containerize `FMBT` and provide instructions for running the container on EC2.
 
 1. Support for a custom token counter. Currently only the LLama tokenizer is supported but we want to allow users to bring their own token counting logic for different models.
 
 1. Support for different payload formats that might be needed for different inference containers. Currently the HF TGI container, and DJL Deep Speed container on SageMaker both use the same format but in future other containers might need a different payload format.
 
 1. Emit live metrics so that they can be monitored through Grafana via live dashboard.
+
+View the [ISSUES](https://github.com/aws-samples/foundation-model-benchmarking-tool/issues) on github and add any you might think be an beneficial iteration to this benchmarking harness.
 
 ## Security
 
