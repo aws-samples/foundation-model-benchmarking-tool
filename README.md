@@ -14,7 +14,7 @@ This foundation model benchmarking tool (a.k.a. `FMBT`) is a tool to answer the 
 
 ## Description
 
-The `FMBT` is a Python based tool to benchmark performance of **any model** on **any supported instance type** (`g5`, `p4d`, `Inf2`). We deploy models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type, inference container and settings such as tensor parallelism etc.
+The `FMBT` is a Python based tool to benchmark performance of **any model** on **any supported instance type** (`g5`, `p4d`, `Inf2`). We deploy models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type, inference container and settings such as tensor parallelism etc. Because `FMBT` works for any model therefore it can be used not only testing _third party models_ available on SageMaker, _open-source models_ but also _proprietary models_ trained by enterprises on their own data.
 
 `FMBT` can be run on any platform that supports Jupyter Notebooks (such as SageMaker, AWS Cloud9 and others) or containers (Amazon EC2, Amazon EKS, AWS Fargate). It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency.
 
