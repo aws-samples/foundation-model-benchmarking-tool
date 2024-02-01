@@ -44,14 +44,14 @@ Create configuration file
     1. Tests are run for each combination of the configured concurrency levels i.e. transactions (inference requests) sent to the endpoint in parallel and dataset. For example, run multiple datasets of say prompt sizes between 3000 to 4000 tokens at concurrency levels of 1, 2, 4, 6, 8 etc. so as to test how many transactions of what token length can the endpoint handle while still maintaining an acceptable level of inference latency.
 
 1. Generate a report that compares and contrasts the performance of the model over different test configurations and stores the reports in an Amazon S3 bucket.
-    1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format within your S3 bucket and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
+    1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
     1. The report is created as an artifact of reproducible research so that anyone having access to the model, instance type and serving stack can run the code and recreate the same results and report.
 
 1. Multiple [configuration files](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/configs) that can be used as reference for benchmarking new models and instance types.
 
 ## Getting started
 
-The code is a collection of Jupyter Notebooks that are run in a sequence to benchmark a desired model on a desired set of instance types. After each run, all data that includes metrics, reports and results are stored in S3.
+The code is a collection of Jupyter Notebooks that are run in a sequence to benchmark a desired model on a desired set of instance types. All data that includes metrics, reports and results are stored in S3.
 
 ### Prerequisites
 
@@ -59,7 +59,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
 1. This code requires Python 3.11. If you are using SageMaker for running this code then select `Data Science 3.0` kernel for your SageMaker notebooks.
 
-1. **Data Ingestion via S3** : Configure two buckets within your AWS account: 
+1. **Use S3 for Data and Results Storage** : Configure two buckets within your AWS account: 
 
     * ***Read bucket***: This bucket contains `tokenizer files`, `prompt template`, `source data` and `deployment scripts` directories. `FMBT` needs to have read access to this bucket. View the structure of this bucket below:
     
@@ -81,25 +81,18 @@ Follow the prerequisites below to set up your environment before running the cod
      
      * View the details of bucket structure below:
 
-        1. **Tokenizer Directory**:  We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). Once you have been approved, create the `llama2_tokenizer` directory and download the following files from [Hugging Face website](https://huggingface.co/meta-llama/Llama-2-7b/tree/main) into this directory:
+        1. **Source Data Directory**: Create a `source_data` directory that stores the dataset you want to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
 
-            * `tokenizer.json`
-            * `config.json`
-            
-        * You can also use your model specific tokenizer by uploading the tokenizer files from `HuggingFace` into the `tokenizer` directory. `FMBT` processes these files from the S3 bucket.
-
-        2. **Source Data Directory**: Create a `source_data` directory that stores the dataset you want to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
-
-            * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `data/dataset` directory. Following is a good list to get started with:
+            * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `source_data` directory. Following is a good list to get started with:
 
                 * `2wikimqa`
                 * `hotpotqa`
                 * `narrativeqa`
                 * `triviaqa`
+        
+        1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This file contains the prompt template that your specific model supports. `FMBT` already supports the prompt template compatible with `Llama` models as shown [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/s3_metrics/prompt_template/prompt_template.txt)
 
-        3. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This file stores the prompt template that your specific model supports. `FMBT` already supports the prompt template compatible with `Llama` models as shown [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/s3_metrics/prompt_template/prompt_template.txt)
-
-        4. **Scripts Directory** (`Deploying models not natively available via SageMaker JumpStart`): for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
+        1. **Scripts Directory** (`Deploying models not natively available via SageMaker JumpStart`): for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
 
             1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
 
@@ -108,8 +101,17 @@ Follow the prerequisites below to set up your environment before running the cod
                 * [All SageMaker Jumpstart Models](https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart-foundation-models.html)
                 * [Text-Generation-Inference (TGI) container supported models](https://huggingface.co/text-generation-inference)
                 * [Deep Java Library DeepSpeed container supported models](https://docs.djl.ai/docs/serving/serving/docs/lmi/configurations_large_model_inference_containers.html)
+                
 
                 View inference scripts for the options above in the [SCRIPTS](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/s3_metrics/scripts) directory.
+
+        1. **Tokenizer Directory**:  We currently use the `Llama 2 Tokenizer` for counting prompt and generation tokens. The use of the LLama2 model is governed by the Meta license. In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). In order to download the tokenizer, visit the website and accept the License before requesting access here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/). Once you have been approved, create the `llama2_tokenizer` directory and download the following files from [Hugging Face website](https://huggingface.co/meta-llama/Llama-2-7b/tree/main) into this directory:
+
+            * `tokenizer.json`
+            * `config.json`
+
+            
+        * You can also use your model specific tokenizer by uploading the tokenizer files from `HuggingFace` into the `tokenizer` directory. `FMBT` processes these files from the S3 bucket.
 
 * ***Write bucket***: All data that contains metrics, prompt payloads and model endpoint information is stored in this bucket. `FMBT` requires write permissions to store the results in this bucket. View the structure of this bucket after results are generated:
 
