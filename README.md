@@ -119,10 +119,11 @@ Follow the prerequisites below to set up your environment before running the cod
 Metrics Bucket  
     |
     ├── General Experiment Name 
-    ├── data/
-        ├── metrics/
-        ├── prompts/
-        ├── models/
+        |
+        ├── data/
+            ├── metrics/
+            ├── prompts/
+            ├── models/
 
 ```
 
