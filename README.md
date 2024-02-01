@@ -90,7 +90,7 @@ Follow the prerequisites below to set up your environment before running the cod
                 * `narrativeqa`
                 * `triviaqa`
         
-        1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This file contains the prompt template that your specific model supports. `FMBT` already supports the prompt template compatible with `Llama` models as shown [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/s3_metrics/prompt_template/prompt_template.txt)
+        1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBT` already supports the prompt template compatible with `Llama` models as shown [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/s3_metrics/prompt_template/prompt_template.txt)
 
         1. **Scripts Directory** (`Deploying models not natively available via SageMaker JumpStart`): for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list `FMBT` also supports a `bring your own script (BYOS)` mode. Here are the steps to use BYOS.
 
@@ -101,7 +101,7 @@ Follow the prerequisites below to set up your environment before running the cod
                 * [All SageMaker Jumpstart Models](https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart-foundation-models.html)
                 * [Text-Generation-Inference (TGI) container supported models](https://huggingface.co/text-generation-inference)
                 * [Deep Java Library DeepSpeed container supported models](https://docs.djl.ai/docs/serving/serving/docs/lmi/configurations_large_model_inference_containers.html)
-                
+
 
                 View inference scripts for the options above in the [SCRIPTS](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/s3_metrics/scripts) directory.
 
@@ -111,7 +111,7 @@ Follow the prerequisites below to set up your environment before running the cod
             * `config.json`
 
             
-        * You can also use your model specific tokenizer by uploading the tokenizer files from `HuggingFace` into the `tokenizer` directory. `FMBT` processes these files from the S3 bucket.
+        * You can also use your model specific tokenizer by uploading the tokenizer files from `HuggingFace` into the `tokenizer` directory. `FMBT` reads these files from the S3 bucket.
 
 * ***Write bucket***: All data that contains metrics, prompt payloads and model endpoint information is stored in this bucket. `FMBT` requires write permissions to store the results in this bucket. View the structure of this bucket after results are generated:
 
