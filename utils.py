@@ -1,14 +1,13 @@
+import os
+import re
 import yaml
+import boto3
 import logging
 import unicodedata
 import globals as  g
 from typing import Dict
 from transformers import AutoTokenizer
-import boto3
-import os
 from botocore.exceptions import NoCredentialsError
-import re
-
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -105,9 +104,9 @@ def write_to_s3(json_data, bucket_name, models_dir, model_name, file_name):
         s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=json_data)
         return (f"s3://{bucket_name}/{s3_file_path}")
     except NoCredentialsError:
-        print("Error: AWS credentials not found.")
+        logger.error("Error: AWS credentials not found.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"An error occurred: {e}")
 
         
 ## function to read from s3
@@ -125,7 +124,7 @@ def read_from_s3(bucket_name, file_name):
         
         return response['Body'].read().decode('utf-8')
     except NoCredentialsError:
-        print("Error: AWS credentials not found.")
+        logger.error("Error: AWS credentials not found.")
         return None
     except Exception as e:
         print(f"An error occurred: {e}")
