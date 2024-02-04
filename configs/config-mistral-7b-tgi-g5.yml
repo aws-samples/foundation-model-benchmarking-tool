@@ -8,11 +8,35 @@ aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
   # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+  ## these are the buckets/resources you will create in your account below:
+  bucket: fmbttest ## add the name of your desired bucket
 
+## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
+dir_paths:
+    data_prefix: data ## add the prefix for all your data management/storage
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics_{datetime}
+    models_dir: models_{datetime}
+    metadata_dir: metadata ## add a file here to dynamically track the metrics dir
 
-prompt:
-  template_file: prompt_template.txt
-  all_prompts_file: all_prompts.csv
+## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
+s3_read_data:
+    read_bucket: fmbt-read
+    scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+    source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    prompt_template_dir: prompt_template
+    prompt_template_file: prompt_template.txt ## add your desired prompt template type
+
+## section that enables container to run notebooks and python scripts automatically 
+run_steps:
+    0_setup.ipynb: no
+    1_deploy_model.ipynb: no
+    2_generate_data.ipynb: no
+    3_run_inference.ipynb: no
+    4_model_metrics_analysis.ipynb: no
+    5_cleanup.ipynb: no
 
 datasets:
   - language: en    
