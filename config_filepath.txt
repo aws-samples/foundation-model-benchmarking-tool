@@ -1,1 +1,0 @@
-configs/config-mistral-7b-tgi-g5.yml
