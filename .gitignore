@@ -17,3 +17,4 @@ llama2_tokenizer/*
 **/results_path.txt
 metadata/*
 **/DS_Store
+.DS_Store
