@@ -3,6 +3,7 @@ import os
 import yaml
 import boto3
 import logging
+import requests
 import unicodedata
 from typing import Dict
 from fmbt import globals
@@ -42,6 +43,7 @@ def load_config(config_file) -> Dict:
     :param config_file: Path to the local file or S3 URI (s3://bucket/key)
     :return: Dictionary with the loaded configuration
     """
+
     # Check if config_file is an S3 URI
     if config_file.startswith("s3://"):
         try:
@@ -58,11 +60,45 @@ def load_config(config_file) -> Dict:
         except Exception as e:
             print(f"Error loading config from S3: {e}")
             raise
+    # Check if config_file is an HTTPS URL
+    elif config_file.startswith("https://"):
+        try:
+            response = requests.get(config_file)
+            response.raise_for_status()  # Raises a HTTPError if the response was an error
+            return yaml.safe_load(response.text)
+        except requests.exceptions.RequestException as e:
+            print(f"Error loading config from HTTPS URL: {e}")
+            raise
     else:
-        # Load from local file system
-        with open(config_file, 'r') as file:
-            logger.info(f"Reading the config file from the s3 bucket --> {config_file}")
-            return yaml.safe_load(file)
+        # Assume local file system if not S3 or HTTPS
+        try:
+            with open(config_file, 'r') as file:
+                return yaml.safe_load(file)
+        except Exception as e:
+            print(f"Error loading config from local file system: {e}")
+            raise
+
+    # # Check if config_file is an S3 URI
+    # if config_file.startswith("s3://"):
+    #     try:
+    #         # Parse S3 URI
+    #         s3_client = boto3.client('s3')
+    #         bucket, key = config_file.replace("s3://", "").split("/", 1)
+
+    #         # Get object from S3 and load YAML
+    #         response = s3_client.get_object(Bucket=bucket, Key=key)
+    #         return yaml.safe_load(response["Body"])
+    #     except NoCredentialsError:
+    #         print("AWS credentials not found.")
+    #         raise
+    #     except Exception as e:
+    #         print(f"Error loading config from S3: {e}")
+    #         raise
+    # else:
+    #     # Load from local file system
+    #     with open(config_file, 'r') as file:
+    #         logger.info(f"Reading the config file from the s3 bucket --> {config_file}")
+    #         return yaml.safe_load(file)
     
 # The files in LongBench contain nonstandard or irregular Unicode.
 # For compatibility and safety we normalize them.

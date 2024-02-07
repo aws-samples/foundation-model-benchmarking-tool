@@ -6,6 +6,7 @@ import boto3
 import logging
 import nbformat
 import argparse
+import requests
 import papermill as pm
 from pathlib import Path
 from datetime import datetime
@@ -23,22 +24,38 @@ def is_valid_s3_uri(s3_uri: str) -> bool:
     pattern = re.compile(r's3://[^/]+/.+')
     return bool(pattern.match(s3_uri))
 
+# Function to check whether the given uri is a valid https URL
+def is_valid_https_url(url: str) -> bool:
+    return url.startswith("https://")
+
 # Function to get the s3_uri from the user and get the config file path, writing the txt file
-def write_config_file_path(s3_uri: str) -> dict:
+def write_config_file_path(user_input: str) -> dict:
     current_working_directory = Path.cwd()
     config_path = current_working_directory / 'fmbt' / 'config_filepath.txt'
     
-    if not is_valid_s3_uri(s3_uri):
-        raise ValueError(f"The provided URI '{s3_uri}' is not a valid S3 URI.")
+    if is_valid_s3_uri(user_input):
+        logger.info(f"Executing the config file found in {user_input}...")
+
+        bucket, key = user_input.replace("s3://", "").split("/", 1)
+
+        # Get object from S3 and load YAML
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+        config_content = yaml.safe_load(response["Body"])
+    elif is_valid_https_url(user_input):
+        try:
+            logger.info(f"Loading config from HTTPS URL: {user_input}")
+            response = requests.get(user_input)
+            response.raise_for_status()  # Raises a HTTPError for bad responses
+            config_content = yaml.safe_load(response.text)
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Error loading config from HTTPS URL: {e}")
+            raise
+    else:
+        raise ValueError(f"The provided URI '{user_input}' is not a valid S3 URI or HTTPS URL.")
     
-    logger.info(f"Executing the config file found in {s3_uri}...")
-
-    bucket, key = s3_uri.replace("s3://", "").split("/", 1)
-
-    # Get object from S3 and load YAML
-    response = s3_client.get_object(Bucket=bucket, Key=key)
-    print(f"response = {response}")
-    return yaml.safe_load(response["Body"])
+    # You can choose to write to config_path here if needed, otherwise just return the loaded content
+    print(f"Loaded configuration: {config_content}")
+    return config_content
 
 # Function to handle cell outputs
 def output_handler(cell: NotebookNode, _):

@@ -1,6 +1,7 @@
 import os
 import yaml
 import boto3
+import requests
 from enum import Enum
 from pathlib import Path
 from datetime import datetime
@@ -26,20 +27,27 @@ else:
     print(f"config file current -> {CONFIG_FILE}, {current_config_file}")
 
 
-# Parse the S3 URL
-bucket_name, key_path = CONFIG_FILE.replace("s3://", "").split("/", 1)
+if CONFIG_FILE.startswith("s3://"):
+    # Parse the S3 URL
+    bucket_name, key_path = CONFIG_FILE.replace("s3://", "").split("/", 1)
+    # Use boto3 to access the S3 service
+    s3 = boto3.resource('s3')
+    # Fetch the object from S3
+    obj = s3.Object(bucket_name, key_path)
+    # Read the object's content
+    CONFIG_FILE_CONTENT = obj.get()['Body'].read().decode('utf-8')
+elif CONFIG_FILE.startswith("https://"):
+    # Fetch the content from the HTTPS URL
+    response = requests.get(CONFIG_FILE)
+    response.raise_for_status()  # Ensure we got a successful response
+    CONFIG_FILE_CONTENT = response.text
+else:
+    raise ValueError("Unsupported URI scheme. Only s3:// and https:// are supported.")
 
-# Use boto3 to access the S3 service
-s3 = boto3.resource('s3')
-# Fetch the object from S3
-print(f"the config file name name: {current_config_file}")
-print(f"the bucket name: {bucket_name}, the key of the config file: {key_path}")
-obj = s3.Object(bucket_name, key_path)
-# Read the object's content
-CONFIG_FILE_CONTENT = obj.get()['Body'].read().decode('utf-8')
-
-# Load the configuration using the updated load_config function with the content fetched from S3
+# Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
+print(f"Loaded config: {config}")
+
 print(f"Loaded config: {config}")
 
 ## data directory and prompts
