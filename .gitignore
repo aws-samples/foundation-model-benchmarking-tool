@@ -1,6 +1,7 @@
 __pycache__/
 e.json
-.DS_Store
+**/.DS_Store
+DS_Store
 .locks/*
 ./scripts/model.tar.gz
 /data/models/*/endpoints.json
@@ -16,4 +17,3 @@ llama2_tokenizer/*
 **/endpoint_path.txt
 **/results_path.txt
 metadata/*
-**/.DS_Store
