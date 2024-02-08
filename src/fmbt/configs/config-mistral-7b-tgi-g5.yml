@@ -44,26 +44,26 @@ datasets:
     min_length_in_tokens: 1
     max_length_in_tokens: 500
     payload_file: payload_{lang}_{min}-{max}.jsonl
-  # - language: en
-  #   min_length_in_tokens: 500
-  #   max_length_in_tokens: 1000
-  #   payload_file: payload_{lang}_{min}-{max}.jsonl
-  # - language: en
-  #   min_length_in_tokens: 1000
-  #   max_length_in_tokens: 2000
-  #   payload_file: payload_{lang}_{min}-{max}.jsonl
-  # - language: en
-  #   min_length_in_tokens: 2000
-  #   max_length_in_tokens: 3000
-  #   payload_file: payload_{lang}_{min}-{max}.jsonl
-  # - language: en
-  #   min_length_in_tokens: 3000
-  #   max_length_in_tokens: 4000
-  #   payload_file: payload_{lang}_{min}-{max}.jsonl
-  # - language: en
-  #   min_length_in_tokens: 305
-  #   max_length_in_tokens: 3997
-  #   payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_{lang}_{min}-{max}.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_{lang}_{min}-{max}.jsonl
 
 metrics:
   dataset_of_interest: en_1-500
@@ -102,16 +102,16 @@ experiments:
     deployment_script: jumpstart.py
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-4000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
+    - 2
+    - 4
+    - 6
+    - 8
     accept_eula: true
     env:
       SAGEMAKER_PROGRAM: "inference.py"
