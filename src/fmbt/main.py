@@ -1,13 +1,14 @@
 import os
 import re
+import sys
 import yaml
 import json
 import boto3
 import logging
-import nbformat
 import argparse
 import requests
 import papermill as pm
+from typing import Dict
 from pathlib import Path
 from datetime import datetime
 from nbformat import NotebookNode
@@ -25,36 +26,34 @@ def is_valid_s3_uri(s3_uri: str) -> bool:
     return bool(pattern.match(s3_uri))
 
 # Function to check whether the given uri is a valid https URL
-def is_valid_https_url(url: str) -> bool:
-    return url.startswith("https://")
+def is_valid_http_url(url: str) -> bool:
+    return url.startswith("https://") or url.startswith("http://")
 
 # Function to get the s3_uri from the user and get the config file path, writing the txt file
-def write_config_file_path(user_input: str) -> dict:
-    current_working_directory = Path.cwd()
-    config_path = current_working_directory / 'fmbt' / 'config_filepath.txt'
-    
-    if is_valid_s3_uri(user_input):
-        logger.info(f"Executing the config file found in {user_input}...")
+def read_config(config_file_path: str) -> Dict:
+    if is_valid_s3_uri(config_file_path):
+        logger.info(f"executing the config file found in {config_file_path}...")
 
-        bucket, key = user_input.replace("s3://", "").split("/", 1)
+        bucket, key = config_file_path.replace("s3://", "").split("/", 1)
 
         # Get object from S3 and load YAML
         response = s3_client.get_object(Bucket=bucket, Key=key)
         config_content = yaml.safe_load(response["Body"])
-    elif is_valid_https_url(user_input):
+    elif is_valid_http_url(config_file_path):
         try:
-            logger.info(f"Loading config from HTTPS URL: {user_input}")
-            response = requests.get(user_input)
+            logger.info(f"loading config from HTTPS URL: {config_file_path}")
+            response = requests.get(config_file_path)
             response.raise_for_status()  # Raises a HTTPError for bad responses
             config_content = yaml.safe_load(response.text)
         except requests.exceptions.RequestException as e:
-            logger.error(f"Error loading config from HTTPS URL: {e}")
+            logger.error(f"error loading config from HTTPS URL: {e}")
             raise
     else:
-        raise ValueError(f"The provided URI '{user_input}' is not a valid S3 URI or HTTPS URL.")
-    
+        logger.info(f"the provided URI '{config_file_path}' is not a valid S3 URI or HTTPS URL, assuming this is a local file")
+        config_content = yaml.safe_load(Path(config_file_path).read_text())
+
     # You can choose to write to config_path here if needed, otherwise just return the loaded content
-    print(f"Loaded configuration: {config_content}")
+    logger.info(f"loaded configuration: {json.dumps(config_content, indent=2)}")
     return config_content
 
 # Function to handle cell outputs
@@ -65,9 +64,9 @@ def output_handler(cell: NotebookNode, _):
                 print(output.text, end='')
 
 
-def run_notebooks(config_file):
-    # Assume `write_config_file_path` function is defined elsewhere to load the config
-    config = write_config_file_path(config_file)
+def run_notebooks(config_file: str) -> None:
+    # Assume `read_config` function is defined elsewhere to load the config
+    config = read_config(config_file)
 
     current_directory = Path(__file__).parent
     logging.info(f"Current directory is --> {current_directory}")
@@ -101,12 +100,14 @@ def run_notebooks(config_file):
                 logger.info(f"STEP EXECUTION COMPLETED: {step}")
             except FileNotFoundError as e:
                 logging.error(f"File not found: {e.filename}")
+                sys.exit(1)
             except Exception as e:
                 logging.error(f"Failed to execute {step}: {str(e)}")
+                sys.exit(1)
         else:
-            logging.info(f"Skipping {step} as it is not marked for execution.")
+            logging.info(f"Skipping {step} as it is not marked for execution")
 
-    print("FMBT has completed the benchmarking process. Check your S3 bucket for results.")
+    logger.info(f"FMBT has completed the benchmarking process. Check S3 bucket \"{config['aws']['bucket']}\" for results")
 
 
 # main function to run all of the fmbt process through a single command via this python package
@@ -121,8 +122,7 @@ def main():
     logger.info(f"Config file specified: {args.config_file}")
 
     # Proceed with the rest of your script's logic, passing the config file as needed
-    run_notebooks(args.config_file)
-    logger.info(f"Environment variable CONFIG_FILE_FMBT set to: {os.environ['CONFIG_FILE_FMBT']}")
+    run_notebooks(args.config_file)    
 
 if __name__ == "__main__":
     main()

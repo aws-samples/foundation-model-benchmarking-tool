@@ -15,7 +15,7 @@ s3_client = boto3.client('s3')
 
 ## Configuring the role ARN -- extract the role name
 arn_string = boto3.client('sts').get_caller_identity().get('Arn')
-ROLE_ARN = arn_string.split('/')[-1]
+ROLE_NAME = arn_string.split('/')[-1]
 
 current_config_file = os.environ.get("CONFIG_FILE_FMBT")
 ## if var is true, use that from cli
@@ -42,7 +42,7 @@ elif CONFIG_FILE.startswith("https://"):
     response.raise_for_status()  # Ensure we got a successful response
     CONFIG_FILE_CONTENT = response.text
 else:
-    raise ValueError("Unsupported URI scheme. Only s3:// and https:// are supported.")
+    CONFIG_FILE_CONTENT = Path(CONFIG_FILE).read_text()
 
 # Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
@@ -51,7 +51,7 @@ print(f"Loaded config: {config}")
 print(f"Loaded config: {config}")
 
 ## data directory and prompts
-PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_ARN}"
+PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
 PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
@@ -68,11 +68,11 @@ year, month, day, hour = formatted_time.split('/')
 # Construct the METRICS_DIR path
 METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}"
 
-METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
-METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
+METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
-METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
-METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
+METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
 
 ## --------------------- Models directory based on date and time ---------------------------

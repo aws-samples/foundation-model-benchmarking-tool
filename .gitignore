@@ -18,3 +18,6 @@ llama2_tokenizer/*
 metadata/*
 **/DS_Store
 .DS_Store
+.fmbt/*
+dist/*
+

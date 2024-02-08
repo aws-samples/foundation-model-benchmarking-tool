@@ -1,0 +1,113 @@
+aws:
+  bucket: fmbttest
+  region: us-east-1
+  sagemaker_execution_role: arn:aws:iam::015469603702:role/SageMakerRepoRole
+datasets:
+- language: en
+  max_length_in_tokens: 500
+  min_length_in_tokens: 1
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+- language: en
+  max_length_in_tokens: 1000
+  min_length_in_tokens: 500
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+- language: en
+  max_length_in_tokens: 2000
+  min_length_in_tokens: 1000
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+- language: en
+  max_length_in_tokens: 3000
+  min_length_in_tokens: 2000
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+- language: en
+  max_length_in_tokens: 4000
+  min_length_in_tokens: 3000
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+- language: en
+  max_length_in_tokens: 3997
+  min_length_in_tokens: 305
+  payload_file: payload_{lang}_{min}-{max}.jsonl
+dir_paths:
+  all_prompts_file: all_prompts.csv
+  data_prefix: data
+  metadata_dir: metadata
+  metrics_dir: metrics_{datetime}
+  models_dir: models_{datetime}
+  prompts_prefix: prompts
+experiments:
+- accept_eula: true
+  concurrency_levels:
+  - 1
+  - 2
+  - 4
+  - 6
+  - 8
+  deploy: true
+  deployment_script: jumpstart.py
+  env:
+    ENDPOINT_SERVER_TIMEOUT: '3600'
+    HF_MODEL_ID: /opt/ml/model
+    MAX_BATCH_PREFILL_TOKENS: '8191'
+    MAX_INPUT_LENGTH: '8191'
+    MAX_TOTAL_TOKENS: '8192'
+    MODEL_CACHE_ROOT: /opt/ml/model
+    SAGEMAKER_ENV: '1'
+    SAGEMAKER_MODEL_SERVER_WORKERS: '1'
+    SAGEMAKER_PROGRAM: inference.py
+    SM_NUM_GPUS: '1'
+  ep_name: lmistral7b-g5-2xlarge
+  image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04
+  instance_count: 1
+  instance_type: ml.g5.2xlarge
+  model_id: huggingface-llm-mistral-7b
+  model_name: mistral7b
+  model_version: '*'
+  name: mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+  payload_files:
+  - payload_en_1-500.jsonl
+  - payload_en_500-1000.jsonl
+  - payload_en_1000-2000.jsonl
+  - payload_en_2000-3000.jsonl
+  - payload_en_3000-4000.jsonl
+general:
+  model_name: mistral7b
+  name: mistral-7b-tgi-g5-v1
+inference_parameters:
+  do_sample: true
+  max_new_tokens: 100
+  temperature: 0.1
+  top_k: 120
+  top_p: 0.92
+  truncate: at-prompt-token-length
+metrics:
+  dataset_of_interest: en_3000-4000
+  weights:
+    latenct_wt: 0.35
+    price_per_tx_wt: 0.65
+pricing:
+  ml.g5.12xlarge: 7.09
+  ml.g5.24xlarge: 10.18
+  ml.g5.2xlarge: 1.515
+  ml.g5.48xlarge: 20.36
+  ml.inf2.24xlarge: 7.79
+  ml.inf2.48xlarge: 15.58
+  ml.p4d.24xlarge: 37.688
+results:
+  all_metrics_file: all_metrics.csv
+  per_inference_request_file: per_inference_request_results.csv
+run_steps:
+  0_setup.ipynb: true
+  1_generate_data.ipynb: true
+  2_deploy_model.ipynb: false
+  3_run_inference.ipynb: true
+  4_model_metric_analysis.ipynb: true
+  5_cleanup.ipynb: true
+s3_read_data:
+  prompt_template_dir: prompt_template
+  prompt_template_file: prompt_template.txt
+  read_bucket: fmbt-read
+  script_files:
+  - hf_token.txt
+  scripts_prefix: scripts
+  source_data_prefix: source_data
+  tokenizer_prefix: tokenizer
