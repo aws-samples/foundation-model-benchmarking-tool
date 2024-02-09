@@ -7,7 +7,7 @@ general:
 aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on SageMaker
-  sagemaker_execution_role: arn:aws:iam::015469603702:role/SageMakerRepoRole                            
+  sagemaker_execution_role: arn:aws:iam::<aws-account-id>:role/<iam-role-name>
   ## these are the buckets/resources you will create in your account below:
   bucket: fmbttest ## add the name of your desired bucket
 
