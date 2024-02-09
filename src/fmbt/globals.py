@@ -127,6 +127,7 @@ INSTANCE_PRICING_PER_HOUR_FNAME: str = "instance_pricing_per_hour.csv"
 SUMMARY_METRICS_FOR_DATASET_W_SCORES_FNAME: str = "summary_metrics_for_dataset_w_scores.csv"
 SUMMARY_METRICS_FOR_DATASET_W_SCORES_BEST_OPTION_FNAME: str = "summary_metrics_for_dataset_best_option.csv"
 SUMMARY_METRICS_FOR_DATASET_W_SCORES_BEST_OPTION_EACH_INSTANCE_TYPE_FNAME: str = "summary_metrics_for_dataset_best_option_each_instance_type.csv"
+SUMMARY_MODEL_ENDPOINT_COST_PER_INSTANCE: str = "endpoint_per_instance_per_run_costs.csv"
 BUSINESS_SUMMARY_PLOT_FNAME: str = "business_summary.png"
 
 # plot filenames
