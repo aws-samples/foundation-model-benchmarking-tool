@@ -1,26 +1,57 @@
 import os
 import yaml
+import boto3
+import requests
 from enum import Enum
 from pathlib import Path
-import boto3
 from datetime import datetime
 
-CONFIG_FILEPATH_FILE: str = "config_filepath.txt"
+current_working_directory = Path.cwd()
+
+CONFIG_FILEPATH_FILE: str = current_working_directory / 'fmbt' / 'config_filepath.txt'
 
 # S3 client initialization
 s3_client = boto3.client('s3')
 
 ## Configuring the role ARN -- extract the role name
 arn_string = boto3.client('sts').get_caller_identity().get('Arn')
-ROLE_ARN = arn_string.split('/')[-1]
+ROLE_NAME = arn_string.split('/')[-1]
 
-CONFIG_FILE: str = Path(CONFIG_FILEPATH_FILE).read_text()
-print(f"CONFIG_FILE={CONFIG_FILE}")
-with open(CONFIG_FILE, 'r') as file:
-    config = yaml.safe_load(file)
+current_config_file = os.environ.get("CONFIG_FILE_FMBT")
+## if var is true, use that from cli
+if current_config_file is not None:
+    CONFIG_FILE = current_config_file
+    print(f"config file current -> {CONFIG_FILE}, {current_config_file}")
+else:
+    CONFIG_FILE = Path(CONFIG_FILEPATH_FILE).read_text().strip()
+    print(f"config file current -> {CONFIG_FILE}, {current_config_file}")
+
+
+if CONFIG_FILE.startswith("s3://"):
+    # Parse the S3 URL
+    bucket_name, key_path = CONFIG_FILE.replace("s3://", "").split("/", 1)
+    # Use boto3 to access the S3 service
+    s3 = boto3.resource('s3')
+    # Fetch the object from S3
+    obj = s3.Object(bucket_name, key_path)
+    # Read the object's content
+    CONFIG_FILE_CONTENT = obj.get()['Body'].read().decode('utf-8')
+elif CONFIG_FILE.startswith("https://"):
+    # Fetch the content from the HTTPS URL
+    response = requests.get(CONFIG_FILE)
+    response.raise_for_status()  # Ensure we got a successful response
+    CONFIG_FILE_CONTENT = response.text
+else:
+    CONFIG_FILE_CONTENT = Path(CONFIG_FILE).read_text()
+
+# Load the configuration
+config = yaml.safe_load(CONFIG_FILE_CONTENT)
+print(f"Loaded config: {config}")
+
+print(f"Loaded config: {config}")
 
 ## data directory and prompts
-PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_ARN}"
+PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
 PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
@@ -37,11 +68,11 @@ year, month, day, hour = formatted_time.split('/')
 # Construct the METRICS_DIR path
 METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}"
 
-METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
-METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
+METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
-METRICS_PER_INFERENCE_DIR  = os.path.join(METRICS_DIR, "per_inference")
-METRICS_PER_CHUNK_DIR  = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
+METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
 
 ## --------------------- Models directory based on date and time ---------------------------
@@ -61,7 +92,7 @@ SOURCE_DATA = config['s3_read_data']['source_data_prefix']
 PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 
 ## Initialize the scripts directory
-SCRIPTS_DIR: str = "scripts"
+SCRIPTS_DIR: str = "fmbt/scripts"
 
 ## METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']

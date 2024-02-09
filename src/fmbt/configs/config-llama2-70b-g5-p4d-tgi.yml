@@ -1,6 +1,6 @@
 general:
-  name: "mistral-7b-tgi-g5-v1"
-  model_name: "mistral7b"
+  name: "llama2-70b-g5-p4d-tgi-v1"
+  model_name: "Llama2-70b"
 
   
 # AWS and SageMaker settings
@@ -24,6 +24,8 @@ dir_paths:
 s3_read_data:
     read_bucket: fmbt-read
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+    script_files:
+    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
@@ -31,12 +33,12 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    0_setup.ipynb: no
-    1_deploy_model.ipynb: no
-    2_generate_data.ipynb: no
-    3_run_inference.ipynb: no
-    4_model_metrics_analysis.ipynb: no
-    5_cleanup.ipynb: no
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: no
+    3_run_inference.ipynb: yes
+    4_model_metric_analysis.ipynb: yes
+    5_cleanup.ipynb: yes
+
 
 datasets:
   - language: en    
@@ -71,7 +73,6 @@ metrics:
     latenct_wt: 0.35
   
 pricing:
-  ml.g5.2xlarge: 1.515
   ml.g5.12xlarge: 7.09
   ml.g5.24xlarge: 10.18
   ml.g5.48xlarge: 20.36
@@ -89,12 +90,12 @@ inference_parameters:
 
 # Model configurations
 experiments:
-  - name: mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: huggingface-llm-mistral-7b
+  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-70b
     model_version: "*"
-    model_name: mistral7b
-    ep_name: lmistral7b-g5-2xlarge
-    instance_type: "ml.g5.2xlarge"
+    model_name: llama2-70b
+    ep_name: llama-2-70b-g5-48xlarge
+    instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
@@ -118,11 +119,39 @@ experiments:
       MODEL_CACHE_ROOT: "/opt/ml/model"
       SAGEMAKER_ENV: "1"
       HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "8191"
-      MAX_TOTAL_TOKENS: "8192"
-      MAX_BATCH_PREFILL_TOKENS: '8191'
-      SM_NUM_GPUS: "1"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+  # P4D Based Instance Model Configuration - using the TGI container:
+  - name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
+    model_id: meta-llama/Llama-2-70b-chat-hf
+    model_version: "*"
+    model_name: meta-llama-Llama-2-70b-chat-hf
+    ep_name: llama-2-13b-p4d-24xlarge    
+    instance_type: "ml.p4d.24xlarge"    
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    deploy: yes
+    instance_count: 1
+    deployment_script: p4d_hf_tgi.py
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    accept_eula: true
+    env:
+      MODEL_LOADING_TIMEOUT: "3600"
+      NUMBER_OF_GPU: 8
+      INSTANCE_COUNT: 1
+      HEALTH_CHECK_TIMEOUT: 300
 
 results:
   per_inference_request_file: per_inference_request_results.csv

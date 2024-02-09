@@ -14,11 +14,11 @@ This foundation model benchmarking tool (a.k.a. `FMBT`) is a tool to answer the 
 
 ## Description
 
-The `FMBT` is a Python based tool to benchmark performance of **any model** on **any supported instance type** (`g5`, `p4d`, `Inf2`). We deploy models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type, inference container and settings such as tensor parallelism etc. Because `FMBT` works for any model therefore it can be used not only testing _third party models_ available on SageMaker, _open-source models_ but also _proprietary models_ trained by enterprises on their own data.
-
-`FMBT` can be run on any platform that supports Jupyter Notebooks (such as SageMaker, AWS Cloud9 and others) or containers (Amazon EC2, Amazon EKS, AWS Fargate). It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency.
+The `FMBT` is a Python package for running performance benchmarks for **any model** on **any supported instance type** (`g5`, `p4d`, `Inf2`). `FMBT` deploys models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type, inference container and settings such as tensor parallelism etc. Because `FMBT` works for any model therefore it can be used not only testing _third party models_ available on SageMaker, _open-source models_ but also _proprietary models_ trained by enterprises on their own data.
 
 >In a production system you may choose to deploy models outside of SageMaker such as on EC2 or EKS but even in those scenarios the benchmarking results from this tool can be used as a guide for determining the optimal instance type and serving stack (inference containers, configuration).
+
+`FMBT` can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency.
 
 The workflow for `FMBT` is as follows:
 
@@ -29,9 +29,8 @@ Create configuration file
                     |
                     |-----> Run inference against deployed endpoint(s)
                                      |
-                                     |------> Run code for report creation
+                                     |------> Create a benchmarking report
 ```
-
 
 1. Create a dataset of different prompt sizes and select one or more such datasets for running the tests.
     1. Currently `FMBT` supports datasets from [LongBench](https://github.com/THUDM/LongBench) and filter out individual items from the dataset based on their size in tokens (for example, prompts less than 500 tokens, between 500 to 1000 tokens and so on and so forth).
@@ -51,15 +50,19 @@ Create configuration file
 
 ## Getting started
 
-The code is a collection of Jupyter Notebooks that are run in a sequence to benchmark a desired model on a desired set of instance types. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
+`FMBT` is available as a Python package on [PyPi](https://pypi.org/project/fmbt) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
 
 ### Prerequisites
 
 Follow the prerequisites below to set up your environment before running the code:
 
-1. **Python 3.11**. If you are using SageMaker for running this code then select `Data Science 3.0` kernel for your SageMaker notebooks.
+1. **Python 3.11**: Setup a Python 3.11 virtual environment and install `FMBT`.
+    ```{.bash}
+    python -m venv .fmbt
+    pip install fmbt==1.0.0
+    ```
 
-1. **S3 buckets for test data, scripts, and results**. Create two buckets within your AWS account:
+1. **S3 buckets for test data, scripts, and results**: Create two buckets within your AWS account:
 
     * _Read bucket_: This bucket contains `tokenizer files`, `prompt template`, `source data` and `deployment scripts` stored in a directory structure as shown below. `FMBT` needs to have read access to this bucket.
     
@@ -119,34 +122,56 @@ Follow the prerequisites below to set up your environment before running the cod
 
 ### Steps to run
 
-1. The `FMBT` is currently intended to run on SageMaker (or any other compute platform where Python 3.11 and JupyterLab can be installed).
+1. `pip install` the `FMBT` package from PyPi.
 
-1. Clone the [`FMBT`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness.git) code repo (you would likely want to fork the repo to create your own copy).
-
-1. Create a config file in the [configs](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/configs) directory.
+1. Create a config file using one of the config files available [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbt/configs).
     1. The configuration file is a YAML file containing configuration for all steps of the benchmarking process. It is recommended to create a copy of an existing config file and tweak it as necessary to create a new one for your experiment.
-    1. Change the config file name in the [config_filename.txt](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/config_filepath.txt) to point to your config file.
 
-1. Create the read and write buckets as mentioned above. Mention the respective directories for your read and write buckets within the `configs` files.
+1. Create the read and write buckets as mentioned in the prerequisites section. Mention the respective directories for your read and write buckets within the config files.
 
-1. Run the [`0_setup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/0_setup.ipynb) to install the required [Python packages](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/requirements.txt).
+1. Run the `FMBT` tool from the command line.
 
-1. Setup your custom tokenizer and datasets needed for download as per instructions in this [README](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main?tab=readme-ov-file#solution-prerequisites).
+    ```{.bash}
+    # the config file path could be an S3 path and https path 
+    # or even a path to a file on the local filesystem
+    fmbt --config-file \path\to\config\file
+    ```
 
-1. Run the [`1_generate_data.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/1_generate_data.ipynb) to create the prompt payloads ready for testing. The generated prompt payloads are written in the `metrics` directory of the results bucket.
-
-1. Run the [`2_deploy_model.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/2_deploy_model.ipynb) to deploy models on different endpoints with the desired configuration as per the configuration file.
-
-1. Run the [`3_run_inference.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/3_run_inference.ipynb) to run inference on the deployed endpoints and collect metrics. These metrics are saved in the metrics directory (these raw metrics are not checked in back into the repo).
-
-1. Run the [`4_model_metric_analysis.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/4_model_metric_analysis.ipynb) to create statistical summaries, plots, tables and a `final report` for the test results. The reports, metrics and plots are written to the `metrics` directory in the results bucket.
-
-1. Run the [`5_cleanup.ipynb`](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/blob/main/5_cleanup.ipynb) to delete the deployed endpoints.
+1. Depending upon the experiments in the config file, the `FMBT` run may take a few minutes to several hours. Once the run completes, you can find the report and metrics in the write S3 bucket set in the [config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbt/configs/config-mistral-7b-tgi-g5.yml#L12). The report is generated as a markdown file called `report.md` and is available in the metrics directory in the write S3 bucket.
 
 ## Results
 
 Here is a screenshot of the `report.md` file generated by `FMBT`.
 ![Report](./img/results.gif)
+
+
+## Building the `FMBT` Python package
+
+The following steps describe how to build the `FMBT` Python package.
+
+1. Clone the `FMBT` repo from GitHub.
+
+1. Make any code changes as needed.
+
+1. Install [`poetry`](https://pypi.org/project/poetry/).
+   
+    ```{.bash}
+    pip install poetry
+    ```
+
+1. Change directory to the `FMBT` repo directory and run poetry build.
+
+    ```{.bash}
+    poetry build
+    ```
+
+1. The `.whl` file is generated in the `dist` folder. Install the `.whl` in your current Python environment.
+
+    ```{.bash}
+    pip install .\dist\fmbt-X.Y.Z.tar.gz
+    ```
+
+1. Run `FMBT` as usual through the `fmbt` CLI command.
 
 ## Pending enhancements
 

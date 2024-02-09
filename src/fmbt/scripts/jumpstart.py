@@ -1,5 +1,4 @@
 import time
-from globals import *
 from typing import Dict
 from sagemaker.predictor import Predictor
 from sagemaker.jumpstart.model import JumpStartModel

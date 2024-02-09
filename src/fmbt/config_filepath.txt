@@ -1,0 +1,1 @@
+s3://fmbt-read2039/configs/config-mistral-7b-tgi-g5.yml

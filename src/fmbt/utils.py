@@ -1,13 +1,16 @@
-import os
 import re
+import os
 import yaml
 import boto3
 import logging
+import requests
+import posixpath
 import unicodedata
-import globals as  g
 from typing import Dict
+from fmbt import globals
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -20,12 +23,12 @@ def _initialize_tokenizer():
     try:
         if _tokenizer is None:
             ## use normal tokenizer -- change this variable LOCAL_TOKENIZER_DIR
-            local_dir = g.TOKENIZER
+            local_dir = globals.TOKENIZER
             # Check if the tokenizer files exist locally
             if not os.path.exists(local_dir):
                 # If not, download from S3
-                bucket_name = g.READ_BUCKET_NAME ## DO IT from config 
-                prefix = g.TOKENIZER_DIR_S3
+                bucket_name = globals.READ_BUCKET_NAME ## DO IT from config 
+                prefix = globals.TOKENIZER_DIR_S3
                 _download_from_s3(bucket_name, prefix, local_dir)
             # Load the tokenizer from the local directory
             _tokenizer = AutoTokenizer.from_pretrained(local_dir)
@@ -35,14 +38,51 @@ def _initialize_tokenizer():
 
 # utility functions
 def load_config(config_file) -> Dict:
-    with open(config_file, 'r') as file:
-        return yaml.safe_load(file)
-    
+    """
+    Load configuration from a local file or an S3 URI.
+
+    :param config_file: Path to the local file or S3 URI (s3://bucket/key)
+    :return: Dictionary with the loaded configuration
+    """
+
+    # Check if config_file is an S3 URI
+    if config_file.startswith("s3://"):
+        try:
+            # Parse S3 URI
+            s3_client = boto3.client('s3')
+            bucket, key = config_file.replace("s3://", "").split("/", 1)
+
+            # Get object from S3 and load YAML
+            response = s3_client.get_object(Bucket=bucket, Key=key)
+            return yaml.safe_load(response["Body"])
+        except NoCredentialsError:
+            print("AWS credentials not found.")
+            raise
+        except Exception as e:
+            print(f"Error loading config from S3: {e}")
+            raise
+    # Check if config_file is an HTTPS URL
+    elif config_file.startswith("https://"):
+        try:
+            response = requests.get(config_file)
+            response.raise_for_status()  # Raises a HTTPError if the response was an error
+            return yaml.safe_load(response.text)
+        except requests.exceptions.RequestException as e:
+            print(f"Error loading config from HTTPS URL: {e}")
+            raise
+    else:
+        # Assume local file system if not S3 or HTTPS
+        try:
+            with open(config_file, 'r') as file:
+                return yaml.safe_load(file)
+        except Exception as e:
+            print(f"Error loading config from local file system: {e}")
+            raise
+   
 # The files in LongBench contain nonstandard or irregular Unicode.
 # For compatibility and safety we normalize them.
 def _normalize(text, form='NFC'):
     return unicodedata.normalize(form, text)
-
 
 def _download_from_s3(bucket_name, prefix, local_dir):
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
@@ -90,62 +130,67 @@ def process_item(item, prompt_fmt: str) -> Dict:
         "context_len": len(_tokenizer.encode(context)),
     }
 
+def nt_to_posix(p: str) -> str:
+    return p.replace("\\", "/")
+
 # Function to write data to S3
-def write_to_s3(json_data, bucket_name, models_dir, model_name, file_name):
+def write_to_s3(json_data, bucket_name, dir1, dir2, file_name):
 
     # Initialize S3 client
     s3_client = boto3.client('s3')
 
     # Construct the S3 file path
-    s3_file_path = os.path.join(models_dir, model_name, file_name)
-
+    s3_file_path = posixpath.join(nt_to_posix(dir1), nt_to_posix(dir2), file_name)
+    logger.info(f"write_to_s3, s3_file_path={s3_file_path}")
     try:
         # Write the JSON data to the S3 bucket
         s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=json_data)
         return (f"s3://{bucket_name}/{s3_file_path}")
     except NoCredentialsError:
-        logger.error("Error: AWS credentials not found.")
+        logger.error("write_to_s3, Error: AWS credentials not found.")
     except Exception as e:
-        logger.error(f"An error occurred: {e}")
+        logger.error(f"write_to_s3, An error occurred: {e}")
 
         
 ## function to read from s3
-def read_from_s3(bucket_name, file_name):
+def read_from_s3(bucket_name, s3_file_path):
 
     # Initialize S3 client
     s3_client = boto3.client('s3')
-
-    # Construct the S3 file path
-    s3_file_path = os.path.join(file_name)
+    s3_file_path = nt_to_posix(s3_file_path)
 
     try:
         # Fetch the object from S3
+        logger.error(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
         response = s3_client.get_object(Bucket=bucket_name, Key=s3_file_path)
         
         return response['Body'].read().decode('utf-8')
     except NoCredentialsError:
-        logger.error("Error: AWS credentials not found.")
+        logger.error("read_from_s3, Error: AWS credentials not found.")
         return None
     except Exception as e:
-        print(f"An error occurred: {e}")
+        logger.error(f"read_from_s3, An error occurred: {e}")
         return None
 
 ## gets a single s3 file
-def get_s3_object(s3_path):
-    # Regular expression to extract bucket name and key from the full S3 path
-    match = re.match(r's3://([^/]+)/(.+)', s3_path)
-    if not match:
-        raise ValueError("Invalid S3 path")
-
-    bucket_name, key = match.groups()
+def get_s3_object(bucket: str, key: str) -> str:
+ 
+    key = nt_to_posix(key)
+    logger.info(f"get_s3_object, bucket_name={bucket}, key={key}")
 
     # Create an S3 client
     s3_client = boto3.client('s3')
 
     # Retrieve the object from S3
-    response = s3_client.get_object(Bucket=bucket_name, Key=key)
+    response = s3_client.get_object(Bucket=bucket, Key=key)
 
     # Read the content of the file
     content = response['Body'].read().decode('utf-8')
 
     return content
+
+# Function to list files in S3 bucket with a specific prefix
+def list_s3_files(bucket, prefix, suffix='.json'):
+    s3_client = boto3.client('s3')
+    response = s3_client.list_objects_v2(Bucket=bucket, Prefix=nt_to_posix(prefix))
+    return [item['Key'] for item in response.get('Contents', []) if item['Key'].endswith(suffix)]
