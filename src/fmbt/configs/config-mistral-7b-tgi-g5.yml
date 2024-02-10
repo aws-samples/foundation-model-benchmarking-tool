@@ -7,7 +7,7 @@ general:
 aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on sagemaker
-  # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+  sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
   ## these are the buckets/resources you will create in your account below:
   bucket: fmbttest ## add the name of your desired bucket
 
@@ -33,11 +33,11 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    1_generate_data.ipynb: no
-    2_deploy_model.ipynb: no
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no
+    5_cleanup.ipynb: yes
 
 datasets:
   - language: en    
