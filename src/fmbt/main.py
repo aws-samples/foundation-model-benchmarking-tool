@@ -122,18 +122,6 @@ def main():
     os.environ["CONFIG_FILE_FMBT"] = args.config_file
     logger.info(f"Config file specified: {args.config_file}")
 
-    ## record the start time of the fmbt experiment
-    deployment_time = time.time()
-
-    # Convert the current time to a string
-    deployment_time_str = str(deployment_time)
-
-    # Store the string representation of the current time in an environment variable
-    os.environ['EXPERIMENT_START_TIME'] = deployment_time_str
-
-    # Optionally, verify that the environment variable is set
-    logger.info("FMBT Experiment start time set to:", os.environ['EXPERIMENT_START_TIME'])
-
     # Proceed with the rest of your script's logic, passing the config file as needed
     run_notebooks(args.config_file)    
 
