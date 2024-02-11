@@ -1,6 +1,6 @@
 # Foundation Model benchmarking tool (FMBT) built using Amazon SageMaker
 
-![Foundation Model Benchmarking Tool](./img/fmbt-small.png)
+![Foundation Model Benchmarking Tool](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true)
 
 A key challenge with FMs is the ability to benchmark their performance in terms of inference latency, throughput and cost so as to determine which model running with what combination of the hardware and serving stack provides the best price-performance combination for a given workload.
 
