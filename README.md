@@ -35,7 +35,7 @@ Create configuration file
 ```
 
 1. Create a dataset of different prompt sizes and select one or more such datasets for running the tests.
-    1. Currently `FMBT` supports datasets from [LongBench](https://github.com/THUDM/LongBench) and filter out individual items from the dataset based on their size in tokens (for example, prompts less than 500 tokens, between 500 to 1000 tokens and so on and so forth).
+    1. Currently `FMBT` supports datasets from [LongBench](https://github.com/THUDM/LongBench) and filter out individual items from the dataset based on their size in tokens (for example, prompts less than 500 tokens, between 500 to 1000 tokens and so on and so forth). Alternatively, you can download the folder from [this link](https://huggingface.co/datasets/THUDM/LongBench/resolve/main/data.zip) to load the data.
 
 1. Deploy **any model** that is deployable on SageMaker on **any supported instance type** (`g5`, `p4d`, `Inf2`).
     1. Models could be either available via SageMaker JumpStart (list available [here](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html)) as well as models not available via JumpStart but still deployable on SageMaker through the low level boto3 (Python) SDK (Bring Your  Own Script).
@@ -83,7 +83,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
         * The details of the bucket structure is as follows:
 
-            1. **Source Data Directory**: Create a `source_data` directory that stores the dataset you want to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench). _Support for bring your own dataset will be added soon_.
+            1. **Source Data Directory**: Create a `source_data` directory that stores the dataset you want to benchmark with. `FMBT` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench) or alternatively from [this link](https://huggingface.co/datasets/THUDM/LongBench/resolve/main/data.zip). _Support for bring your own dataset will be added soon_.
 
                 * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `source_data` directory. Following is a good list to get started with:
 
