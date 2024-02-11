@@ -1,5 +1,7 @@
 # Foundation Model benchmarking tool (FMBT) built using Amazon SageMaker
 
+![Foundation Model Benchmarking Tool](./img/fmbt-small.png)
+
 A key challenge with FMs is the ability to benchmark their performance in terms of inference latency, throughput and cost so as to determine which model running with what combination of the hardware and serving stack provides the best price-performance combination for a given workload.
 
 Stated as **business problem**, the ask is “_*What is the dollar cost per transaction for a given generative AI workload that serves a given number of users while keeping the response time under a target threshold?*_”
