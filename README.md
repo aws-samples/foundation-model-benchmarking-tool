@@ -94,7 +94,7 @@ Follow the prerequisites below to set up your environment before running the cod
                 
                     Store these files in the `source_data` directory.
 
-            1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBT` already supports the [prompt template](prompt_template/prompt_template.txt) compatible with `Llama` models.
+            1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBT` already supports the [prompt template](src/fmbt/prompt_template/prompt_template.txt) compatible with `Llama` models.
 
             1. **Scripts Directory**: `FMBT` also supports a `bring your own script (BYOS)` mode for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list. Here are the steps to use BYOS.
 
