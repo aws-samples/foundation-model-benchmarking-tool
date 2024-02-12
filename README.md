@@ -48,7 +48,7 @@ Create configuration file
     1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
     1. The report is created as an artifact of reproducible research so that anyone having access to the model, instance type and serving stack can run the code and recreate the same results and report.
 
-1. Multiple [configuration files](https://github.com/aws-samples/jumpstart-models-benchmarking-test-harness/tree/main/configs) that can be used as reference for benchmarking new models and instance types.
+1. Multiple [configuration files](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbt/configs) that can be used as reference for benchmarking new models and instance types.
 
 ## Getting started
 
@@ -98,7 +98,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
             1. **Scripts Directory**: `FMBT` also supports a `bring your own script (BYOS)` mode for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list. Here are the steps to use BYOS.
 
-                1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`1_deploy_model.ipynb`](./1_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
+                1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`2_deploy_model.ipynb`](./src/fmbt/2_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
 
                 1. Place your deployment script in the `scripts` directory in your ***read bucket***. If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. Today, `FMBT` provides inference scripts for:
 
