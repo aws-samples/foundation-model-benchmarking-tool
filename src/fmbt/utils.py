@@ -7,34 +7,43 @@ import requests
 import posixpath
 import unicodedata
 from typing import Dict
+from pathlib import Path
 from fmbt import globals
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-_tokenizer = None
+import math
+class CustomTokenizer:    
+    """A custom tokenizer class"""
+    TOKENS: int = 1000
+    WORDS: int = 750
 
-# initializing tokenizer in case it is encoded as none type 
-def _initialize_tokenizer():
-    global _tokenizer
-    try:
-        if _tokenizer is None:
-            ## use normal tokenizer -- change this variable LOCAL_TOKENIZER_DIR
-            local_dir = globals.TOKENIZER
-            # Check if the tokenizer files exist locally
-            if not os.path.exists(local_dir):
-                # If not, download from S3
-                bucket_name = globals.READ_BUCKET_NAME ## DO IT from config 
-                prefix = globals.TOKENIZER_DIR_S3
-                _download_from_s3(bucket_name, prefix, local_dir)
-            # Load the tokenizer from the local directory
-            _tokenizer = AutoTokenizer.from_pretrained(local_dir)
-    except Exception as e:
-        logger.error(f"An error occurred while initializing the tokenizer: {e}")
+    def __init__(self, bucket, prefix, local_dir):
+        print(f"CustomTokenizer, based on HF transformers")
+        # Check if the tokenizer files exist locally
+        if not os.path.exists(local_dir):
+            # If not, download from S3            
+            _download_from_s3(bucket, prefix, local_dir)
+        # Load the tokenizer from the local directory
+        dir_not_empty = any(Path(local_dir).iterdir())
+        if dir_not_empty is True:
+            logger.info("loading the provided tokenizer")
+            self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
+        else:
+            logger.error(f"no tokenizer provided, the {local_dir} is empty, "
+                         f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
+            self.tokenizer = None
 
+    def count_tokens(self, text):
+        if self.tokenizer is not None:
+            return len(self.tokenizer.encode(text))
+        else:
+            int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
+    
+_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
 
 # utility functions
 def load_config(config_file) -> Dict:
@@ -111,8 +120,7 @@ def _download_from_s3(bucket_name, prefix, local_dir):
 
 def count_tokens(text: str) -> int:
     global _tokenizer
-    _initialize_tokenizer()
-    return len(_tokenizer.encode(text))
+    return len(_tokenizer.count_tokens(text))
 
 def process_item(item, prompt_fmt: str) -> Dict:
     question = _normalize(item.input)
@@ -126,8 +134,8 @@ def process_item(item, prompt_fmt: str) -> Dict:
         "context": context,
         "prompt": prompt,
         "prompt_len": prompt_len,
-        "question_len": len(_tokenizer.encode(question)),
-        "context_len": len(_tokenizer.encode(context)),
+        "question_len": len(_tokenizer.count_tokens(question)),
+        "context_len": len(_tokenizer.count_tokens(context)),
     }
 
 def nt_to_posix(p: str) -> str:
