@@ -1,40 +1,76 @@
 import re
 import os
 import yaml
+import math
 import boto3
 import logging
 import requests
 import posixpath
 import unicodedata
 from typing import Dict
+from pathlib import Path
 from fmbt import globals
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
 
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-_tokenizer = None
+# The files in LongBench contain nonstandard or irregular Unicode.
+# For compatibility and safety we normalize them.
+def _normalize(text, form='NFC'):
+    return unicodedata.normalize(form, text)
 
-# initializing tokenizer in case it is encoded as none type 
-def _initialize_tokenizer():
-    global _tokenizer
+def _download_from_s3(bucket_name, prefix, local_dir):
+    """Downloads files from an S3 bucket and a specified prefix to a local directory."""
+    s3_client = boto3.client('s3')
+
+    # Ensure the local directory exists
+    if not os.path.exists(local_dir):
+        os.makedirs(local_dir)
+
+    # List and download files
     try:
-        if _tokenizer is None:
-            ## use normal tokenizer -- change this variable LOCAL_TOKENIZER_DIR
-            local_dir = globals.TOKENIZER
-            # Check if the tokenizer files exist locally
-            if not os.path.exists(local_dir):
-                # If not, download from S3
-                bucket_name = globals.READ_BUCKET_NAME ## DO IT from config 
-                prefix = globals.TOKENIZER_DIR_S3
-                _download_from_s3(bucket_name, prefix, local_dir)
-            # Load the tokenizer from the local directory
-            _tokenizer = AutoTokenizer.from_pretrained(local_dir)
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        if 'Contents' in response:
+            for obj in response['Contents']:
+                file_key = obj['Key']
+                if file_key.endswith('/'):  
+                    continue
+                local_file_path = os.path.join(local_dir, os.path.basename(file_key))
+                s3_client.download_file(bucket_name, file_key, local_file_path)
+                logger.info(f"Downloaded: {local_file_path}")
+        else:
+            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
     except Exception as e:
-        logger.error(f"An error occurred while initializing the tokenizer: {e}")
+        logger.error(f"An error occurred while downloading from S3: {e}")
 
+class CustomTokenizer:    
+    """A custom tokenizer class"""
+    TOKENS: int = 1000
+    WORDS: int = 750
+
+    def __init__(self, bucket, prefix, local_dir):
+        print(f"CustomTokenizer, based on HF transformers")
+        # Check if the tokenizer files exist in s3 and if not, use the autotokenizer       
+        _download_from_s3(bucket, prefix, local_dir)
+        # Load the tokenizer from the local directory
+        dir_not_empty = any(Path(local_dir).iterdir())
+        if dir_not_empty is True:
+            logger.info("loading the provided tokenizer")
+            self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
+        else:
+            logger.error(f"no tokenizer provided, the {local_dir} is empty, "
+                         f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
+            self.tokenizer = None
+
+    def count_tokens(self, text):
+        if self.tokenizer is not None:
+            return len(self.tokenizer.encode(text))
+        else:
+            return int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
+    
+_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
 
 # utility functions
 def load_config(config_file) -> Dict:
@@ -78,41 +114,11 @@ def load_config(config_file) -> Dict:
         except Exception as e:
             print(f"Error loading config from local file system: {e}")
             raise
-   
-# The files in LongBench contain nonstandard or irregular Unicode.
-# For compatibility and safety we normalize them.
-def _normalize(text, form='NFC'):
-    return unicodedata.normalize(form, text)
-
-def _download_from_s3(bucket_name, prefix, local_dir):
-    """Downloads files from an S3 bucket and a specified prefix to a local directory."""
-    s3_client = boto3.client('s3')
-
-    # Ensure the local directory exists
-    if not os.path.exists(local_dir):
-        os.makedirs(local_dir)
-
-    # List and download files
-    try:
-        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        if 'Contents' in response:
-            for obj in response['Contents']:
-                file_key = obj['Key']
-                if file_key.endswith('/'):  
-                    continue
-                local_file_path = os.path.join(local_dir, os.path.basename(file_key))
-                s3_client.download_file(bucket_name, file_key, local_file_path)
-                logger.info(f"Downloaded: {local_file_path}")
-        else:
-            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
-    except Exception as e:
-        logger.error(f"An error occurred while downloading from S3: {e}")
 
 
 def count_tokens(text: str) -> int:
     global _tokenizer
-    _initialize_tokenizer()
-    return len(_tokenizer.encode(text))
+    return _tokenizer.count_tokens(text)
 
 def process_item(item, prompt_fmt: str) -> Dict:
     question = _normalize(item.input)
@@ -126,8 +132,8 @@ def process_item(item, prompt_fmt: str) -> Dict:
         "context": context,
         "prompt": prompt,
         "prompt_len": prompt_len,
-        "question_len": len(_tokenizer.encode(question)),
-        "context_len": len(_tokenizer.encode(context)),
+        "question_len": _tokenizer.count_tokens(question),
+        "context_len": _tokenizer.count_tokens(context),
     }
 
 def nt_to_posix(p: str) -> str:

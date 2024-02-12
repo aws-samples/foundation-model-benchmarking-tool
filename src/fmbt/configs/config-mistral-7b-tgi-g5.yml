@@ -7,9 +7,9 @@ general:
 aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on sagemaker
-  sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
+  # sagemaker_execution_role: arn:aws:iam::<your-aws-account-id>:role/<your-role-name>
   ## these are the buckets/resources you will create in your account below:
-  bucket: fmbttest ## add the name of your desired bucket
+  bucket: fmbt2039test ## add the name of your desired bucket
 
 ## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
 dir_paths:
@@ -22,7 +22,7 @@ dir_paths:
 
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
-    read_bucket: fmbt-read
+    read_bucket: fmbt-read2039
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
