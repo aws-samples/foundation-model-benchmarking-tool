@@ -61,7 +61,7 @@ Follow the prerequisites below to set up your environment before running the cod
 1. **Python 3.11**: Setup a Python 3.11 virtual environment and install `FMBT`.
     ```{.bash}
     python -m venv .fmbt
-    pip install fmbt==1.0.0
+    pip install fmbt
     ```
 
 1. **S3 buckets for test data, scripts, and results**: Create two buckets within your AWS account:
