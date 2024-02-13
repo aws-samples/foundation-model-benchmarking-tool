@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "fmbt"
-version = "1.0.7"
+name = "fmbench"
+version = "1.0.0"
 description ="Benchmark performance of **any model** on **any supported instance type** on Amazon SageMaker."
 authors = ["Amit Arora <aroraai@amazon.com>", "Madhur prashant <Madhurpt@amazon.com>"]
 readme = "README.md"
@@ -23,7 +23,7 @@ sagemaker="2.203.0"
 [tool.poetry.dev-dependencies]
 
 [[tool.poetry.packages]]
-include = "fmbt"
+include = "fmbench"
 from = "src"
 
 [build-system]
@@ -31,4 +31,4 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-fmbt = 'fmbt.main:main'
+fmbench = 'fmbench.main:main'

@@ -1,27 +1,16 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: 'Foundation model benchmarking tool'
 
-Metadata:
-  AWS::CloudFormation::Interface:
-    ParameterGroups:
-      - Label:
-          default: Required Parameters
-        Parameters:
-          - BedrockNotebookName
-    ParameterLabels:      
-      BedrockNotebookName:
-        default: Name of SageMaker Notebook Instance
-      
 Parameters:
   S3BucketNameForRead:
-    Default: sagemaker-fmbt-read
+    Default: sagemaker-fmbench-read
     Type: String
     Description: Name of the Amazon S3 bucket for holding datasets, scripts and tokenizer files. Account id would be suffixed automatically for uniqueness.
     MinLength: 1
     MaxLength: 63
     AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
   S3BucketNameForWrite:
-    Default: sagemaker-fmbt-write
+    Default: sagemaker-fmbench-write
     Type: String
     Description: Name of the Amazon S3 bucket for holding metrics and reports. Account id would be suffixed automatically for uniqueness.
     MinLength: 1
