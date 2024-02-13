@@ -1,0 +1,15 @@
+configs/config-llama2-13b-inf2-g5-p4d-v1.yml
+configs/config-llama2-13b-inf2-g5-p4d-quick.yml
+configs/config-llama2-70b-g5-p4d-tgi.yml
+configs/config-llama2-70b-g5-p4d-trt.yml
+configs/config-mistral-7b-tgi-g5.yml
+prompt_template/.keep
+scripts/.keep
+source_data/2wikimqa_e.jsonl
+source_data/2wikimqa.jsonl
+source_data/hotpotqa_e.jsonl
+source_data/hotpotqa.jsonl
+source_data/narrativeqa.jsonl
+source_data/triviaqa_e.jsonl
+source_data/triviaqa.jsonl
+source_data/LICENSE.txt
