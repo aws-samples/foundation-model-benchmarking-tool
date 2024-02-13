@@ -1,0 +1,261 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 'Foundation model benchmarking tool'
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Required Parameters
+        Parameters:
+          - BedrockNotebookName
+    ParameterLabels:      
+      BedrockNotebookName:
+        default: Name of SageMaker Notebook Instance
+      
+Parameters:
+  S3BucketNameForRead:
+    Default: sagemaker-fmbt-read
+    Type: String
+    Description: Name of the Amazon S3 bucket for holding datasets, scripts and tokenizer files. Account id would be suffixed automatically for uniqueness.
+    MinLength: 1
+    MaxLength: 63
+    AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
+  S3BucketNameForWrite:
+    Default: sagemaker-fmbt-write
+    Type: String
+    Description: Name of the Amazon S3 bucket for holding metrics and reports. Account id would be suffixed automatically for uniqueness.
+    MinLength: 1
+    MaxLength: 63
+    AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
+
+  
+Resources:
+
+  CodeRepository:
+    Type: AWS::SageMaker::CodeRepository
+    Properties:
+      GitConfig:
+          RepositoryUrl: https://github.com/aws-samples/foundation-model-benchmarking-tool
+
+  NotebookInstance:
+    Type: AWS::SageMaker::NotebookInstance
+    Properties:
+      NotebookInstanceName: !Sub ${AWS::StackName}-notebook
+      InstanceType: ml.t3.xlarge
+      RoleArn: !GetAtt NotebookRole.Arn
+      DefaultCodeRepository: !GetAtt CodeRepository.CodeRepositoryName
+
+  NotebookRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${AWS::StackName}-role
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+              - sagemaker.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+          - Effect: Allow
+            Principal:
+              Service:
+              - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+         
+  S3BucketForRead:
+    Type: AWS::S3::Bucket
+    Description: Amazon S3 bucket to hold source data
+    Properties:
+      BucketName: !Join
+      - '-'
+      - - !Ref S3BucketNameForRead
+        - !Sub ${AWS::AccountId}
+  
+  S3BucketForWrite:
+    Type: AWS::S3::Bucket
+    Description: Amazon S3 bucket to hold metrics and reports
+    Properties:
+      BucketName: !Join
+      - '-'
+      - - !Ref S3BucketNameForWrite
+        - !Sub ${AWS::AccountId}
+
+  cleanupReadBucketOnDelete:
+    Type: Custom::cleanupbucket
+    Properties:
+      ServiceToken: !GetAtt 'DeleteS3Bucket.Arn'
+      BucketName: !Ref S3BucketForRead
+    DependsOn: S3BucketForRead
+
+  cleanupWriteBucketOnDelete:
+    Type: Custom::cleanupbucket
+    Properties:
+      ServiceToken: !GetAtt 'DeleteS3Bucket.Arn'
+      BucketName: !Ref S3BucketForWrite
+    DependsOn: S3BucketForWrite
+
+  DeleteS3Bucket:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Description: "Delete all objects in S3 bucket"
+      Timeout: 30
+      Role: !GetAtt 'LambdaBasicExecutionRole.Arn'
+      Runtime: python3.9      
+      Code:
+        ZipFile: |
+          import json, boto3, logging
+          import cfnresponse
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+
+          def lambda_handler(event, context):
+              logger.info("event: {}".format(event))
+              try:
+                  bucket = event['ResourceProperties']['BucketName']
+                  logger.info("bucket: {}, event['RequestType']: {}".format(bucket,event['RequestType']))
+                  if event['RequestType'] == 'Delete':
+                      s3 = boto3.resource('s3')
+                      bucket = s3.Bucket(bucket)
+                      for obj in bucket.objects.filter():
+                          logger.info("delete obj: {}".format(obj))
+                          s3.Object(bucket.name, obj.key).delete()
+
+                  sendResponseCfn(event, context, cfnresponse.SUCCESS)
+              except Exception as e:
+                  logger.info("Exception: {}".format(e))
+                  sendResponseCfn(event, context, cfnresponse.FAILED)
+
+          def sendResponseCfn(event, context, responseStatus):
+              responseData = {}
+              responseData['Data'] = {}
+              cfnresponse.send(event, context, responseStatus, responseData, "CustomResourcePhysicalID")   
+
+  CustomSGResource:
+    Type: AWS::CloudFormation::CustomResource
+    Properties:
+      ServiceToken: !GetAtt 'CustomFunctionCopyContentsToS3Bucket.Arn'
+
+
+  LambdaBasicExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: /
+      Policies:
+        - PolicyName: S3Access
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - logs:CreateLogGroup
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: arn:aws:logs:*:*:*
+              - Effect: Allow
+                Action:
+                  - s3:*
+                Resource: '*'
+
+  
+  CustomFunctionCopyContentsToS3Bucket:
+    Type: AWS::Lambda::Function
+    Properties:
+      Handler: index.lambda_handler
+      Description: "Copies files from the Blog bucket to bucket in this account"
+      Timeout: 30
+      Role: !GetAtt 'LambdaBasicExecutionRole.Arn'
+      Runtime: python3.9
+      Environment:
+        Variables:
+          READ_BUCKET: !Ref S3BucketForRead
+          WRITE_BUCKET: !Ref S3BucketForWrite
+          MY_AWS_REGION: !Ref AWS::Region
+          ROLE_ARN: !GetAtt 'NotebookRole.Arn'
+      Code:
+        ZipFile: |
+          import os
+          import json
+          import boto3
+          import logging
+          import cfnresponse
+          
+          logger = logging.getLogger()
+          logger.setLevel(logging.INFO)
+          BLOGS_BUCKET = "aws-blogs-artifacts-public" 
+          SRC_PREFIX = "artifacts/ML-FMBT"
+          MANIFEST = os.path.join(SRC_PREFIX, "manifest.txt")
+          # s3://aws-blogs-artifacts-public/artifacts/ML-15729/docs/manifest.txt
+          def lambda_handler(event, context):
+            logger.info('got event {}'.format(event))
+            if event['RequestType'] == 'Delete':
+              logger.info(f"copy files function called at the time of stack deletion, skipping")
+              response = dict(files_copied=0, error=None)
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, response)
+              return
+            try:
+              s3 = boto3.client('s3')
+              obj = s3.get_object(Bucket=BLOGS_BUCKET, Key=MANIFEST)
+              manifest_data = obj['Body'].iter_lines()
+              ctr = 0
+              for f in manifest_data:
+                fname = f.decode()
+                is_config = fname.startswith("configs")
+                key = os.path.join(SRC_PREFIX, fname)
+                logger.info(f"going to read {key} from bucket={BLOGS_BUCKET}")
+                copy_source = { 'Bucket': BLOGS_BUCKET, 'Key': key }
+                dst_key = fname
+                read_bucket = os.environ.get('READ_BUCKET')
+                write_bucket = os.environ.get('WRITE_BUCKET')
+
+                # Retrieve the object from S3
+                if is_config:
+                    response = s3.get_object(Bucket=BLOGS_BUCKET, Key=key)
+                    content = response['Body'].read().decode('utf-8')
+                    content = content.format(region=os.environ.get('MY_AWS_REGION'),
+                                             role_arn=os.environ.get('ROLE_ARN'),
+                                             write_bucket=write_bucket,
+                                             read_bucket=read_bucket)
+                    s3.put_object(Bucket=read_bucket, Key=dst_key, Body=content)
+                    logger.info(f"going to copy config file after editing from {copy_source} -> s3://{read_bucket}/{dst_key}")
+                else:                    
+                    bucket = boto3.resource('s3').Bucket(read_bucket)
+                    logger.info(f"going to copy {copy_source} -> s3://{read_bucket}/{dst_key}")
+                    bucket.copy(copy_source, dst_key)
+                ctr += 1
+              response = dict(files_copied=ctr, error=None)
+              cfnresponse.send(event, context, cfnresponse.SUCCESS, response)
+            except Exception as e:
+              logger.error(e)
+              response = dict(files_copied=0, error=str(e))
+              cfnresponse.send(event, context, cfnresponse.FAILED, response)
+
+            return 
+  
+Outputs:
+  S3BucketForRead:
+    Value: !GetAtt S3BucketForRead.Arn
+  S3BucketForWrite:
+    Value: !GetAtt S3BucketForWrite.Arn
+  FilesCopied:
+    Description: Files copied
+    Value: !GetAtt 'CustomSGResource.files_copied'
+  FileCopyError:
+    Description: Files copy error
+    Value: !GetAtt 'CustomSGResource.error'
+  Region:
+    Description: Deployed Region
+    Value: !Ref AWS::Region
