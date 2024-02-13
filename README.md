@@ -72,14 +72,16 @@ Create configuration file
     pip install fmbench
     ```
 
-1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-13b on different inference stacks.
+1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-7b on different inference stacks. _This following benchmark test requires one instance each of `ml.g5.xlarge` and `ml.g5.2xlarge` instance types in your AWS account_.
 
     ```{.bash}
     account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
-    fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-13b-inf2-g5-p4d-quick.yml
+    fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml
     ```
 
-1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket.
+1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself.
+
+1. Download the metrics and report files from the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket or the SageMaker notebook to your machine for offline analysis.
 
 ### The DIY version (with gory details)
 
@@ -150,7 +152,7 @@ Follow the prerequisites below to set up your environment before running the cod
             ├── <test-name>/data/models
             ├── <test-name>/data/prompts
 
-### Steps to run
+#### Steps to run
 
 1. `pip install` the `FMBench` package from PyPi.
 

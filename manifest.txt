@@ -3,6 +3,7 @@ configs/config-llama2-13b-inf2-g5-p4d-quick.yml
 configs/config-llama2-70b-g5-p4d-tgi.yml
 configs/config-llama2-70b-g5-p4d-trt.yml
 configs/config-mistral-7b-tgi-g5.yml
+configs/config-llama2-7b-g5-quick.yml
 prompt_template/.keep
 scripts/.keep
 source_data/2wikimqa_e.jsonl
