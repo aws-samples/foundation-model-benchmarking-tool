@@ -1,4 +1,5 @@
 configs/config-llama2-13b-inf2-g5-p4d-v1.yml
+configs/config-llama2-13b-inf2-g5-p4d-quick.yml
 configs/config-llama2-70b-g5-p4d-tgi.yml
 configs/config-llama2-70b-g5-p4d-trt.yml
 configs/config-mistral-7b-tgi-g5.yml
