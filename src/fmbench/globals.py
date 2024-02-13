@@ -122,6 +122,7 @@ PLACE_HOLDER: int = -1705338041
 COUNTS_FNAME: str = "experiment_counts.csv"
 ERROR_RATES_FNAME: str = "error_rates.csv"
 RESULTS_DESC_MD_FNAME: str = "results.md"
+RESULTS_HTML_RENDERED: str = "R=results.html"
 SUMMARY_METRICS_W_PRICING_FNAME: str = "summary_metrics_w_pricing.csv"
 INSTANCE_PRICING_PER_HOUR_FNAME: str = "instance_pricing_per_hour.csv"
 SUMMARY_METRICS_FOR_DATASET_W_SCORES_FNAME: str = "summary_metrics_for_dataset_w_scores.csv"
@@ -163,3 +164,18 @@ RESULT_DESC: str = """The best option for staying within a latency budget of `{l
 RESULT_ROW: str = "|`{dataset}`|`{instance_type}`|{desc}|"
 
 RESULT_FAILURE_DESC: str = """This experiment did not find any combination of concurrency level and other configuration settings that could provide a response within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset."""
+
+PROMPT_TEMPLATE: str = """<s>[INST] <<SYS>>
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. If you don't know the answer just say that you don't know. Use three sentences maximum and keep the answer concise.
+<</SYS>>
+
+```
+{context}
+```
+
+Question: {question}
+
+[/INST]
+Answer:
+
+"""
