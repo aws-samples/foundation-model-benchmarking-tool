@@ -76,7 +76,6 @@ Create configuration file
 
     ```{.bash}
     account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
-    echo $account
     fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-13b-inf2-g5-p4d-quick.yml
     ```
 
