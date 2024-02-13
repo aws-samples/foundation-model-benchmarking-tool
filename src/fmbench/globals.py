@@ -117,6 +117,7 @@ class TRUNCATE_POLICY(str, Enum):
 
 # misc. metrics related
 PLACE_HOLDER: int = -1705338041
+RESULTS_DIR: str = "results"
 
 # metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"

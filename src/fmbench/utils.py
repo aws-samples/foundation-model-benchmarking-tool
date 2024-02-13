@@ -200,3 +200,34 @@ def list_s3_files(bucket, prefix, suffix='.json'):
     s3_client = boto3.client('s3')
     response = s3_client.list_objects_v2(Bucket=bucket, Prefix=nt_to_posix(prefix))
     return [item['Key'] for item in response.get('Contents', []) if item['Key'].endswith(suffix)]
+
+def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
+    """Downloads files from an S3 bucket and a specified prefix to a local directory."""
+    s3_client = boto3.client('s3')
+
+    # Ensure the local directory exists
+    if not os.path.exists(local_dir):
+        os.makedirs(local_dir)
+
+    # List and download files
+    try:
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+        if 'Contents' in response:
+            for obj in response['Contents']:                
+                file_key = obj['Key']
+                
+                local_file_key = file_key.replace(prefix, "")
+                logger.info(f"{local_file_key}, {os.path.dirname(local_file_key)}")
+                local_dir_to_create = os.path.join(local_dir, os.path.dirname(local_file_key))
+                os.makedirs(local_dir_to_create, exist_ok = True)
+                local_file_to_create = os.path.basename(local_file_key)
+                if file_key.endswith('/'):
+                    continue
+                
+                local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
+                s3_client.download_file(bucket_name, file_key, local_file_path)
+                logger.info(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
+        else:
+            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
+    except Exception as e:
+        logger.error(f"An error occurred while downloading from S3: {e}")
