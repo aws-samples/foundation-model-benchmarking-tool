@@ -1,4 +1,4 @@
-# Foundation Model benchmarking tool (FMBT) built using Amazon SageMaker
+# Foundation Model benchmarking tool (FMBench) built using Amazon SageMaker
 
 ![Foundation Model Benchmarking Tool](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true)
 
@@ -48,11 +48,11 @@ Create configuration file
     1. The report is generated in the [Markdown](https://en.wikipedia.org/wiki/Markdown) format and consists of plots, tables and text that highlight the key results and provide an overall recommendation on what is the best combination of instance type and serving stack to use for the model under stack for a dataset of interest.
     1. The report is created as an artifact of reproducible research so that anyone having access to the model, instance type and serving stack can run the code and recreate the same results and report.
 
-1. Multiple [configuration files](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbt/configs) that can be used as reference for benchmarking new models and instance types.
+1. Multiple [configuration files](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs) that can be used as reference for benchmarking new models and instance types.
 
 ## Getting started
 
-`FMBench` is available as a Python package on [PyPi](https://pypi.org/project/fmbt) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
+`FMBench` is available as a Python package on [PyPi](https://pypi.org/project/fmbench) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
 
 ### Quickstart
 
@@ -123,11 +123,11 @@ Follow the prerequisites below to set up your environment before running the cod
                 
                     Store these files in the `source_data` directory.
 
-            1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBench` already supports the [prompt template](src/fmbt/prompt_template/prompt_template.txt) compatible with `Llama` models.
+            1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBench` already supports the [prompt template](src/fmbench/prompt_template/prompt_template.txt) compatible with `Llama` models.
 
             1. **Scripts Directory**: `FMBench` also supports a `bring your own script (BYOS)` mode for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list. Here are the steps to use BYOS.
 
-                1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`2_deploy_model.ipynb`](./src/fmbt/2_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
+                1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`2_deploy_model.ipynb`](./src/fmbench/2_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
 
                 1. Place your deployment script in the `scripts` directory in your ***read bucket***. If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. Today, `FMBench` provides inference scripts for:
 
@@ -155,7 +155,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
 1. `pip install` the `FMBench` package from PyPi.
 
-1. Create a config file using one of the config files available [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbt/configs).
+1. Create a config file using one of the config files available [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs).
     1. The configuration file is a YAML file containing configuration for all steps of the benchmarking process. It is recommended to create a copy of an existing config file and tweak it as necessary to create a new one for your experiment.
 
 1. Create the read and write buckets as mentioned in the prerequisites section. Mention the respective directories for your read and write buckets within the config files.
@@ -165,10 +165,10 @@ Follow the prerequisites below to set up your environment before running the cod
     ```{.bash}
     # the config file path could be an S3 path and https path 
     # or even a path to a file on the local filesystem
-    fmbt --config-file \path\to\config\file
+    fmbench --config-file \path\to\config\file
     ```
 
-1. Depending upon the experiments in the config file, the `FMBench` run may take a few minutes to several hours. Once the run completes, you can find the report and metrics in the write S3 bucket set in the [config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbt/configs/config-mistral-7b-tgi-g5.yml#L12). The report is generated as a markdown file called `report.md` and is available in the metrics directory in the write S3 bucket.
+1. Depending upon the experiments in the config file, the `FMBench` run may take a few minutes to several hours. Once the run completes, you can find the report and metrics in the write S3 bucket set in the [config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/config-mistral-7b-tgi-g5.yml#L12). The report is generated as a markdown file called `report.md` and is available in the metrics directory in the write S3 bucket.
 
 ## Results
 
@@ -199,7 +199,7 @@ The following steps describe how to build the `FMBench` Python package.
 1. The `.whl` file is generated in the `dist` folder. Install the `.whl` in your current Python environment.
 
     ```{.bash}
-    pip install .\dist\fmbt-X.Y.Z.tar.gz
+    pip install .\dist\fmbench-X.Y.Z.tar.gz
     ```
 
 1. Run `FMBench` as usual through the `FMBench` CLI command.
@@ -208,13 +208,7 @@ The following steps describe how to build the `FMBench` Python package.
 
 The following enhancements are identified as next steps for `FMBench`.
 
-1. [**Highest priority**] Convert `FMBench` to a Python package and publish on [PyPi](https://pypi.org/).
-
 1. Containerize `FMBench` and provide instructions for running the container on EC2.
-
-1. Add code to determine the cost of running an entire experiment and include it in the final report. This would only include the cost of running the SageMaker endpoints based on hourly public pricing (the cost of running this code on a notebook or a EC2 is trivial in comparison and can be ignored).
-
-1. Support for a custom token counter. Currently only the LLama tokenizer is supported but we want to allow users to bring their own token counting logic for different models.
 
 1. Support for different payload formats that might be needed for different inference containers. Currently the HF TGI container, and DJL Deep Speed container on SageMaker both use the same format but in future other containers might need a different payload format.
 
