@@ -108,18 +108,18 @@ def run_notebooks(config_file: str) -> None:
         else:
             logging.info(f"Skipping {step} as it is not marked for execution")
 
-    logger.info(f"FMBT has completed the benchmarking process. Check S3 bucket \"{config['aws']['bucket']}\" for results")
+    logger.info(f"FMBench has completed the benchmarking process. Check S3 bucket \"{config['aws']['bucket']}\" for results")
 
 
-# main function to run all of the fmbt process through a single command via this python package
+# main function to run all of the fmbench process through a single command via this python package
 def main():
-    parser = argparse.ArgumentParser(description='Run FMBT with a specified config file.')
+    parser = argparse.ArgumentParser(description='Run FMBench with a specified config file.')
     parser.add_argument('--config-file', type=str, help='The S3 URI of your Config File', required=True)
     args = parser.parse_args()
     print(f"{args} = args")
 
     # Set the environment variable based on the parsed argument
-    os.environ["CONFIG_FILE_FMBT"] = args.config_file
+    os.environ["CONFIG_FILE_FMBENCH"] = args.config_file
     logger.info(f"Config file specified: {args.config_file}")
 
     # Proceed with the rest of your script's logic, passing the config file as needed

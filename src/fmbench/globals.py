@@ -8,7 +8,7 @@ from datetime import datetime
 
 current_working_directory = Path.cwd()
 
-CONFIG_FILEPATH_FILE: str = current_working_directory / 'fmbt' / 'config_filepath.txt'
+CONFIG_FILEPATH_FILE: str = current_working_directory / 'fmbench' / 'config_filepath.txt'
 
 # S3 client initialization
 s3_client = boto3.client('s3')
@@ -17,7 +17,7 @@ s3_client = boto3.client('s3')
 arn_string = boto3.client('sts').get_caller_identity().get('Arn')
 ROLE_NAME = arn_string.split('/')[-1]
 
-current_config_file = os.environ.get("CONFIG_FILE_FMBT")
+current_config_file = os.environ.get("CONFIG_FILE_FMBENCH")
 ## if var is true, use that from cli
 if current_config_file is not None:
     CONFIG_FILE = current_config_file
@@ -92,7 +92,7 @@ SOURCE_DATA = config['s3_read_data']['source_data_prefix']
 PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 
 ## Initialize the scripts directory
-SCRIPTS_DIR: str = "fmbt/scripts"
+SCRIPTS_DIR: str = "fmbench/scripts"
 
 ## METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']

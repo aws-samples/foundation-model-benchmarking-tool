@@ -9,7 +9,7 @@ import posixpath
 import unicodedata
 from typing import Dict
 from pathlib import Path
-from fmbt import globals
+from fmbench import globals
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
 
