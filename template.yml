@@ -95,7 +95,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       Description: "Delete all objects in S3 bucket"
-      Timeout: 30
+      Timeout: 300
       Role: !GetAtt 'LambdaBasicExecutionRole.Arn'
       Runtime: python3.9      
       Code:
