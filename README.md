@@ -69,7 +69,7 @@ Create configuration file
     ```{.bash}
     conda create --name fmbench_python311 -y python=3.11 ipykernel
     source activate fmbench_python311;
-    pip install fmbench
+    pip install -U fmbench
     ```
 
 1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-7b on different inference stacks.
