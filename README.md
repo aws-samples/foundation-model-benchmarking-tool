@@ -72,7 +72,11 @@ Create configuration file
     pip install fmbench
     ```
 
-1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-7b on different inference stacks. _This following benchmark test requires one instance each of `ml.g5.xlarge` and `ml.g5.2xlarge` instance types in your AWS account_.
+1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-7b on different inference stacks.
+    
+    1. The following benchmark test requires one instance each of `ml.g5.xlarge` and `ml.g5.2xlarge` instance types in your AWS account. 
+    
+    1. It uses a simple relationship of 750 words equals 1000 tokens, to get a more accurate representation of token counts use the `Llama2 tokenizer` (instructions are provided in the next section).
 
     ```{.bash}
     account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
