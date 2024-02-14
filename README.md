@@ -72,20 +72,18 @@ Create configuration file
     pip install -U fmbench
     ```
 
-1. Now you are ready to `fmbench` with the following command line. This would take about ~30 minutes to complete and will produce a report comparing the performance of Llama2-7b on different inference stacks.
+1. Now you are ready to `fmbench` with the following command line. We will use a sample config file placed in the S3 bucket by the CloudFormation stack for a quick first run.
     
-    1. The following benchmark test requires one instance each of `ml.g5.xlarge` and `ml.g5.2xlarge` instance types in your AWS account. 
+    1. We benchmark performance for the `Llama2-7b` model on a `ml.g5.xlarge` and a `ml.g5.2xlarge` instance type, using the `huggingface-pytorch-tgi-inference` inference container. This test would take about 30 minutes to complete and cost about $0.20.
     
-    1. It uses a simple relationship of 750 words equals 1000 tokens, to get a more accurate representation of token counts use the `Llama2 tokenizer` (instructions are provided in the next section).
+    1. It uses a simple relationship of 750 words equals 1000 tokens, to get a more accurate representation of token counts use the `Llama2 tokenizer` (instructions are provided in the next section). ***It is strongly recommended that for more accurate results on token throughput you use a tokenizer specific to the model you are testing rather than the default tokenizer. See instructions provided later in this document on how to use a custom tokenizer***.
 
     ```{.bash}
     account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
     fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml
     ```
 
-1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself.
-
-1. Download the metrics and report files from the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket or the SageMaker notebook to your machine for offline analysis.
+1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
 
 ### The DIY version (with gory details)
 
