@@ -220,12 +220,8 @@ def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
                 local_file_key = file_key.replace(prefix, "")
                 parent_dir_in_s3 = os.path.dirname(local_file_key)
                 logger.info(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
-                if parent_dir_in_s3 != "/":
-                    local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3)
-                    logger.info(f"parent_dir_in_s3 != backslash, local_dir_to_create={local_dir_to_create}")
-                else:
-                    local_dir_to_create = local_dir 
-                    logger.info(f"set local_dir_to_create to local_dir")
+                # the first char for parent_dir_in_s3 would always be a '/' so skip that
+                local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
                 os.makedirs(local_dir_to_create, exist_ok = True)
                 logger.info(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
                 local_file_to_create = os.path.basename(local_file_key)
