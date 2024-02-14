@@ -14,3 +14,4 @@ source_data/narrativeqa.jsonl
 source_data/triviaqa_e.jsonl
 source_data/triviaqa.jsonl
 source_data/LICENSE.txt
+source_data/THIRD_PARTY_LICENSES.txt
