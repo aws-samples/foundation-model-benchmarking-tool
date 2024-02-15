@@ -1,9 +1,12 @@
 [tool.poetry]
 name = "fmbench"
-version = "1.0.18"
+version = "1.0.19"
 description ="Benchmark performance of **any model** on **any supported instance type** on Amazon SageMaker."
 authors = ["Amit Arora <aroraai@amazon.com>", "Madhur prashant <Madhurpt@amazon.com>"]
-readme = "README.md"
+readme = "README_pypi.md"
+license = "MIT"
+repository = "https://github.com/aws-samples/foundation-model-benchmarking-tool"
+keywords = ["benchmarking", "sagemaker", "generative-ai", "foundation-models"]
 
 [tool.poetry.dependencies]
 python = "^3.11"
