@@ -209,19 +209,7 @@ The following steps describe how to build the `FMBench` Python package.
 
 ## Pending enhancements
 
-The following enhancements are identified as next steps for `FMBench`.
-
-1. Containerize `FMBench` and provide instructions for running the container on EC2.
-
-1. Support for different payload formats that might be needed for different inference containers. Currently the HF TGI container, and DJL Deep Speed container on SageMaker both use the same format but in future other containers might need a different payload format.
-
-1. Emit live metrics so that they can be monitored through Grafana via live dashboard.
-
-1. Allow users to publish their experiment configs and results by doing a POST to an AWS Lambda that writes results to a common S3 bucket that can serve as storage for a simple website.
-
-1. Create a leaderboard of model benchmarks.
-
-View the [ISSUES](https://github.com/aws-samples/foundation-model-benchmarking-tool/issues) on github and add any you might think be an beneficial iteration to this benchmarking harness.
+View the [ISSUES](https://github.com/aws-samples/foundation-model-benchmarking-tool/issues) on GitHub and add any you might think be an beneficial iteration to this benchmarking harness.
 
 ## Security
 
