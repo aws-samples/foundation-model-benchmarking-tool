@@ -197,9 +197,24 @@ def get_s3_object(bucket: str, key: str) -> str:
 
 # Function to list files in S3 bucket with a specific prefix
 def list_s3_files(bucket, prefix, suffix='.json'):
+    filter_key_by_suffix = lambda k,s: True if s is None else k.endswith(s)
     s3_client = boto3.client('s3')
-    response = s3_client.list_objects_v2(Bucket=bucket, Prefix=nt_to_posix(prefix))
-    return [item['Key'] for item in response.get('Contents', []) if item['Key'].endswith(suffix)]
+    next_continuation_token = None
+    
+    return_list = []
+    while True:
+        if next_continuation_token is not None:
+            response = s3_client.list_objects_v2(Bucket=bucket, Prefix=nt_to_posix(prefix), ContinuationToken=next_continuation_token)
+        else:
+            response = s3_client.list_objects_v2(Bucket=bucket, Prefix=nt_to_posix(prefix))
+        return_list += [item['Key'] for item in response.get('Contents', []) if filter_key_by_suffix(item['Key'], suffix) is True]
+        logger.info(f"found {len(return_list)} items in bucket={bucket}, prefix={prefix}, suffix={suffix}")
+        if response['IsTruncated'] is True:            
+            next_continuation_token = response['NextContinuationToken']
+        else:
+            break
+    logger.info(f"there are total of {len(return_list)} items in bucket={bucket}, prefix={prefix}, suffix={suffix}")
+    return return_list
 
 def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
@@ -213,27 +228,24 @@ def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
     # List and download files
     try:
         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        if 'Contents' in response:
-            for obj in response['Contents']:                
-                file_key = obj['Key']
-                logger.info(f"file_key={file_key}, prefix={prefix}") 
-                local_file_key = file_key.replace(prefix, "")
-                parent_dir_in_s3 = os.path.dirname(local_file_key)
-                logger.info(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
-                # the first char for parent_dir_in_s3 would always be a '/' so skip that
-                local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
-                os.makedirs(local_dir_to_create, exist_ok = True)
-                logger.info(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
-                local_file_to_create = os.path.basename(local_file_key)
-                if file_key.endswith('/'):
-                    logger.info(f"skipping file_key={file_key}")
-                    continue
-                
-                local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
-                logger.info(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
-                s3_client.download_file(bucket_name, file_key, local_file_path)
-                logger.info(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
-        else:
-            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
+        key_list =  list_s3_files(bucket_name, prefix, suffix=None)
+        for file_key in key_list:
+            logger.info(f"file_key={file_key}, prefix={prefix}") 
+            local_file_key = file_key.replace(prefix, "")
+            parent_dir_in_s3 = os.path.dirname(local_file_key)
+            logger.info(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
+            # the first char for parent_dir_in_s3 would always be a '/' so skip that
+            local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
+            os.makedirs(local_dir_to_create, exist_ok = True)
+            logger.info(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
+            local_file_to_create = os.path.basename(local_file_key)
+            if file_key.endswith('/'):
+                logger.info(f"skipping file_key={file_key}")
+                continue
+            
+            local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
+            logger.info(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
+            s3_client.download_file(bucket_name, file_key, local_file_path)
+            logger.info(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
     except Exception as e:
         logger.error(f"An error occurred while downloading from S3: {e}")
