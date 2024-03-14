@@ -18,7 +18,7 @@ logger.setLevel(logging.INFO)
 
 # The files in LongBench contain nonstandard or irregular Unicode.
 # For compatibility and safety we normalize them.
-def _normalize(text, form='NFC'):
+def normalize(text, form='NFC'):
     return unicodedata.normalize(form, text)
 
 def _download_from_s3(bucket_name, prefix, local_dir):
@@ -70,7 +70,7 @@ class CustomTokenizer:
         else:
             return int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
     
-_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
+tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
 
 # utility functions
 def load_config(config_file) -> Dict:
@@ -117,8 +117,8 @@ def load_config(config_file) -> Dict:
 
 
 def count_tokens(text: str) -> int:
-    global _tokenizer
-    return _tokenizer.count_tokens(text)
+    global tokenizer
+    return tokenizer.count_tokens(text)
 
 # def process_item(item, prompt_fmt: str) -> Dict:
 #     question = _normalize(item.input)
@@ -136,17 +136,17 @@ def count_tokens(text: str) -> int:
 #         "context_len": _tokenizer.count_tokens(context),
 #     }
 
-def process_item(item, prompt_fmt: str) -> Dict:
-    text = _normalize(item.text)
-    prompt = prompt_fmt.format(text=text)
-    prompt_len = count_tokens(prompt)
-    ## generalize this further...
-    ## bring your own script (if different) - bring your count token and your script
-    return {
-        "prompt": prompt,
-        "prompt_len": prompt_len,
-        "text_len": _tokenizer.count_tokens(text),
-    }
+# def process_item(item, prompt_fmt: str) -> Dict:
+#     text = normalize(item.text)
+#     prompt = prompt_fmt.format(text=text)
+#     prompt_len = count_tokens(prompt)
+#     ## generalize this further...
+#     ## bring your own script (if different) - bring your count token and your script
+#     return {
+#         "prompt": prompt,
+#         "prompt_len": prompt_len,
+#         "text_len": tokenizer.count_tokens(text),
+#     }
 
 def nt_to_posix(p: str) -> str:
     return p.replace("\\", "/")

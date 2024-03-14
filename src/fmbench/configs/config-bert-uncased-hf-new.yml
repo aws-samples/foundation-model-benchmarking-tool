@@ -23,6 +23,10 @@ dir_paths:
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
     read_bucket: sagemaker-fmbench-read-121797993273
+    prompt_preprocess_dir: prompt_preprocess_scripts
+    preprocess_func_files:
+    - bert_payload_preprocess.py
+    - llama_payload_preprocess.py
     inf_scripts_prefix: inference_scripts
     inference_script_files:
     - llama_mistral_inference.py ## inference for llama + mistral
@@ -37,9 +41,9 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    1_generate_data.ipynb: no ## set to yes if you are using the long bench data. if not, set to no, and enter your custom data pre processing script 
-    2_deploy_model.ipynb: no
-    3_run_inference.ipynb: no
+    1_generate_data.ipynb: yes ## set to yes if you are using the long bench data. if not, set to no, and enter your custom data pre processing script 
+    2_deploy_model.ipynb: yes
+    3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: no
 
@@ -49,6 +53,9 @@ datasets:
     min_length_in_tokens: 1
     max_length_in_tokens: 500
     payload_file: payload_en_1-500.jsonl
+
+## represents the preprocess function that takes each of the dataset payload and processes each row as a payload in the necessary format
+process_prompt_function: bert_payload_preprocess.py ## adding it as a separate section for now since we need to focus on generating prompt payloads for one model type in one config file
 
 metrics:
   dataset_of_interest: en_1-500

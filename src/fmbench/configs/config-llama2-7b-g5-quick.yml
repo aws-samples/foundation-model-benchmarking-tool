@@ -22,10 +22,14 @@ dir_paths:
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
     read_bucket: sagemaker-fmbench-read-121797993273
+    prompt_preprocess_dir: prompt_preprocess_scripts
+    preprocess_func_files:
+    - bert_payload_preprocess.py
+    - llama_payload_preprocess.py
     inf_scripts_prefix: inference_scripts
     inference_script_files:
-    - llama_mistral_inference.py
-    - bert_inference.py
+    - llama_mistral_inference.py ## inference for llama + mistral
+    - bert_inference.py ## inference for bert based tc models
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
@@ -68,6 +72,9 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
+
+## represents the preprocess function that takes each of the dataset payload and processes each row as a payload in the necessary format
+process_prompt_function: llama_payload_preprocess.py ## adding it as a separate section for now since we need to focus on generating prompt payloads for one model type in one config file
 
 metrics:
   dataset_of_interest: en_1000-2000
