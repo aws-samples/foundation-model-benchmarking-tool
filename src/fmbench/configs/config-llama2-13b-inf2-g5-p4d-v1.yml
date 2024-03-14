@@ -21,14 +21,19 @@ dir_paths:
 
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
-    read_bucket: {read_bucket}
+    read_bucket: sagemaker-fmbench-read-218208277580
+    inf_scripts_prefix: inference_scripts
+    inference_script_files:
+    - llama_mistral_inference.py
+    - bert_inference.py
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
-    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template.txt ## add your desired prompt template type
+
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
