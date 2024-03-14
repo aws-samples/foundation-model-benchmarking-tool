@@ -120,20 +120,32 @@ def count_tokens(text: str) -> int:
     global _tokenizer
     return _tokenizer.count_tokens(text)
 
+# def process_item(item, prompt_fmt: str) -> Dict:
+#     question = _normalize(item.input)
+#     context = _normalize(item.context)
+#     prompt = prompt_fmt.format(question=question, context=context)
+#     prompt_len = count_tokens(prompt)
+#     ## generalize this further...
+#     ## bring your own script (if different) - bring your count token and your script
+#     return {
+#         "question": question,
+#         "context": context,
+#         "prompt": prompt,
+#         "prompt_len": prompt_len,
+#         "question_len": _tokenizer.count_tokens(question),
+#         "context_len": _tokenizer.count_tokens(context),
+#     }
+
 def process_item(item, prompt_fmt: str) -> Dict:
-    question = _normalize(item.input)
-    context = _normalize(item.context)
-    prompt = prompt_fmt.format(question=question, context=context)
+    text = _normalize(item.text)
+    prompt = prompt_fmt.format(text=text)
     prompt_len = count_tokens(prompt)
     ## generalize this further...
     ## bring your own script (if different) - bring your count token and your script
     return {
-        "question": question,
-        "context": context,
         "prompt": prompt,
         "prompt_len": prompt_len,
-        "question_len": _tokenizer.count_tokens(question),
-        "context_len": _tokenizer.count_tokens(context),
+        "text_len": _tokenizer.count_tokens(text),
     }
 
 def nt_to_posix(p: str) -> str:

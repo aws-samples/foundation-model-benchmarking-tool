@@ -7,9 +7,9 @@ general:
 aws:
   region: us-east-1
   # uncomment and set the Role ARN if not running on sagemaker
-  sagemaker_execution_role: arn:aws:iam::218208277580:role/fmbench-newstack-role
+  sagemaker_execution_role: arn:aws:iam::121797993273:role/fmbench-role
   ## these are the buckets/resources you will create in your account below:
-  bucket: sagemaker-fmbench-write-218208277580 ## add the name of your desired bucket
+  bucket: sagemaker-fmbench-write-121797993273 ## add the name of your desired bucket
 
 ## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
 dir_paths:
@@ -22,7 +22,7 @@ dir_paths:
 
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
-    read_bucket: sagemaker-fmbench-read-218208277580
+    read_bucket: sagemaker-fmbench-read-121797993273
     inf_scripts_prefix: inference_scripts
     inference_script_files:
     - llama_mistral_inference.py ## inference for llama + mistral
@@ -49,26 +49,6 @@ datasets:
     min_length_in_tokens: 1
     max_length_in_tokens: 500
     payload_file: payload_en_1-500.jsonl
-  - language: en
-    min_length_in_tokens: 500
-    max_length_in_tokens: 1000
-    payload_file: payload_en_500-1000.jsonl
-  - language: en
-    min_length_in_tokens: 1000
-    max_length_in_tokens: 2000
-    payload_file: payload_en_1000-2000.jsonl
-  - language: en
-    min_length_in_tokens: 2000
-    max_length_in_tokens: 3000
-    payload_file: payload_en_2000-3000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
 
 metrics:
   dataset_of_interest: en_1-500
@@ -77,6 +57,7 @@ metrics:
     latenct_wt: 0.35
   
 pricing:
+  ml.m5.xlarge: 0.23
   ml.g5.2xlarge: 1.515
   ml.g5.12xlarge: 7.09
   ml.g5.24xlarge: 10.18
@@ -86,8 +67,8 @@ pricing:
   ml.p4d.24xlarge: 37.688
   
 inference_parameters:
-  ContentType: "application/json"
-  Accept: "application/json"
+  ContentType: "application/x-text"
+  Accept: "application/json;verbose"
 
 # Model configurations
 experiments:
@@ -107,8 +88,8 @@ experiments:
 
     concurrency_levels:
     - 1
-    - 2
-    - 4
+    # - 2
+    # - 4
     # - 6
     # - 8
     accept_eula: true
