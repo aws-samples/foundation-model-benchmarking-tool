@@ -22,6 +22,7 @@ from pathlib import Path
 from fmbench.utils import *
 from fmbench.globals import *
 from tomark import Tomark
+from typing import Optional
 from sys import displayhook
 from datetime import datetime
 from datetime import timezone
@@ -43,11 +44,13 @@ logger = logging.getLogger(__name__)
 config = load_config(CONFIG_FILE)
 logger.info(json.dumps(config, indent=2))
 
+## ------- reading the metrics from the inference file where all info is stored ----------------------------
 metrics_path_file: str = os.path.join(METADATA_DIR, METRICS_PATH_FNAME)
 METRICS_DIR: str = Path(metrics_path_file).read_text().strip()
 logger.info(f"metrics_path_file={metrics_path_file}, METRICS_DIR={METRICS_DIR}")
 file_path = os.path.join(METRICS_DIR, config["results"]["per_inference_request_file"])
 logger.info(f"File path containing the metrics per inference folder --> {file_path}")
+## ---------------------------------------------------------------------------------------------------------
 
 # Read the file from S3
 try:    
@@ -59,7 +62,7 @@ try:
 except Exception as e:
     logger.error(f"Error reading from S3: {e}")
 
-df_per_inference.head()
+logger.info(f"the per inference file stored as df here..... {df_per_inference.head()}")
 
 # Rename a column in the dataframe for clarity of the instance parameter of the model used
 df_per_inference = df_per_inference.rename(columns={"instance_type": "instance"})
@@ -93,8 +96,7 @@ buffer.seek(0)  # Rewind buffer to the beginning
 write_to_s3(buffer.getvalue(), BUCKET_NAME, "", METRICS_DIR, TOKENS_VS_LATENCY_PLOT_FNAME)
 logger.info(f"Plot saved to s3://{BUCKET_NAME}/{METRICS_DIR}/{TOKENS_VS_LATENCY_PLOT_FNAME}")
 
-# Optionally, display the plot
-sns_plot
+## define all metrics file path and read it now to create visualizations
 all_metrics_fpath = os.path.join(METRICS_DIR, config["results"]["all_metrics_file"])
 
 # Read the file from S3
@@ -107,11 +109,10 @@ try:
     df_all_metrics.head()
 except Exception as e:
     logger.error(f"Error reading from S3: {e}")
-
-df_all_metrics.head()
+logger.info(f"the all metrics file stored as df..... {df_all_metrics.head()}")
 
 ## displaying all of the available columns in the all metrics dataframe
-df_all_metrics.columns
+logger.info(f"columns generated for the all metrics generation..... {df_all_metrics.columns}")
 
 
 # #### Display the number of experiment names within the metrics dataframe, instance types and models
@@ -155,11 +156,10 @@ counts_s3_path = os.path.join(METRICS_DIR, COUNTS_FNAME)
 # Write the CSV data to S3
 write_to_s3(csv_data, BUCKET_NAME, "", METRICS_DIR, COUNTS_FNAME)
 logger.info(f"Counts DataFrame saved to s3://{BUCKET_NAME}/{counts_s3_path}")
+logger.info(df_counts)
 
-df_counts
 
-
-# #### Display the mean error rates for each experiment with different congifurations using the same columns of interest used in the cell above
+## Display the mean error rates for each experiment with different congifurations using the same columns of interest used in the cell above
 df_error_rates = df_all_metrics.groupby(group_by_cols).agg({'error_rate': 'mean'}).reset_index()
 df_error_rates = df_error_rates.round(2)
 
@@ -197,6 +197,8 @@ g.fig.suptitle("Inference error rates for different concurrency levels and insta
 g = g.set_ylabels("Error rate (failed / total inferences)")
 g = g.set_xlabels("Concurrency level")
 
+# Create a bytes buffer to save the plot
+buffer = io.BytesIO()
 sns_plot.savefig(buffer, format='png')
 buffer.seek(0)
 
@@ -204,11 +206,8 @@ buffer.seek(0)
 write_to_s3(buffer.getvalue(), BUCKET_NAME, "", METRICS_DIR, ERROR_RATES_PLOT_FNAME)
 logger.info(f"Plot saved to s3://{BUCKET_NAME}/{METRICS_DIR}/{ERROR_RATES_PLOT_FNAME}")
 
-## Display the plot 
-sns_plot
 
-
-# #### Check for the df elements that have error rates above 0
+## Check for the df elements that have error rates above 0
 df_error_rates_nz = df_error_rates[df_error_rates.error_rate > 0]
 df_error_rates_nz
 
@@ -270,13 +269,15 @@ sns_plot = sns_plot.set_ylabels("Latency (seconds)")
 sns_plot = sns_plot.set_xlabels("Concurrency level")
 sns_plot.fig.subplots_adjust(top=0.8)
 
-sns_plot.savefig(buffer, format='png')
+## ensuring a fresh buffer is used here
+buffer = io.BytesIO()  
+sns_plot.figure.savefig(buffer, format='png')
 buffer.seek(0)
 
 # Write the plot to S3
 write_to_s3(buffer.getvalue(), BUCKET_NAME, "", METRICS_DIR, CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_FNAME)
 logger.info(f"Plot saved to s3://{BUCKET_NAME}/{METRICS_DIR}/{CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_FNAME}")
-
+plt.close() 
 
 df_pricing = pd.DataFrame.from_dict(config['pricing'], orient='index').reset_index()
 df_pricing.columns = ['instance_type', 'price_per_hour']
@@ -354,6 +355,9 @@ multiplier: int = 10 if int(min_price_per_tx * count) == 0 else 1
 
 price_tx_col_name = f"price_per_tx_{count*multiplier}_txn"
 
+# This created a FacetGrid for plotting multiple scatter plots based on 'instance' and 'concurrency' categories
+g = sns.FacetGrid(df_per_inference, col="instance", row="concurrency", hue="instance", height=3.5, aspect=1.25)
+
 df_summary_metrics_best_option_instance_type[price_tx_col_name] = df_summary_metrics_best_option_instance_type.price_per_txn * 10000
 df_summary_metrics_best_option_instance_type[price_tx_col_name] = df_summary_metrics_best_option_instance_type[price_tx_col_name].astype(int)
 df_summary_metrics_best_option_instance_type = df_summary_metrics_best_option_instance_type.sort_values(by=price_tx_col_name)
@@ -379,16 +383,17 @@ for r in df_summary_metrics_best_option_instance_type.iterrows():
        ha = "center", # Horizontal alignment
        va = "center") # Vertical alignment 
 
-business_summary_plot_fpath: str = os.path.join(METRICS_DIR, BUSINESS_SUMMARY_PLOT_FNAME)
-sns_plot.figure.savefig(buffer, format='png')
+## ensuring a fresh buffer is used here
+buffer = io.BytesIO()
+g.savefig(buffer, format='png')
 buffer.seek(0)
+
+business_summary_plot_fpath: str = os.path.join(METRICS_DIR, BUSINESS_SUMMARY_PLOT_FNAME)
 
 # Write the plot to S3
 write_to_s3(buffer.getvalue(), BUCKET_NAME, "", "", business_summary_plot_fpath)
 logger.info(f"Plot saved to s3://{BUCKET_NAME}/{business_summary_plot_fpath}")
-
-## Display the plot 
-sns_plot
+plt.close()
 
 displayhook(df_summary_metrics_best_option_instance_type)
 
@@ -451,12 +456,11 @@ business_summary: str = BUSINESS_SUMMARY.format(model_name=config['general']['mo
                                               cost_table=cost_mkdn_table,
                                               total_cost_as_str=f"${df_cost_metrics.cost.sum():.2f}"
                                               )
-business_summary
+logger.info(f"fmbench is now recording the business summary for your run: {business_summary}")
 
 
-from typing import Optional
+
 dttm = str(datetime.utcnow())
-
 overall_results_md = OVERALL_RESULTS_MD.format(dttm=dttm,
                                                business_summary=business_summary)
 results_group_cols: List[str] = ['instance_type', 'payload_file']
