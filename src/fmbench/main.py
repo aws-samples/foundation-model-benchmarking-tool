@@ -8,11 +8,10 @@ import boto3
 import logging
 import argparse
 import requests
-import papermill as pm
+import subprocess  # Added for executing .py files
 from typing import Dict
 from pathlib import Path
 from datetime import datetime
-from nbformat import NotebookNode
 
 # Setup logging
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
@@ -57,74 +56,54 @@ def read_config(config_file_path: str) -> Dict:
     logger.info(f"loaded configuration: {json.dumps(config_content, indent=2)}")
     return config_content
 
-# Function to handle cell outputs
-def output_handler(cell: NotebookNode, _):
-    if cell.cell_type == 'code':
-        for output in cell.get('outputs', []):
-            if output.output_type == 'stream':
-                print(output.text, end='')
-
-
-def run_notebooks(config_file: str) -> None:
-    # Assume `read_config` function is defined elsewhere to load the config
+# Adjusting this function to handle .py files as steps to each portion of fmbench
+def run_scripts(config_file: str) -> None:
     config = read_config(config_file)
 
     current_directory = Path(__file__).parent
     logging.info(f"Current directory is --> {current_directory}")
 
-    output_directory = current_directory / "executed_notebooks"
+    output_directory = current_directory / "executed_scripts"
     if not output_directory.exists():
         output_directory.mkdir()
 
     for step, execute in config['run_steps'].items():
         if execute:
-            notebook_path = current_directory / step
-            logging.info(f"Current step file --> {notebook_path.stem}")
-
-            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
-            output_file = output_directory / f"{notebook_path.stem}_{timestamp}.ipynb"
+            script_path = current_directory / f"{step}.py"  # Adjusted for .py file
+            logging.info(f"Current step file --> {script_path.stem}")
 
             try:
-                logging.info(f"Executing {notebook_path.name}...")
+                logging.info(f"Executing {script_path.name}...")
                 logger.info(f"THE STEP BEING EXECUTED NOW: {step}")
-                pm.execute_notebook(
-                    input_path=str(notebook_path),
-                    output_path=str(output_file),
-                    parameters={},
-                    report_mode=True,  
-                    progress_bar=True,
-                    stdout_file=None, 
-                    stderr_file=None,
-                    log_output=True,
-                    output_handler=output_handler 
+                # Using subprocess to run the .py file and capture output
+                result = subprocess.run(
+                    ["python", str(script_path)], capture_output=True, text=True, check=True
                 )
+                logger.info(f"Output: {result.stdout}")
+                logger.info(f"Error (if any): {result.stderr}")
                 logger.info(f"STEP EXECUTION COMPLETED: {step}")
             except FileNotFoundError as e:
                 logging.error(f"File not found: {e.filename}")
                 sys.exit(1)
-            except Exception as e:
-                logging.error(f"Failed to execute {step}: {str(e)}")
+            except subprocess.CalledProcessError as e:
+                logging.error(f"Failed to execute {step}: {e.stderr}")
                 sys.exit(1)
         else:
             logging.info(f"Skipping {step} as it is not marked for execution")
 
-    logger.info(f"FMBench has completed the benchmarking process. Check S3 bucket \"{config['aws']['bucket']}\" for results")
+    logger.info(f"FMBench has completed the benchmarking process. Check the output for results")
 
-
-# main function to run all of the fmbench process through a single command via this python package
+# Adjust the main function as necessary
 def main():
     parser = argparse.ArgumentParser(description='Run FMBench with a specified config file.')
-    parser.add_argument('--config-file', type=str, help='The S3 URI of your Config File', required=True)
+    parser.add_argument('--config-file', type=str, help='The S3 URI or local path of your Config File', required=True)
     args = parser.parse_args()
     print(f"{args} = args")
 
-    # Set the environment variable based on the parsed argument
     os.environ["CONFIG_FILE_FMBENCH"] = args.config_file
     logger.info(f"Config file specified: {args.config_file}")
 
-    # Proceed with the rest of your script's logic, passing the config file as needed
-    run_notebooks(args.config_file)    
+    run_scripts(args.config_file)  # Call the updated function
 
 if __name__ == "__main__":
     main()
-

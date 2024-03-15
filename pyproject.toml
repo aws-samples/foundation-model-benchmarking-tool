@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fmbench"
-version = "1.0.22"
+version = "1.0.23"
 description ="Benchmark performance of **any model** on **any supported instance type** on Amazon SageMaker."
 authors = ["Amit Arora <aroraai@amazon.com>", "Madhur prashant <Madhurpt@amazon.com>"]
 readme = "README_pypi.md"
