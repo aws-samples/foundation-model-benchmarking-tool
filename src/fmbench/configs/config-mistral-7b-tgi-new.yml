@@ -45,7 +45,7 @@ run_steps:
     2_deploy_model: yes
     3_run_inference: yes
     4_model_metric_analysis: yes
-    5_cleanup: yes
+    5_cleanup: no
 
 datasets:
   - language: en    
@@ -101,13 +101,13 @@ inference_parameters:
 
 # Model configurations
 experiments:
-  - name: mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+  - name: mistral-7b-g5-huggingface-pytorch-tgi
     model_id: huggingface-llm-mistral-7b
     model_version: "*"
     model_name: mistral7b
     ep_name: lmistral7b-g5-2xlarge
     instance_type: "ml.g5.2xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazon aws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
