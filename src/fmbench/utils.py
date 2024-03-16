@@ -7,9 +7,9 @@ import logging
 import requests
 import posixpath
 import unicodedata
-from typing import Dict
 from pathlib import Path
 from fmbench import globals
+from typing import Dict, List
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
 
@@ -80,6 +80,17 @@ def load_config(config_file) -> Dict:
     :param config_file: Path to the local file or S3 URI (s3://bucket/key)
     :return: Dictionary with the loaded configuration
     """
+    session = boto3.session.Session()
+    caller = boto3.client('sts').get_caller_identity()
+    account_id = caller.get('Account')
+    arn_string = caller.get('Arn')
+
+    # check if the file is still parameterized and if so replace the parameters with actual values
+    # if the file is not parameterized then the following statements change nothing
+    args = dict(region=session.region_name,
+                role_arn=arn_string,
+                write_bucket=f"sagemaker-fmbench-write-{account_id}",
+                read_bucket=f"sagemaker-fmbench-read-{account_id}")
 
     # Check if config_file is an S3 URI
     if config_file.startswith("s3://"):
@@ -90,7 +101,8 @@ def load_config(config_file) -> Dict:
 
             # Get object from S3 and load YAML
             response = s3_client.get_object(Bucket=bucket, Key=key)
-            return yaml.safe_load(response["Body"])
+            content = response["Body"]
+            
         except NoCredentialsError:
             print("AWS credentials not found.")
             raise
@@ -102,45 +114,46 @@ def load_config(config_file) -> Dict:
         try:
             response = requests.get(config_file)
             response.raise_for_status()  # Raises a HTTPError if the response was an error
-            return yaml.safe_load(response.text)
+            content = response.text
         except requests.exceptions.RequestException as e:
             print(f"Error loading config from HTTPS URL: {e}")
             raise
     else:
         # Assume local file system if not S3 or HTTPS
         try:
-            with open(config_file, 'r') as file:
-                return yaml.safe_load(file)
+            content = Path(config_file).read_text()
         except Exception as e:
             print(f"Error loading config from local file system: {e}")
             raise
-
+    
+    content = content.format(**args)
+    config = yaml.safe_load(content)
+    return config
 
 def count_tokens(text: str) -> int:
     global _tokenizer
     return _tokenizer.count_tokens(text)
 
-def process_item(item, prompt_fmt: str) -> Dict:
-    question = _normalize(item.input)
-    context = _normalize(item.context)
-    prompt = prompt_fmt.format(question=question, context=context)
+def process_item(item, prompt_template_keys: List, prompt_fmt: str) -> Dict:
+    args = {}
+    for k in prompt_template_keys:
+        v = _normalize(item[k])
+        args[k] = v
+        args[f"{k}_len"] = _tokenizer.count_tokens(v)
+    #input = _normalize(item.input)
+    #context = _normalize(item.context)
+    prompt = prompt_fmt.format(**args)
     prompt_len = count_tokens(prompt)
-    ## generalize this further...
-    ## bring your own script (if different) - bring your count token and your script
-    return {
-        "question": question,
-        "context": context,
+    return args | {
         "prompt": prompt,
-        "prompt_len": prompt_len,
-        "question_len": _tokenizer.count_tokens(question),
-        "context_len": _tokenizer.count_tokens(context),
+        "prompt_len": prompt_len
     }
 
 def nt_to_posix(p: str) -> str:
     return p.replace("\\", "/")
 
 # Function to write data to S3
-def write_to_s3(json_data, bucket_name, dir1, dir2, file_name):
+def write_to_s3(data, bucket_name, dir1, dir2, file_name):
 
     # Initialize S3 client
     s3_client = boto3.client('s3')
@@ -150,7 +163,7 @@ def write_to_s3(json_data, bucket_name, dir1, dir2, file_name):
     logger.info(f"write_to_s3, s3_file_path={s3_file_path}")
     try:
         # Write the JSON data to the S3 bucket
-        s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=json_data)
+        s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=data)
         return (f"s3://{bucket_name}/{s3_file_path}")
     except NoCredentialsError:
         logger.error("write_to_s3, Error: AWS credentials not found.")
@@ -167,7 +180,7 @@ def read_from_s3(bucket_name, s3_file_path):
 
     try:
         # Fetch the object from S3
-        logger.error(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
+        logger.info(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
         response = s3_client.get_object(Bucket=bucket_name, Key=s3_file_path)
         
         return response['Body'].read().decode('utf-8')

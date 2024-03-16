@@ -8,13 +8,16 @@ from datetime import datetime
 
 current_working_directory = Path.cwd()
 
-CONFIG_FILEPATH_FILE: str = current_working_directory / 'fmbench' / 'config_filepath.txt'
+CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 
 # S3 client initialization
 s3_client = boto3.client('s3')
+session = boto3.session.Session()
 
 ## Configuring the role ARN -- extract the role name
-arn_string = boto3.client('sts').get_caller_identity().get('Arn')
+caller = boto3.client('sts').get_caller_identity()
+account_id = caller.get('Account')
+arn_string = caller.get('Arn')
 ROLE_NAME = arn_string.split('/')[-1]
 
 current_config_file = os.environ.get("CONFIG_FILE_FMBENCH")
@@ -44,12 +47,19 @@ elif CONFIG_FILE.startswith("https://"):
 else:
     CONFIG_FILE_CONTENT = Path(CONFIG_FILE).read_text()
 
+# check if the file is still parameterized and if so replace the parameters with actual values
+# if the file is not parameterized then the following statements change nothing
+args = dict(region=session.region_name,
+            role_arn=arn_string,
+            write_bucket=f"sagemaker-fmbench-write-{account_id}",
+            read_bucket=f"sagemaker-fmbench-read-{account_id}")
+CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
+
 # Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
 print(f"Loaded config: {config}")
-
-print(f"Loaded config: {config}")
-
+                                                                                           
+    
 ## data directory and prompts
 PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
