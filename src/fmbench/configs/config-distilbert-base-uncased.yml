@@ -64,6 +64,18 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
+  - language: en    
+    min_length_in_tokens: 100
+    max_length_in_tokens: 250
+    payload_file: payload_en_100-250.jsonl
+  - language: en    
+    min_length_in_tokens: 10
+    max_length_in_tokens: 20
+    payload_file: payload_en_10-20.jsonl
+  - language: en    
+    min_length_in_tokens: 50
+    max_length_in_tokens: 150
+    payload_file: payload_en_50-150.jsonl
 
 dataset:
   prompt_template_keys:
@@ -72,7 +84,7 @@ dataset:
   - text
   
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_50-150
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
@@ -105,13 +117,17 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
-    - payload_en_1-500.jsonl
+    #- payload_en_1-500.jsonl
+    - payload_en_50-150.jsonl
 
     concurrency_levels:
     - 1
     - 2
     - 4
+    - 6
+    - 8
     env:
       SAGEMAKER_PROGRAM: "inference.py"
       ENDPOINT_SERVER_TIMEOUT: "3600"
@@ -123,3 +139,7 @@ experiments:
 results:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 100000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.2
+  

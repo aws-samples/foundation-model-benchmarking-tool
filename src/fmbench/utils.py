@@ -39,7 +39,7 @@ def _download_from_s3(bucket_name, prefix, local_dir):
                     continue
                 local_file_path = os.path.join(local_dir, os.path.basename(file_key))
                 s3_client.download_file(bucket_name, file_key, local_file_path)
-                logger.info(f"Downloaded: {local_file_path}")
+                logger.debug(f"Downloaded: {local_file_path}")
         else:
             logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
     except Exception as e:
@@ -140,8 +140,6 @@ def process_item(item, prompt_template_keys: List, prompt_fmt: str) -> Dict:
         v = _normalize(item[k])
         args[k] = v
         args[f"{k}_len"] = _tokenizer.count_tokens(v)
-    #input = _normalize(item.input)
-    #context = _normalize(item.context)
     prompt = prompt_fmt.format(**args)
     prompt_len = count_tokens(prompt)
     return args | {
@@ -160,7 +158,7 @@ def write_to_s3(data, bucket_name, dir1, dir2, file_name):
 
     # Construct the S3 file path
     s3_file_path = posixpath.join(nt_to_posix(dir1), nt_to_posix(dir2), file_name)
-    logger.info(f"write_to_s3, s3_file_path={s3_file_path}")
+    logger.debug(f"write_to_s3, s3_file_path={s3_file_path}")
     try:
         # Write the JSON data to the S3 bucket
         s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=data)
@@ -180,7 +178,7 @@ def read_from_s3(bucket_name, s3_file_path):
 
     try:
         # Fetch the object from S3
-        logger.info(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
+        logger.debug(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
         response = s3_client.get_object(Bucket=bucket_name, Key=s3_file_path)
         
         return response['Body'].read().decode('utf-8')
@@ -195,7 +193,7 @@ def read_from_s3(bucket_name, s3_file_path):
 def get_s3_object(bucket: str, key: str) -> str:
  
     key = nt_to_posix(key)
-    logger.info(f"get_s3_object, bucket_name={bucket}, key={key}")
+    logger.debug(f"get_s3_object, bucket_name={bucket}, key={key}")
 
     # Create an S3 client
     s3_client = boto3.client('s3')
@@ -243,22 +241,22 @@ def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
         key_list =  list_s3_files(bucket_name, prefix, suffix=None)
         for file_key in key_list:
-            logger.info(f"file_key={file_key}, prefix={prefix}") 
+            logger.debug(f"file_key={file_key}, prefix={prefix}") 
             local_file_key = file_key.replace(prefix, "")
             parent_dir_in_s3 = os.path.dirname(local_file_key)
-            logger.info(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
+            logger.debug(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
             # the first char for parent_dir_in_s3 would always be a '/' so skip that
             local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
             os.makedirs(local_dir_to_create, exist_ok = True)
-            logger.info(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
+            logger.debug(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
             local_file_to_create = os.path.basename(local_file_key)
             if file_key.endswith('/'):
                 logger.info(f"skipping file_key={file_key}")
                 continue
             
             local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
-            logger.info(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
+            logger.debug(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
             s3_client.download_file(bucket_name, file_key, local_file_path)
-            logger.info(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
+            logger.debug(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
     except Exception as e:
         logger.error(f"An error occurred while downloading from S3: {e}")
