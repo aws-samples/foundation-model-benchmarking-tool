@@ -25,21 +25,26 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
-    source_data_prefix: source_data1  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
-    prompt_template_dir: prompt_template1
+    prompt_template_dir: prompt_template
     prompt_template_file: prompt_template.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
+    0_setup.ipynb: yes
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
 
-
 datasets:
+  prompt_template_keys:
+  #- input
+  #- context
+  - text
+  filters:
   - language: en    
     min_length_in_tokens: 1
     max_length_in_tokens: 500
@@ -76,13 +81,7 @@ datasets:
     min_length_in_tokens: 50
     max_length_in_tokens: 150
     payload_file: payload_en_50-150.jsonl
-
-dataset:
-  prompt_template_keys:
-  #- input
-  #- context
-  - text
-  
+ 
 metrics:
   dataset_of_interest: en_50-150
   weights:

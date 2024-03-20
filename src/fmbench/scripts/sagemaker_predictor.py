@@ -31,7 +31,6 @@ class SageMakerPredictor(FMBenchPredictor):
         response_json = None
         latency = None
         try:
-            payload["parameters"].pop('truncate', None)
             st = time.perf_counter()
             response = self._predictor.predict(payload["inputs"], payload["parameters"])
             
