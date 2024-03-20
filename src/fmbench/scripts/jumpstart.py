@@ -14,14 +14,15 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         )
 
     # Deploy the model using asyncio.to_thread to run in a separate thread
-    ep_name = f"{experiment_config['ep_name']}-{int(time.time())}"
+    sec, us = str(time.time()).split(".")
+    ep_name = f"{experiment_config['ep_name']}-{sec}-{us}"
     accept_eula = experiment_config.get('accept_eula')
     if accept_eula is not None:
         predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],
                                  accept_eula=accept_eula,
                                  endpoint_name=ep_name)
     else:
-        predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],            
+        predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],
                                  endpoint_name=ep_name)
 
     return dict(endpoint_name=predictor.endpoint_name, experiment_name=experiment_config['name'])

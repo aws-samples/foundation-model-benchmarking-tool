@@ -134,12 +134,39 @@ experiments:
       MODEL_CACHE_ROOT: "/opt/ml/model"
       SAGEMAKER_ENV: "1"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+  - name: distilbert-base-uncased-ml-m5-xlarge
+    model_id: huggingface-tc-distilbert-base-uncased
+    model_version: "*"
+    model_name: distilbert-base-uncased
+    ep_name: distilbert-base-uncased
+    instance_type: "ml.m5.xlarge"
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-cpu-py39-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    payload_files:
+    #- payload_en_1-500.jsonl
+    - payload_en_50-150.jsonl
+
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
 
-results:
+report:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 100000
   v_shift_w_single_instance: 0.025
-  v_shift_w_gt_one_instance: 0.2
+  v_shift_w_gt_one_instance: 0.025
   

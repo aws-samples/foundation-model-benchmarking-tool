@@ -1,19 +1,3 @@
-from typing import Dict
-from abc import ABC, abstractmethod, abstractproperty
-class FMBenchPredictor(ABC):
-    
-    @abstractmethod
-    def __init__(self, endpoint_name: str):
-        pass
-    @abstractmethod
-    def get_prediction(self, payload: Dict) -> Dict:
-        pass
-    @abstractproperty
-    def endpoint_name(self) -> str:
-        """The endpoint name property."""
-        pass
-    
-
 import time
 import json
 import logging
@@ -21,13 +5,11 @@ import sagemaker
 from typing import Dict
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
-
+from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
 
 ## set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
@@ -45,7 +27,7 @@ class SageMakerPredictor(FMBenchPredictor):
             logger.error(f"create_predictor, exception occured while creating predictor for endpoint_name={self._endpoint_name}, exception={e}")
         logger.info(f"__init__ self._predictor={self._predictor}")
         
-    def get_prediction(self, payload: Dict) -> Dict:
+    def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json = None
         latency = None
         try:
@@ -68,7 +50,7 @@ class SageMakerPredictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
-        return dict(response_json=response_json, latency=latency)
+        return FMBenchPredictionResponse(response_json=response_json, latency=latency)
     
     @property
     def endpoint_name(self) -> str:
