@@ -1,0 +1,193 @@
+general:
+  name: "fmbench-titan"      
+  model_name: "titan"
+  
+# AWS and SageMaker settings
+aws:
+  region: {region}
+  # uncomment and set the Role ARN if not running on sagemaker
+  sagemaker_execution_role: {role_arn}
+  ## these are the buckets/resources you will create in your account below:
+  bucket: {write_bucket}
+
+## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
+dir_paths:
+    data_prefix: data ## add the prefix for all your data management/storage
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics
+    models_dir: models
+    metadata_dir: metadata ## add a file here to dynamically track the metrics dir
+
+## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
+s3_read_data:
+    read_bucket: {read_bucket}
+    scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+    script_files:
+    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    prompt_template_dir: prompt_template
+    prompt_template_file: prompt_template.txt ## add your desired prompt template type
+
+## section that enables container to run notebooks and python scripts automatically 
+run_steps:
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: no
+    3_run_inference.ipynb: yes
+    4_model_metric_analysis.ipynb: yes
+    5_cleanup.ipynb: yes
+
+datasets:
+  prompt_template_keys:
+  - input
+  - context
+  # - text
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_en_305-3997.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 100
+  #   max_length_in_tokens: 250
+  #   payload_file: payload_en_100-250.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 10
+  #   max_length_in_tokens: 20
+  #   payload_file: payload_en_10-20.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 50
+  #   max_length_in_tokens: 150
+  #   payload_file: payload_en_50-150.jsonl
+ 
+metrics:
+  dataset_of_interest: en_3000-4000
+  weights:
+    price_per_tx_wt: 0.65
+    latenct_wt: 0.35
+  
+pricing:
+  ml.m5.xlarge: 0.23
+  ml.g5.xlarge: 1.006
+  ml.g5.2xlarge: 1.212
+  ml.g5.12xlarge: 7.09
+  ml.g5.24xlarge: 10.18
+  ml.g5.48xlarge: 20.36
+  ml.inf2.24xlarge: 7.79
+  ml.inf2.48xlarge: 15.58
+  ml.p4d.24xlarge: 37.688
+  ml.p3.2xlarge: 3.825
+  ## Bedrock provisioned throughput pricing
+  Claudev3-Haiku-ODT: 0 ## not released
+  ClaudeV2-ODT: 0
+  ClaudeV2:1-ODT: 0
+  ClaudeInstant-ODT: 0 ## on demand pricing range for price per 1k input AND 1k output tokens
+  titan-emb-text-ODT: 0
+  titan-text-lite-ODT: 0
+  titan-text-express-ODT: 0
+  Sonnet-ODT: 0 ## not released yet
+  Mistral-ODT: 0 ## not released
+  Mixtral-ODT: 0 ## not released
+  Llama13b-ODT: 0 ## this is for LLama PT one month commitment
+  Llama70b-ODT: 0 ## this is for LLama PT one month commitment
+  AI21mid-ODT: 0 ## model customization (fine-tuning) and Provisioned Throughput are not supported for AI21 Labs’ models on Amazon Bedrock.
+  AI21ultra-ODT: 0
+  CohereCommand-ODT: 0
+  CohereCommLight-ODT: 0
+  
+inference_parameters:
+  ContentType: 'application/json'
+  Accept: 'application/json'
+
+# Model configurations for mistral 7b instruct on Amazon Bedrock
+experiments:
+  - name: titan-embed-text-v1
+    model_id: amazon.titan-embed-text-v1
+    model_version: "*"
+    model_name: titan-embed-text-v1
+    ep_name: amazon.titan-embed-text-v1
+    instance_type: 'titan-emb-text-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    payload_files:
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    env: 
+  - name: titan-text-lite-v1
+    model_id: amazon.titan-text-lite-v1
+    model_version: "*"
+    model_name: titan-text-lite-v1
+    ep_name: amazon.titan-text-lite-v1
+    instance_type: 'titan-text-lite-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    payload_files:
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    env:
+  - name: titan-text-express-v1
+    model_id: amazon.titan-text-express-v1
+    model_version: "*"
+    model_name: titan-text-express
+    ep_name: amazon.titan-text-express-v1
+    instance_type: 'titan-text-express-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    payload_files:
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    env: 
+ 
+
+report:
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 100000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025

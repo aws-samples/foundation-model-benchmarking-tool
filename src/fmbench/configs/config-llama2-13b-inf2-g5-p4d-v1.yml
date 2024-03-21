@@ -32,6 +32,7 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
+    0_setup.ipynb: yes
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
@@ -40,6 +41,10 @@ run_steps:
 
 
 datasets:
+  prompt_template_keys:
+  - input
+  - context
+  filters:
   - language: en    
     min_length_in_tokens: 1
     max_length_in_tokens: 500
@@ -286,7 +291,9 @@ experiments:
       SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
-
-results:
+report:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025

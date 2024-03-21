@@ -1,7 +1,6 @@
 general:
-  name: "llama2-70b-g5-p4d-trt-v1"
-  model_name: "Llama2-70b"
-
+  name: "fmbench-cohere"      
+  model_name: "cohere"
   
 # AWS and SageMaker settings
 aws:
@@ -9,7 +8,7 @@ aws:
   # uncomment and set the Role ARN if not running on sagemaker
   sagemaker_execution_role: {role_arn}
   ## these are the buckets/resources you will create in your account below:
-  bucket: {write_bucket} ## add the name of your desired bucket
+  bucket: {write_bucket}
 
 ## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
 dir_paths:
@@ -25,7 +24,7 @@ s3_read_data:
     read_bucket: {read_bucket}
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
-    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
@@ -35,17 +34,16 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes
+    2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
-
-  
 
 datasets:
   prompt_template_keys:
   - input
   - context
+  # - text
   filters:
   - language: en    
     min_length_in_tokens: 1
@@ -71,7 +69,19 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
-
+  # - language: en    
+  #   min_length_in_tokens: 100
+  #   max_length_in_tokens: 250
+  #   payload_file: payload_en_100-250.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 10
+  #   max_length_in_tokens: 20
+  #   payload_file: payload_en_10-20.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 50
+  #   max_length_in_tokens: 150
+  #   payload_file: payload_en_50-150.jsonl
+ 
 metrics:
   dataset_of_interest: en_3000-4000
   weights:
@@ -79,38 +89,52 @@ metrics:
     latenct_wt: 0.35
   
 pricing:
+  ml.m5.xlarge: 0.23
+  ml.g5.xlarge: 1.006
+  ml.g5.2xlarge: 1.212
   ml.g5.12xlarge: 7.09
   ml.g5.24xlarge: 10.18
   ml.g5.48xlarge: 20.36
   ml.inf2.24xlarge: 7.79
   ml.inf2.48xlarge: 15.58
   ml.p4d.24xlarge: 37.688
+  ml.p3.2xlarge: 3.825
+  ## Bedrock provisioned throughput pricing
+  Claudev3-Haiku-ODT: 0 ## not released
+  ClaudeV2-ODT: 0
+  ClaudeV2:1-ODT: 0
+  ClaudeInstant-ODT: 0 ## on demand pricing range for price per 1k input AND 1k output tokens
+  titan-emb-text-ODT: 0
+  titan-text-lite-ODT: 0
+  titan-text-express-ODT: 0
+  Sonnet-ODT: 0 ## not released yet
+  Mistral-ODT: 0 ## not released
+  Mixtral-ODT: 0 ## not released
+  Llama13b-ODT: 0 ## this is for LLama PT one month commitment
+  Llama70b-ODT: 0 ## this is for LLama PT one month commitment
+  AI21mid-ODT: 0 ## model customization (fine-tuning) and Provisioned Throughput are not supported for AI21 Labs’ models on Amazon Bedrock.
+  AI21ultra-ODT: 0
+  CohereCommand-ODT: 0
+  CohereCommLight-ODT: 0
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
-  truncate: at-prompt-token-length
+  ContentType: 'application/json'
+  Accept: 'application/json'
 
-# Model configurations
+# Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-70b
+  - name: command-text-v14
+    model_id: cohere.command-text-v14
     model_version: "*"
-    model_name: llama2-70b
-    ep_name: llama-2-70b-g5-48xlarge
-    instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
+    model_name: command-text-v14
+    ep_name: cohere.command-text-v14
+    instance_type: 'CohereCommand-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
@@ -118,36 +142,19 @@ experiments:
     - 4
     - 6
     - 8
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "8"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  - name: llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122
-    model_id: meta-llama/Llama-2-70b-hf # change this to meta chat model
+    env: 
+  - name: command-light-text-v14
+    model_id: cohere.command-light-text-v14
     model_version: "*"
-    model_name: llama2-70bdjl
-    bucket_name: sagemaker-us-east-1-015469603702
-    key_name: hf-large-model-djl/code_llama2 ## where you want your model.tar.gz to be located
-    s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/ ## S3 path to your uncompressed model
-    ep_name: llama-2-70b-chat-p4d-24xlarge    
-    ## allow_patterns: [] use if you are downloading the model first for the first time
-    instance_type: "ml.p4d.24xlarge"    
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
-    deploy: yes
-    instance_count: 1
-    deployment_script: p4d_djl.py
+    model_name: command-light-text
+    ep_name: cohere.command-light-text-v14
+    instance_type: 'CohereCommLight-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
@@ -155,17 +162,11 @@ experiments:
     - 4
     - 6
     - 8
-    accept_eula: true
-    remove_truncate: yes
     env:
-      MODEL_LOADING_TIMEOUT: "3600"
-      NUMBER_OF_GPU: "8"
-      INSTANCE_COUNT: "1"
-      HEALTH_CHECK_TIMOUT: "300"
 
 report:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
-  txn_count_for_showing_cost: 10000
+  txn_count_for_showing_cost: 100000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
