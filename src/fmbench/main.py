@@ -90,6 +90,7 @@ def run_notebooks(config_file: str) -> None:
                 pm.execute_notebook(
                     input_path=str(notebook_path),
                     output_path=str(output_file),
+                    kernel_name='python3',
                     parameters={},
                     report_mode=True,  
                     progress_bar=True,
