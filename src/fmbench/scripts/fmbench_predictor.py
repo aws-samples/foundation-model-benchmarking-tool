@@ -23,4 +23,7 @@ class FMBenchPredictionResponse(dict):
       self.__dict__ = self
       self.__dict__['response_json'] = kwargs['response_json']
       self.__dict__['latency'] = kwargs['latency']
+      self.__dict__['prompt_tokens'] = kwargs['prompt_tokens']
+      self.__dict__['completion_tokens'] = kwargs['completion_tokens']
+    #   self.__dict__['experiment_cost'] = kwargs['experiment_cost']
       super().__init__(*k, **kwargs)

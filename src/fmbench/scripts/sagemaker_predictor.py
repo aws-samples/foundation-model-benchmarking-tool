@@ -3,6 +3,7 @@ import json
 import logging
 import sagemaker
 from typing import Dict
+from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
 from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
@@ -30,6 +31,12 @@ class SageMakerPredictor(FMBenchPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json = None
         latency = None
+        prompt_tokens = None
+        completion_tokens = None
+
+        ## represents the number of tokens in the prompt payload -- TO ABSTRACT THIS IN THE FUTURE ITERATION
+        prompt_tokens = count_tokens(payload["inputs"])
+
         try:
             st = time.perf_counter()
             response = self._predictor.predict(payload["inputs"], payload["parameters"])
@@ -45,11 +52,14 @@ class SageMakerPredictor(FMBenchPredictor):
             if response_json.get("generated_text") is None:            
                 if response_json.get("predicted_label") is not None:                    
                     response_json["generated_text"] = response_json.get("predicted_label")
-                 
+            
+            ## counts the completion tokens for the model using the default/user provided tokenizer - to change this too in the future iteration and abstract it out
+            completion_tokens = count_tokens(response_json.get("generated_text"))
+
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
-        return FMBenchPredictionResponse(response_json=response_json, latency=latency)
+        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
     
     @property
     def endpoint_name(self) -> str:

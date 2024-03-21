@@ -2,15 +2,19 @@ import time
 import json
 import boto3
 import logging
+import anthropic
 import requests as req
 import botocore.session
 from typing import Dict
+import anthropic_bedrock
 from itertools import groupby
 from operator import itemgetter
 from botocore.config import Config
 from botocore.auth import SigV4Auth
 from typing import Dict, List, Tuple
+from fmbench.utils import count_tokens
 from botocore.awsrequest import AWSRequest
+from anthropic_bedrock import AnthropicBedrock
 from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
 
 ## set a logger
@@ -43,12 +47,19 @@ class BedrockPredictor(FMBenchPredictor):
         latency = None
         response = None
         inference_params = None
+        prompt_tokens = None
+        completion_tokens = None
 
-        ## extract the inputs from the payload for the bedrock specific prompt plug in below in payload formats
         prompt_input_data = payload['inputs']
+
+        ## extract the input data prompts here using our normal count tokenizer to count the number of input tokens
+        prompt_tokens = count_tokens(payload['inputs']) ## NEED TO ADD BEDROCK SUPPORT FOR EVERY MODEL HERE TOO - TODO
 
         # Get the AWS region dynamically
         aws_region = boto3.Session().region_name
+
+        ## initialize an anthropic client to get token counts for claude models
+        client = AnthropicBedrock()
 
         # Build the REST API URL based on the region and self.endpoint_name
         bedrock_rest_api_url = f"https://bedrock-runtime.{aws_region}.amazonaws.com/model/{self.endpoint_name}/invoke"
@@ -219,11 +230,64 @@ class BedrockPredictor(FMBenchPredictor):
                         response_json["generated_text"] = response_json["completion"]
                     else:
                         logger.warning(f"get_prediction, response_json does not contain 'content', 'generatedToken', or 'outputs' key: {response_json}")
+                
+                
+                
+                
+                ## this is the PAYLOAD PROMPT COUNT BASED ON ALL MODELS ON BEDROCK 
+                ## extract the inputs from the payload for the bedrock specific prompt plug in below in payload formats
+                ## this is the case for llama on bedrock
+                if "prompt_token_count" in response_json:
+                    prompt_tokens = response_json["prompt_token_count"]
+                    logger.info(f"LLAMA BEDROCK PROMPT TOKENS: {prompt_tokens}")
+                ## this is the case for titan on bedrock
+                elif "inputTextTokenCount" in response_json:
+                    completion_tokens = response_json["inputTextTokenCount"]
+                    logger.info(f"TITAN PROMPT TOKENS: {prompt_tokens}")
+                ## this is the case for all claude models
+                elif "claude" in bedrock_rest_api_url:
+                    completion_tokens = client.count_tokens(prompt_input_data) 
+                    logger.info(f"CLAUDE PROMPT TOKENS: {prompt_tokens}")
+                else:
+                    logger.info(f"Counting tokens using the default hf tokenizer......")
+                    prompt_tokens = count_tokens(prompt_input_data)
+
+
+                ## this is the TOKEN COMPLETION COUNT FOR ALL MODELS ON BEDROCK -- llama and titan. CLAUDE ADDED AS AN ANTHROPIC TOKEN COUNTER CLIENT
+                if "generation_token_count" in response_json:
+                    completion_tokens = response_json["generation_token_count"]
+                    logger.info(f"Llama completion tokens: {completion_tokens}")
+                elif "tokenCount" in response_json:
+                    completion_tokens = response_json["tokenCount"]
+                    logger.info(f"Titan completion tokes: {completion_tokens}")
+                elif "claude" in bedrock_rest_api_url:
+                    completion_tokens = client.count_tokens(response_json['generated_text'])
+                    logger.info(f"Claude completion tokens: {completion_tokens}")                               
+                else: ## for all other models
+                    completion = response_json.get("generated_text", "")
+                    logger.info(f"Counting tokens using the default hf tokenizer......")
+                    completion_tokens = count_tokens(completion)
         else:
             logger.error(f"get_prediction, received non-200 status code {response.status_code} from predictor={self._endpoint_name}")
 
-        return FMBenchPredictionResponse(response_json=response_json, latency=latency)
+        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
     
+    def calculate_cost(self, duration: float, metrics: Dict) -> float: ## ---> TO IMPLEMENT
+        """
+        Represents the function to calculate the cost of each experiment run for Bedrock.
+        
+        Args:
+            duration (float): The duration of the experiment run in seconds.
+            metrics (Dict): A dictionary containing metrics related to the experiment run.
+        
+        Returns:
+            float: The cost of the experiment run.
+        """
+        # Implement the logic to calculate the cost based on the duration and metrics
+        # This could involve factors like the number of tokens generated, the model size, etc.
+        # For simplicity, let's assume a fixed cost per second
+        pass 
+
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
