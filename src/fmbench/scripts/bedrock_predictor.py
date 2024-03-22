@@ -293,5 +293,35 @@ class BedrockPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
+    def calculate_cost(self, instance_type, config: dict, duration: float, metrics: dict) -> float:
+        """Represents the function to calculate the cost for Bedrock experiments."""
+        experiment_cost = 0.0
+
+        if metrics:
+            prompt_tokens = metrics.get("all_prompts_token_count", 0)
+            completion_tokens = metrics.get("all_completions_token_count", 0)
+
+            # Retrieve the pricing information for the instance type
+            instance_pricing = config['pricing'].get(instance_type, {})
+            input_token_price_per_thousand = 0
+            output_token_price_per_thousand = 0
+
+            for pricing_dict in instance_pricing:
+                logger.info(f"pricing dict: {pricing_dict}")
+                if 'input-per-1k-tokens' in pricing_dict:
+                    input_token_price_per_thousand = pricing_dict['input-per-1k-tokens']
+                    logger.info(f"input per 1k token pricing: {input_token_price_per_thousand}")
+                if 'output-per-1k-tokens' in pricing_dict:
+                    output_token_price_per_thousand = pricing_dict['output-per-1k-tokens']
+                    logger.info(f"output per 1k token pricing: {output_token_price_per_thousand}")
+
+            # Calculate cost based on the number of input and output tokens
+            input_token_cost = (prompt_tokens / 1000.0) * input_token_price_per_thousand
+            output_token_cost = (completion_tokens / 1000.0) * output_token_price_per_thousand
+
+            experiment_cost = input_token_cost + output_token_cost
+
+        return experiment_cost
+    
 def create_predictor(endpoint_name: str):
     return BedrockPredictor(endpoint_name)

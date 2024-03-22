@@ -14,7 +14,7 @@ class FMBenchPredictor(ABC):
         pass
 
     @abstractproperty
-    def calculate_cost(self, duration: float, metrics: dict) -> str:
+    def calculate_cost(self, instance_type: str, config: dict, duration: float, metrics: dict) -> float:
         """Represents the function to calculate the cost of each experiment run."""
         pass
 
@@ -25,5 +25,4 @@ class FMBenchPredictionResponse(dict):
       self.__dict__['latency'] = kwargs['latency']
       self.__dict__['prompt_tokens'] = kwargs['prompt_tokens']
       self.__dict__['completion_tokens'] = kwargs['completion_tokens']
-    #   self.__dict__['experiment_cost'] = kwargs['experiment_cost']
       super().__init__(*k, **kwargs)

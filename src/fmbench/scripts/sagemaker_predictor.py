@@ -30,6 +30,7 @@ class SageMakerPredictor(FMBenchPredictor):
         
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json = None
+        response = None
         latency = None
         prompt_tokens = None
         completion_tokens = None
@@ -66,9 +67,13 @@ class SageMakerPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
-    def calculate_cost(self, duration: float, metrics: dict) -> str:
+    def calculate_cost(price_per_unit_time: float, duration: float, metrics: dict) -> str:
         """Represents the function to calculate the cost of each experiment run."""
-        pass
+        experiment_cost = 0.0
+        metrics = None ## this is not needed for now, will be used in the case of bedrock
+        ## sagemaker experiment pricing calculation
+        experiment_cost = price_per_unit_time * duration
+        return experiment_cost
     
 def create_predictor(endpoint_name: str):
     return SageMakerPredictor(endpoint_name)

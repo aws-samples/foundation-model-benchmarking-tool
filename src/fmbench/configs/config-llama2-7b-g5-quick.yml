@@ -6,7 +6,7 @@ general:
 aws:
   region: {region}
   # uncomment and set the Role ARN if not running on sagemaker
-  sagemaker_execution_role: {role_arn}
+  sagemaker_execution_role: arn:aws:iam::121797993273:role/service-role/AmazonSageMaker-ExecutionRole-20231012T171939
   ## these are the buckets/resources you will create in your account below:
   bucket: {write_bucket} ## add the name of your desired bucket
 
@@ -106,6 +106,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1000-2000.jsonl
 
@@ -133,9 +134,10 @@ experiments:
     ep_name: llama-2-7b-g5-2xlarge
     instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
+    deploy: no
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1000-2000.jsonl
 
@@ -159,6 +161,6 @@ experiments:
 report:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
-  txn_count_for_showing_cost: 10000
+  txn_count_for_showing_cost: 100000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025

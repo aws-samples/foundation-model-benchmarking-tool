@@ -99,23 +99,61 @@ pricing:
   ml.inf2.48xlarge: 15.58
   ml.p4d.24xlarge: 37.688
   ml.p3.2xlarge: 3.825
-  ## Bedrock provisioned throughput pricing
-  Claudev3-Haiku-ODT: 0 ## not released
-  ClaudeV2-ODT: 0
-  ClaudeV2:1-ODT: 0
-  ClaudeInstant-ODT: 0 ## on demand pricing range for price per 1k input AND 1k output tokens
-  titan-emb-text-ODT: 0
+  ## Bedrock on demand pricing
+  ## CLAUDE
+  Claudev3-Haiku-ODT:
+  - input-per-1k-tokens: 0.00025
+  - output-per-1k-tokens: 0.00125
+  Claudev3-Sonnet-ODT:
+  - input-per-1k-tokens: 0.00300
+  - output-per-1k-tokens: 0.01500
+  ClaudeV2-ODT: 
+  - input-per-1k-tokens: 0.000800 
+  - output-per-1k-tokens: 0.002400
+  ClaudeV2:1-ODT: 
+  - input-per-1k-tokens: 0.000800 
+  - output-per-1k-tokens: 0.002400
+  ClaudeInstant-ODT: ## on demand pricing range for price per 1k input AND 1k output tokens 33 -- ADD ALL ODT PRICING THIS WAY FOR NOW
+  - input-per-1k-tokens: 0.00080 ## per 1k input tokens
+  - output-per-1k-tokens: 0.00240 ## per 1k output tokens
+  ## TITAN
+  titan-emb-text-ODT: 
+  - input-per-1k-tokens: 0.0001
+  - output-per-1k-tokens: 0 ## n/a
   titan-text-lite-ODT: 0
-  titan-text-express-ODT: 0
-  Sonnet-ODT: 0 ## not released yet
-  Mistral-ODT: 0 ## not released
-  Mixtral-ODT: 0 ## not released
-  Llama13b-ODT: 0 ## this is for LLama PT one month commitment
-  Llama70b-ODT: 0 ## this is for LLama PT one month commitment
-  AI21mid-ODT: 0 ## model customization (fine-tuning) and Provisioned Throughput are not supported for AI21 Labs’ models on Amazon Bedrock.
+  - input-per-1k-tokens: 0.0003
+  - output-per-1k-tokens: 0.0004
+  titan-text-express-ODT: 
+  - input-per-1k-tokens: 0.0008
+  - output-per-1k-tokens: 0.0016
+  ## MISTRAL & MIXTRAL
+  Mistral-ODT:
+  - input-per-1k-tokens: 0.00015
+  - output-per-1k-tokens: 0.0002
+  Mixtral-ODT: 
+  - input-per-1k-tokens: 0.00045
+  - output-per-1k-tokens: 0.0007
+  ##  LLAMA
+  Llama13b-ODT:
+  - input-per-1k-tokens: 0.00075
+  - output-per-1k-tokens: 0.00100
+  Llama70b-ODT: 
+  - input-per-1k-tokens: 0.00195
+  - output-per-1k-tokens: 0.00195
+  ##  AI21
+  AI21mid-ODT:
+  - input-per-1k-tokens: 0.0125
+  - output-per-1k-tokens: 0.0125
   AI21ultra-ODT: 0
-  CohereCommand-ODT: 0
-  CohereCommLight-ODT: 0
+  - input-per-1k-tokens: 0.0188
+  - output-per-1k-tokens: 0.0188
+  ## COHERE
+  CohereCommand-ODT: 
+  - input-per-1k-tokens: 0.0015
+  - output-per-1k-tokens: 0.0020
+  CohereCommLight-ODT: 
+  - input-per-1k-tokens: 0.0003
+  - output-per-1k-tokens: 0.0006
   
 inference_parameters:
   ContentType: 'application/json'
