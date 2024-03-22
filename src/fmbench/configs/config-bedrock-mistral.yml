@@ -89,6 +89,7 @@ metrics:
     latenct_wt: 0.35
   
 pricing:
+  ## sagemaker pricing
   ml.m5.xlarge: 0.23
   ml.g5.xlarge: 1.006
   ml.g5.2xlarge: 1.212
@@ -120,7 +121,7 @@ pricing:
   titan-emb-text-ODT: 
   - input-per-1k-tokens: 0.0001
   - output-per-1k-tokens: 0 ## n/a
-  titan-text-lite-ODT: 0
+  titan-text-lite-ODT: 
   - input-per-1k-tokens: 0.0003
   - output-per-1k-tokens: 0.0004
   titan-text-express-ODT: 
@@ -144,7 +145,7 @@ pricing:
   AI21mid-ODT:
   - input-per-1k-tokens: 0.0125
   - output-per-1k-tokens: 0.0125
-  AI21ultra-ODT: 0
+  AI21ultra-ODT: 
   - input-per-1k-tokens: 0.0188
   - output-per-1k-tokens: 0.0188
   ## COHERE

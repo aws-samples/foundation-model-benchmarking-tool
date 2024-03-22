@@ -271,28 +271,7 @@ class BedrockPredictor(FMBenchPredictor):
             logger.error(f"get_prediction, received non-200 status code {response.status_code} from predictor={self._endpoint_name}")
 
         return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
-    
-    def calculate_cost(self, duration: float, metrics: Dict) -> float: ## ---> TO IMPLEMENT
-        """
-        Represents the function to calculate the cost of each experiment run for Bedrock.
-        
-        Args:
-            duration (float): The duration of the experiment run in seconds.
-            metrics (Dict): A dictionary containing metrics related to the experiment run.
-        
-        Returns:
-            float: The cost of the experiment run.
-        """
-        # Implement the logic to calculate the cost based on the duration and metrics
-        # This could involve factors like the number of tokens generated, the model size, etc.
-        # For simplicity, let's assume a fixed cost per second
-        pass 
 
-    @property
-    def endpoint_name(self) -> str:
-        """The endpoint name property."""
-        return self._endpoint_name
-    
     def calculate_cost(self, instance_type, config: dict, duration: float, metrics: dict) -> float:
         """Represents the function to calculate the cost for Bedrock experiments."""
         experiment_cost = 0.0
@@ -322,6 +301,11 @@ class BedrockPredictor(FMBenchPredictor):
             experiment_cost = input_token_cost + output_token_cost
 
         return experiment_cost
+
+    @property
+    def endpoint_name(self) -> str:
+        """The endpoint name property."""
+        return self._endpoint_name
     
 def create_predictor(endpoint_name: str):
     return BedrockPredictor(endpoint_name)
