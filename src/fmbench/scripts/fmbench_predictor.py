@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod, abstractproperty
 class FMBenchPredictor(ABC):
     
     @abstractmethod
-    def __init__(self, endpoint_name: str):
+    def __init__(self, endpoint_name: str, inference_spec: Dict):
         pass
     @abstractmethod
     def get_prediction(self, payload: Dict) -> Dict:

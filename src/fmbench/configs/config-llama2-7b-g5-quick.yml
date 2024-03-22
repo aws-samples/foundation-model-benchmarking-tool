@@ -106,6 +106,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1000-2000.jsonl
 
@@ -136,6 +137,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1000-2000.jsonl
 

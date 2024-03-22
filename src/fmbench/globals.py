@@ -186,7 +186,7 @@ You are an assistant for question-answering tasks. Use the following pieces of r
 {context}
 ```
 
-Question: {question}
+Question: {input}
 
 [/INST]
 Answer:

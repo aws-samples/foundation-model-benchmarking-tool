@@ -13,9 +13,10 @@ logger = logging.getLogger(__name__)
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
-    def __init__(self, endpoint_name: str):
+    def __init__(self, endpoint_name: str, inference_spec: Dict):
         self._predictor: Optional[sagemaker.base_predictor.Predictor] = None
         self._endpoint_name: str = endpoint_name
+        self._inference_spec = inference_spec
         try:
             # Create a SageMaker Predictor object
             self._predictor = Predictor(
@@ -32,7 +33,13 @@ class SageMakerPredictor(FMBenchPredictor):
         latency = None
         try:
             st = time.perf_counter()
-            response = self._predictor.predict(payload["inputs"], payload["parameters"])
+            split_input_and_inference_params = None
+            if self._inference_spec is not None:
+                split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
+            if split_input_and_inference_params is True:
+                response = self._predictor.predict(payload["inputs"], payload["parameters"])                
+            else:
+                response = self._predictor.predict(payload)
             
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
@@ -56,5 +63,5 @@ class SageMakerPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
-def create_predictor(endpoint_name: str):
-    return SageMakerPredictor(endpoint_name)
+def create_predictor(endpoint_name: str, inference_spec: Dict):
+    return SageMakerPredictor(endpoint_name, inference_spec)

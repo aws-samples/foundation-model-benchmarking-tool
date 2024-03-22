@@ -105,6 +105,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: p4d_hf_tgi.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -130,6 +131,7 @@ experiments:
     model_name: llama2-13b
     ep_name: llama-2-13b-inf2-24xlarge
     instance_type: "ml.inf2.24xlarge"
+    inference_script: sagemaker_predictor.py
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
     deploy: yes
     instance_count: 1
@@ -166,6 +168,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -198,6 +201,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -233,6 +237,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -267,6 +272,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl

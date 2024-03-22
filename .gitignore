@@ -26,3 +26,4 @@ src/fmbench/metadata/
 src/fmbench/distilbert-base-uncased-v1-SageMaker/
 distilbert-base-uncased-v1-SageMaker/
 results/
+llama2-7b-v1-SageMaker/
