@@ -1,5 +1,0 @@
-experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_hour,price_per_txn,score
-llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_1000-2000.jsonl,ml.g5.xlarge,1,0.0,1623.0,1110,60.0,19,2.6,43,1.006,0.000389922480620155,1282.4984707141764
-llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_1000-2000.jsonl,ml.g5.2xlarge,1,1.0,,35671,,0,,0,1.212,inf,
-llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_1000-2000.jsonl,ml.g5.2xlarge,2,1.0,,62956,,0,,0,1.212,inf,
-llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_1000-2000.jsonl,ml.g5.2xlarge,4,1.0,,98321,,0,,0,1.212,inf,

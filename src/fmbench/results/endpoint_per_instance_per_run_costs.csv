@@ -1,2 +1,0 @@
-experiment_name,instance_type,duration_in_seconds,cost
-llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,ml.g5.xlarge,50.14,0.01
