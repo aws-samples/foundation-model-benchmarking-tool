@@ -1,0 +1,2 @@
+experiment_name,payload_file,instance_type,concurrency,error_rate,prompt_token_count_mean,prompt_token_throughput,completion_token_count_mean,completion_token_throughput,latency_mean,transactions_per_minute,price_per_txn,score
+claude-instant-v1,payload_en_1000-2000.jsonl,ClaudeInstant-ODT,1,0.0,1623,875,60,27,2.18,32,0.0014424,346.873839218021

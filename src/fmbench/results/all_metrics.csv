@@ -1,0 +1,16 @@
+experiment_name,concurrency,payload_file,errors,successes,error_rate,all_prompts_token_count,prompt_token_count_mean,prompt_token_throughput,all_completions_token_count,completion_token_count_mean,completion_token_throughput,transactions,transactions_per_second,transactions_per_minute,latency_mean,instance_type_x,EndpointName_x,ModelName_x,Image_x,S3Uri_x,instance_type_y,EndpointName_y,ModelName_y,Image_y,S3Uri_y,instance_type
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1339,1339.0,554.79,94,94.0,38.95,1,0.41,24,2.2888075829978334,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1932,1932.0,1152.01,47,47.0,28.03,1,0.6,36,1.6497906659933506,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1154,1154.0,856.43,42,42.0,31.17,1,0.74,44,1.2983396670024376,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1646,1646.0,1394.11,32,32.0,27.1,1,0.85,51,1.1336507499945583,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1397,1397.0,401.48,83,83.0,23.85,1,0.29,17,3.42721141698712,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1746,1746.0,1172.45,59,59.0,39.62,1,0.67,40,1.4532077909971122,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1373,1373.0,682.1,75,75.0,37.26,1,0.5,30,1.9736374579952098,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1598,1598.0,399.46,79,79.0,19.75,1,0.25,15,3.9371663339989027,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1743,1743.0,1459.67,21,21.0,17.59,1,0.84,50,1.1107988330040826,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1539,1539.0,1342.81,17,17.0,14.83,1,0.87,52,1.0643735409976216,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1695,1695.0,368.5,98,98.0,21.31,1,0.22,13,4.517527457996039,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1421,1421.0,1112.18,31,31.0,24.26,1,0.78,46,1.199854292004602,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1918,1918.0,847.33,108,108.0,47.71,1,0.44,26,2.1863788339978782,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1910,1910.0,740.38,54,54.0,20.93,1,0.39,23,2.4999954579980113,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT
+claude-instant-v1,1,payload_en_1000-2000.jsonl,[],1,0.0,1939,1939.0,653.3,67,67.0,22.57,1,0.34,20,2.890143500000704,ClaudeInstant-ODT,,,,,,,,,,ClaudeInstant-ODT

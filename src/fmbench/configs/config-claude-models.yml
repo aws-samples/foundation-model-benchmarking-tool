@@ -184,94 +184,94 @@ experiments:
     # - 6
     # - 8
     env: 
-  - name: haiku-bedrock-trial
-    model_id: anthropic.claude-3-haiku-20240307-v1:0
-    model_version: "*"
-    model_name: haiku
-    ep_name: anthropic.claude-3-haiku-20240307-v1:0
-    instance_type: 'Claudev3-Haiku-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
-  - name: claude-v2
-    model_id: anthropic.claude-v2
-    model_version: "*"
-    model_name: claude-v2
-    ep_name: anthropic.claude-v2
-    instance_type: 'ClaudeV2-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
-  - name: claude-3-sonnet
-    model_id: anthropic.claude-3-sonnet-20240229-v1:0
-    model_version: "*"
-    model_name: claude-3-sonnet
-    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
-    instance_type: 'Claudev3-Sonnet-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
-  - name: claude-v2:1
-    model_id: anthropic.claude-v2:1
-    model_version: "*"
-    model_name: claude-v2:1
-    ep_name: anthropic.claude-v2:1
-    instance_type: 'ClaudeV2:1-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
+  # - name: haiku-bedrock-trial
+  #   model_id: anthropic.claude-3-haiku-20240307-v1:0
+  #   model_version: "*"
+  #   model_name: haiku
+  #   ep_name: anthropic.claude-3-haiku-20240307-v1:0
+  #   instance_type: 'Claudev3-Haiku-ODT'
+  #   image_uri: ## leaving it blank for bedrock supported models
+  #   deploy: no ## deployment step not needed for bedrock models
+  #   instance_count: 1 ## not needed for bedrock models
+  #   deployment_script: ## not needed for bedrock models
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #   payload_files:
+  #   - payload_en_3000-4000.jsonl
+  #   concurrency_levels:
+  #   - 1
+  #   # - 2
+  #   # - 4
+  #   # - 6
+  #   # - 8
+  #   env: ## no environment variables needed for claude 3 models
+  # - name: claude-v2
+  #   model_id: anthropic.claude-v2
+  #   model_version: "*"
+  #   model_name: claude-v2
+  #   ep_name: anthropic.claude-v2
+  #   instance_type: 'ClaudeV2-ODT'
+  #   image_uri: ## leaving it blank for bedrock supported models
+  #   deploy: no ## deployment step not needed for bedrock models
+  #   instance_count: 1 ## not needed for bedrock models
+  #   deployment_script: ## not needed for bedrock models
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #   payload_files:
+  #   - payload_en_3000-4000.jsonl
+  #   concurrency_levels:
+  #   - 1
+  #   - 2
+  #   - 4
+  #   # - 6
+  #   # - 8
+  #   env: ## no environment variables needed for claude 3 models
+  # - name: claude-3-sonnet
+  #   model_id: anthropic.claude-3-sonnet-20240229-v1:0
+  #   model_version: "*"
+  #   model_name: claude-3-sonnet
+  #   ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+  #   instance_type: 'Claudev3-Sonnet-ODT'
+  #   image_uri: ## leaving it blank for bedrock supported models
+  #   deploy: no ## deployment step not needed for bedrock models
+  #   instance_count: 1 ## not needed for bedrock models
+  #   deployment_script: ## not needed for bedrock models
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #   payload_files:
+  #   - payload_en_3000-4000.jsonl
+  #   concurrency_levels:
+  #   - 1
+  #   # - 2
+  #   # - 4
+  #   # - 6
+  #   # - 8
+  #   env: ## no environment variables needed for claude 3 models
+  # - name: claude-v2:1
+  #   model_id: anthropic.claude-v2:1
+  #   model_version: "*"
+  #   model_name: claude-v2:1
+  #   ep_name: anthropic.claude-v2:1
+  #   instance_type: 'ClaudeV2:1-ODT'
+  #   image_uri: ## leaving it blank for bedrock supported models
+  #   deploy: no ## deployment step not needed for bedrock models
+  #   instance_count: 1 ## not needed for bedrock models
+  #   deployment_script: ## not needed for bedrock models
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #   payload_files:
+  #   - payload_en_3000-4000.jsonl
+  #   concurrency_levels:
+  #   - 1
+  #   - 2
+  #   - 4
+  #   # - 6
+  #   # - 8
+  #   env: ## no environment variables needed for claude 3 models
 
 report:
   per_inference_request_file: per_inference_request_results.csv
