@@ -83,7 +83,7 @@ datasets:
   #   payload_file: payload_en_50-150.jsonl
  
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_1000-2000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
@@ -162,17 +162,41 @@ inference_parameters:
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  # - name: claude-instant-v1
-  #   model_id: anthropic.claude-instant-v1
+  - name: claude-instant-v1
+    model_id: anthropic.claude-instant-v1
+    model_version: "*"
+    model_name: claude-instant-v1
+    ep_name: anthropic.claude-instant-v1
+    instance_type: 'ClaudeInstant-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+    payload_files:
+    - payload_en_1000-2000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    env: 
+  # - name: haiku-bedrock-trial
+  #   model_id: anthropic.claude-3-haiku-20240307-v1:0
   #   model_version: "*"
-  #   model_name: claude-instant-v1
-  #   ep_name: anthropic.claude-instant-v1
-  #   instance_type: 'ClaudeInstant-ODT'
+  #   model_name: haiku
+  #   ep_name: anthropic.claude-3-haiku-20240307-v1:0
+  #   instance_type: 'Claudev3-Haiku-ODT'
   #   image_uri: ## leaving it blank for bedrock supported models
   #   deploy: no ## deployment step not needed for bedrock models
   #   instance_count: 1 ## not needed for bedrock models
   #   deployment_script: ## not needed for bedrock models
   #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
   #   payload_files:
   #   - payload_en_3000-4000.jsonl
   #   concurrency_levels:
@@ -181,27 +205,7 @@ experiments:
   #   # - 4
   #   # - 6
   #   # - 8
-  #   env: 
-  - name: haiku-bedrock-trial
-    model_id: anthropic.claude-3-haiku-20240307-v1:0
-    model_version: "*"
-    model_name: haiku
-    ep_name: anthropic.claude-3-haiku-20240307-v1:0
-    instance_type: 'Claudev3-Haiku-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
+  #   env: ## no environment variables needed for claude 3 models
   # - name: claude-v2
   #   model_id: anthropic.claude-v2
   #   model_version: "*"
@@ -213,6 +217,8 @@ experiments:
   #   instance_count: 1 ## not needed for bedrock models
   #   deployment_script: ## not needed for bedrock models
   #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
   #   payload_files:
   #   - payload_en_3000-4000.jsonl
   #   concurrency_levels:
@@ -222,26 +228,28 @@ experiments:
   #   # - 6
   #   # - 8
   #   env: ## no environment variables needed for claude 3 models
-  - name: claude-3-sonnet
-    model_id: anthropic.claude-3-sonnet-20240229-v1:0
-    model_version: "*"
-    model_name: claude-3-sonnet
-    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
-    instance_type: 'Claudev3-Sonnet-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: ## no environment variables needed for claude 3 models
+  # - name: claude-3-sonnet
+  #   model_id: anthropic.claude-3-sonnet-20240229-v1:0
+  #   model_version: "*"
+  #   model_name: claude-3-sonnet
+  #   ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+  #   instance_type: 'Claudev3-Sonnet-ODT'
+  #   image_uri: ## leaving it blank for bedrock supported models
+  #   deploy: no ## deployment step not needed for bedrock models
+  #   instance_count: 1 ## not needed for bedrock models
+  #   deployment_script: ## not needed for bedrock models
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #   payload_files:
+  #   - payload_en_3000-4000.jsonl
+  #   concurrency_levels:
+  #   - 1
+  #   # - 2
+  #   # - 4
+  #   # - 6
+  #   # - 8
+  #   env: ## no environment variables needed for claude 3 models
   # - name: claude-v2:1
   #   model_id: anthropic.claude-v2:1
   #   model_version: "*"
@@ -253,6 +261,8 @@ experiments:
   #   instance_count: 1 ## not needed for bedrock models
   #   deployment_script: ## not needed for bedrock models
   #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
   #   payload_files:
   #   - payload_en_3000-4000.jsonl
   #   concurrency_levels:

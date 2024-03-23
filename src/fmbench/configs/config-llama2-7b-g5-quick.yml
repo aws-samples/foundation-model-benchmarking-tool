@@ -112,8 +112,8 @@ experiments:
 
     concurrency_levels:
     - 1
-    - 2
-    - 4
+    # - 2
+    # - 4
 
     accept_eula: true
     env:

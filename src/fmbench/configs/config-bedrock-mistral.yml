@@ -173,6 +173,8 @@ experiments:
     instance_count: 1 ## not needed for bedrock models
     deployment_script: ## not needed for bedrock models
     inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
@@ -193,6 +195,8 @@ experiments:
     instance_count: 1 ## not needed for bedrock models
     deployment_script: ## not needed for bedrock models
     inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
     - payload_en_3000-4000.jsonl
     concurrency_levels:

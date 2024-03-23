@@ -117,6 +117,8 @@ experiments:
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
     #- payload_en_1-500.jsonl
     - payload_en_50-150.jsonl
@@ -144,6 +146,8 @@ experiments:
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
     #- payload_en_1-500.jsonl
     - payload_en_50-150.jsonl

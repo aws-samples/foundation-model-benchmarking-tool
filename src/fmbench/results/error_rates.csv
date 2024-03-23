@@ -1,0 +1,2 @@
+experiment_name,payload_file,instance_type,concurrency,error_rate
+llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0,payload_en_1000-2000.jsonl,ml.g5.xlarge,1,0.0

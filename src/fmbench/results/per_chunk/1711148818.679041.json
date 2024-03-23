@@ -1,0 +1,18 @@
+{
+  "experiment_name": "claude-instant-v1",
+  "concurrency": 1,
+  "payload_file": "payload_en_1000-2000.jsonl",
+  "errors": [],
+  "successes": 1,
+  "error_rate": 0.0,
+  "all_prompts_token_count": 1421,
+  "prompt_token_count_mean": 1421.0,
+  "prompt_token_throughput": 367.29,
+  "all_completions_token_count": 68,
+  "completion_token_count_mean": 68.0,
+  "completion_token_throughput": 17.58,
+  "transactions": 1,
+  "transactions_per_second": 0.26,
+  "transactions_per_minute": 15,
+  "latency_mean": 3.771423625003081
+}

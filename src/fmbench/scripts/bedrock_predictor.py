@@ -26,13 +26,14 @@ logger = logging.getLogger(__name__)
 class BedrockPredictor(FMBenchPredictor):
 
     # overriding abstract method
-    def __init__(self, endpoint_name: str):
+    def __init__(self, endpoint_name: str, inference_spec: Dict):
 
         ## initiliazing the bedrock client
         bedrock_client = boto3.client('bedrock-runtime')
 
         self._predictor: Optional[bedrock_client] = None
         self._endpoint_name: str = endpoint_name
+        self._inference_spec = inference_spec
 
         try:
             # Create a bedrock runtime client 
@@ -307,5 +308,5 @@ class BedrockPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
-def create_predictor(endpoint_name: str):
-    return BedrockPredictor(endpoint_name)
+def create_predictor(endpoint_name: str, inference_spec: Dict):
+    return BedrockPredictor(endpoint_name, inference_spec)
