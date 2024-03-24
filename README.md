@@ -78,11 +78,17 @@ Create configuration file
     
     1. It uses a simple relationship of 750 words equals 1000 tokens, to get a more accurate representation of token counts use the `Llama2 tokenizer` (instructions are provided in the next section). ***It is strongly recommended that for more accurate results on token throughput you use a tokenizer specific to the model you are testing rather than the default tokenizer. See instructions provided later in this document on how to use a custom tokenizer***.
 
-    ```{.bash}
-    account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
-    fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml
-    ```
+        ```{.bash}
+        account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
+        fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml >> fmbench.log 2>&1
+        ```
 
+    1. Open another terminal window and do a `tail -f` on the `fmbench.log` file to see all the traces being generated at runtime.
+    
+        ```{.bash}
+        tail -f fmbench.log
+        ```
+    
 1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
 
 ### The DIY version (with gory details)
@@ -175,7 +181,7 @@ If you have an endpoint deployed on say `Amazon EKS` or `Amazon EC2` or have you
     - Skip the deployment step by setting the `2_deploy_model.ipynb` step under `run_steps` to `no`.
     - Set the `inference_script` under any experiment in the `experiments` section for which you want to use your new custom inference script to point to your new Python file (`my_custom_predictor.py`) that contains your custom predictor.
 
-#### Steps to run
+### Steps to run
 
 1. `pip install` the `FMBench` package from PyPi.
 
@@ -223,7 +229,7 @@ The following steps describe how to build the `FMBench` Python package.
 1. The `.whl` file is generated in the `dist` folder. Install the `.whl` in your current Python environment.
 
     ```{.bash}
-    pip install .\dist\fmbench-X.Y.Z.tar.gz
+    pip install dist/fmbench-X.Y.Z-py3-none-any.whl
     ```
 
 1. Run `FMBench` as usual through the `FMBench` CLI command.
