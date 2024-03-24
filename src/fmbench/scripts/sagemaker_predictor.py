@@ -2,10 +2,11 @@ import time
 import json
 import logging
 import sagemaker
-from typing import Dict
+from typing import Dict, Union
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
-from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
+from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
+                                               FMBenchPredictionResponse)
 
 ## set a logger
 logging.basicConfig(level=logging.INFO)
@@ -13,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
-    def __init__(self, endpoint_name: str, inference_spec: Dict):
+    def __init__(self, endpoint_name: str, inference_spec: Dict | None):
         self._predictor: Optional[sagemaker.base_predictor.Predictor] = None
         self._endpoint_name: str = endpoint_name
         self._inference_spec = inference_spec
@@ -63,5 +64,5 @@ class SageMakerPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
-def create_predictor(endpoint_name: str, inference_spec: Dict):
+def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     return SageMakerPredictor(endpoint_name, inference_spec)
