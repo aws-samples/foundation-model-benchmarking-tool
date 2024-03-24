@@ -26,9 +26,11 @@ s3_read_data:
     script_files:
     - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    source_data_files:
+    - banking77.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_bert.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -117,7 +119,8 @@ experiments:
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
-    split_input_and_parameters: yes
+    inference_spec:
+      split_input_and_parameters: yes
     payload_files:
     #- payload_en_1-500.jsonl
     - payload_en_50-150.jsonl

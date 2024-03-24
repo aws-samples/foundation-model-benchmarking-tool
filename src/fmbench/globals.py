@@ -6,7 +6,10 @@ from enum import Enum
 from pathlib import Path
 from datetime import datetime
 
-current_working_directory = Path.cwd()
+
+FMBENCH_PACKAGE_NAME: str = "fmbench"
+
+current_working_directory: str = Path.cwd()
 
 CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 
