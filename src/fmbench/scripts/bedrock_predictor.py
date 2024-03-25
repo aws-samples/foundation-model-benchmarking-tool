@@ -2,82 +2,65 @@ import os
 import boto3
 import logging
 from typing import Dict
-from litellm import embedding
-from litellm import completion
-from typing import Dict, List, Tuple
+from litellm import embedding ## import litellm for bedrock model support: embedding models in this case
+from litellm import completion ## support for text generation models on bedrock
 from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
 
 ## set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
 ## Represents the class to predict using a bedrock rest API 
 class BedrockPredictor(FMBenchPredictor):
-
     # overriding abstract method
-    def __init__(self, endpoint_name: str, inference_spec: Dict):
+    def __init__(self, endpoint_name: str, inference_spec: Dict | None):
 
-        ## initiliazing the bedrock client
-        bedrock_client = boto3.client('bedrock-runtime')
+        ## initialize the service name
+        service_name: str = "bedrock"
 
-        self._predictor: Optional[bedrock_client] = None
-        self._endpoint_name: str = endpoint_name
-        self._inference_spec = inference_spec
-
-        try:
-            # Create a bedrock runtime client 
-            self._predictor = bedrock_client
-
+        try: ## initializing some of the variables in the contructor 
+            self._endpoint_name = endpoint_name
+            self._inference_spec = inference_spec
+            self._predictor = boto3.client('bedrock-runtime')
+            self.aws_region = boto3.Session().region_name
+            self.bedrock_model = f"{service_name}/{self.endpoint_name}"
+            self.response_json = {}
+            logger.info(f"__init__ self._predictor={self._predictor}")
         except Exception as e:
-            logger.error(f"create_predictor, exception occured while creating predictor for endpoint_name={self._endpoint_name}, exception={e}")
-        logger.info(f"__init__ self._predictor={self._predictor}")
-        
-    def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
-        response_json = {}
-        latency = None
-        response = None
-        prompt_tokens = None
-        completion_tokens = None
+            logger.error(f"Exception occurred while creating predictor/initializing variables for endpoint_name={self._endpoint_name}, exception={e}")
+            self._predictor = None
 
+    def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         ## Represents the prompt payload
         prompt_input_data = payload['inputs']
+        os.environ["AWS_REGION_NAME"] = self.aws_region
+        logger.info(f"Endpoint name being invoked for inference using 'litellm': {self.bedrock_model}")
+        try:
+            ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
+            ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
+            logger.info(f"Invoking {self.bedrock_model} to get inference....")
+            response = completion(
+            model=self.bedrock_model,
+            messages=[{ "content": prompt_input_data,"role": "user"}], 
+            )
 
-        # Get the AWS region dynamically
-        aws_region = boto3.Session().region_name
+            ## iterate through the entire model response
+            for choice in response.choices:
+                ## extract the message and the message's content from litellm
+                if choice.message and choice.message.content:
+                    ## extract the response from the dict
+                    self.response_json["generated_text"] = choice.message.content
+                    break
 
-        ## getting the aws account region as an environment variable as declared in the litellm documentation
-        os.environ["AWS_REGION_NAME"] = aws_region
-
-        # Build the REST API URL based on the region and self.endpoint_name
-        bedrock_model = f"bedrock/{self.endpoint_name}"
-        logger.info(f"Endpoint name being invoked for inference using 'litellm': {bedrock_model}")
-
-        ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
-        ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
-        logger.info(f"Invoking {bedrock_model} to get inference....")
-        response = completion(
-        model=bedrock_model,
-        messages=[{ "content": prompt_input_data,"role": "user"}], 
-        )
-
-        ## iterate through the entire model response
-        for choice in response.choices:
-            ## extract the message and the message's content from litellm
-            if choice.message and choice.message.content:
-                ## extract the response from the dict
-                response_json["generated_text"] = choice.message.content
-                logger.info(f"Inference from {bedrock_model}: {response_json}")
-                break
-
-        # Extract number of input and completion prompt tokens (this is the same structure for embeddings and text generation models on Amazon Bedrock)
-        prompt_tokens = response.usage.prompt_tokens
-        completion_tokens = response.usage.completion_tokens
-        # Extract latency in seconds
-        latency_ms = response._response_ms
-        latency = latency_ms / 1000
-
-        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
+            # Extract number of input and completion prompt tokens (this is the same structure for embeddings and text generation models on Amazon Bedrock)
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.completion_tokens
+            # Extract latency in seconds
+            latency_ms = response._response_ms
+            latency = latency_ms / 1000
+        except Exception as e:
+            logger.error(f"Exception occurred during prediction for endpoint_name={self._endpoint_name}, exception={e}")
+        return FMBenchPredictionResponse(response_json=self.response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
 
     def calculate_cost(self, instance_type, config: dict, duration: float, metrics: dict) -> float:
         """Represents the function to calculate the cost for Bedrock experiments."""
@@ -116,45 +99,33 @@ class BedrockPredictor(FMBenchPredictor):
     
 class BedrockPredictorEmbeddings(BedrockPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
-        response_json = {}
-        latency = None
-        response = None
-        prompt_tokens = None
-        completion_tokens = None
-
         ## Represents the prompt payload
         prompt_input_data = payload['inputs']
-
-        # Get the AWS region dynamically
-        aws_region = boto3.Session().region_name
-
         ## getting the aws account region as an environment variable as declared in the litellm documentation
-        os.environ["AWS_REGION_NAME"] = aws_region
+        os.environ["AWS_REGION_NAME"] = self.aws_region
+        logger.info(f"Endpoint name being invoked for inference using 'litellm': {self.bedrock_model}")
+        try:
+            ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
+            ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
+            logger.info(f"Invoking {self.bedrock_model} to get inference....")
+            response = embedding(
+                model=self.bedrock_model,
+                input=[prompt_input_data],
+            )
 
-        # Build the REST API URL based on the region and self.endpoint_name
-        bedrock_model = f"bedrock/{self.endpoint_name}"
-        logger.info(f"Endpoint name being invoked for inference using 'litellm': {bedrock_model}")
+            embedding_vector = response.data[0]["embedding"]
+            self.response_json["generated_text"] = str(embedding_vector)
+            prompt_tokens = response.usage.prompt_tokens
+            completion_tokens = response.usage.total_tokens
 
-        ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
-        ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
-        logger.info(f"Invoking {bedrock_model} to get inference....")
-        response = embedding(
-            model=bedrock_model,
-            input=[prompt_input_data],
-        )
-
-        embedding_vector = response.data[0]["embedding"]
-        response_json["generated_text"] = str(embedding_vector)
-        prompt_tokens = response.usage.prompt_tokens
-        completion_tokens = response.usage.total_tokens
-
-        latency_ms = response._response_ms
-        latency = latency_ms / 1000
-
-        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
+            latency_ms = response._response_ms
+            latency = latency_ms / 1000
+        except Exception as e:
+            logger.error(f"Exception occurred during prediction for endpoint_name={self._endpoint_name}, exception={e}")
+        return FMBenchPredictionResponse(response_json=self.response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
 
 
-def create_predictor(endpoint_name: str, inference_spec: Dict):
+def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     ## represents the current bedrock embedding models
     embedding_models = ["amazon.titan-embed-text-v1", "cohere.embed-english-v3", "cohere.embed-multilingual-v3"]
     if endpoint_name in embedding_models: ## handling for embedding models

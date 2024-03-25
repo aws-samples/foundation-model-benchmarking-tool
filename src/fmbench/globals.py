@@ -6,7 +6,10 @@ from enum import Enum
 from pathlib import Path
 from datetime import datetime
 
-current_working_directory = Path.cwd()
+
+FMBENCH_PACKAGE_NAME: str = "fmbench"
+
+current_working_directory: str = Path.cwd()
 
 CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 
@@ -133,8 +136,7 @@ RESULTS_DIR: str = "results"
 # metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"
 ERROR_RATES_FNAME: str = "error_rates.csv"
-RESULTS_DESC_MD_FNAME: str = "results.md"
-RESULTS_HTML_RENDERED: str = "R=results.html"
+RESULTS_DESC_MD_FNAME: str = "report.md"
 SUMMARY_METRICS_W_PRICING_FNAME: str = "summary_metrics_w_pricing.csv"
 INSTANCE_PRICING_PER_HOUR_FNAME: str = "instance_pricing_per_hour.csv"
 SUMMARY_METRICS_FOR_DATASET_W_SCORES_FNAME: str = "summary_metrics_for_dataset_w_scores.csv"

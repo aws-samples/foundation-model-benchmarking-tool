@@ -21,3 +21,11 @@ metadata/*
 .fmbt/*
 dist/*
 tokenizer/*
+src/fmbench/results/
+src/fmbench/metadata/
+src/fmbench/distilbert-base-uncased-v1-SageMaker/
+distilbert-base-uncased-v1-SageMaker/
+results/
+llama2-7b-v1-SageMaker/
+fmbench.log
+llama2-13b-inf2-g5-p4d-v1-SageMaker/

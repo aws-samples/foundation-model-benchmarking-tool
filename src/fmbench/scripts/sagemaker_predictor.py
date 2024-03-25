@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
-    def __init__(self, endpoint_name: str, inference_spec: Dict):
+    def __init__(self, endpoint_name: str, inference_spec: Dict | None):
         self._predictor: Optional[sagemaker.base_predictor.Predictor] = None
         self._endpoint_name: str = endpoint_name
         self._inference_spec = inference_spec
@@ -89,5 +89,5 @@ class SageMakerPredictor(FMBenchPredictor):
         experiment_cost = cost_per_second * duration
         return experiment_cost
     
-def create_predictor(endpoint_name: str, inference_spec: Dict):
+def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     return SageMakerPredictor(endpoint_name, inference_spec)

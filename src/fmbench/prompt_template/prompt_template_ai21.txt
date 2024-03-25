@@ -1,0 +1,6 @@
+prompt:
+```
+{context}
+```
+{input}
+

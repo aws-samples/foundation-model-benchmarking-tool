@@ -26,9 +26,18 @@ s3_read_data:
     script_files:
     - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    source_data_files:
+#    - rajpurkar/squad_v2.jsonl
+    - 2wikimqa_e.jsonl
+    - 2wikimqa.jsonl
+    - hotpotqa_e.jsonl
+    - hotpotqa.jsonl
+    - narrativeqa.jsonl
+    - triviaqa_e.jsonl
+    - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -105,6 +114,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: p4d_hf_tgi.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -130,6 +140,7 @@ experiments:
     model_name: llama2-13b
     ep_name: llama-2-13b-inf2-24xlarge
     instance_type: "ml.inf2.24xlarge"
+    inference_script: sagemaker_predictor.py
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
     deploy: yes
     instance_count: 1
@@ -166,6 +177,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -198,6 +210,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -233,6 +246,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -267,6 +281,7 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
