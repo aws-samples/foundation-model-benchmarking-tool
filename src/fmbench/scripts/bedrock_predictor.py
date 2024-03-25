@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 class BedrockPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self, endpoint_name: str, inference_spec: Dict | None):
-
         ## initialize the service name
         service_name: str = "bedrock"
         try: ## initializing some of the variables in the contructor 

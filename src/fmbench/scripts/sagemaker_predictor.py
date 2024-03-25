@@ -78,7 +78,6 @@ class SageMakerPredictor(FMBenchPredictor):
         """Represents the function to calculate the cost of each experiment run."""
         experiment_cost = 0.0
         metrics = None ## this is not needed for now, will be used in the case of bedrock
-        # sagemaker experiment pricing calculation
         # price of the given instance for this experiment 
         hourly_rate = config['pricing'].get(instance_type, {})
         logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
