@@ -1,20 +1,10 @@
-import time
-import json
+import os
 import boto3
 import logging
-import anthropic
-import requests as req
-import botocore.session
 from typing import Dict
-import anthropic_bedrock
-from itertools import groupby
-from operator import itemgetter
-from botocore.config import Config
-from botocore.auth import SigV4Auth
+from litellm import embedding
+from litellm import completion
 from typing import Dict, List, Tuple
-from fmbench.utils import count_tokens
-from botocore.awsrequest import AWSRequest
-from anthropic_bedrock import AnthropicBedrock
 from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
 
 ## set a logger
@@ -44,232 +34,48 @@ class BedrockPredictor(FMBenchPredictor):
         logger.info(f"__init__ self._predictor={self._predictor}")
         
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
-        response_json = None
+        response_json = {}
         latency = None
         response = None
-        inference_params = None
         prompt_tokens = None
         completion_tokens = None
 
+        ## Represents the prompt payload
         prompt_input_data = payload['inputs']
-
-        ## extract the input data prompts here using our normal count tokenizer to count the number of input tokens
-        prompt_tokens = count_tokens(payload['inputs']) ## NEED TO ADD BEDROCK SUPPORT FOR EVERY MODEL HERE TOO - TODO
 
         # Get the AWS region dynamically
         aws_region = boto3.Session().region_name
 
-        ## initialize an anthropic client to get token counts for claude models
-        client = AnthropicBedrock()
+        ## getting the aws account region as an environment variable as declared in the litellm documentation
+        os.environ["AWS_REGION_NAME"] = aws_region
 
         # Build the REST API URL based on the region and self.endpoint_name
-        bedrock_rest_api_url = f"https://bedrock-runtime.{aws_region}.amazonaws.com/model/{self.endpoint_name}/invoke"
-        logger.info(f"REST API URL created based on bedrock model id '{self.endpoint_name}' : {bedrock_rest_api_url}")
+        bedrock_model = f"bedrock/{self.endpoint_name}"
+        logger.info(f"Endpoint name being invoked for inference using 'litellm': {bedrock_model}")
 
-        ## ------------------------------------------------------ Default parameters and prompt formats ------------------------------------------------------
-        ## inference parameters for each model type - need to abstract this out
-        inference_params = {
-            "claude_v2": {
-                "max_tokens_to_sample": 300,
-                "top_p": 1,
-                "top_k": 250,
-                "stop_sequences": ["\n\nHuman:"],
-            },
-            "claude_3": {
-                "max_tokens": 2000,
-            },
-            "llama_2": {
-                "max_gen_len": 512,
-                "temperature": 0.5,
-                "top_p": 0.9,
-            },
-            "mixtral": {
-                "max_tokens": 200,
-                "temperature": 0.5,
-                "top_p": 0.9,
-                "top_k": 50,
-            },
-            "cohere": {
-                "temperature": 0.9,
-                "p": 1,
-                "k": 0,
-            },
-            "ai21": {
-                "maxTokens": 400,
-                "temperature": 0.9,
-                "topP": 0.9,
-                "stopSequences": [],
-                "countPenalty": {"scale": 0},
-                "presencePenalty": {"scale": 0},
-                "frequencyPenalty": {"scale": 0},
-            },
-        }
+        ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
+        ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
+        logger.info(f"Invoking {bedrock_model} to get inference....")
+        response = completion(
+        model=bedrock_model,
+        messages=[{ "content": prompt_input_data,"role": "user"}], 
+        )
 
-        # Define formats for different models
-        claude_v2_format = {
-            "prompt": f"\n\nHuman:{prompt_input_data}\n\nAssistant:",
-            "anthropic_version": "bedrock-2023-05-31",
-            **inference_params["claude_v2"],
-        }
+        ## iterate through the entire model response
+        for choice in response.choices:
+            ## extract the message and the message's content from litellm
+            if choice.message and choice.message.content:
+                ## extract the response from the dict
+                response_json["generated_text"] = choice.message.content
+                logger.info(f"Inference from {bedrock_model}: {response_json}")
+                break
 
-        claude_3_format = {
-            "messages": [{"role": "user", "content": prompt_input_data}],
-            "anthropic_version": "bedrock-2023-05-31",
-            **inference_params["claude_3"],
-        }
-
-        llama_2_format = {
-            "prompt": prompt_input_data,
-            **inference_params["llama_2"],
-        }
-
-        mixtral_format = {
-            "prompt": f"<s>[INST] {prompt_input_data} [/INST]",
-            **inference_params["mixtral"],
-        }
-
-        cohere_format = {
-            "prompt": prompt_input_data,
-            **inference_params["cohere"],
-        }
-
-        ai21_format = {
-            "prompt": prompt_input_data,
-            **inference_params["ai21"],
-        }
-
-        ## ------------------------------------------------------ model mapping to payload formats ------------------------------------------------------
-
-        # Define a dictionary with payload formats for different models associated to the model id
-        payload_formats = {
-            "anthropic.claude-3-haiku-20240307-v1:0": claude_3_format,
-            "anthropic.claude-3-sonnet-20240229-v1:0": claude_3_format,
-            "anthropic.claude-v2": claude_v2_format,
-            "anthropic.claude-instant-v1": claude_v2_format,
-            "anthropic.claude-v2:1": claude_v2_format,
-            "meta.llama2-13b-chat-v1": llama_2_format,
-            "meta.llama2-70b-chat-v1": llama_2_format,
-            "mistral.mistral-7b-instruct-v0:2": mixtral_format,
-            "mistral.mixtral-8x7b-instruct-v0:1": mixtral_format,
-            "cohere.command-text-v14": cohere_format,
-            "cohere.command-light-text-v14": cohere_format,
-            "amazon.titan-embed-text-v1": {"inputText": prompt_input_data},
-            "amazon.titan-text-lite-v1": {"inputText": prompt_input_data},
-            "amazon.titan-text-express-v1": {"inputText": prompt_input_data},
-            "ai21.j2-ultra-v1": ai21_format,
-            "ai21.j2-mid-v1": ai21_format,
-        }
-
-         # Get the payload format based on self.endpoint_name
-        text_payload = payload_formats.get(self.endpoint_name)
-        if not text_payload:
-            logger.error(f"Unrecognized model endpoint: {self.endpoint_name}. Use a valid bedrock model id. Refer to supported models here: https://docs.aws.amazon.com/bedrock/latest/userguide/models-supported.html")
-        ## -------------------------------------------------------------------------------------------------------------------------------------
-
-        # Converting the payload dictionary into a JSON-formatted string to be sent in the HTTP request
-        request_payload = text_payload
-        request_body = json.dumps(request_payload)
-
-        # Creating an AWSRequest object for a POST request with the service specified endpoint, JSON request body, and HTTP headers
-        request = AWSRequest(method='POST',
-                            url=bedrock_rest_api_url,
-                            data=request_body,
-                            headers={'content-type': 'application/json'})
-
-        # Initializing a botocore session
-        session = botocore.session.Session()
-
-        # Adding a SigV4 authentication information to the AWSRequest object, signing the request
-        sigv4 = SigV4Auth(session.get_credentials(), 'bedrock', 'us-east-1')
-        sigv4.add_auth(request)
-
-        # Prepare the request by formatting it correctly
-        prepped = request.prepare()
-
-        # start the latency metric timer here
-        st = time.perf_counter()
-        # Send the HTTP POST request to the prepared URL with the specified headers & JSON-formatted request body, storing the response
-        response = req.post(prepped.url, headers=prepped.headers, data=request_body)
-        # recording the latency at the end of bedrock prediction
-        latency = time.perf_counter() - st
-
-        if response.status_code == 200:
-            response_body = response.content.decode('utf-8')
-            response_json = json.loads(response_body)
-
-            if isinstance(response_json, list):
-                response_json = response_json[0]
-                # response_json = response_json
-
-            # add a key called completion, if not there, this is for haiku, sonnet
-            if response_json is not None:
-                if response_json.get("generated_text") is None:
-                    if "content" in response_json:
-                        content_items = response_json["content"]
-                        response_text = ""
-                        for content_item in content_items:
-                            if content_item["type"] == "text":
-                                response_text += content_item["text"]
-                        response_json["generated_text"] = response_text
-                    ## this is for ai21
-                    elif "generatedToken" in response_json:
-                        # If the response contains generatedToken, create the completion string
-                        completion = ""
-                        for token_dict in response_json["generatedToken"]:
-                            completion += token_dict["generatedToken"]["token"]
-                        response_json["generated_text"] = completion
-                    ## this is for mistral, llama
-                    elif "outputs" in response_json: 
-                        # If the response contains outputs, get the text from the first output
-                        if response_json["outputs"] and isinstance(response_json["outputs"], list):
-                            first_output = response_json["outputs"][0]
-                            if "text" in first_output:
-                                response_json["generated_text"] = first_output["text"]
-                    ## this is for claude v2, v2:1 and instant models
-                    elif "completion" in response_json:
-                        # Extract generated text from "completion" key
-                        response_json["generated_text"] = response_json["completion"]
-                    else:
-                        logger.warning(f"get_prediction, response_json does not contain 'content', 'generatedToken', or 'outputs' key: {response_json}")
-                
-                
-                
-                
-                ## this is the PAYLOAD PROMPT COUNT BASED ON ALL MODELS ON BEDROCK 
-                ## extract the inputs from the payload for the bedrock specific prompt plug in below in payload formats
-                ## this is the case for llama on bedrock
-                if "prompt_token_count" in response_json:
-                    prompt_tokens = response_json["prompt_token_count"]
-                    logger.info(f"LLAMA BEDROCK PROMPT TOKENS: {prompt_tokens}")
-                ## this is the case for titan on bedrock
-                elif "inputTextTokenCount" in response_json:
-                    completion_tokens = response_json["inputTextTokenCount"]
-                    logger.info(f"TITAN PROMPT TOKENS: {prompt_tokens}")
-                ## this is the case for all claude models
-                elif "claude" in bedrock_rest_api_url:
-                    completion_tokens = client.count_tokens(prompt_input_data) 
-                    logger.info(f"CLAUDE PROMPT TOKENS: {prompt_tokens}")
-                else:
-                    logger.info(f"Counting tokens using the default hf tokenizer......")
-                    prompt_tokens = count_tokens(prompt_input_data)
-
-
-                ## this is the TOKEN COMPLETION COUNT FOR ALL MODELS ON BEDROCK -- llama and titan. CLAUDE ADDED AS AN ANTHROPIC TOKEN COUNTER CLIENT
-                if "generation_token_count" in response_json:
-                    completion_tokens = response_json["generation_token_count"]
-                    logger.info(f"Llama completion tokens: {completion_tokens}")
-                elif "tokenCount" in response_json:
-                    completion_tokens = response_json["tokenCount"]
-                    logger.info(f"Titan completion tokes: {completion_tokens}")
-                elif "claude" in bedrock_rest_api_url:
-                    completion_tokens = client.count_tokens(response_json['generated_text'])
-                    logger.info(f"Claude completion tokens: {completion_tokens}")                               
-                else: ## for all other models
-                    completion = response_json.get("generated_text", "")
-                    logger.info(f"Counting tokens using the default hf tokenizer......")
-                    completion_tokens = count_tokens(completion)
-        else:
-            logger.error(f"get_prediction, received non-200 status code {response.status_code} from predictor={self._endpoint_name}")
+        # Extract number of input and completion prompt tokens (this is the same structure for embeddings and text generation models on Amazon Bedrock)
+        prompt_tokens = response.usage.prompt_tokens
+        completion_tokens = response.usage.completion_tokens
+        # Extract latency in seconds
+        latency_ms = response._response_ms
+        latency = latency_ms / 1000
 
         return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
 
@@ -308,5 +114,50 @@ class BedrockPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
+class BedrockPredictorEmbeddings(BedrockPredictor):
+    def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
+        response_json = {}
+        latency = None
+        response = None
+        prompt_tokens = None
+        completion_tokens = None
+
+        ## Represents the prompt payload
+        prompt_input_data = payload['inputs']
+
+        # Get the AWS region dynamically
+        aws_region = boto3.Session().region_name
+
+        ## getting the aws account region as an environment variable as declared in the litellm documentation
+        os.environ["AWS_REGION_NAME"] = aws_region
+
+        # Build the REST API URL based on the region and self.endpoint_name
+        bedrock_model = f"bedrock/{self.endpoint_name}"
+        logger.info(f"Endpoint name being invoked for inference using 'litellm': {bedrock_model}")
+
+        ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
+        ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
+        logger.info(f"Invoking {bedrock_model} to get inference....")
+        response = embedding(
+            model=bedrock_model,
+            input=[prompt_input_data],
+        )
+
+        embedding_vector = response.data[0]["embedding"]
+        response_json["generated_text"] = str(embedding_vector)
+        prompt_tokens = response.usage.prompt_tokens
+        completion_tokens = response.usage.total_tokens
+
+        latency_ms = response._response_ms
+        latency = latency_ms / 1000
+
+        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
+
+
 def create_predictor(endpoint_name: str, inference_spec: Dict):
-    return BedrockPredictor(endpoint_name, inference_spec)
+    ## represents the current bedrock embedding models
+    embedding_models = ["amazon.titan-embed-text-v1", "cohere.embed-english-v3", "cohere.embed-multilingual-v3"]
+    if endpoint_name in embedding_models: ## handling for embedding models
+        return BedrockPredictorEmbeddings(endpoint_name, inference_spec)
+    else: ## handling for all text generation models
+        return BedrockPredictor(endpoint_name, inference_spec)

@@ -5,5 +5,6 @@ pandas==2.1.4
 datasets==2.16.1
 seaborn==0.13.1
 tomark==0.1.4
+litellm==1.34.0 ## library to easily interface with LLM providers, in this case, for Amazon Bedrock
 anthropic==0.2.8 ## adding anthropic for claude token counting functionality
 anthropic-bedrock==0.8.0 ## adding anthropic bedrock for claude token counting functionality
