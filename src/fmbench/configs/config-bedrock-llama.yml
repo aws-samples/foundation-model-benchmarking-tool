@@ -41,11 +41,11 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    1_generate_data.ipynb: no
+    2_deploy_model.ipynb: no ## nothing to deploy
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
+    5_cleanup.ipynb: no ## nothing to clean up
 
 datasets:
   prompt_template_keys:
@@ -97,7 +97,7 @@ metrics:
     latenct_wt: 0.35
   
 pricing:
-  ## sagemaker pricing
+  ## instance pricing (hourly)
   ml.m5.xlarge: 0.23
   ml.g5.xlarge: 1.006
   ml.g5.2xlarge: 1.212
@@ -108,7 +108,7 @@ pricing:
   ml.inf2.48xlarge: 15.58
   ml.p4d.24xlarge: 37.688
   ml.p3.2xlarge: 3.825
-  ## Bedrock on demand pricing
+  ## Bedrock on demand pricing (token based pricing)
   ## CLAUDE
   Claudev3-Haiku-ODT:
   - input-per-1k-tokens: 0.00025

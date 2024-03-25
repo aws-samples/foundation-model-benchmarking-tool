@@ -2,7 +2,7 @@ ipywidgets==8.1.1
 sagemaker==2.203.0
 transformers==4.36.2
 pandas==2.1.4
+litellm==1.34.0 ## library to easily interface with LLM providers, in this case, for Amazon Bedrock
 datasets==2.16.1
 seaborn==0.13.1
 tomark==0.1.4
-litellm==1.34.0 ## library to easily interface with LLM providers, in this case, for Amazon Bedrock

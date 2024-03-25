@@ -33,7 +33,6 @@ class BedrockPredictor(FMBenchPredictor):
         ## Represents the prompt payload
         prompt_input_data = payload['inputs']
         os.environ["AWS_REGION_NAME"] = self.aws_region
-        logger.info(f"Endpoint name being invoked for inference using 'litellm': {self.bedrock_model}")
         try:
             ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
             ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
@@ -65,7 +64,7 @@ class BedrockPredictor(FMBenchPredictor):
         """Represents the function to calculate the cost for Bedrock experiments."""
         experiment_cost = 0.0
 
-        if metrics:
+        if metrics: ## refer to the metrics dict returned at the end of the run to track the mean prompt and completion token count
             prompt_tokens = metrics.get("all_prompts_token_count", 0)
             completion_tokens = metrics.get("all_completions_token_count", 0)
 
@@ -96,13 +95,13 @@ class BedrockPredictor(FMBenchPredictor):
         """The endpoint name property."""
         return self._endpoint_name
     
+## subclass of BedrockPredictor for embedding models supported on Amazon Bedrock
 class BedrockPredictorEmbeddings(BedrockPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         ## Represents the prompt payload
         prompt_input_data = payload['inputs']
         ## getting the aws account region as an environment variable as declared in the litellm documentation
         os.environ["AWS_REGION_NAME"] = self.aws_region
-        logger.info(f"Endpoint name being invoked for inference using 'litellm': {self.bedrock_model}")
         try:
             ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
             ## [CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE]
