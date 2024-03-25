@@ -17,7 +17,6 @@ class BedrockPredictor(FMBenchPredictor):
 
         ## initialize the service name
         service_name: str = "bedrock"
-
         try: ## initializing some of the variables in the contructor 
             self._endpoint_name = endpoint_name
             self._inference_spec = inference_spec

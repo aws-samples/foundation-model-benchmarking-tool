@@ -241,6 +241,6 @@ experiments:
 report:
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
-  txn_count_for_showing_cost: 100000
+  txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
