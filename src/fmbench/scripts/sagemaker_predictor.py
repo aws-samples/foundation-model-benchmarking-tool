@@ -35,7 +35,6 @@ class SageMakerPredictor(FMBenchPredictor):
         latency = None
         prompt_tokens = None
         completion_tokens = None
-
         ## represents the number of tokens in the prompt payload -- TO ABSTRACT THIS IN THE FUTURE ITERATION
         prompt_tokens = count_tokens(payload["inputs"])
 
@@ -60,7 +59,6 @@ class SageMakerPredictor(FMBenchPredictor):
             if response_json.get("generated_text") is None:            
                 if response_json.get("predicted_label") is not None:                    
                     response_json["generated_text"] = response_json.get("predicted_label")
-            
             ## counts the completion tokens for the model using the default/user provided tokenizer - to change this too in the future iteration and abstract it out
             completion_tokens = count_tokens(response_json.get("generated_text"))
 
@@ -76,12 +74,11 @@ class SageMakerPredictor(FMBenchPredictor):
     
     def calculate_cost(self, instance_type: str, config: dict, duration: float, metrics: dict) -> str:
         """Represents the function to calculate the cost of each experiment run."""
-        experiment_cost: Optional[float] = 0.0
-        metrics = None ## this is not needed for now, will be used in the case of bedrock
+        experiment_cost: Optional[float] = 0.0 ## cannot be converted into 'None' because 'NoneType' cannot be added during cost calculation, only integers
         try:
-            hourly_rate = config['pricing'].get(instance_type, {}) 
+            hourly_rate = config['pricing'].get(instance_type, {}) ## cannot initialize in the constructor, since it uses config which is parameterized in this function
             logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
-            experiment_cost = (hourly_rate / 3600) * duration
+            experiment_cost = (hourly_rate / 3600) * duration ## calculating the experiment cost for instance based pricing
         except Exception as e:
             logger.error(f"Exception occurred during experiment cost calculation....., exception={e}")
         return experiment_cost

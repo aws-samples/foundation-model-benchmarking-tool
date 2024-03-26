@@ -1,5 +1,5 @@
-pricing:
-  ## sagemaker pricing
+pricing: ## this pricing file is used for all config files (contains sagemaker instance based pricing, bedrock ODT for now)
+  ## INSTANCE BASED PRICING -------> FOR SAGEMAKER, EKS, BEDROCK PROVISIONED THROUGHPUT, BRING YOUR OWN ENDPOINT INSTANCES THAT ARE PRICED HOURLY
   ml.m5.xlarge: 0.23
   ml.g5.xlarge: 1.006
   ml.g5.2xlarge: 1.212
@@ -10,7 +10,8 @@ pricing:
   ml.inf2.48xlarge: 15.58
   ml.p4d.24xlarge: 37.688
   ml.p3.2xlarge: 3.825
-  ## Bedrock on demand pricing
+
+  ## TOKEN BASED PRICING -------> FOR BEDROCK INPUT AND OUTPUT TOKENS (ON DEMAND THROUGHPUT PRICING)
   ## CLAUDE
   Claudev3-Haiku-ODT:
   - input-per-1k-tokens: 0.00025

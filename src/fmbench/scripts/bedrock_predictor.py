@@ -64,13 +64,13 @@ class BedrockPredictor(FMBenchPredictor):
 
     def calculate_cost(self, instance_type, config: dict, duration: float, metrics: dict) -> float:
         """Represents the function to calculate the cost for Bedrock experiments."""
-        experiment_cost: Optional[float] = 0.0
+        experiment_cost: Optional[float] = 0.0 ## not changing into None since int can only be added, not Nonetype
         try:
             if metrics:
                 prompt_tokens = metrics.get("all_prompts_token_count", )
                 completion_tokens = metrics.get("all_completions_token_count", )
                 # Retrieve the pricing information for the instance type
-                instance_pricing = config['pricing'].get(instance_type, [])
+                instance_pricing = config['pricing'].get(instance_type, []) ## config is parameterized in this function, so cannot add this as a constructor var
                 logger.info(f"pricing dict: {instance_pricing}")
                 # Calculate cost based on the number of input and output tokens
                 input_token_cost = 0.0
@@ -94,7 +94,7 @@ class BedrockPredictor(FMBenchPredictor):
 class BedrockPredictorEmbeddings(BedrockPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         ## Represents the prompt payload
-        prompt_input_data = payload['inputs']
+        prompt_input_data = payload['inputs'] 
         ## getting the aws account region as an environment variable as declared in the litellm documentation
         os.environ["AWS_REGION_NAME"] = self.aws_region
         try:
@@ -103,18 +103,15 @@ class BedrockPredictorEmbeddings(BedrockPredictor):
                 model=self.bedrock_model,
                 input=[prompt_input_data],
             )
-
             embedding_vector = response.data[0]["embedding"]
             self.response_json["generated_text"] = str(embedding_vector)
             prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.total_tokens
-
+            completion_tokens = response.usage.total_tokens ## using total tokens as completion token count for embedding models for now
             latency_ms = response._response_ms
-            latency = latency_ms / 1000
+            latency = latency_ms / 1000 ## calculate latency in seconds
         except Exception as e:
             logger.error(f"Exception occurred during prediction for endpoint_name={self._endpoint_name}, exception={e}")
         return FMBenchPredictionResponse(response_json=self.response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
-
 
 def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     if endpoint_name in EMBEDDING_MODELS: ## handling for embedding models

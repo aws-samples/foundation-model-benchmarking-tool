@@ -19,7 +19,7 @@ logger.setLevel(logging.INFO)
 # The files in LongBench contain nonstandard or irregular Unicode.
 # For compatibility and safety we normalize them.
 def _normalize(text, form='NFC'):
-    return unicodedata.normalize(form, text)
+    return unicodedata.normalize(form, str(text))
 
 def _download_from_s3(bucket_name, prefix, local_dir):
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
@@ -101,7 +101,7 @@ def load_config(config_file) -> Dict:
 
             # Get object from S3 and load YAML
             response = s3_client.get_object(Bucket=bucket, Key=key)
-            content = response["Body"]
+            content = response["Body"].read().decode('utf-8')
             
         except NoCredentialsError:
             print("AWS credentials not found.")
