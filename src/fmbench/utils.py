@@ -101,7 +101,7 @@ def load_config(config_file) -> Dict:
 
             # Get object from S3 and load YAML
             response = s3_client.get_object(Bucket=bucket, Key=key)
-            content = response["Body"]
+            content = response["Body"].read().decode('utf-8')
             
         except NoCredentialsError:
             print("AWS credentials not found.")
