@@ -2,7 +2,7 @@ import time
 import json
 import logging
 import sagemaker
-from typing import Dict
+from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
@@ -76,16 +76,14 @@ class SageMakerPredictor(FMBenchPredictor):
     
     def calculate_cost(self, instance_type: str, config: dict, duration: float, metrics: dict) -> str:
         """Represents the function to calculate the cost of each experiment run."""
-        experiment_cost = 0.0
+        experiment_cost: Optional[float] = 0.0
         metrics = None ## this is not needed for now, will be used in the case of bedrock
-        # price of the given instance for this experiment 
-        hourly_rate = config['pricing'].get(instance_type, {})
-        logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
-
-        cost_per_second = hourly_rate / 3600
-        logger.info(f"the rate for {config['general']['model_name']} running on {instance_type} is {cost_per_second} per second")
-        
-        experiment_cost = cost_per_second * duration
+        try:
+            hourly_rate = config['pricing'].get(instance_type, {}) 
+            logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
+            experiment_cost = (hourly_rate / 3600) * duration
+        except Exception as e:
+            logger.error(f"Exception occurred during experiment cost calculation....., exception={e}")
         return experiment_cost
     
 def create_predictor(endpoint_name: str, inference_spec: Dict | None):

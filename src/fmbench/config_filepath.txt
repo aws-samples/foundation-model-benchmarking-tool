@@ -1,1 +1,1 @@
-configs/config-bedrock-llama.yml
+configs/config-claude-models.yml

@@ -1,12 +1,12 @@
 general:
-  name: "fmbench-claude"      
-  model_name: "claude"
+  name: "fmbench-bedrockVsm-llama"      
+  model_name: "llama2-13b"
   
 # AWS and SageMaker settings
 aws:
   region: {region}
   # uncomment and set the Role ARN if not running on sagemaker
-  sagemaker_execution_role: {role_arn}
+  sagemaker_execution_role: arn:aws:iam::218208277580:role/service-role/AmazonSageMaker-ExecutionRole-20230911T184036
   ## these are the buckets/resources you will create in your account below:
   bucket: {write_bucket}
 
@@ -26,9 +26,6 @@ s3_read_data:
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
-    configs_prefix: configs
-    config_files:
-    - pricing.yml
     source_data_files:
     - 2wikimqa_e.jsonl
     - 2wikimqa.jsonl
@@ -39,16 +36,16 @@ s3_read_data:
     - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_claude.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    1_generate_data.ipynb: no
+    2_deploy_model.ipynb: no ## nothing to deploy
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
+    5_cleanup.ipynb: no ## nothing to clean up
 
 datasets:
   prompt_template_keys:
@@ -94,12 +91,78 @@ datasets:
   #   payload_file: payload_en_50-150.jsonl
  
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_3000-4000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
   
-pricing: pricing.yml ## mention the relative path to your yml file, in this case, it is local
+pricing:
+  ## instance pricing (hourly)
+  ml.m5.xlarge: 0.23
+  ml.g5.xlarge: 1.006
+  ml.g5.2xlarge: 1.212
+  ml.g5.12xlarge: 7.09
+  ml.g5.24xlarge: 10.18
+  ml.g5.48xlarge: 20.36
+  ml.inf2.24xlarge: 7.79
+  ml.inf2.48xlarge: 15.58
+  ml.p4d.24xlarge: 37.688
+  ml.p3.2xlarge: 3.825
+  ## Bedrock on demand pricing (token based pricing)
+  ## CLAUDE
+  Claudev3-Haiku-ODT:
+  - input-per-1k-tokens: 0.00025
+  - output-per-1k-tokens: 0.00125
+  Claudev3-Sonnet-ODT:
+  - input-per-1k-tokens: 0.00300
+  - output-per-1k-tokens: 0.01500
+  ClaudeV2-ODT: 
+  - input-per-1k-tokens: 0.000800 
+  - output-per-1k-tokens: 0.002400
+  ClaudeV2:1-ODT: 
+  - input-per-1k-tokens: 0.000800 
+  - output-per-1k-tokens: 0.002400
+  ClaudeInstant-ODT: ## on demand pricing range for price per 1k input AND 1k output tokens 33 -- ADD ALL ODT PRICING THIS WAY FOR NOW
+  - input-per-1k-tokens: 0.00080 ## per 1k input tokens
+  - output-per-1k-tokens: 0.00240 ## per 1k output tokens
+  ## TITAN
+  titan-emb-text-ODT: 
+  - input-per-1k-tokens: 0.0001
+  - output-per-1k-tokens: 0 ## n/a
+  titan-text-lite-ODT: 
+  - input-per-1k-tokens: 0.0003
+  - output-per-1k-tokens: 0.0004
+  titan-text-express-ODT: 
+  - input-per-1k-tokens: 0.0008
+  - output-per-1k-tokens: 0.0016
+  ## MISTRAL & MIXTRAL
+  Mistral-ODT:
+  - input-per-1k-tokens: 0.00015
+  - output-per-1k-tokens: 0.0002
+  Mixtral-ODT: 
+  - input-per-1k-tokens: 0.00045
+  - output-per-1k-tokens: 0.0007
+  ##  LLAMA
+  Llama13b-ODT:
+  - input-per-1k-tokens: 0.00075
+  - output-per-1k-tokens: 0.00100
+  Llama70b-ODT: 
+  - input-per-1k-tokens: 0.00195
+  - output-per-1k-tokens: 0.00195
+  ##  AI21
+  AI21mid-ODT:
+  - input-per-1k-tokens: 0.0125
+  - output-per-1k-tokens: 0.0125
+  AI21ultra-ODT: 
+  - input-per-1k-tokens: 0.0188
+  - output-per-1k-tokens: 0.0188
+  ## COHERE
+  CohereCommand-ODT: 
+  - input-per-1k-tokens: 0.0015
+  - output-per-1k-tokens: 0.0020
+  CohereCommLight-ODT: 
+  - input-per-1k-tokens: 0.0003
+  - output-per-1k-tokens: 0.0006
   
 inference_parameters:
   ContentType: 'application/json'
@@ -107,94 +170,61 @@ inference_parameters:
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: claude-instant-v1
-    model_id: anthropic.claude-instant-v1
+  - name: llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
+    model_id: meta-textgenerationneuron-llama-2-13b-f
+    model_version: 1.0.0
+    model_name: llama2-13b
+    ep_name: llama-2-13b-inf2-48xlarge    
+    instance_type: "ml.inf2.48xlarge"    
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    payload_files:
+    # - payload_en_1-500.jsonl
+    # - payload_en_500-1000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    # - 4
+    # - 6
+    # - 8
+
+    accept_eula: true
+    env:
+      OPTION_DTYPE: fp16
+      OPTION_MAX_ROLLING_BATCH_SIZE: "4"
+      OPTION_N_POSITIONS: "4096"
+      OPTION_TENSOR_PARALLEL_DEGREE: "24"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+      SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
+      SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
+  - name: llama2-13b-chat-bedrock
+    model_id: meta.llama2-13b-chat-v1
     model_version: "*"
-    model_name: claude-instant-v1
-    ep_name: anthropic.claude-instant-v1
-    instance_type: 'ClaudeInstant-ODT'
+    model_name: llama2-13b-chat
+    ep_name: meta.llama2-13b-chat-v1
+    instance_type: 'Llama13b-ODT'
     image_uri: ## leaving it blank for bedrock supported models
     deploy: no ## deployment step not needed for bedrock models
-    instance_count: ## not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
     deployment_script: ## not needed for bedrock models
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
     payload_files:
-    - payload_en_1000-2000.jsonl
+    - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
+    - 2
     # - 4
     # - 6
     # - 8
     env: 
-  # - name: claude-3-haiku
-  #   model_id: anthropic.claude-3-haiku-20240307-v1:0
-  #   model_version: "*"
-  #   model_name: haiku
-  #   ep_name: anthropic.claude-3-haiku-20240307-v1:0
-  #   instance_type: 'Claudev3-Haiku-ODT'
-  #   image_uri: ## leaving it blank for bedrock supported models
-  #   deploy: no ## deployment step not needed for bedrock models
-  #   instance_count:  ## not needed for bedrock models
-  #   deployment_script: ## not needed for bedrock models
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #   payload_files:
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   - 2
-  #   - 4
-  #   # - 6
-  #   # - 8
-  #   env: ## no environment variables needed for claude 3 models
-  # - name: claude-3-sonnet
-  #   model_id: anthropic.claude-3-sonnet-20240229-v1:0
-  #   model_version: "*"
-  #   model_name: claude-3-sonnet
-  #   ep_name: anthropic.claude-3-sonnet-20240229-v1:0
-  #   instance_type: 'Claudev3-Sonnet-ODT'
-  #   image_uri: ## leaving it blank for bedrock supported models
-  #   deploy: no ## deployment step not needed for bedrock models
-  #   instance_count:  ## not needed for bedrock models
-  #   deployment_script: ## not needed for bedrock models
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #   payload_files:
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   - 2
-  #   - 4
-  #   # - 6
-  #   # - 8
-  #   env: ## no environment variables needed for claude 3 models
-  # - name: claude-v2:1
-  #   model_id: anthropic.claude-v2:1
-  #   model_version: "*"
-  #   model_name: claude-v2:1
-  #   ep_name: anthropic.claude-v2:1
-  #   instance_type: 'ClaudeV2:1-ODT'
-  #   image_uri: ## leaving it blank for bedrock supported models
-  #   deploy: no ## deployment step not needed for bedrock models
-  #   instance_count:  ## not needed for bedrock models
-  #   deployment_script: ## not needed for bedrock models
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #   payload_files:
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   - 2
-  #   - 4
-  #   # - 6
-  #   # - 8
-  #   env: ## no environment variables needed for claude 3 models
 
 report:
   per_inference_request_file: per_inference_request_results.csv
