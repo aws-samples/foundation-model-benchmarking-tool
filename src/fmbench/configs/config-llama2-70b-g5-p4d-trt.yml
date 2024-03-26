@@ -26,6 +26,9 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    configs_prefix: configs
+    config_files:
+    - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     - 2wikimqa_e.jsonl
@@ -86,13 +89,7 @@ metrics:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
   
-pricing:
-  ml.g5.12xlarge: 7.09
-  ml.g5.24xlarge: 10.18
-  ml.g5.48xlarge: 20.36
-  ml.inf2.24xlarge: 7.79
-  ml.inf2.48xlarge: 15.58
-  ml.p4d.24xlarge: 37.688
+pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters:
   do_sample: yes

@@ -2,11 +2,11 @@ import time
 import json
 import logging
 import sagemaker
-from typing import Dict, Union
+from typing import Dict, Optional
+from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
-from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
-                                               FMBenchPredictionResponse)
+from fmbench.scripts.fmbench_predictor import FMBenchPredictor, FMBenchPredictionResponse
 
 ## set a logger
 logging.basicConfig(level=logging.INFO)
@@ -31,7 +31,13 @@ class SageMakerPredictor(FMBenchPredictor):
         
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json = None
+        response = None
         latency = None
+        prompt_tokens = None
+        completion_tokens = None
+        ## represents the number of tokens in the prompt payload -- TO ABSTRACT THIS IN THE FUTURE ITERATION
+        prompt_tokens = count_tokens(payload["inputs"])
+
         try:
             st = time.perf_counter()
             split_input_and_inference_params = None
@@ -53,16 +59,29 @@ class SageMakerPredictor(FMBenchPredictor):
             if response_json.get("generated_text") is None:            
                 if response_json.get("predicted_label") is not None:                    
                     response_json["generated_text"] = response_json.get("predicted_label")
-                 
+            ## counts the completion tokens for the model using the default/user provided tokenizer - to change this too in the future iteration and abstract it out
+            completion_tokens = count_tokens(response_json.get("generated_text"))
+
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
-        return FMBenchPredictionResponse(response_json=response_json, latency=latency)
+        return FMBenchPredictionResponse(response_json=response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
     
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
         return self._endpoint_name
+    
+    def calculate_cost(self, instance_type: str, config: dict, duration: float, metrics: dict) -> str:
+        """Represents the function to calculate the cost of each experiment run."""
+        experiment_cost: Optional[float] = 0.0 ## cannot be converted into 'None' because 'NoneType' cannot be added during cost calculation, only integers
+        try:
+            hourly_rate = config['pricing'].get(instance_type, {}) ## cannot initialize in the constructor, since it uses config which is parameterized in this function
+            logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
+            experiment_cost = (hourly_rate / 3600) * duration ## calculating the experiment cost for instance based pricing
+        except Exception as e:
+            logger.error(f"Exception occurred during experiment cost calculation....., exception={e}")
+        return experiment_cost
     
 def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     return SageMakerPredictor(endpoint_name, inference_spec)

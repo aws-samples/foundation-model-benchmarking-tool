@@ -1,7 +1,6 @@
 general:
-  name: "llama2-70b-g5-p4d-tgi-v1"
-  model_name: "Llama2-70b"
-
+  name: "fmbench-bedrock-mistral-7b-instruct"      
+  model_name: "mistral-7b-instruct-bedrock"
   
 # AWS and SageMaker settings
 aws:
@@ -9,7 +8,7 @@ aws:
   # uncomment and set the Role ARN if not running on sagemaker
   sagemaker_execution_role: {role_arn}
   ## these are the buckets/resources you will create in your account below:
-  bucket: {write_bucket} ## add the name of your desired bucket
+  bucket: {write_bucket}
 
 ## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
 dir_paths:
@@ -40,22 +39,22 @@ s3_read_data:
     - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes
+    2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
-
 
 datasets:
   prompt_template_keys:
   - input
   - context
+  # - text
   filters:
   - language: en    
     min_length_in_tokens: 1
@@ -69,7 +68,7 @@ datasets:
     min_length_in_tokens: 1000
     max_length_in_tokens: 2000
     payload_file: payload_en_1000-2000.jsonl
-  - language: en
+  - language: ens
     min_length_in_tokens: 2000
     max_length_in_tokens: 3000
     payload_file: payload_en_2000-3000.jsonl
@@ -81,89 +80,77 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
-
+  # - language: en    
+  #   min_length_in_tokens: 100
+  #   max_length_in_tokens: 250
+  #   payload_file: payload_en_100-250.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 10
+  #   max_length_in_tokens: 20
+  #   payload_file: payload_en_10-20.jsonl
+  # - language: en    
+  #   min_length_in_tokens: 50
+  #   max_length_in_tokens: 150
+  #   payload_file: payload_en_50-150.jsonl
+ 
 metrics:
   dataset_of_interest: en_3000-4000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
   
-pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+pricing: pricing.yml ## enter the relative local path, or the s3 path to the pricing.yml file
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
-  truncate: at-prompt-token-length
+  ContentType: 'application/json'
+  Accept: 'application/json'
 
-# Model configurations
+# Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-70b
+  - name: mistral-7b-instruct-v0:2
+    model_id: mistral.mistral-7b-instruct-v0:2
     model_version: "*"
-    model_name: llama2-70b
-    ep_name: llama-2-70b-g5-48xlarge
-    instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor.py
+    model_name: mistral-7b-instruct-v0:2
+    ep_name: mistral.mistral-7b-instruct-v0:2
+    instance_type: 'Mistral-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "8"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  # P4D Based Instance Model Configuration - using the TGI container:
-  - name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
-    model_id: meta-llama/Llama-2-70b-chat-hf
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    env: 
+  - name: mixtral-8x7b-instruct-v0:1
+    model_id: mistral.mixtral-8x7b-instruct-v0:1
     model_version: "*"
-    model_name: meta-llama-Llama-2-70b-chat-hf
-    ep_name: llama-2-13b-p4d-24xlarge    
-    instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
-    deploy: yes
-    instance_count: 1
-    deployment_script: p4d_hf_tgi.py
-    inference_script: sagemaker_predictor.py
+    model_name: mixtral-8x7b-instruct-v0:1
+    ep_name: mistral.mixtral-8x7b-instruct-v0:1
+    instance_type: 'Mixtral-ODT'
+    image_uri: ## leaving it blank for bedrock supported models
+    deploy: no ## deployment step not needed for bedrock models
+    instance_count: 1 ## not needed for bedrock models
+    deployment_script: ## not needed for bedrock models
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    accept_eula: true
-    env:
-      MODEL_LOADING_TIMEOUT: "3600"
-      NUMBER_OF_GPU: 8
-      INSTANCE_COUNT: 1
-      HEALTH_CHECK_TIMEOUT: 300
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    env: 
 
 report:
   per_inference_request_file: per_inference_request_results.csv
@@ -171,3 +158,12 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+
+
+
+
+
+
+
+
+
