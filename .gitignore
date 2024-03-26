@@ -29,3 +29,4 @@ results/
 llama2-7b-v1-SageMaker/
 fmbench.log
 llama2-13b-inf2-g5-p4d-v1-SageMaker/
+llama2-70b-g5-p4d-trt-v1-SageMaker/

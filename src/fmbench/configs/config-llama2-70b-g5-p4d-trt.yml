@@ -104,13 +104,13 @@ inference_parameters:
 
 # Model configurations
 experiments:
-  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0
     model_id: meta-textgeneration-llama-2-70b
     model_version: "*"
     model_name: llama2-70b
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
