@@ -90,6 +90,7 @@ def run_notebooks(config_file: str) -> None:
                 pm.execute_notebook(
                     input_path=str(notebook_path),
                     output_path=str(output_file),
+                    kernel_name='python3',
                     parameters={},
                     report_mode=True,  
                     progress_bar=True,
@@ -121,6 +122,9 @@ def main():
     # Set the environment variable based on the parsed argument
     os.environ["CONFIG_FILE_FMBENCH"] = args.config_file
     logger.info(f"Config file specified: {args.config_file}")
+    
+    # set env var to indicate that fmbench is being run from main and not interactively via a notebook
+    os.environ["INTERACTIVE_MODE_SET"] = "no"
 
     # Proceed with the rest of your script's logic, passing the config file as needed
     run_notebooks(args.config_file)    
