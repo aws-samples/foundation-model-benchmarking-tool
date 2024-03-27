@@ -106,9 +106,9 @@ inference_parameters:
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
   - name: llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-7b
+    model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
-    model_name: llama2-7b
+    model_name: llama2-7b-f
     ep_name: llama-2-7b-g5xlarge
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -117,7 +117,10 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1
@@ -137,9 +140,9 @@ experiments:
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
   - name: llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-7b
+    model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
-    model_name: llama2-7b
+    model_name: llama2-7b-f
     ep_name: llama-2-7b-g5-2xlarge
     instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -148,7 +151,10 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1

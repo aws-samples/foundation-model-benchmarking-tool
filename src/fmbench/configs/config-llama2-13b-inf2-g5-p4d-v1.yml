@@ -137,7 +137,7 @@ experiments:
   - name: llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=12
     model_id: meta-textgenerationneuron-llama-2-13b-f
     model_version: 1.0.0
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-inf2-24xlarge
     instance_type: "ml.inf2.24xlarge"
     inference_script: sagemaker_predictor.py
@@ -170,7 +170,7 @@ experiments:
   - name: llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
     model_id: meta-textgenerationneuron-llama-2-13b-f
     model_version: 1.0.0
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-inf2-48xlarge    
     instance_type: "ml.inf2.48xlarge"    
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
@@ -201,9 +201,9 @@ experiments:
       SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
       SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
   - name: llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-12xlarge
     instance_type: "ml.g5.12xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -237,9 +237,9 @@ experiments:
       SM_NUM_GPUS: "4"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-13b-g5.24xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-24xlarge
     instance_type: "ml.g5.24xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -272,9 +272,9 @@ experiments:
       SM_NUM_GPUS: "4"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
