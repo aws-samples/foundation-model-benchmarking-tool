@@ -6,3 +6,4 @@ datasets==2.16.1
 seaborn==0.13.1
 tomark==0.1.4
 boto3==1.34.69
+s3fs==2024.3.1

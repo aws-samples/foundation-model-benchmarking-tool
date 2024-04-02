@@ -1,4 +1,5 @@
 __pycache__/
+*.zip
 e.json
 .DS_Store
 .locks/*
@@ -30,3 +31,6 @@ llama2-7b-v1-SageMaker/
 fmbench.log
 llama2-13b-inf2-g5-p4d-v1-SageMaker/
 llama2-70b-g5-p4d-trt-v1-SageMaker/
+Llama2-7b-g4dn-SageMaker/
+Llama2-7b-g4dn-g5-SageMaker/
+llama2-70b-g5-inf2-tgi-v1-SageMaker/

@@ -112,7 +112,7 @@ experiments:
     image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
     deploy: yes
     instance_count: 1
-    deployment_script: p4d_hf_tgi.py
+    deployment_script: deploy_w_hf_tgi.py
     inference_script: sagemaker_predictor.py
     payload_files:
     # - payload_en_1-500.jsonl

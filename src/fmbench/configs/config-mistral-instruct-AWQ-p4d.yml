@@ -1,6 +1,6 @@
 general:
-  name: "llama2-70b-g5-p4d-tgi-v1"
-  model_name: "Llama2-70b"
+  name: "mistral-7b-instruct-AWQ"
+  model_name: "mistral7bInstruct-AWQ"
 
   
 # AWS and SageMaker settings
@@ -35,9 +35,9 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: tokenizer_mistral ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -47,7 +47,6 @@ run_steps:
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
-
 
 datasets:
   prompt_template_keys:
@@ -78,14 +77,19 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
+  - language: en
+    min_length_in_tokens: 1600
+    max_length_in_tokens: 5000
+    payload_file: payload_en_1600-5000.jsonl
 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_1000-2000
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
   
 pricing:
+  ml.g5.2xlarge: 1.515
   ml.g5.12xlarge: 7.09
   ml.g5.24xlarge: 10.18
   ml.g5.48xlarge: 20.36
@@ -98,75 +102,40 @@ inference_parameters:
   temperature: 0.1
   top_p: 0.92
   top_k: 120  
-  max_new_tokens: 100
-  truncate: at-prompt-token-length
+  max_new_tokens: 200
 
 # Model configurations
 experiments:
-  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-70b-f
+  - name: mistral-Instruct7b-p4d-lmi-customer-drop
+    model_id: TheBloke/Mistral-7B-Instruct-v0.2-AWQ
     model_version: "*"
-    model_name: llama2-70b-f
-    ep_name: llama-2-70b-g5-48xlarge
-    instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    model_name: mistral7bInstruct-AWQ
+    ep_name: mistral7bInstruct-p4dAWQ
+    download_from_hf_place_in_s3: yes
+    model_s3_path: s3://{write_bucket}/TheBloke/Mistral-7B-Instruct-v0.2-AWQ
+    instance_type: "ml.p4d.24xlarge"
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
     deploy: yes
     instance_count: 1
-    deployment_script: jumpstart.py
+    deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    serving.properties: |
+      engine=Python
+      option.tensor_parallel_degree=1
+      option.model_id=s3://{write_bucket}/TheBloke/Mistral-7B-Instruct-v0.2-AWQ
+      option.max_rolling_batch_size=64
+      option.rolling_batch=vllm
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2
-    - 4
-    - 6
-    - 8
+    - 5
+    - 10
+    - 20
+    - 30
     accept_eula: true
     env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "8"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  # P4D Based Instance Model Configuration - using the TGI container:
-  - name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
-    model_id: meta-llama/Llama-2-70b-chat-hf
-    model_version: "*"
-    model_name: meta-llama-Llama-2-70b-chat-hf
-    ep_name: llama-2-13b-p4d-24xlarge    
-    instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
-    deploy: yes
-    instance_count: 1
-    deployment_script: deploy_w_hf_tgi.py
-    inference_script: sagemaker_predictor.py
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    accept_eula: true
-    env:
-      MODEL_LOADING_TIMEOUT: "3600"
-      NUMBER_OF_GPU: 8
-      INSTANCE_COUNT: 1
-      HEALTH_CHECK_TIMEOUT: 300
 
 report:
   per_inference_request_file: per_inference_request_results.csv
@@ -174,3 +143,10 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+  latency_vs_token_len_chart: 
+    y_ticks: 
+    # - 1
+    # - 2
+    # - 3
+    # - 4
+    title: "Effect of token length on inference latency for \"TheBloke/Mistral-7B-Instruct-v0.2-AWQ\""
