@@ -24,10 +24,7 @@ s3_read_data:
     read_bucket: {read_bucket}
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
-    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
-    configs_prefix: configs
-    config_files:
-    - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     # - rajpurkar/squad_v2.jsonl
@@ -101,9 +98,9 @@ inference_parameters:
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
   - name: llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-7b
+    model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
-    model_name: llama2-7b
+    model_name: llama2-7b-f
     ep_name: llama-2-7b-g5xlarge
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -112,7 +109,10 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1
@@ -132,9 +132,9 @@ experiments:
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
   - name: llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-7b
+    model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
-    model_name: llama2-7b
+    model_name: llama2-7b-f
     ep_name: llama-2-7b-g5-2xlarge
     instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -143,7 +143,10 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1

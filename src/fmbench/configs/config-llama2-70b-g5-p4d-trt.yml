@@ -26,9 +26,6 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
-    configs_prefix: configs
-    config_files:
-    - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     - 2wikimqa_e.jsonl
@@ -102,9 +99,9 @@ inference_parameters:
 # Model configurations
 experiments:
   - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0
-    model_id: meta-textgeneration-llama-2-70b
+    model_id: meta-textgeneration-llama-2-70b-f
     model_version: "*"
-    model_name: llama2-70b
+    model_name: llama2-70b-f
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'

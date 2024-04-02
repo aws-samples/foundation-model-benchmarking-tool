@@ -24,10 +24,7 @@ s3_read_data:
     read_bucket: {read_bucket}
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
-    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
-    configs_prefix: configs
-    config_files:
-    - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
 #    - rajpurkar/squad_v2.jsonl
@@ -134,7 +131,7 @@ experiments:
   - name: llama2-13b-inf2.24xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=12
     model_id: meta-textgenerationneuron-llama-2-13b-f
     model_version: 1.0.0
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-inf2-24xlarge
     instance_type: "ml.inf2.24xlarge"
     inference_script: sagemaker_predictor.py
@@ -167,7 +164,7 @@ experiments:
   - name: llama2-13b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
     model_id: meta-textgenerationneuron-llama-2-13b-f
     model_version: 1.0.0
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-inf2-48xlarge    
     instance_type: "ml.inf2.48xlarge"    
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
@@ -198,9 +195,9 @@ experiments:
       SAGEMAKER_TS_RESPONSE_TIMEOUT: "120"
       SAGEMAKER_MODEL_SERVER_TIMEOUT: "120"
   - name: llama2-13b-g5.12xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-12xlarge
     instance_type: "ml.g5.12xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -234,9 +231,9 @@ experiments:
       SM_NUM_GPUS: "4"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-13b-g5.24xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-24xlarge
     instance_type: "ml.g5.24xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
@@ -269,9 +266,9 @@ experiments:
       SM_NUM_GPUS: "4"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-13b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-13b
+    model_id: meta-textgeneration-llama-2-13b-f
     model_version: "*"
-    model_name: llama2-13b
+    model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
