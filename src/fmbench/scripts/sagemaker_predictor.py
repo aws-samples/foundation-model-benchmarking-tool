@@ -43,6 +43,7 @@ class SageMakerPredictor(FMBenchPredictor):
             split_input_and_inference_params = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
+            response = None
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"], payload["parameters"])                
             else:

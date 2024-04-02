@@ -1,5 +1,5 @@
 general:
-  name: "llama2-70b-g5-p4d-tgi-v1"
+  name: "llama2-70b-g5-inf2-tgi-v1"
   model_name: "Llama2-70b"
 
   
@@ -28,13 +28,14 @@ s3_read_data:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - 2wikimqa_e.jsonl
-    - 2wikimqa.jsonl
-    - hotpotqa_e.jsonl
-    - hotpotqa.jsonl
-    - narrativeqa.jsonl
-    - triviaqa_e.jsonl
-    - triviaqa.jsonl
+    - rajpurkar/squad.jsonl
+    # - 2wikimqa_e.jsonl
+    # - 2wikimqa.jsonl
+    # - hotpotqa_e.jsonl
+    # - hotpotqa.jsonl
+    # - narrativeqa.jsonl
+    # - triviaqa_e.jsonl
+    # - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
@@ -63,9 +64,13 @@ datasets:
     max_length_in_tokens: 1000
     payload_file: payload_en_500-1000.jsonl
   - language: en
+    min_length_in_tokens: 1
+    max_length_in_tokens: 924
+    payload_file: payload_en_1-924.jsonl
+  - language: en
     min_length_in_tokens: 1000
-    max_length_in_tokens: 2000
-    payload_file: payload_en_1000-2000.jsonl
+    max_length_in_tokens: 1948
+    payload_file: payload_en_1000-1948.jsonl
   - language: en
     min_length_in_tokens: 2000
     max_length_in_tokens: 3000
@@ -80,7 +85,7 @@ datasets:
     payload_file: payload_en_305-3997.jsonl
 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_1-924
   weights:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
@@ -99,7 +104,7 @@ inference_parameters:
   top_p: 0.92
   top_k: 120  
   max_new_tokens: 100
-  truncate: at-prompt-token-length
+  #truncate: at-prompt-token-length
 
 # Model configurations
 experiments:
@@ -115,17 +120,12 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_1-924.jsonl
     concurrency_levels:
     - 1
     - 2
     - 4
-    - 6
-    - 8
+
     accept_eula: true
     env:
       SAGEMAKER_PROGRAM: "inference.py"
@@ -137,36 +137,33 @@ experiments:
       MAX_TOTAL_TOKENS: "4096"
       SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  # P4D Based Instance Model Configuration - using the TGI container:
-  - name: llama2-70b-p4d.24xlarge-tgi-inference-2.0.1-tgi0.9.3-gpu-py39-cu118
-    model_id: meta-llama/Llama-2-70b-chat-hf
-    model_version: "*"
-    model_name: meta-llama-Llama-2-70b-chat-hf
-    ep_name: llama-2-13b-p4d-24xlarge    
-    instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+  - name: llama2-70b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
+    model_id: meta-textgenerationneuron-llama-2-70b-f
+    model_version: 1.0.1
+    model_name: llama2-70b-f
+    ep_name: llama-2-70b-inf2-48xlarge    
+    instance_type: "ml.inf2.48xlarge"    
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:1.13.1-optimum0.0.17-neuronx-py310-ubuntu22.04'
     deploy: yes
     instance_count: 1
-    deployment_script: deploy_w_hf_tgi.py
+    deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_1-924.jsonl
     concurrency_levels:
     - 1
     - 2
     - 4
-    - 6
-    - 8
+
+
     accept_eula: true
     env:
-      MODEL_LOADING_TIMEOUT: "3600"
-      NUMBER_OF_GPU: 8
-      INSTANCE_COUNT: 1
-      HEALTH_CHECK_TIMEOUT: 300
+      "SAGEMAKER_PROGRAM": "inference.py"
+      "ENDPOINT_SERVER_TIMEOUT": "3600"
+      "MODEL_CACHE_ROOT": "/opt/ml/model"
+      "SAGEMAKER_ENV": "1"
+      "HF_MODEL_ID": "/opt/ml/model"
+      "SAGEMAKER_MODEL_SERVER_WORKERS": "1"
 
 report:
   per_inference_request_file: per_inference_request_results.csv

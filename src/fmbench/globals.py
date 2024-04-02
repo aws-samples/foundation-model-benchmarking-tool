@@ -167,7 +167,7 @@ OVERALL_RESULTS_MD: str = """
 
 ## Per instance results
 
-The following table provides the best combinations for running inference for different sizes prompts on different instance types.
+The following table provides the best combinations for running inference for different sizes prompts on different instance types. The following dataset(s) were used for this test: {datasets}.
 
 |Dataset   | Instance type   | Recommendation   |
 |---|---|---|
