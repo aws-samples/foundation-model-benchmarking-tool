@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # Initialize the global variables, including the embeddings model declaration and the service name
 global_vars = globals()
 global_vars['EMBEDDING_MODELS']: list[str] = ["amazon.titan-embed-text-v1", "cohere.embed-english-v3", "cohere.embed-multilingual-v3"]  # type: ignore
-global_vars['SERVICE_NAME']: str = 'bedrock'
+global_vars['SERVICE_NAME']: str = 'bedrock' 
 
 # Represents the class to predict using a bedrock rest API 
 class BedrockPredictor(FMBenchPredictor):
@@ -42,16 +42,14 @@ class BedrockPredictor(FMBenchPredictor):
         prompt_input_data = payload['inputs']
         # Represents the inference parameters (in this case, temperature and caching) 
         parameters = copy.deepcopy(payload['parameters'])
-
         # get the temperature, max_tokens and caching values as inference parameters 
         temperature = parameters.get('temperature', None)
         max_tokens = parameters.get('max_tokens', None)
         caching = parameters.get('caching', None)
         logger.info(f"Temperature passed for bedrock invocation: {temperature}, Max tokens: {max_tokens}, Caching: {caching}... ")
-
         os.environ["AWS_REGION_NAME"] = self.aws_region
         try:
-            # this response is for text generation models on bedrock: CLAUDE, LLAMA, ai21, MISTRAL, MIXTRAL, COHERE
+            # this response is for text generation models on bedrock: Claude, Llama, Mixtral & Mistral, Cohere, Titan, ai21
             logger.info(f"Invoking {self.bedrock_model} to get inference....")
             response = completion(
             model=self.bedrock_model,

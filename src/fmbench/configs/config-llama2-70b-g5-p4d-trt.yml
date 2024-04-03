@@ -26,6 +26,9 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    configs_prefix: configs
+    config_files:
+    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     - 2wikimqa_e.jsonl
