@@ -87,7 +87,8 @@ metrics:
     price_per_tx_wt: 0.65
     latenct_wt: 0.35
   
-pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+# mention the name of the file that contains pricing information, as an s3 path or locally in the configs folder
+pricing: pricing.yml 
   
 inference_parameters: 
   temperature: 0.1

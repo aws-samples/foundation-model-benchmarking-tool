@@ -20,7 +20,7 @@ global_vars['SERVICE_NAME']: str = 'bedrock'
 class BedrockPredictor(FMBenchPredictor):
 
     # initialize the service name
-    service_name: str = global_vars['SERVICE_NAME']
+    service_name = global_vars['SERVICE_NAME']
 
     # overriding abstract method
     def __init__(self, endpoint_name: str, inference_spec: Dict | None):

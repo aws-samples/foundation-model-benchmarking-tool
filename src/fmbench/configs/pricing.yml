@@ -1,5 +1,6 @@
-pricing: ## this pricing file is used for all config files (contains sagemaker instance based pricing, bedrock ODT for now)
-  ## INSTANCE BASED PRICING -------> FOR SAGEMAKER, EKS, BEDROCK PROVISIONED THROUGHPUT, BRING YOUR OWN ENDPOINT INSTANCES THAT ARE PRICED HOURLY
+pricing: 
+  # Instance Based Pricing: SageMaker, EKS, Bedrock Provisioned Throughput, Bring your own endpoints that are priced hourly
+  # SageMaker Hourly Instance Pricing
   ml.m5.xlarge: 0.23
   ml.g5.xlarge: 1.006
   ml.g5.2xlarge: 1.212
@@ -11,8 +12,8 @@ pricing: ## this pricing file is used for all config files (contains sagemaker i
   ml.p4d.24xlarge: 37.688
   ml.p3.2xlarge: 3.825
 
-  ## TOKEN BASED PRICING -------> FOR BEDROCK INPUT AND OUTPUT TOKENS (ON DEMAND THROUGHPUT PRICING)
-  ## CLAUDE
+  # Token Based Pricing: Bedrock (On Demand Throughput)
+  # Claude
   Claudev3-Haiku-ODT:
   - input-per-1k-tokens: 0.00025
   - output-per-1k-tokens: 0.00125
@@ -25,41 +26,41 @@ pricing: ## this pricing file is used for all config files (contains sagemaker i
   ClaudeV2:1-ODT: 
   - input-per-1k-tokens: 0.000800 
   - output-per-1k-tokens: 0.002400
-  ClaudeInstant-ODT: ## on demand pricing range for price per 1k input AND 1k output tokens 33 -- ADD ALL ODT PRICING THIS WAY FOR NOW
-  - input-per-1k-tokens: 0.00080 ## per 1k input tokens
-  - output-per-1k-tokens: 0.00240 ## per 1k output tokens
-  ## TITAN
+  ClaudeInstant-ODT: 
+  - input-per-1k-tokens: 0.00080 
+  - output-per-1k-tokens: 0.00240 
+  # Titan
   titan-emb-text-ODT: 
   - input-per-1k-tokens: 0.0001
-  - output-per-1k-tokens: 0 ## n/a
+  - output-per-1k-tokens: 0 # n/a
   titan-text-lite-ODT: 
   - input-per-1k-tokens: 0.0003
   - output-per-1k-tokens: 0.0004
   titan-text-express-ODT: 
   - input-per-1k-tokens: 0.0008
   - output-per-1k-tokens: 0.0016
-  ## MISTRAL & MIXTRAL
+  # Mistral & Mixtral
   Mistral-ODT:
   - input-per-1k-tokens: 0.00015
   - output-per-1k-tokens: 0.0002
   Mixtral-ODT: 
   - input-per-1k-tokens: 0.00045
   - output-per-1k-tokens: 0.0007
-  ##  LLAMA
+  ## Llama
   Llama13b-ODT:
   - input-per-1k-tokens: 0.00075
   - output-per-1k-tokens: 0.00100
   Llama70b-ODT: 
   - input-per-1k-tokens: 0.00195
   - output-per-1k-tokens: 0.00195
-  ##  AI21
+  #  ai21
   AI21mid-ODT:
   - input-per-1k-tokens: 0.0125
   - output-per-1k-tokens: 0.0125
   AI21ultra-ODT: 
   - input-per-1k-tokens: 0.0188
   - output-per-1k-tokens: 0.0188
-  ## COHERE
+  # Cohere
   CohereCommand-ODT: 
   - input-per-1k-tokens: 0.0015
   - output-per-1k-tokens: 0.0020
