@@ -79,20 +79,8 @@ datasets:
   - language: en
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 100
-  #   max_length_in_tokens: 250
-  #   payload_file: payload_en_100-250.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 10
-  #   max_length_in_tokens: 20
-  #   payload_file: payload_en_10-20.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 50
-  #   max_length_in_tokens: 150
-  #   payload_file: payload_en_50-150.jsonl
- 
+    payload_file: payload_en_305-3997.jsonl  
+
 metrics:
   dataset_of_interest: en_3000-4000
   weights:
@@ -103,6 +91,7 @@ pricing: pricing.yml ## mention the name of the file that contains pricing infor
   
 inference_parameters: 
   temperature: 0.1
+  max_tokens: 100
   caching: False
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock

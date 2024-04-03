@@ -89,9 +89,10 @@ metrics:
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
-## need to add this separately for each of the model....
+## need to add this separately for each of the model (for sagemaker versus bedrock)
 inference_parameters: 
   temperature: 0.1
+  max_tokens: 100
   caching: False
 
 
