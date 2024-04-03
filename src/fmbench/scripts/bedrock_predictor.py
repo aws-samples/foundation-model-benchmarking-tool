@@ -1,4 +1,5 @@
 import os
+import copy
 import boto3
 import logging
 from litellm import embedding ## import litellm for bedrock model support: embedding models in this case
@@ -32,8 +33,13 @@ class BedrockPredictor(FMBenchPredictor):
             self._predictor = None
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
-        ## Represents the prompt payload
+        # Represents the prompt payload
         prompt_input_data = payload['inputs']
+        parameters = copy.deepcopy(payload['parameters'])
+        # get the temperature and caching for invoking the bedrock model via the lite llm api
+        temperature = parameters.get('temperature', None)
+        caching = parameters.get('caching', None)
+        logger.info(f"temperature value from the inference parameters is: {temperature}, and caching is set to {caching}")
         os.environ["AWS_REGION_NAME"] = self.aws_region
         try:
             ## Represents calling the litellm completion/messaging api utilizing the completion/embeddings API
@@ -41,6 +47,8 @@ class BedrockPredictor(FMBenchPredictor):
             logger.info(f"Invoking {self.bedrock_model} to get inference....")
             response = completion(
             model=self.bedrock_model,
+            temperature = temperature,
+            caching = caching,
             messages=[{ "content": prompt_input_data,"role": "user"}], 
             )
 
@@ -70,7 +78,7 @@ class BedrockPredictor(FMBenchPredictor):
                 prompt_tokens = metrics.get("all_prompts_token_count", )
                 completion_tokens = metrics.get("all_completions_token_count", )
                 # Retrieve the pricing information for the instance type
-                instance_pricing = config['pricing'].get(instance_type, []) ## config is parameterized in this function, so cannot add this as a constructor var
+                instance_pricing = config['pricing'].get(instance_type, []) 
                 logger.info(f"pricing dict: {instance_pricing}")
                 # Calculate cost based on the number of input and output tokens
                 input_token_cost = 0.0
@@ -106,15 +114,15 @@ class BedrockPredictorEmbeddings(BedrockPredictor):
             embedding_vector = response.data[0]["embedding"]
             self.response_json["generated_text"] = str(embedding_vector)
             prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.total_tokens ## using total tokens as completion token count for embedding models for now
+            completion_tokens = response.usage.total_tokens 
             latency_ms = response._response_ms
-            latency = latency_ms / 1000 ## calculate latency in seconds
+            latency = latency_ms / 1000 
         except Exception as e:
             logger.error(f"Exception occurred during prediction for endpoint_name={self._endpoint_name}, exception={e}")
         return FMBenchPredictionResponse(response_json=self.response_json, latency=latency, completion_tokens=completion_tokens, prompt_tokens=prompt_tokens)
 
 def create_predictor(endpoint_name: str, inference_spec: Dict | None):
     if endpoint_name in EMBEDDING_MODELS: ## handling for embedding models
-        return BedrockPredictorEmbeddings(endpoint_name, inference_spec) ## create a github issue
+        return BedrockPredictorEmbeddings(endpoint_name, inference_spec) 
     else: ## handling for all text generation models
         return BedrockPredictor(endpoint_name, inference_spec)

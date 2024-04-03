@@ -77,8 +77,8 @@ class SageMakerPredictor(FMBenchPredictor):
         """Represents the function to calculate the cost of each experiment run."""
         experiment_cost: Optional[float] = 0.0 ## cannot be converted into 'None' because 'NoneType' cannot be added during cost calculation, only integers
         try:
-            hourly_rate = config['pricing'].get(instance_type, {}) ## cannot initialize in the constructor, since it uses config which is parameterized in this function
-            logger.info(f"the hourly rate for {config['general']['model_name']} running on {instance_type} is {hourly_rate}")
+            hourly_rate = config['pricing'].get(instance_type, None) ## cannot initialize in the constructor, since it uses config which is parameterized in this function
+            logger.info(f"the hourly rate for running on {instance_type} is {hourly_rate}")
             experiment_cost = (hourly_rate / 3600) * duration ## calculating the experiment cost for instance based pricing
         except Exception as e:
             logger.error(f"Exception occurred during experiment cost calculation....., exception={e}")

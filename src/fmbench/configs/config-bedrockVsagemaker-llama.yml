@@ -80,18 +80,6 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 100
-  #   max_length_in_tokens: 250
-  #   payload_file: payload_en_100-250.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 10
-  #   max_length_in_tokens: 20
-  #   payload_file: payload_en_10-20.jsonl
-  # - language: en    
-  #   min_length_in_tokens: 50
-  #   max_length_in_tokens: 150
-  #   payload_file: payload_en_50-150.jsonl
  
 metrics:
   dataset_of_interest: en_3000-4000
@@ -101,9 +89,11 @@ metrics:
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
-inference_parameters:
-  ContentType: 'application/json'
-  Accept: 'application/json'
+## need to add this separately for each of the model....
+inference_parameters: 
+  temperature: 0.1
+  caching: False
+
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
@@ -127,7 +117,7 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    # - 4
+    - 4
     # - 6
     # - 8
 
@@ -158,7 +148,7 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    # - 4
+    - 4
     # - 6
     # - 8
     env: 

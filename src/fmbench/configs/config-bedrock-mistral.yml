@@ -101,9 +101,9 @@ metrics:
   
 pricing: pricing.yml ## enter the relative local path, or the s3 path to the pricing.yml file
   
-inference_parameters:
-  ContentType: 'application/json'
-  Accept: 'application/json'
+inference_parameters: 
+  temperature: 0.1
+  caching: False
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
