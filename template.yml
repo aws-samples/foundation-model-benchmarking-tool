@@ -37,7 +37,7 @@ Resources:
   NotebookRole:
     Type: AWS::IAM::Role
     Properties:
-      RoleName: !Sub ${AWS::StackName}-role
+      RoleName: !Sub ${AWS::StackName}-${AWS::Region}-role
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
