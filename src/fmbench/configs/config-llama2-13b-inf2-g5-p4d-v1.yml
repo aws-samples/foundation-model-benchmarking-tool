@@ -110,7 +110,7 @@ experiments:
     model_name: meta-llama-Llama-2-13b-chat-hf
     ep_name: llama-2-13b-p4d-24xlarge    
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_hf_tgi.py
@@ -141,7 +141,7 @@ experiments:
     ep_name: llama-2-13b-inf2-24xlarge
     instance_type: "ml.inf2.24xlarge"
     inference_script: sagemaker_predictor.py
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -173,7 +173,7 @@ experiments:
     model_name: llama2-13b-f
     ep_name: llama-2-13b-inf2-48xlarge    
     instance_type: "ml.inf2.48xlarge"    
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-neuronx-sdk2.16.0'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -206,7 +206,7 @@ experiments:
     model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-12xlarge
     instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -242,7 +242,7 @@ experiments:
     model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-24xlarge
     instance_type: "ml.g5.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -277,7 +277,7 @@ experiments:
     model_name: llama2-13b-f
     ep_name: llama-2-13b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
