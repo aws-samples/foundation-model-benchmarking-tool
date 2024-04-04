@@ -5,14 +5,14 @@ Parameters:
   S3BucketNameForRead:
     Default: sagemaker-fmbench-read
     Type: String
-    Description: Name of the Amazon S3 bucket for holding datasets, scripts and tokenizer files. Account id would be suffixed automatically for uniqueness.
+    Description: Name of the Amazon S3 bucket for holding datasets, scripts and tokenizer files. AWS region and account id would be suffixed automatically for uniqueness.
     MinLength: 1
     MaxLength: 63
     AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
   S3BucketNameForWrite:
     Default: sagemaker-fmbench-write
     Type: String
-    Description: Name of the Amazon S3 bucket for holding metrics and reports. Account id would be suffixed automatically for uniqueness.
+    Description: Name of the Amazon S3 bucket for holding metrics and reports. AWS region and account id would be suffixed automatically for uniqueness.
     MinLength: 1
     MaxLength: 63
     AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
@@ -65,6 +65,7 @@ Resources:
       BucketName: !Join
       - '-'
       - - !Ref S3BucketNameForRead
+        - !Sub ${AWS::Region}
         - !Sub ${AWS::AccountId}
   
   S3BucketForWrite:
@@ -74,6 +75,7 @@ Resources:
       BucketName: !Join
       - '-'
       - - !Ref S3BucketNameForWrite
+        - !Sub ${AWS::Region}
         - !Sub ${AWS::AccountId}
 
   cleanupReadBucketOnDelete:
