@@ -110,7 +110,7 @@ experiments:
     model_name: llama2-70b-f
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -142,13 +142,13 @@ experiments:
     model_id: meta-llama/Llama-2-70b-hf # change this to meta chat model
     model_version: "*"
     model_name: llama2-70bdjl
-    bucket_name: sagemaker-us-east-1-015469603702
+    bucket_name: sagemaker-{region}-015469603702
     key_name: hf-large-model-djl/code_llama2 ## where you want your model.tar.gz to be located
-    s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/ ## S3 path to your uncompressed model
+    s3_path: s3://sagemaker-{region}-015469603702/llama-2-70B-fp16/lmi/ ## S3 path to your uncompressed model
     ep_name: llama-2-70b-chat-p4d-24xlarge    
     ## allow_patterns: [] use if you are downloading the model first for the first time
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
     deploy: yes
     instance_count: 1
     deployment_script: p4d_djl.py

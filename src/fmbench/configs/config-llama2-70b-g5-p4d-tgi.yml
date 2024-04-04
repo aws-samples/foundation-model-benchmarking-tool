@@ -109,7 +109,7 @@ experiments:
     model_name: llama2-70b-f
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -144,7 +144,7 @@ experiments:
     model_name: meta-llama-Llama-2-70b-chat-hf
     ep_name: llama-2-13b-p4d-24xlarge    
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_hf_tgi.py
