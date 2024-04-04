@@ -143,7 +143,7 @@ experiments:
     model_name: distilbert-base-uncased
     ep_name: distilbert-base-uncased
     instance_type: "ml.m5.xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-cpu-py39-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-cpu-py39-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
