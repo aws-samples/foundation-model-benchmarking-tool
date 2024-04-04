@@ -7,14 +7,15 @@ Deploys a model from HuggingFace on Amazon SageMaker using the DJL DeepSpeek LMI
 """
 # Import necessary libraries
 import os
+import glob
 import time
-import s3fs
 import boto3
 import logging
 import tarfile
 import tempfile
 import sagemaker
 from pathlib import Path
+from urllib.parse import urlparse
 from sagemaker.utils import name_from_base
 from huggingface_hub import snapshot_download
 from typing import Dict, List, Tuple, Optional
@@ -31,9 +32,6 @@ HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)),
 # Initialize your S3 client for your model uploading
 s3_client = boto3.client('s3')
 
-# Use your specific execution role if needed
-# role=sagemaker.get_execution_role()
-
 # session/account specific variables
 sess = sagemaker.session.Session()
 # Define the location of your s3 prefix for model artifacts
@@ -47,7 +45,6 @@ account_id: str = sess.account_id()
 
 # Initialize the sagemaker and sagemaker runtime clients
 sm_client = boto3.client("sagemaker")
-
 
 def _download_model(model_id: str,
                     local_model_path: str,
@@ -68,16 +65,35 @@ def _download_model(model_id: str,
     )
     print(f"Uncompressed model downloaded into ... -> {model_download_path}")
     return model_download_path
-
-
-def _upload_model_files_to_s3(local_model_path: str,
-                              s3_path: str) -> None:
+    
+def _upload_dir(localDir, awsInitDir, bucketName, tag="*.*"):
     """
-    Upload the model files to S3
-    """
-    s3_file = s3fs.S3FileSystem()
-    s3_file.put(local_model_path, s3_path, recursive=True)
+    from current working directory, upload a 'localDir' with all its subcontents (files and subdirectories...)
+    to a aws bucket
+    Parameters
+    ----------
+    localDir :   localDirectory to be uploaded, with respect to current working directory
+    awsInitDir : prefix 'directory' in aws
+    bucketName : bucket in aws
+    tag :        tag to select files, like *png
+                 NOTE: if you use tag it must be given like --tag '*txt', in some quotation marks... for argparse
+    prefix :     to remove initial '/' from file names
 
+    Returns
+    -------
+    None
+    """
+    s3 = boto3.resource('s3')
+    p = Path(localDir)
+    mydirs = list(p.glob('**'))
+    for mydir in mydirs:
+        fileNames = glob.glob(os.path.join(mydir, tag))
+        fileNames = [f for f in fileNames if not Path(f).is_dir()]
+        for i, fileName in enumerate(fileNames):
+            print(f"fileName {fileName}")
+
+            awsPath = os.path.join(awsInitDir, str(fileName))
+            s3.meta.client.upload_file(fileName, bucketName, awsPath)
 
 def _create_and_upload_model_artifact(serving_properties_path: str,
                                       bucket: str,
@@ -175,8 +191,9 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         local_model_path = _download_model(experiment_config['model_id'],
                                            local_model_path)
         logger.info(f"going to upload model files to {experiment_config['model_s3_path']}")
-        _upload_model_files_to_s3(local_model_path,
-                                  experiment_config['model_s3_path'])
+        
+        o = urlparse(experiment_config['model_s3_path'], allow_fragments=False)
+        _upload_dir(local_model_path, o.path, o.netloc)
 
         model_artifact = experiment_config['model_s3_path']
         logger.info(f"Uncompressed model downloaded into ... -> {model_artifact}")
