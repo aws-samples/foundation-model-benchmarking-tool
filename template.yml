@@ -167,7 +167,7 @@ Resources:
     Properties:
       Handler: index.lambda_handler
       Description: "Copies files from the Blog bucket to bucket in this account"
-      Timeout: 30
+      Timeout: 90
       Role: !GetAtt 'LambdaBasicExecutionRole.Arn'
       Runtime: python3.9
       Environment:
