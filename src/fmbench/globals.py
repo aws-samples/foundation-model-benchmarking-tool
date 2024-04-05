@@ -5,6 +5,7 @@ import requests
 from enum import Enum
 from pathlib import Path
 from datetime import datetime
+from fmbench import defaults
 
 
 FMBENCH_PACKAGE_NAME: str = "fmbench"
@@ -16,6 +17,7 @@ CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 # S3 client initialization
 s3_client = boto3.client('s3')
 session = boto3.session.Session()
+region_name = session.region_name
 
 ## Configuring the role ARN -- extract the role name
 caller = boto3.client('sts').get_caller_identity()
@@ -54,8 +56,8 @@ else:
 # if the file is not parameterized then the following statements change nothing
 args = dict(region=session.region_name,
             role_arn=arn_string,
-            write_bucket=f"sagemaker-fmbench-write-{account_id}",
-            read_bucket=f"sagemaker-fmbench-read-{account_id}")
+            write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
+            read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration
