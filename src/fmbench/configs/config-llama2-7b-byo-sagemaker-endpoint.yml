@@ -43,7 +43,7 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes # if you have a pre existing endpoint, let this step be 'yes', so the endpoint configuration details can be processed by fmbench
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
@@ -105,14 +105,15 @@ inference_parameters:
 
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
-  - name: llama2-7b-g5.xlarge-bring-your-own-sm-endpoint
+  - name: llama2-7b-g5.2xlarge-bring-your-own-sm-endpoint
     model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
     model_name: llama2-7b-f
-    ep_name: llama-2-7b-g5xlarge-<>-<> # existing endpoint name already deployed 
-    instance_type: "ml.g5.xlarge"
+    ep_name: llama-2-7b-g5-2xlarge-<>-<> # enter the name of the existing endpoint name already deployed on sagemaker
+    instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: no # setting to no since the endpoint has already been deployed
+    bring_your_own_endpoint: yes # set bring your own endpoint to yes to have information on your endpoint configured to run inferences from
+    deploy: no #setting to no since the endpoint has already been deployed
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
@@ -121,6 +122,41 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     # - payload_en_2000-3000.jsonl
+
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+
+    accept_eula: true
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      HF_MODEL_ID: "/opt/ml/model"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "1"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+
+  - name: llama2-7b-g5.2xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-7b-f
+    model_version: "3.*"
+    model_name: llama2-7b-f
+    ep_name: llama-2-7b-g5-2xlarge
+    instance_type: "ml.g5.2xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    bring_your_own_endpoint: no # set this to 'no' when you do not have an endpoint that already exists and want to create a new one on sagemaker
+    deploy: no
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1
