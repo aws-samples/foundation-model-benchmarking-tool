@@ -20,6 +20,8 @@ This foundation model benchmarking tool (a.k.a. `FMBench`) is a tool to answer t
 
 1. Support for external endpoints. No longer limited to Amazon SageMaker endpoints, more [here](https://github.com/aws-samples/foundation-model-benchmarking-tool?tab=readme-ov-file#bring-your-own-dataset--endpoint).
 
+1. Bring your own `Amazon SageMaker` endpoints. If you have an already deployed SageMaker endpoint you can now test it with `FMBench`.
+
 1. Added config files for [`Mistral-7B-Instruct`](https://huggingface.co/mistralai/Mistral-7B-Instruct-v0.2), [`Mistral-7B-Instruct-v0.2-AWQ`](https://huggingface.co/TheBloke/Mistral-7B-Instruct-v0.2-AWQ), `huggingface-tc-distilbert-base-uncased` (from SageMaker JumpStart), `meta-textgenerationneuron-llama-2-70b-f` (on AWS Inferentia2).
 
 ## Key Features
