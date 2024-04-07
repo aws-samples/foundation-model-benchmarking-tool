@@ -109,7 +109,7 @@ experiments:
     model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
     model_name: llama2-7b-f
-    ep_name: llama-2-7b-g5xlarge-1712501835-075647 # existing endpoint name already deployed 
+    ep_name: llama-2-7b-g5xlarge-<>-<> # existing endpoint name already deployed 
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: no # setting to no since the endpoint has already been deployed
