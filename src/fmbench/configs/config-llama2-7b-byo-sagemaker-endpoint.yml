@@ -110,7 +110,7 @@ experiments:
     model_version: "3.*"
     model_name: llama2-7b-f
     ep_name: llama-2-7b-g5-2xlarge-<>-<> # enter the name of the existing endpoint name already deployed on sagemaker
-    instance_type: "ml.g5.2xlarge"
+    instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     bring_your_own_endpoint: yes # set bring your own endpoint to yes to have information on your endpoint configured to run inferences from
     deploy: no #setting to no since the endpoint has already been deployed
