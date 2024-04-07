@@ -1,5 +1,5 @@
 general:
-  name: "llama2-7b-bring-your-own-sagemaker-endpoint"      
+  name: "llama2-7b-byo-sagemaker-ep"      
   model_name: "Llama2-7b"
   
 # AWS and SageMaker settings
@@ -106,13 +106,12 @@ inference_parameters:
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
   - name: llama2-7b-g5.2xlarge-bring-your-own-sm-endpoint
-    model_id: meta-textgeneration-llama-2-7b-f
-    model_version: "3.*"
+    model_id: # model id, version and image uri not needed for byo endpoint
+    model_version:
     model_name: llama2-7b-f
-    ep_name: llama-2-7b-g5-2xlarge-<>-<> # enter the name of the existing endpoint name already deployed on sagemaker
-    instance_type: "ml.g5.xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    bring_your_own_endpoint: yes # set bring your own endpoint to yes to have information on your endpoint configured to run inferences from
+    ep_name: <your-sagemaker-endpoint-name>
+    instance_type: "ml.g5.2xlarge"
+    image_uri:
     deploy: no #setting to no since the endpoint has already been deployed
     instance_count: 1
     deployment_script: jumpstart.py
@@ -121,7 +120,7 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_2000-3000.jsonl
 
     concurrency_levels:
     - 1
@@ -147,8 +146,7 @@ experiments:
     ep_name: llama-2-7b-g5-2xlarge
     instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    bring_your_own_endpoint: no # set this to 'no' when you do not have an endpoint that already exists and want to create a new one on sagemaker
-    deploy: no
+    deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
@@ -181,3 +179,4 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+
