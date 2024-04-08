@@ -176,7 +176,6 @@ experiments:
     accept_eula: true
     remove_truncate: yes
     env:
-      MODEL_LOADING_TIMEOUT: "3600"
       NUMBER_OF_GPU: "8"
       INSTANCE_COUNT: "1"
       HEALTH_CHECK_TIMEOUT: "300"
