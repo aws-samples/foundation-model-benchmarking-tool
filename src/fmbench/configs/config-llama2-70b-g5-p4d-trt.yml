@@ -174,7 +174,6 @@ experiments:
     - 6
     - 8
     accept_eula: true
-    remove_truncate: yes
     env:
       NUMBER_OF_GPU: "8"
       INSTANCE_COUNT: "1"
