@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-titan"      
-  model_name: "titan"
+  name: "fmbench-llama2"      
+  model_name: "Llama2 on Bedrock & SageMaker"
   
 # AWS and SageMaker settings
 aws:
@@ -45,7 +45,7 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
@@ -82,10 +82,7 @@ datasets:
     payload_file: payload_en_305-3997.jsonl
  
 metrics:
-  dataset_of_interest: en_3000-4000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
+  dataset_of_interest: en_500-1000
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -96,75 +93,68 @@ inference_parameters:
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: titan-embed-text-v1
-    model_id: amazon.titan-embed-text-v1
+  - name: bedrock:meta.llama2-13b-chat-v1
+    model_id: meta.llama2-13b-chat-v1
     model_version: "*"
-    model_name: titan-embed-text-v1
-    ep_name: amazon.titan-embed-text-v1
-    instance_type: 'titan-emb-text-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
+    model_name: meta.llama2-13b-chat-v1
+    ep_name: meta.llama2-13b-chat-v1
+    instance_type: meta.llama2-13b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
     payload_files:
-    - payload_en_3000-4000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2
-    - 4
-    - 6
-    - 8
-    env: 
-  - name: titan-text-lite-v1
-    model_id: amazon.titan-text-lite-v1
-    model_version: "*"
-    model_name: titan-text-lite-v1
-    ep_name: amazon.titan-text-lite-v1
-    instance_type: 'titan-text-lite-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
+
     env:
-  - name: titan-text-express-v1
-    model_id: amazon.titan-text-express-v1
-    model_version: "*"
-    model_name: titan-text-express
-    ep_name: amazon.titan-text-express-v1
-    instance_type: 'titan-text-express-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
+  - name: llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-7b-f
+    model_version: "3.*"
+    model_name: llama2-7b-f
+    ep_name: llama-2-7b-g5xlarge
+    instance_type: "ml.g5.xlarge"
+    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
     payload_files:
-    - payload_en_3000-4000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+
     concurrency_levels:
     - 1
     - 2
-    - 4
-    - 6
-    - 8
-    env: 
- 
+    #- 4
+
+    accept_eula: true
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      HF_MODEL_ID: "/opt/ml/model"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "1"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
 report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 50
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

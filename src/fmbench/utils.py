@@ -239,21 +239,21 @@ def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
     # List and download files
     try:
         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        key_list =  list_s3_files(bucket_name, prefix, suffix=None)
+        key_list = list_s3_files(bucket_name, prefix, suffix=None)
         for file_key in key_list:
-            logger.debug(f"file_key={file_key}, prefix={prefix}") 
+            logger.debug(f"file_key={file_key}, prefix={prefix}")
             local_file_key = file_key.replace(prefix, "")
             parent_dir_in_s3 = os.path.dirname(local_file_key)
             logger.debug(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
             # the first char for parent_dir_in_s3 would always be a '/' so skip that
             local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
-            os.makedirs(local_dir_to_create, exist_ok = True)
+            os.makedirs(local_dir_to_create, exist_ok=True)
             logger.debug(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
             local_file_to_create = os.path.basename(local_file_key)
             if file_key.endswith('/'):
                 logger.info(f"skipping file_key={file_key}")
                 continue
-            
+
             local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
             logger.debug(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
             s3_client.download_file(bucket_name, file_key, local_file_path)
