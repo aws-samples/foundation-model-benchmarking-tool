@@ -139,21 +139,21 @@ experiments:
       SM_NUM_GPUS: "8"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama2-70b-chat-p4d.24xlarge-djl-inference-0.26.0-tensorrtllm0.7.1-cu122
-    model_id: meta-llama/Llama-2-70b-hf # change this to meta chat model
+    model_id: meta-llama/Llama-2-70b-hf 
     model_version: "*"
     model_name: llama2-70bdjl
     ep_name: llama-2-70b-chat-p4d-24xlarge  
-    download_from_hf_place_in_s3: yes  
+    download_from_hf_place_in_s3: no  
     model_s3_path: s3://{write_bucket}/meta-llama/Llama-2-70b-hf
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' 
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
     serving.properties: |
       engine=MPI
-      option.model_id=s3://{write_bucket}/meta-llama/Llama-2-70b-hf
+      option.model_id=meta-llama/Llama-2-70b-hf 
       option.tensor_parallel_degree=8
       option.max_input_len=4000
       option.max_output_len=100
