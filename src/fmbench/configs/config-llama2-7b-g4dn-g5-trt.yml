@@ -22,7 +22,7 @@ s3_read_data:
     - hf_token.txt
     configs_prefix: configs
     config_files:
-    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    - pricing.yml
     source_data_prefix: source_data
     source_data_files:
     - 2wikimqa_e.jsonl
@@ -78,18 +78,16 @@ datasets:
 
 metrics:
   dataset_of_interest: en_2000-3000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
 pricing: pricing.yml
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
 
 experiments:
   - name: llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
@@ -98,11 +96,13 @@ experiments:
     model_name: llama2-7b-f
     ep_name: llama-2-7b-g512xlarge
     instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -134,11 +134,13 @@ experiments:
     download_from_hf_place_in_s3: yes
     model_s3_path: s3://{write_bucket}/meta-llama/Llama-2-7b-hf
     instance_type: "ml.g4dn.12xlarge"
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     serving.properties: |
       engine=Python
       option.tensor_parallel_degree=4
@@ -162,6 +164,9 @@ experiments:
     env:
 
 report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 50
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

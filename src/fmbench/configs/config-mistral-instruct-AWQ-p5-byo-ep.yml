@@ -1,8 +1,7 @@
 general:
-  name: "llama2-70b-g5-inf2-tgi-v1"
-  model_name: "Llama2-70b"
+  name: "mistral-7b-p5-instruct-AWQ-byo-ep"
+  model_name: "mistral7bInstruct-AWQ"
 
-  
 # AWS and SageMaker settings
 aws:
   region: {region}
@@ -28,20 +27,19 @@ s3_read_data:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     configs_prefix: configs
     config_files:
-    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    - pricing.yml
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - rajpurkar/squad.jsonl
-    # - 2wikimqa_e.jsonl
-    # - 2wikimqa.jsonl
-    # - hotpotqa_e.jsonl
-    # - hotpotqa.jsonl
-    # - narrativeqa.jsonl
-    # - triviaqa_e.jsonl
-    # - triviaqa.jsonl
-    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    - 2wikimqa_e.jsonl
+    - 2wikimqa.jsonl
+    - hotpotqa_e.jsonl
+    - hotpotqa.jsonl
+    - narrativeqa.jsonl
+    - triviaqa_e.jsonl
+    - triviaqa.jsonl
+    tokenizer_prefix: tokenizer_mistral ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -51,7 +49,6 @@ run_steps:
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
-
 
 datasets:
   prompt_template_keys:
@@ -67,13 +64,9 @@ datasets:
     max_length_in_tokens: 1000
     payload_file: payload_en_500-1000.jsonl
   - language: en
-    min_length_in_tokens: 1
-    max_length_in_tokens: 924
-    payload_file: payload_en_1-924.jsonl
-  - language: en
     min_length_in_tokens: 1000
-    max_length_in_tokens: 1948
-    payload_file: payload_en_1000-1948.jsonl
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
   - language: en
     min_length_in_tokens: 2000
     max_length_in_tokens: 3000
@@ -86,9 +79,13 @@ datasets:
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
     payload_file: payload_en_305-3997.jsonl
+  - language: en
+    min_length_in_tokens: 1600
+    max_length_in_tokens: 5000
+    payload_file: payload_en_1600-5000.jsonl
 
 metrics:
-  dataset_of_interest: en_1-924
+  dataset_of_interest: en_1000-2000
   
 pricing: pricing.yml
   
@@ -99,77 +96,51 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
-    #truncate: at-prompt-token-length
 
 # Model configurations
 experiments:
-  - name: llama2-70b-g5.48xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: meta-textgeneration-llama-2-70b-f
-    model_version: "*"
-    model_name: llama2-70b-f
-    ep_name: llama-2-70b-g5-48xlarge
-    instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
-    deploy: yes
+  - name: mistral-Instruct7b-p5-byo-sagemaker-ep
+    model_id: 
+    model_version: 
+    model_name: mistral7bInstruct-AWQ
+    ep_name: <your-sagemaker-endpoint-name> # enter the name of the existing endpoint name already deployed on sagemaker
+    instance_type: "ml.p5.48xlarge"
+    image_uri:
+    deploy: no #setting to no since the endpoint has already been deployed
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     inference_spec:
       parameter_set: sagemaker
     payload_files:
-    - payload_en_1-924.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+
     concurrency_levels:
     - 1
-    - 2
-    - 4
+    - 5
+    - 30
 
     accept_eula: true
     env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "8"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-  - name: llama2-70b-inf2.48xlarge-djl-0.24.0-neuronx-sdk-2.14.1-bs=4-tpd=24
-    model_id: meta-textgenerationneuron-llama-2-70b-f
-    model_version: 1.0.1
-    model_name: llama2-70b-f
-    ep_name: llama-2-70b-inf2-48xlarge    
-    instance_type: "ml.inf2.48xlarge"    
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:1.13.1-optimum0.0.17-neuronx-py310-ubuntu22.04'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor.py
-    inference_spec:
-      parameter_set: sagemaker
-    payload_files:
-    - payload_en_1-924.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-
-
-    accept_eula: true
-    env:
-      "SAGEMAKER_PROGRAM": "inference.py"
-      "ENDPOINT_SERVER_TIMEOUT": "3600"
-      "MODEL_CACHE_ROOT": "/opt/ml/model"
-      "SAGEMAKER_ENV": "1"
-      "HF_MODEL_ID": "/opt/ml/model"
-      "SAGEMAKER_MODEL_SERVER_WORKERS": "1"
-
+    
 report:
-  latency_budget: 2
-  cost_per_10k_txn_budget: 50
+  latency_budget: 1
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+  latency_vs_token_len_chart: 
+    y_ticks: 
+    # - 1
+    # - 2
+    # - 3
+    # - 4
+    title: "Effect of token length on inference latency for \"TheBloke/Mistral-7B-Instruct-v0.2-AWQ\""
+

@@ -1,6 +1,0 @@
-prompt:
-```
-{context}
-```
-{input}
-

@@ -81,18 +81,16 @@ datasets:
 
 metrics:
   dataset_of_interest: en_1000-2000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
 pricing: pricing.yml
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 200
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 200
 
 experiments:
   - name: Mistral-7B-Instruct-v0.2-p4d
@@ -103,11 +101,13 @@ experiments:
     download_from_hf_place_in_s3: None
     model_s3_path: None
     instance_type: "ml.p4d.24xlarge"
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     serving.properties: |
       engine=Python
       option.tensor_parallel_degree=2
@@ -128,6 +128,9 @@ experiments:
     env:
 
 report:
+  latency_budget: 1
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

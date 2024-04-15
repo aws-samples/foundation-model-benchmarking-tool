@@ -44,11 +44,11 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: no
-    2_deploy_model.ipynb: yes
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
+    5_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
@@ -83,9 +83,6 @@ datasets:
  
 metrics:
   dataset_of_interest: en_3000-4000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   

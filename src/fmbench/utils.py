@@ -9,6 +9,7 @@ import posixpath
 import unicodedata
 from pathlib import Path
 from fmbench import globals
+from fmbench import defaults
 from typing import Dict, List
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
@@ -85,6 +86,7 @@ def load_config(config_file) -> Dict:
     :return: Dictionary with the loaded configuration
     """
     session = boto3.session.Session()
+    region_name = session.region_name
     caller = boto3.client('sts').get_caller_identity()
     account_id = caller.get('Account')
     arn_string = caller.get('Arn')
@@ -93,8 +95,8 @@ def load_config(config_file) -> Dict:
     # if the file is not parameterized then the following statements change nothing
     args = dict(region=session.region_name,
                 role_arn=arn_string,
-                write_bucket=f"sagemaker-fmbench-write-{account_id}",
-                read_bucket=f"sagemaker-fmbench-read-{account_id}")
+                write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
+                read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 
     # Check if config_file is an S3 URI
     if config_file.startswith("s3://"):

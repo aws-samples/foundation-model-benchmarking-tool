@@ -51,7 +51,6 @@ run_steps:
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
 
-
 datasets:
   prompt_template_keys:
   - input
@@ -84,19 +83,17 @@ datasets:
 
 metrics:
   dataset_of_interest: en_3000-4000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
 pricing: pricing.yml
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
-  truncate: at-prompt-token-length
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
+    truncate: at-prompt-token-length
 
 # Model configurations
 experiments:
@@ -106,11 +103,13 @@ experiments:
     model_name: llama2-70b-f
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -141,11 +140,13 @@ experiments:
     model_name: meta-llama-Llama-2-70b-chat-hf
     ep_name: llama-2-13b-p4d-24xlarge    
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi0.9.3-gpu-py39-cu118-ubuntu20.04
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_hf_tgi.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -166,6 +167,9 @@ experiments:
       HEALTH_CHECK_TIMEOUT: 300
 
 report:
+  latency_budget: 5
+  cost_per_10k_txn_budget: 50
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

@@ -61,6 +61,7 @@ Create configuration file
    |AWS Region                |     Link        |
    |:------------------------:|:-----------:|
    |us-east-1 (N. Virginia)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
+   |us-west-2 (Oregon)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
 
 1. Once the CloudFormation stack is created, navigate to SageMaker Notebooks and open the `fmbench-notebook`.
 
@@ -80,7 +81,8 @@ Create configuration file
 
         ```{.bash}
         account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
-        fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml >> fmbench.log 2>&1
+        region=`aws configure get region`
+        fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/config-llama2-7b-g5-quick.yml >> fmbench.log 2>&1
         ```
 
     1. Open another terminal window and do a `tail -f` on the `fmbench.log` file to see all the traces being generated at runtime.
@@ -89,7 +91,7 @@ Create configuration file
         tail -f fmbench.log
         ```
     
-1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
+1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_region>-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
 
 ### The DIY version (with gory details)
 

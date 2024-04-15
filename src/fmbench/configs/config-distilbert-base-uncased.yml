@@ -89,11 +89,8 @@ datasets:
  
 metrics:
   dataset_of_interest: en_50-150
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
-pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+pricing: pricing.yml
   
 inference_parameters:
   sagemaker:
@@ -108,7 +105,7 @@ experiments:
     model_name: distilbert-base-uncased
     ep_name: distilbert-base-uncased
     instance_type: "ml.p3.2xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-inference:1.10.2-transformers4.17.0-gpu-py38-cu113-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.10.2-transformers4.17.0-gpu-py38-cu113-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -138,7 +135,7 @@ experiments:
     model_name: distilbert-base-uncased
     ep_name: distilbert-base-uncased
     instance_type: "ml.m5.xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-cpu-py39-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-cpu-py39-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py

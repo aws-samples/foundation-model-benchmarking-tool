@@ -87,18 +87,16 @@ datasets:
 
 metrics:
   dataset_of_interest: en_1000-2000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
-  
+
 pricing: pricing.yml
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 200
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 200
 
 # Model configurations
 experiments:
@@ -115,6 +113,8 @@ experiments:
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     serving.properties: |
       engine=Python
       option.tensor_parallel_degree=1
@@ -134,6 +134,9 @@ experiments:
     env:
 
 report:
+  latency_budget: 1
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
