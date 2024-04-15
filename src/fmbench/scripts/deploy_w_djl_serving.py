@@ -65,35 +65,18 @@ def _download_model(model_id: str,
     )
     print(f"Uncompressed model downloaded into ... -> {model_download_path}")
     return model_download_path
-    
-def _upload_dir(localDir, awsInitDir, bucketName, tag="*.*"):
-    """
-    from current working directory, upload a 'localDir' with all its subcontents (files and subdirectories...)
-    to a aws bucket
-    Parameters
-    ----------
-    localDir :   localDirectory to be uploaded, with respect to current working directory
-    awsInitDir : prefix 'directory' in aws
-    bucketName : bucket in aws
-    tag :        tag to select files, like *png
-                 NOTE: if you use tag it must be given like --tag '*txt', in some quotation marks... for argparse
-    prefix :     to remove initial '/' from file names
 
-    Returns
-    -------
-    None
-    """
+def _upload_dir(localDir: str, awsInitDir: str, bucketName: str, tag: str ="*.*"):
     s3 = boto3.resource('s3')
     p = Path(localDir)
-    mydirs = list(p.glob('**'))
-    for mydir in mydirs:
-        fileNames = glob.glob(os.path.join(mydir, tag))
-        fileNames = [f for f in fileNames if not Path(f).is_dir()]
-        for i, fileName in enumerate(fileNames):
-            print(f"fileName {fileName}")
-
-            awsPath = os.path.join(awsInitDir, str(fileName))
-            s3.meta.client.upload_file(fileName, bucketName, awsPath)
+    # Iterate over all directories and files within localDir
+    for path in p.glob('**/*'):
+        if path.is_file():
+            rel_path = path.relative_to(p)
+            awsPath = os.path.join(awsInitDir, str(rel_path)).replace("\\", "/")
+            logger.info(f"Uploading {path} to s3://{bucketName}/{awsPath}")
+            logger.info(f"path: {path}, bucket name: {bucketName}, awsPath: {awsPath}")
+            s3.meta.client.upload_file(path, bucketName, awsPath)
 
 def _create_and_upload_model_artifact(serving_properties_path: str,
                                       bucket: str,
@@ -114,7 +97,6 @@ def _create_and_upload_model_artifact(serving_properties_path: str,
     logger.info(f"uploaded model.tar.gz to {model_tar_gz_path}")
     return model_tar_gz_path
 
-
 def _create_model(experiment_config: Dict,
                   inference_image_uri: str,
                   s3_model_artifact: str,
@@ -124,6 +106,27 @@ def _create_model(experiment_config: Dict,
     """
     model_name = name_from_base(experiment_config['model_name'])
     env = experiment_config.get('env')
+
+    # HF token required for gated model downloads form HF
+    hf_token_file_path = Path(HF_TOKEN_FNAME)
+    hf_dict: Optional[Dict] = None
+    if hf_token_file_path.is_file() is True:
+        logger.info(f"hf_token file path: {hf_token_file_path} is a file")
+        hf_dict = dict(HUGGING_FACE_HUB_TOKEN=hf_token_file_path.read_text().strip())
+    else:
+        logger.info(f"hf_token file path: {hf_token_file_path} is not a file")
+        
+    # this gets passed as an env var
+    if env:
+        if hf_dict:
+            # both env and hf_dict exists, so we do a union
+            env = env | hf_dict
+    else:
+        if hf_dict:
+            # env var did not exist, but hf_dict did so that
+            # is now the env var
+            env = hf_dict
+
     if env:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact,
@@ -131,6 +134,7 @@ def _create_model(experiment_config: Dict,
     else:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact)
+
     create_model_response = sm_client.create_model(
         ModelName=model_name,
         ExecutionRoleArn=role_arn,
@@ -191,9 +195,10 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         local_model_path = _download_model(experiment_config['model_id'],
                                            local_model_path)
         logger.info(f"going to upload model files to {experiment_config['model_s3_path']}")
-        
+
         o = urlparse(experiment_config['model_s3_path'], allow_fragments=False)
-        _upload_dir(local_model_path, o.path, o.netloc)
+        _upload_dir(local_model_path, o.path.lstrip('/'), o.netloc) 
+        logger.info(f"local model path: {local_model_path}, o.path: {o.path}, o.netloc: {o.netloc}")
 
         model_artifact = experiment_config['model_s3_path']
         logger.info(f"Uncompressed model downloaded into ... -> {model_artifact}")
@@ -203,6 +208,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     # handle serving.properties, we read it from the config and then write it to
     # a local file
     write_bucket = experiment_config.get('bucket', default_bucket)
+    logger.info(f"write bucket for inserting model.tar.gz into: {write_bucket}")
     properties = experiment_config["serving.properties"].format(write_bucket=write_bucket)
     dir_path = os.path.dirname(os.path.realpath(__file__))
     serving_properties_path = os.path.join(dir_path, "serving.properties")

@@ -12,6 +12,7 @@ pricing:
     ml.inf2.48xlarge: 15.58
     ml.p4d.24xlarge: 37.688
     ml.p3.2xlarge: 3.825
+    anthropic.claude-v3-sonnet-pt-nc: 88
 
   token_based:
     # Token Based Pricing: Bedrock
@@ -41,10 +42,11 @@ pricing:
     ## Llama
     meta.llama2-13b-chat-v1:
       input-per-1k-tokens: 0.00075
-      output-per-1k-tokens: 0.00100
-    meta.llama2-13b-chat-v1: 
+      output-per-1k-tokens: 0.00100      
+    meta.llama2-70b-chat-v1: 
       input-per-1k-tokens: 0.00195
-      output-per-1k-tokens: 0.00195
+      output-per-1k-tokens: 0.00256
+      
     #  ai21
     ai21.j2-mid-v1:
       input-per-1k-tokens: 0.0125

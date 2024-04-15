@@ -16,10 +16,12 @@ from botocore.exceptions import NoCredentialsError
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# The files in LongBench contain nonstandard or irregular Unicode.
-# For compatibility and safety we normalize them.
+
 def _normalize(text, form='NFC'):
+    # The files in LongBench contain nonstandard or irregular Unicode.
+    # For compatibility and safety we normalize them.
     return unicodedata.normalize(form, str(text))
+
 
 def _download_from_s3(bucket_name, prefix, local_dir):
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
@@ -35,7 +37,7 @@ def _download_from_s3(bucket_name, prefix, local_dir):
         if 'Contents' in response:
             for obj in response['Contents']:
                 file_key = obj['Key']
-                if file_key.endswith('/'):  
+                if file_key.endswith('/'):
                     continue
                 local_file_path = os.path.join(local_dir, os.path.basename(file_key))
                 s3_client.download_file(bucket_name, file_key, local_file_path)
@@ -45,19 +47,21 @@ def _download_from_s3(bucket_name, prefix, local_dir):
     except Exception as e:
         logger.error(f"An error occurred while downloading from S3: {e}")
 
-class CustomTokenizer:    
+
+class CustomTokenizer:
     """A custom tokenizer class"""
     TOKENS: int = 1000
     WORDS: int = 750
 
     def __init__(self, bucket, prefix, local_dir):
-        print(f"CustomTokenizer, based on HF transformers")
-        # Check if the tokenizer files exist in s3 and if not, use the autotokenizer       
+        logger.info(f"CustomTokenizer, based on HF transformers, {bucket} "
+                    f"prefix: {prefix} local_dir: {local_dir}")
+        # Check if the tokenizer files exist in s3 and if not, use the autotokenizer
         _download_from_s3(bucket, prefix, local_dir)
         # Load the tokenizer from the local directory
         dir_not_empty = any(Path(local_dir).iterdir())
         if dir_not_empty is True:
-            logger.info("loading the provided tokenizer")
+            logger.info("loading the provided tokenizer from local_dir={local_dir}")
             self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
         else:
             logger.error(f"no tokenizer provided, the {local_dir} is empty, "
@@ -69,7 +73,7 @@ class CustomTokenizer:
             return len(self.tokenizer.encode(text))
         else:
             return int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
-    
+
 _tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
 
 # utility functions
@@ -130,6 +134,18 @@ def load_config(config_file) -> Dict:
     config = yaml.safe_load(content)
     return config
 
+def load_main_config(config_file) -> Dict:
+    config = load_config(config_file)
+    # iterate through each experiment and populate the parameters section in the inference spec
+    for i in range(len(config['experiments'])):
+        # for the experiment at index i, look up the parameter set
+        # retrieve the parameter set from the inference_parameter section
+        # assign the parameters from that parameter set to a new key called
+        # parameters in that experiment
+        parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
+        config['experiments'][i]['inference_spec']['parameters'] = parameters
+    return config
+    
 def count_tokens(text: str) -> int:
     global _tokenizer
     return _tokenizer.count_tokens(text)

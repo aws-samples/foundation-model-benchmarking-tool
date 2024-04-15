@@ -139,17 +139,26 @@ experiments:
     model_id: meta-llama/Llama-2-70b-hf # change this to meta chat model
     model_version: "*"
     model_name: llama2-70bdjl
-    bucket_name: sagemaker-us-east-1-015469603702
-    key_name: hf-large-model-djl/code_llama2 ## where you want your model.tar.gz to be located
-    s3_path: s3://sagemaker-us-east-1-015469603702/llama-2-70B-fp16/lmi/ ## S3 path to your uncompressed model
-    ep_name: llama-2-70b-chat-p4d-24xlarge    
+    ep_name: llama-2-70b-chat-p4d-24xlarge
+    download_from_hf_place_in_s3: None
+    model_s3_path: None
     ## allow_patterns: [] use if you are downloading the model first for the first time
     instance_type: "ml.p4d.24xlarge"    
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
     deploy: yes
     instance_count: 1
-    deployment_script: p4d_djl.py
+    deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    serving.properties: |
+       engine=MPI
+       option.model_id=meta-llama/Llama-2-70b-hf
+       option.tensor_parallel_degree=8
+       option.max_input_len=4000
+       option.max_output_len=100
+       option.use_custom_all_reduce=true
+       option.output_formatter=json
+       option.max_rolling_batch_size=8
+       option.model_loading_timeout=3600
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl

@@ -96,8 +96,9 @@ metrics:
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters:
-  ContentType: "application/x-text"
-  Accept: "application/json;verbose"
+  sagemaker:
+    ContentType: "application/x-text"
+    Accept: "application/json;verbose"
 
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
@@ -114,6 +115,7 @@ experiments:
     inference_script: sagemaker_predictor.py
     inference_spec:
       split_input_and_parameters: yes
+      parameter_set: sagemaker
     payload_files:
     #- payload_en_1-500.jsonl
     - payload_en_50-150.jsonl
@@ -143,6 +145,7 @@ experiments:
     inference_script: sagemaker_predictor.py
     inference_spec:
       split_input_and_parameters: yes
+      parameter_set: sagemaker
     payload_files:
     #- payload_en_1-500.jsonl
     - payload_en_50-150.jsonl
@@ -162,6 +165,9 @@ experiments:
 
 
 report:
+  latency_budget: 0.2
+  cost_per_10k_txn_budget: 5
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 100000

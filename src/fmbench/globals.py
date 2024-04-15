@@ -60,7 +60,16 @@ CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
-print(f"Loaded config: {config}")
+
+# iterate through each experiment and populate the parameters section in the inference spec
+for i in range(len(config['experiments'])):
+    # for the experiment at index i, look up the parameter set
+    # retrieve the parameter set from the inference_parameter section
+    # assign the parameters from that parameter set to a new key called
+    # parameters in that experiment
+    parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
+    config['experiments'][i]['inference_spec']['parameters'] = parameters
+print(f"loaded config: {config}")
 
 # data directory and prompts
 PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
@@ -132,7 +141,7 @@ class TRUNCATE_POLICY(str, Enum):
 
 # misc. metrics related
 PLACE_HOLDER: int = -1705338041
-RESULTS_DIR: str = "results"
+RESULTS_DIR: str = f"results-{config['general']['name']}"
 
 # metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"

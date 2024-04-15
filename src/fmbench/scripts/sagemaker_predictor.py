@@ -16,7 +16,9 @@ logger = logging.getLogger(__name__)
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
-    def __init__(self, endpoint_name: str, inference_spec: Dict | None):
+    def __init__(self,
+                 endpoint_name: str,
+                 inference_spec: Optional[Dict]):
         self._predictor: Optional[sagemaker.base_predictor.Predictor] = None
         self._endpoint_name: str = endpoint_name
         self._inference_spec: Dict = inference_spec
@@ -30,7 +32,7 @@ class SageMakerPredictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
-        logger.info(f"__init__ self._predictor={self._predictor}")
+        logger.info(f"__init__ _predictor={self._predictor}, _inference_spec={self._inference_spec}")
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json: Optional[Dict] = None
@@ -49,8 +51,12 @@ class SageMakerPredictor(FMBenchPredictor):
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
             response = None
             if split_input_and_inference_params is True:
-                response = self._predictor.predict(payload["inputs"], payload["parameters"])
+                response = self._predictor.predict(payload["inputs"],
+                                                   self._inference_spec["parameters"])
             else:
+                payload = payload | dict(parameters=self._inference_spec["parameters"])
+                #import json
+                #logger.info(json.dumps(payload, indent=2, default=str))
                 response = self._predictor.predict(payload)
 
             latency = time.perf_counter() - st
@@ -97,6 +103,11 @@ class SageMakerPredictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
+
+    @property
+    def inference_parameters(self) -> Dict:
+        """The inference parameters property."""
+        return self._inference_spec.get("parameters")
 
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):

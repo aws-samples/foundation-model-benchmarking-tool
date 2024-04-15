@@ -90,9 +90,11 @@ metrics:
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters: 
-  temperature: 0.1
-  max_tokens: 100
-  caching: False
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
@@ -109,6 +111,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -136,6 +139,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -165,6 +169,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -192,6 +197,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -219,6 +225,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -246,6 +253,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -273,6 +281,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -300,6 +309,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -327,6 +337,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -354,6 +365,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -381,6 +393,7 @@ experiments:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl

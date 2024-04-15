@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-llama2-13bchat-bedrock"      
-  model_name: "llama2-13bchat-bedrock"
+  name: "fmbench-bedrock-claude-sonnet"      
+  model_name: "Claude Sonnet available in Amazon Bedrock"
   
 # AWS and SageMaker settings
 aws:
@@ -39,16 +39,16 @@ s3_read_data:
     - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_titan_text.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: no
-    2_deploy_model.ipynb: no ## nothing to deploy
-    3_run_inference.ipynb: yes
+    2_deploy_model.ipynb: no
+    3_run_inference.ipynb: no
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no ## nothing to clean up
+    5_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
@@ -83,65 +83,68 @@ datasets:
  
 metrics:
   dataset_of_interest: en_3000-4000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
+
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters: 
-  temperature: 0.1
-  max_tokens: 100
-  caching: False
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: llama2-13b-chat-bedrock
-    model_id: meta.llama2-13b-chat-v1
-    model_version: "*"
-    model_name: llama2-13b-chat
-    ep_name: meta.llama2-13b-chat-v1
-    instance_type: 'Llama13b-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
+  - name: anthropic.claude-v3-sonnet-pt
+    model_name: anthropic.claude-v3-sonnet-pt
+    ep_name: arn:aws:bedrock:us-east-1:015469603702:provisioned-model/c6srw13w02oy
+    instance_type: anthropic.claude-v3-sonnet-pt-nc
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: 
-  - name: llama2-70b-chat-v1
-    model_id: meta.llama2-70b-chat-v1
-    model_version: "*"
-    model_name: llama2-70b-chat-v1
-    ep_name: meta.llama2-70b-chat-v1
-    instance_type: 'Llama70b-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: anthropic.claude-3-sonnet-20240229-v1:0
+    model_name: anthropic.claude-3-sonnet-20240229-v1:0
+    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_type: anthropic.claude-3-sonnet-20240229-v1:0
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: 
-
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+    
 report:
+  latency_budget: 5
+  cost_per_10k_txn_budget: 350
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

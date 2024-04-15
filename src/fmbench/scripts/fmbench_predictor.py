@@ -5,16 +5,13 @@ from abc import ABC, abstractmethod, abstractproperty
 class FMBenchPredictor(ABC):
 
     @abstractmethod
-    def __init__(self, endpoint_name: str, inference_spec: Optional[Dict]):
+    def __init__(self,
+                 endpoint_name: str,
+                 inference_spec: Optional[Dict]):
         pass
 
     @abstractmethod
     def get_prediction(self, payload: Dict) -> Dict:
-        pass
-
-    @abstractproperty
-    def endpoint_name(self) -> str:
-        """The endpoint name property."""
         pass
 
     @abstractmethod
@@ -26,6 +23,16 @@ class FMBenchPredictor(ABC):
         """Represents the function to calculate the
            cost of each experiment run.
         """
+        pass
+
+    @abstractproperty
+    def endpoint_name(self) -> str:
+        """The endpoint name property."""
+        pass
+
+    @abstractproperty
+    def inference_parameters(self) -> Dict:
+        """The inference parameters property."""
         pass
 
 

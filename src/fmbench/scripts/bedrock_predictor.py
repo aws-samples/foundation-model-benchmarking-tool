@@ -1,4 +1,5 @@
 import os
+import math
 import boto3
 import logging
 from litellm import completion
@@ -24,19 +25,46 @@ class BedrockPredictor(FMBenchPredictor):
     _service_name: str = SERVICE_NAME
 
     # overriding abstract method
-    def __init__(self, endpoint_name: str, inference_spec: Optional[Dict]):
+    def __init__(self,
+                 endpoint_name: str,
+                 inference_spec: Optional[Dict]):
         try:
             # initialize private member variables
             self._endpoint_name = endpoint_name
+            self._pt_model_id = None
             self._inference_spec = inference_spec
-            self._predictor = boto3.client('bedrock-runtime')
             self._aws_region = boto3.Session().region_name
 
+            # check if the endpoint name corresponded to a provisioned throughput
+            # endpoint
+            if ':provisioned-model/' in self._endpoint_name:
+                logger.info(f"{self._endpoint_name} is a provisioned throughput endpoint")
+                bedrock_client = boto3.client(SERVICE_NAME)
+                response = bedrock_client.list_provisioned_model_throughputs()
+                if response['ResponseMetadata']['HTTPStatusCode'] != 200:
+                    logger.error(f"error received while calling list_provisioned_model_throughputs, response=\"{response}\", "
+                                 f"BedrockPredictor cannot be created")
+                else:
+                    fm_arn = [pt_summary['foundationModelArn'] for \
+                                pt_summary in response['provisionedModelSummaries'] \
+                                  if pt_summary['provisionedModelArn'] == self._endpoint_name]
+                    if len(fm_arn) > 0:                        
+                        # set the PT name which looks like arn:aws:bedrock:us-east-1:<account-id>:provisioned-model/<something>                        
+                        self._pt_model_id = self._endpoint_name
+                        # set the endpoint name which needs to look like the FM model id
+                        # this can now be extracted from the fm_arn which looks like 
+                        # 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0:28k',                        
+                        self._endpoint_name = fm_arn[0].split("/")[1]
+                        logger.info(f"a matching PT was found, self._pt_model_id={self._pt_model_id}, "
+                                    f"self._endpoint_name={self._endpoint_name}")
+                    else:
+                        logger.error(f"no matching PT was found, BedrockPredictor cannot be created")
+                    
+                
             # model_id for the litellm API with the specific bedrock model of choice
             # endpoint_name in case of bedrock refers to the model_id such as 
             # cohere.command-text-v14 for example
             self._bedrock_model = f"{self._service_name}/{self._endpoint_name}"
-
             # litellm supports the following inference params as per
             # https://litellm.vercel.app/docs/completion/input
             self._temperature = 0.1
@@ -50,27 +78,28 @@ class BedrockPredictor(FMBenchPredictor):
             # call to be independant
             self._caching = False
 
+            # override these defaults if there is an inference spec provided
+            if inference_spec:
+                parameters: Optional[Dict] = inference_spec.get('parameters')
+                if parameters:
+                    self._temperature = parameters.get('temperature', self._temperature)
+                    self._max_tokens = parameters.get('max_tokens', self._max_tokens)
+                    self._top_p = parameters.get('top_p', self._top_p)
             self._response_json = {}
-            logger.info(f"__init__, _bedrock_model={self._bedrock_model}, "
-                        f"_predictor={self._predictor}")
+            logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
+                        f"_temperature={self._temperature} "
+                        f"_max_tokens={self._max_tokens}, _top_p={self._top_p} "
+                        f"_stream={self._stream}, _stop={self._stop}, _caching={self._caching}")
         except Exception as e:
-            logger.error(f"exception while creating predictor/initializing variables "
-                         f"for endpoint_name={self._endpoint_name}, exception={e}")
-            self._predictor = None
+            exception_msg = f"""exception while creating predictor/initializing variables
+                            for endpoint_name={self._endpoint_name}, exception=\"{e}\", 
+                            BedrockPredictor cannot be created"""
+            logger.error(exception_msg)
+            raise ValueError(exception_msg)
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
-        # Represents the inference parameters (in this case, temperature and caching) 
-        parameters = payload['parameters']
-
-        # get the temperature, max_tokens and caching values as inference parameters 
-        temperature = parameters.get('temperature', self._temperature)
-        max_tokens = parameters.get('max_tokens', self._max_tokens)
-        top_p = parameters.get('top_p', self._top_p)
-        caching = parameters.get('caching', self._caching)
-        logger.info(f"parameters={parameters}")
-
         os.environ["AWS_REGION_NAME"] = self._aws_region
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
@@ -83,19 +112,21 @@ class BedrockPredictor(FMBenchPredictor):
             # know that?
             if 'cohere' not in self._endpoint_name:
                 response = completion(model=self._bedrock_model,
+                                      model_id=self._pt_model_id,
                                       messages=[{"content": prompt_input_data,
                                                  "role": "user"}],
-                                      temperature=temperature,
-                                      max_tokens=max_tokens,
-                                      top_p=top_p,
-                                      caching=caching,)
+                                      temperature=self._temperature,
+                                      max_tokens=self._max_tokens,
+                                      top_p=self._top_p,
+                                      caching=self._caching,)
             else:
                 response = completion(model=self._bedrock_model,
+                                      model_id=self._pt_model_id,
                                       messages=[{"content": prompt_input_data,
                                                  "role": "user"}],
-                                      temperature=temperature,
-                                      max_tokens=max_tokens,
-                                      caching=caching,)
+                                      temperature=self._temperature,
+                                      max_tokens=self._max_tokens,
+                                      caching=self._caching,)
 
             # iterate through the entire model response
             # since we are not sending bached request so we only expect
@@ -137,20 +168,31 @@ class BedrockPredictor(FMBenchPredictor):
         input_token_cost: Optional[float] = None
         output_token_cost: Optional[float] = None
         try:
-            # Retrieve the pricing information for the instance type
-            bedrock_pricing = pricing['pricing']['token_based']
-            # Calculate cost based on the number of input and output tokens
-            model_pricing = bedrock_pricing.get(instance_type, None)
-            if model_pricing:
-                input_token_cost = (prompt_tokens / 1000.0) * model_pricing['input-per-1k-tokens']
-                output_token_cost = (completion_tokens / 1000.0) * model_pricing['output-per-1k-tokens']
-                experiment_cost = input_token_cost + output_token_cost
-                logger.info(f"instance_type={instance_type}, prompt_tokens={prompt_tokens}, "
-                            f"input_token_cost={input_token_cost}, output_token_cost={completion_tokens}, "
-                            f"output_token_cost={output_token_cost}, experiment_cost={experiment_cost}")
+            if self._pt_model_id is None:
+                logger.info("calculate_cost, calculating cost with token based pricing")
+                # Retrieve the pricing information for the instance type
+                bedrock_pricing = pricing['pricing']['token_based']
+                # Calculate cost based on the number of input and output tokens
+                model_pricing = bedrock_pricing.get(instance_type, None)
+                if model_pricing:
+                    input_token_cost = (prompt_tokens / 1000.0) * model_pricing['input-per-1k-tokens']
+                    output_token_cost = (completion_tokens / 1000.0) * model_pricing['output-per-1k-tokens']
+                    experiment_cost = input_token_cost + output_token_cost
+                    logger.info(f"instance_type={instance_type}, prompt_tokens={prompt_tokens}, "
+                                f"input_token_cost={input_token_cost}, output_token_cost={completion_tokens}, "
+                                f"output_token_cost={output_token_cost}, experiment_cost={experiment_cost}")
+                else:
+                    logger.error(f"model pricing for \"{instance_type}\" not found, "
+                                 f"cannot calculate experiment cost")
             else:
-                logger.error(f"model pricing for \"{instance_type}\" not found, "
-                             f"cannot calculate experiment cost")
+                logger.info("calculate_cost, calculating cost with PT pricing")
+                instance_based_pricing = pricing['pricing']['instance_based']
+                hourly_rate = instance_based_pricing.get(instance_type, None)
+                # calculating the experiment cost for instance based pricing
+                duration_in_hours_ceil = math.ceil(duration/3600)
+                experiment_cost = hourly_rate * duration_in_hours_ceil
+                logger.info(f"instance_type={instance_type}, hourly_rate={hourly_rate}, "
+                            f"duration_in_hours_ceil={duration_in_hours_ceil}, experiment_cost={experiment_cost}")
 
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
@@ -160,6 +202,13 @@ class BedrockPredictor(FMBenchPredictor):
     def endpoint_name(self) -> str:
         """The endpoint name property."""
         return self._endpoint_name
+
+    @property
+    def inference_parameters(self) -> Dict:
+        """The inference parameters property."""
+        return dict(temperature=self._temperature,
+                    max_tokens=self._max_tokens,
+                    top_p=self._top_p)
 
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):

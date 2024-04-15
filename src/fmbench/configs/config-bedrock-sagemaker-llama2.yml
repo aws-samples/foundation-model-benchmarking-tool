@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-j2-ultra-v1"      
-  model_name: "j2-ultra-v1"
+  name: "fmbench-llama2"      
+  model_name: "Llama2 on Bedrock & SageMaker"
   
 # AWS and SageMaker settings
 aws:
@@ -39,13 +39,13 @@ s3_read_data:
     - triviaqa.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_ai21.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
@@ -77,71 +77,109 @@ datasets:
     max_length_in_tokens: 4000
     payload_file: payload_en_3000-4000.jsonl
   - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl  
-
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
 metrics:
-  dataset_of_interest: en_3000-4000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters: 
-  temperature: 0.1
-  max_tokens: 100
-  caching: False
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
+  sagemaker:
+    temperature: 0.1
+    do_sample: yes  
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
+    return_full_text: False
+    #truncate: at-prompt-token-length
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: j2-ultra-v1
-    model_id: ai21.j2-ultra-v1
+  - name: llama2-13b-p4d.24xlarge-trt-inference
+    model_id: meta-llama/Llama-2-13b-chat-hf
     model_version: "*"
-    model_name: j2-ultra-v1
-    ep_name: ai21.j2-ultra-v1
-    instance_type: 'AI21ultra-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
+    model_name: meta-llama-Llama-2-13b-chat-hf
+    ep_name: llama-2-13b-p4d-24xlarge 
+    download_from_hf_place_in_s3: None
+    model_s3_path: None
+    instance_type: "ml.p4d.24xlarge"    
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-tensorrtllm0.8.0-cu122
+    deploy: yes
+    instance_count: 1
+    deployment_script: deploy_w_djl_serving.py
+    inference_script: sagemaker_predictor.py
+    serving.properties: |
+       engine=MPI
+       option.model_id=meta-llama/Llama-2-13b-chat-hf
+       option.tensor_parallel_degree=4
+       option.max_rolling_batch_size=64
+       option.rolling_batch=trtllm
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: sagemaker
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    accept_eula: true
+    env:
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      OPTION_MAX_INPUT_LEN: "3840"
+      OPTION_MAX_OUTPUT_LEN: "256"
+      OPTION_USE_CUSTOM_ALL_REDUCE: "true"
+      
+  - name: meta.llama2-13b-chat-v1
+    model_id: meta.llama2-13b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-13b-chat-v1
+    ep_name: meta.llama2-13b-chat-v1
+    instance_type: meta.llama2-13b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
+      parameter_set: bedrock
     payload_files:
-    - payload_en_3000-4000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: 
-  - name: j2-mid-v1
-    model_id: ai21.j2-mid-v1
-    model_version: "*"
-    model_name: j2-ultra-v1
-    ep_name: ai21.j2-mid-v1
-    instance_type: 'AI21mid-ODT'
-    image_uri: ## leaving it blank for bedrock supported models
-    deploy: no ## deployment step not needed for bedrock models
-    instance_count: 1 ## not needed for bedrock models
-    deployment_script: ## not needed for bedrock models
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-    payload_files:
-    - payload_en_3000-4000.jsonl
-    concurrency_levels:
-    - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    env: 
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+
 
 report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
