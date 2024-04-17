@@ -111,7 +111,7 @@ experiments:
     download_from_hf_place_in_s3: None
     model_s3_path: None
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-tensorrtllm0.8.0-cu122
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-tensorrtllm0.8.0-cu122
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
@@ -178,7 +178,7 @@ experiments:
 
 report:
   latency_budget: 2
-  cost_per_10k_txn_budget: 20
+  cost_per_10k_txn_budget: 30
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

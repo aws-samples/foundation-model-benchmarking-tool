@@ -80,8 +80,8 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
   - language: en
     min_length_in_tokens: 305
     max_length_in_tokens: 3997
@@ -99,6 +99,7 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
+    return_full_text: False
     #truncate: at-prompt-token-length
 
 # Model configurations
@@ -165,7 +166,7 @@ experiments:
       "SAGEMAKER_MODEL_SERVER_WORKERS": "1"
 
 report:
-  latency_budget: 2
+  latency_budget: 5
   cost_per_10k_txn_budget: 50
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv

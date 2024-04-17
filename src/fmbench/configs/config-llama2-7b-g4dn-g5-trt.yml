@@ -68,16 +68,11 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
-
-
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
 metrics:
-  dataset_of_interest: en_2000-3000
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml
   
@@ -108,7 +103,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -153,7 +148,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -165,7 +160,7 @@ experiments:
 
 report:
   latency_budget: 2
-  cost_per_10k_txn_budget: 50
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

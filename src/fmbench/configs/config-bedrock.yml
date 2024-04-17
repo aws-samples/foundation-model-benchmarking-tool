@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-titan"      
+  name: "fmbench-bedrock"      
   model_name: "FMs available in Amazon Bedrock"
   
 # AWS and SageMaker settings

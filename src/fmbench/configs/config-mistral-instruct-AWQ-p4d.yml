@@ -108,7 +108,7 @@ experiments:
     download_from_hf_place_in_s3: yes
     model_s3_path: s3://{write_bucket}/TheBloke/Mistral-7B-Instruct-v0.2-AWQ
     instance_type: "ml.p4d.24xlarge"
-    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py

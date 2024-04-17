@@ -76,15 +76,11 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
-
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -95,7 +91,7 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
-    truncate: at-prompt-token-length
+    #truncate: at-prompt-token-length
 
 # Model configurations
 experiments:
@@ -105,7 +101,7 @@ experiments:
     model_name: llama2-70b-f
     ep_name: llama-2-70b-g5-48xlarge
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -117,7 +113,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -144,7 +140,7 @@ experiments:
     model_s3_path: None
     ## allow_patterns: [] use if you are downloading the model first for the first time
     instance_type: "ml.p4d.24xlarge"    
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-tensorrtllm0.7.1-cu122' ## New djl TENSORRTLLM container
     deploy: yes
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
@@ -166,7 +162,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -182,7 +178,7 @@ experiments:
       HEALTH_CHECK_TIMOUT: "300"
 
 report:
-  latency_budget: 2
+  latency_budget: 5
   cost_per_10k_txn_budget: 50
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv

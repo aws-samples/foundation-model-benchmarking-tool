@@ -38,7 +38,7 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: mistral_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
@@ -82,7 +82,7 @@ datasets:
     payload_file: payload_en_305-3997.jsonl
 
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_2000-3000
 
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -93,17 +93,16 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
-    truncate: at-prompt-token-length
 
 # Model configurations
 experiments:
-  - name: mistral-7b-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
-    model_id: huggingface-llm-mistral-7b
+  - name: mistral-7b--instruct-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: huggingface-llm-mistral-7b-instruct
     model_version: "*"
-    model_name: mistral7b
-    ep_name: lmistral7b-g5-2xlarge
-    instance_type: "ml.g5.2xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    model_name: mistral-7b-instruct
+    ep_name: mistral7b-g5-2xlarge
+    instance_type: "ml.g5.2xlarge"    
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -115,13 +114,13 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    #- payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
     - 2
     - 4
-    - 6
-    - 8
+    # - 6
+    # - 8
     accept_eula: true
     env:
       SAGEMAKER_PROGRAM: "inference.py"
@@ -135,8 +134,9 @@ experiments:
       SM_NUM_GPUS: "1"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
+
 report:
-  latency_budget: 1
+  latency_budget: 5
   cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
