@@ -181,6 +181,34 @@ experiments:
     - 8
     - 10
     env:
+  - name: meta.llama2-70b-chat-v1
+    model_id: meta.llama2-70b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-70b-chat-v1
+    ep_name: meta.llama2-70b-chat-v1
+    instance_type: meta.llama2-70b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
   - name: amazon.titan-text-lite-v1
     model_id: amazon.titan-text-lite-v1
     model_version: "*"

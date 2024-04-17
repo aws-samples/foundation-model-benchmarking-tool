@@ -25,9 +25,6 @@ pricing:
       input-per-1k-tokens: 0.00300
       output-per-1k-tokens: 0.01500
     # Titan
-    titan-emb-text-ODT: 
-      input-per-1k-tokens: 0.0001
-      output-per-1k-tokens: 0 # n/a
     amazon.titan-text-lite-v1: 
       input-per-1k-tokens: 0.0003
       output-per-1k-tokens: 0.0004
