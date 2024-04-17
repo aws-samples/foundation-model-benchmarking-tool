@@ -123,6 +123,8 @@ experiments:
     - 1
     - 2
     - 4
+    - 6
+    - 8
 
     accept_eula: true
     env:
@@ -154,6 +156,8 @@ experiments:
     - 1
     - 2
     - 4
+    - 6
+    - 8
 
 
     accept_eula: true
