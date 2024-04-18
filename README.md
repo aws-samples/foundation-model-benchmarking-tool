@@ -34,11 +34,11 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 |:------------------|:-----------------|:----------------|:--------------|:--------------|:------------------------------|:--------------------------------|
 | **Anthropic Claude-3 Sonnet** | | |  | | ✅ | ✅  | 
 | **Anthropic Claude-3 Haiku**  | | |  | | ✅ |   |
-| **Mistral Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
-| **Mistral Mistral-7b-AWQ** || | |✅ | |   |
-| **Mistral Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
-| **Llama2-13b chat**  |✅ |✅ |✅  |✅ | ✅  |   |
-| **Llama2-70b chat**  |✅ |✅ |✅  |✅ | ✅  |   |
+| **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
+| **Mistral-7b-AWQ** || | |✅ | |   |
+| **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
+| **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
+| **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Amazon Titan text lite**  | | |  | | ✅ |   |
 | **Amazon Titan text express**  | | |  | | ✅ |   |
 | **Cohere Command text**  | | |  | | ✅ |   |
@@ -50,7 +50,7 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## Description
 
-The `FMBench` is a Python package for running performance benchmarks for **any model** on **any supported instance type** (`g5`, `p4d`, `Inf2`). `FMBench` deploys models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type, inference container and settings such as tensor parallelism etc. Because `FMBench` works for any model therefore it can be used not only testing _third party models_ available on SageMaker, _open-source models_ but also _proprietary models_ trained by enterprises on their own data.
+`FMBench` is a Python package for running performance benchmarks for **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** with support for Amazon EKS and Bring your own endpoint in the works. `FMBench` deploys models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type (`g5`, `p4d`, `p5`, `Inf2`), inference containers (`DeepSpeed`, `TensorRT`, `HuggingFace TGI` and others) and settings such as tensor parallelism etc. Because `FMBench` works for any model therefore it can be used not only testing _third party models_ but also _open-source models_ and _proprietary models_ trained by enterprises on their own data.
 
 >In a production system you may choose to deploy models outside of SageMaker such as on EC2 or EKS but even in those scenarios the benchmarking results from this tool can be used as a guide for determining the optimal instance type and serving stack (inference containers, configuration).
 
