@@ -74,15 +74,11 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
  
 metrics:
-  dataset_of_interest: en_3000-4000
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -114,7 +110,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -142,7 +138,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -172,7 +168,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -200,7 +196,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -228,7 +224,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -256,7 +252,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -284,7 +280,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -312,7 +308,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -340,7 +336,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -368,7 +364,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -396,7 +392,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -424,7 +420,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2

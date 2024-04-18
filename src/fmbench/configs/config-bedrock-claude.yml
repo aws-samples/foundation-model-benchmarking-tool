@@ -82,7 +82,7 @@ datasets:
     payload_file: payload_en_305-3997.jsonl
  
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_3000-4000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -98,7 +98,7 @@ inference_parameters:
 experiments:
   - name: anthropic.claude-v3-sonnet-pt
     model_name: anthropic.claude-v3-sonnet-pt
-    ep_name: arn:aws:bedrock:us-east-1:015469603702:provisioned-model/ujp0lfds26bo
+    ep_name: <your-provisioned-throughput-arn>
     instance_type: anthropic.claude-v3-sonnet-pt-nc
     inference_script: bedrock_predictor.py
     inference_spec:
