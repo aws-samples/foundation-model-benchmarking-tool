@@ -50,9 +50,7 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## Description
 
-`FMBench` is a Python package for running performance benchmarks for **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** with support for Amazon EKS and Bring your own endpoint in the works. `FMBench` deploys models on Amazon SageMaker and use the endpoint to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. for different combinations of instance type (`g5`, `p4d`, `p5`, `Inf2`), inference containers (`DeepSpeed`, `TensorRT`, `HuggingFace TGI` and others) and settings such as tensor parallelism etc. Because `FMBench` works for any model therefore it can be used not only testing _third party models_ but also _open-source models_ and _proprietary models_ trained by enterprises on their own data.
-
->In a production system you may choose to deploy models outside of SageMaker such as on EC2 or EKS but even in those scenarios the benchmarking results from this tool can be used as a guide for determining the optimal instance type and serving stack (inference containers, configuration).
+`FMBench` is a Python package for running performance benchmarks for **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** or deployed by you on an AWS service of choice (such as Amazon EKS or Amazon EC2) a.k.a **Bring your own endpoint**. For SageMaker, `FMBench` provides both the option of deploying models on SageMaker as part of its workflow and use the endpoint or skip the deployment step and use an endpoint you provide to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. This approach allows for benchmarking different combinations of instance types (`g5`, `p4d`, `p5`, `Inf2`), inference containers (`DeepSpeed`, `TensorRT`, `HuggingFace TGI` and others) and parameters such as tensor parallelism, rolling batch etc. Because `FMBench` is model agnostic therefore it can be used not only testing _third party models_ but also _open-source models_ and _proprietary models_ trained by enterprises on their own data.
 
 `FMBench` can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency.
 
@@ -61,7 +59,7 @@ The workflow for `FMBench` is as follows:
 ```
 Create configuration file
         |
-        |-----> Deploy model on SageMaker
+        |-----> Deploy model on SageMaker/Use models on Bedrock/Bring your own endpoint
                     |
                     |-----> Run inference against deployed endpoint(s)
                                      |

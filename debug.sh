@@ -4,7 +4,7 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=~/anaconda3/envs/fmbench_python311/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/config-mistral-instruct-p4d.yml
+CONFIG_FILE_PATH=src/fmbench/configs/config-llama2-7b-g5-quick.yml
 LOGFILE=fmbench.log
 
 # delete existing install
