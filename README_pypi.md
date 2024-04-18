@@ -1,6 +1,18 @@
-# Foundation Model benchmarking tool (FMBench) built using Amazon SageMaker
+# Foundation Model benchmarking tool (FMBench)
 
-![Foundation Model Benchmarking Tool](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true)
+<h1 align="center">
+        <img src="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true"></img>
+    </h1>
+    <p align="center">
+        <p align="center">Benchmark any Foundation Model (FM) on any AWS service [Amazon SageMaker, Amazon Bedrock, Amazon EKS, Bring your own endpoint etc.]
+        <br>
+    </p>
+<h4 align="center"><a href="" target="_blank">Amazon SageMaker</a> | <a href="" target="_blank">Amazon Bedrock</a></h4>
+<h4 align="center">
+    <a href="https://pypi.org/project/fmbench/" target="_blank">
+        <img src="https://img.shields.io/pypi/v/fmbench.svg" alt="PyPI Version">
+    </a>    
+</h4>
 
 A key challenge with FMs is the ability to benchmark their performance in terms of inference latency, throughput and cost so as to determine which model running with what combination of the hardware and serving stack provides the best price-performance combination for a given workload.
 
@@ -14,7 +26,34 @@ This foundation model benchmarking tool (a.k.a. `FMBench`) is a tool to answer t
 
 ![business question](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/business_summary.png?raw=true)
 
+## Models benchmarked
+
+Configuration files are available in the [configs](./src/fmbench/configs) folder for the following models in this repo.
+
+| Model    | SageMaker g4dn/g5/p3 | SageMaker Inf2 | SageMaker P4 | SageMaker P5 | Bedrock On-demand throughput | Bedrock provisioned throughput |
+|:------------------|:-----------------|:----------------|:--------------|:--------------|:------------------------------|:--------------------------------|
+| **Anthropic Claude-3 Sonnet** | | |  | | ✅ | ✅  | 
+| **Anthropic Claude-3 Haiku**  | | |  | | ✅ |   |
+| **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
+| **Mistral-7b-AWQ** || | |✅ | |   |
+| **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
+| **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
+| **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
+| **Amazon Titan text lite**  | | |  | | ✅ |   |
+| **Amazon Titan text express**  | | |  | | ✅ |   |
+| **Cohere Command text**  | | |  | | ✅ |   |
+| **Cohere Command light text**  | | |  | | ✅ |   |
+| **AI21 J2 Mid**  | | |  | | ✅ |   |
+| **AI21 J2 Ultra** | | |  | | ✅ |   |
+| **distilbert-base-uncased**  |  ✅ | |  | ||   |
+
 ## New in this release
+
+### v1.0.29
+
+1. Support for Amazon Bedrock. Benchmark models available on Bedrock, both on-demand throughput and provisioned throughput.
+
+### v1.0.28
 
 1. Support for HuggingFace datasets as well as bring your own datasets, more [here](https://github.com/aws-samples/foundation-model-benchmarking-tool?tab=readme-ov-file#bring-your-own-dataset--endpoint).
 

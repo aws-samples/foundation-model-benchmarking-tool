@@ -19,14 +19,14 @@ s3_client = boto3.client('s3')
 session = boto3.session.Session()
 region_name = session.region_name
 
-## Configuring the role ARN -- extract the role name
+# Configuring the role ARN -- extract the role name
 caller = boto3.client('sts').get_caller_identity()
 account_id = caller.get('Account')
 arn_string = caller.get('Arn')
 ROLE_NAME = arn_string.split('/')[-1]
 
 current_config_file = os.environ.get("CONFIG_FILE_FMBENCH")
-## if var is true, use that from cli
+# if var is true, use that from cli
 if current_config_file is not None:
     CONFIG_FILE = current_config_file
     print(f"config file current -> {CONFIG_FILE}, {current_config_file}")
@@ -62,16 +62,23 @@ CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
-print(f"Loaded config: {config}")
-                                                                                           
-    
-## data directory and prompts
+
+# iterate through each experiment and populate the parameters section in the inference spec
+for i in range(len(config['experiments'])):
+    # for the experiment at index i, look up the parameter set
+    # retrieve the parameter set from the inference_parameter section
+    # assign the parameters from that parameter set to a new key called
+    # parameters in that experiment
+    parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
+    config['experiments'][i]['inference_spec']['parameters'] = parameters
+print(f"loaded config: {config}")
+
+# data directory and prompts
 PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
 PROMPTS_DIR = os.path.join(DATA_DIR, config['dir_paths']['prompts_prefix'])
 
-## --------------------- Metrics directory based on date and time ---------------------------
-
+# Metrics directory based on date and time
 current_time = datetime.now()
 
 # Assuming current_time is a datetime object
@@ -90,32 +97,32 @@ METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
 
-## --------------------- Models directory based on date and time ---------------------------
+# Models directory based on date and time 
 MODELS_DIR = f"{DATA_DIR}/models"
 
-## Use this to upload to the s3 bucket (extracted from the config file)
+# Use this to upload to the s3 bucket (extracted from the config file)
 BUCKET_NAME = config['aws']['bucket']
 READ_BUCKET_NAME = config['s3_read_data']['read_bucket']
 
-## S3 prefix
+# S3 prefix
 PREFIX_NAME = config['dir_paths']['data_prefix']
 
-## SOURCE data is where your actual data resides in s3
+# SOURCE data is where your actual data resides in s3
 SOURCE_DATA = config['s3_read_data']['source_data_prefix']
 
-## Read the prompt template that the user uploads
+# Read the prompt template that the user uploads
 PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 
-## Initialize the scripts directory
+# Initialize the scripts directory
 SCRIPTS_DIR: str = "fmbench/scripts"
 
-## METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
+# METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
 METRICS_PATH_FNAME: str = "metrics_path.txt"
 
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 
-## this is for custom tokenizers
+# this is for custom tokenizers
 TOKENIZER_DIR_S3 = config['s3_read_data']['tokenizer_prefix']
 TOKENIZER = 'tokenizer'
 
@@ -123,17 +130,20 @@ DEPLOYMENT_SCRIPT_S3 = config['s3_read_data']['scripts_prefix']
 
 _ = list(map(lambda x: os.makedirs(x, exist_ok=True), DIR_LIST))
 
-## Define the endpoint list as the config-general name plus the role arn for unique generation from different roles in the same/different accounts
-ENDPOINT_LIST_PATH:str = os.path.join(MODELS_DIR, "endpoints.json")
+# Define the endpoint list as the config-general name plus the role arn for unique generation 
+# from different roles in the same/different accounts
+ENDPOINT_LIST_PATH: str = os.path.join(MODELS_DIR, "endpoints.json")
 
-REQUEST_PAYLOAD_FPATH:str = os.path.join(PROMPTS_DIR, "payload.jsonl")
-RESULTS_FPATH:str = os.path.join(METRICS_DIR, "results.csv")
+REQUEST_PAYLOAD_FPATH: str = os.path.join(PROMPTS_DIR, "payload.jsonl")
+RESULTS_FPATH: str = os.path.join(METRICS_DIR, "results.csv")
+
+
 class TRUNCATE_POLICY(str, Enum):
     AT_PROMPT_TOKEN_LENGTH = 'at-prompt-token-length'
 
 # misc. metrics related
 PLACE_HOLDER: int = -1705338041
-RESULTS_DIR: str = "results"
+RESULTS_DIR: str = f"results-{config['general']['name']}"
 
 # metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"
@@ -154,9 +164,7 @@ TOKENS_VS_LATENCY_PLOT_TEXT: str = "Tokens vs latency for different concurrency 
 TOKENS_VS_LATENCY_PLOT_FNAME: str = "tokens_vs_latency.png"
 CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_FNAME: str = "concurrency_vs_inference_latency.png"
 CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_TEXT: str = "Concurrency Vs latency for different instance type for selected dataset"
-
-
-LATENCY_BUDGET: int = 20
+LATENCY_BUDGET: int = 5
 
 OVERALL_RESULTS_MD: str = """
 # Results for performance benchmarking
@@ -175,7 +183,7 @@ The following table provides the best combinations for running inference for dif
 |---|---|---|
 """
 
-## Dataset=`{dataset}`, instance_type=`{instance_type}`
+# Dataset=`{dataset}`, instance_type=`{instance_type}`
 RESULT_DESC: str = """The best option for staying within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset is a `concurrency level of {concurrency}`. A concurrency level of {concurrency} achieves an `average latency of {latency_mean} seconds`, for an `average prompt size of {prompt_size} tokens` and `completion size of {completion_size} tokens` with `{tpm} transactions/minute`."""
 
 RESULT_ROW: str = "|`{dataset}`|`{instance_type}`|{desc}|"

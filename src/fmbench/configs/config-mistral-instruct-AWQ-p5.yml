@@ -25,6 +25,9 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    configs_prefix: configs
+    config_files:
+    - pricing.yml
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     - 2wikimqa_e.jsonl
@@ -34,7 +37,7 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: tokenizer_mistral ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: mistral_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
@@ -45,7 +48,7 @@ run_steps:
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no
+    5_cleanup.ipynb: yes
 
 datasets:
   prompt_template_keys:
@@ -83,26 +86,16 @@ datasets:
 
 metrics:
   dataset_of_interest: en_1000-2000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
   
-pricing:
-  ml.g5.2xlarge: 1.515
-  ml.g5.12xlarge: 7.09
-  ml.g5.24xlarge: 10.18
-  ml.g5.48xlarge: 20.36
-  ml.inf2.24xlarge: 7.79
-  ml.inf2.48xlarge: 15.58
-  ml.p4d.24xlarge: 37.688
-  ml.p5.48xlarge: 98.32
+pricing: pricing.yml
   
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
 
 # Model configurations
 experiments:
@@ -119,6 +112,8 @@ experiments:
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     serving.properties: |
       engine=Python
       option.tensor_parallel_degree=1
@@ -138,6 +133,9 @@ experiments:
     env:
 
 report:
+  latency_budget: 1
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

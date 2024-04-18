@@ -1,1 +1,1 @@
-configs/config-llama2-7b-g5-quick.yml
+configs/config-bedrock-claude.yml

@@ -25,6 +25,9 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    configs_prefix: configs
+    config_files:
+    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     # - rajpurkar/squad_v2.jsonl
@@ -72,36 +75,23 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
-
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
 metrics:
-  dataset_of_interest: en_1000-2000
-  weights:
-    price_per_tx_wt: 0.65
-    latenct_wt: 0.35
+  dataset_of_interest: en_2000-3000
   
-pricing:
-  ml.g5.xlarge: 1.006
-  ml.g5.2xlarge: 1.212
-  ml.g5.12xlarge: 7.09
-  ml.g5.24xlarge: 10.18
-  ml.g5.48xlarge: 20.36
-  ml.inf2.24xlarge: 7.79
-  ml.inf2.48xlarge: 15.58
-  ml.p4d.24xlarge: 37.688
+pricing: pricing.yml
 
 inference_parameters:
-  do_sample: yes
-  temperature: 0.1
-  top_p: 0.92
-  top_k: 120  
-  max_new_tokens: 100
-  truncate: at-prompt-token-length
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
+    return_full_text: False
+    #truncate: at-prompt-token-length
 
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
@@ -116,12 +106,14 @@ experiments:
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-
+    #- payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -150,11 +142,14 @@ experiments:
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
+    #- payload_en_3000-3840.jsonl
 
     concurrency_levels:
     - 1
@@ -174,6 +169,9 @@ experiments:
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
 report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000

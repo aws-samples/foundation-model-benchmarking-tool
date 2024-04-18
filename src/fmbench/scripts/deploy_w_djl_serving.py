@@ -106,6 +106,27 @@ def _create_model(experiment_config: Dict,
     """
     model_name = name_from_base(experiment_config['model_name'])
     env = experiment_config.get('env')
+
+    # HF token required for gated model downloads form HF
+    hf_token_file_path = Path(HF_TOKEN_FNAME)
+    hf_dict: Optional[Dict] = None
+    if hf_token_file_path.is_file() is True:
+        logger.info(f"hf_token file path: {hf_token_file_path} is a file")
+        hf_dict = dict(HUGGING_FACE_HUB_TOKEN=hf_token_file_path.read_text().strip())
+    else:
+        logger.info(f"hf_token file path: {hf_token_file_path} is not a file")
+        
+    # this gets passed as an env var
+    if env:
+        if hf_dict:
+            # both env and hf_dict exists, so we do a union
+            env = env | hf_dict
+    else:
+        if hf_dict:
+            # env var did not exist, but hf_dict did so that
+            # is now the env var
+            env = hf_dict
+
     if env:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact,
@@ -113,6 +134,7 @@ def _create_model(experiment_config: Dict,
     else:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact)
+
     create_model_response = sm_client.create_model(
         ModelName=model_name,
         ExecutionRoleArn=role_arn,
