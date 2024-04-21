@@ -91,7 +91,6 @@ inference_parameters:
     details: True
     stop: '<|eot_id|>'
 
-# Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
   - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
