@@ -26,6 +26,12 @@ This foundation model benchmarking tool (a.k.a. `FMBench`) is a tool to answer t
 
 ![business question](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/business_summary.png?raw=true)
 
+## What's New :rotating_light: Benchmarking Llama3 on Amazon SageMaker :rotating_light:
+Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/blogs/machine-learning/meta-llama-3-models-are-now-available-in-amazon-sagemaker-jumpstart/)), and you can now benchmark it using `FMBench`. Here are the config files for benchmarking `Llama3-8b-instruct` and `Llama3-70b-instruct` on `ml.p4d.24xlarge` and `ml.g5.12xlarge` instance.
+
+- [Config file](./src/fmbench/configs/config-llama3-8b-instruct-g5-p4d.yml) for `Llama3-8b-instruct` on  `ml.p4d.24xlarge` and `ml.g5.12xlarge`
+- [Config file](./src/fmbench/configs/config-llama3-70b-instruct-g5-p4d.yml) for `Llama3-70b-instruct` on  `ml.p4d.24xlarge` and `ml.g5.12xlarge`
+
 ## Models benchmarked
 
 Configuration files are available in the [configs](./src/fmbench/configs) folder for the following models in this repo.
