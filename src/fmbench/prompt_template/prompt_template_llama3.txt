@@ -1,0 +1,13 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. 
+The context may contain multiple question answer pairs as an example, just answer the final question provided after the context.
+If you dont know the answer just say that you dont know. Use three sentences maximum and keep the answer concise. 
+
+```
+{context}
+```
+
+Question: {input} 
+
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
