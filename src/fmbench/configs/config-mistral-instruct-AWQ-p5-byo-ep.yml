@@ -128,8 +128,6 @@ experiments:
     - 1
     - 5
     - 30
-
-    accept_eula: true
     env:
     
 report:

@@ -121,7 +121,6 @@ experiments:
     - 4
     # - 6
     # - 8
-    accept_eula: true
     env:
       SAGEMAKER_PROGRAM: "inference.py"
       ENDPOINT_SERVER_TIMEOUT: "3600"

@@ -130,7 +130,6 @@ experiments:
     - 10
     - 20
     - 30
-    accept_eula: true
     env:
 
 report:
