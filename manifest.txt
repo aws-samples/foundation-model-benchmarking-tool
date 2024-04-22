@@ -13,6 +13,8 @@ configs/config-llama2-70b-g5-p4d-trt.yml
 configs/config-llama2-7b-g5-quick.yml
 configs/config-bedrock-sagemaker-llama2.yml
 configs/config-distilbert-base-uncased.yml
+configs/config-llama3-70b-instruct-g5-p4d.yml
+configs/config-llama3-8b-instruct-g5-p4d.yml
 prompt_template/.keep
 scripts/.keep
 source_data/2wikimqa_e.jsonl
