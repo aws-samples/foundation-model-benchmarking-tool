@@ -52,7 +52,7 @@ class RESTPredictor(FMBenchPredictor):
                 # Send the request to the model service - add your authentication parameter here
                 response = requests.get(self._endpoint_name, params={"sentence": prompt,
                                                                      timeout: timeout, 
-                                                                    auth: auth})
+                                                                     auth: auth})
             else:
                 response = requests.get(self._endpoint_name, params={"sentence": prompt,
                                                                     timeout: timeout,

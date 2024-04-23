@@ -121,6 +121,10 @@ experiments:
     - 4
     - 6
     - 8
+    - 10 
+    - 12 
+    - 15
+    - 18
     env:
 
 report:
@@ -132,4 +136,5 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+
 
