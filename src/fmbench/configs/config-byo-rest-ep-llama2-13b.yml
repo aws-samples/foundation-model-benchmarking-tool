@@ -169,7 +169,7 @@ experiments:
     # the ep_name will contain the endpoint url that is used to invoke your model and get the response
     # in this case, we use ray serve with `NousResearch/Llama-2-13b-chat-hf` model deployed on an EKS cluster.
     # the endpoint url format used in this example is "http://<NLB_DNS_NAME>/serve/infer?sentence=<PROMPT_PAYLOAD>"
-    ep_name: 'http://k8s-ingressn-ingressn-7755b84559-e8f2cefe15d4af21.elb.us-east-1.amazonaws.com/serve/infer?sentence=' # public DNS/URL to send your request
+    ep_name: 'http://<NLB_DNS_NAME>/serve/infer?sentence=' # public DNS/URL to send your request
     instance_type: "ml.inf2.48xlarge"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed on an EKS cluster
