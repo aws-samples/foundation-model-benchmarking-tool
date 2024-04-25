@@ -46,8 +46,8 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
 | **Mistral-7b-AWQ** || | |✅ | |   |
 | **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
-| **Llama3-8b instruct**  |✅ ||✅  | |  |   |
-| **Llama3-70b instruct**  |✅ ||✅  | | |   |
+| **Llama3-8b instruct**  |✅ ||✅  | |✅  |   |
+| **Llama3-70b instruct**  |✅ ||✅  | |✅ |   |
 | **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Amazon Titan text lite**  | | |  | | ✅ |   |
@@ -205,7 +205,12 @@ Follow the prerequisites below to set up your environment before running the cod
             ├── <test-name>/data/models
             ├── <test-name>/data/prompts
         ````
-        
+
+### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
+
+`FMBench` now provides an example of bringing your own endpoint as a `REST Predictor` for benchmarking. View this [`script`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/REST-predictor-fmbench/src/fmbench/scripts/rest_predictor.py) as an example. This script is an inference file for the `NousResearch/Llama-2-13b-chat-hf` model deployed on an [Amazon EKS](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/amazon-elastic-kubernetes-service.html) cluster using [Ray Serve](https://docs.ray.io/en/latest/ray-overview/examples.html). The model is deployed via `data-on-eks` which is a comprehensive resource for scaling your data and machine learning workloads on Amazon EKS and unlocking the power of Gen AI. Using `data-on-eks`, you can harness the capabilities of AWS Trainium, AWS Inferentia and NVIDIA GPUs to scale and optimize your Gen AI workloads and benchmark those models on FMBench with ease. 
+
+
 ### Bring your own `dataset` | `endpoint`
 
 `FMBench` started out as supporting only SageMaker endpoints and while that is still true as far as _deploying_ the endpoint through `FMBench` is concerned but we now support the ability to support external endpoints and external datasets.
