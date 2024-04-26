@@ -42,6 +42,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
         - arn:aws:iam::aws:policy/AmazonS3FullAccess
         - arn:aws:iam::aws:policy/AWSCloudFormationReadOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
       AssumeRolePolicyDocument:
         Version: 2012-10-17
         Statement:

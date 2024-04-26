@@ -37,8 +37,8 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 | **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
 | **Mistral-7b-AWQ** || | |✅ | |   |
 | **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
-| **Llama3-8b instruct**  |✅ ||✅  | |  |   |
-| **Llama3-70b instruct**  |✅ ||✅  | | |   |
+| **Llama3-8b instruct**  |✅ ||✅  | |✅  |   |
+| **Llama3-70b instruct**  |✅ ||✅  | |✅ |   |
 | **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Amazon Titan text lite**  | | |  | | ✅ |   |
