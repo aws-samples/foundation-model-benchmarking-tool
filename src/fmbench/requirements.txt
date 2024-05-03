@@ -1,5 +1,5 @@
 ipywidgets==8.1.1
-sagemaker==2.203.0
+sagemaker==2.218.0
 transformers==4.36.2
 pandas==2.1.4
 datasets==2.16.1
