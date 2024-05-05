@@ -180,12 +180,9 @@ experiments:
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
+    # currently the llama3-8b jumpstart model is compiled with a batch size of 1
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
 
     accept_eula: true
     # Environment variables to be passed to the container
@@ -208,7 +205,6 @@ experiments:
       OPTION_ATTENTION_LAYOUT: 'BSH'
       OPTION_GROUP_QUERY_ATTENTION: 'replicated-heads'
 
-  # experiments for llama3-8b instruct on G5 instances  
   - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
     model_version: "*"
@@ -230,48 +226,6 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "1"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
-      
-  - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
-    model_id: meta-textgeneration-llama-3-8b-instruct
-    model_version: "*"
-    model_name: llama3-8b-instruct-g5.24xl
-    ep_name: llama-3-8b-instruct-g5-24xl
-    instance_type: "ml.g5.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor.py
-    inference_spec:
-      parameter_set: sagemaker
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
 
     accept_eula: true
     env:
