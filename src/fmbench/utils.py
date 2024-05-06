@@ -168,6 +168,15 @@ def process_item(item, prompt_template_keys: List, prompt_fmt: str) -> Dict:
 def nt_to_posix(p: str) -> str:
     return p.replace("\\", "/")
 
+
+def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
+    s3 = boto3.resource('s3')
+    try:
+        s3.Bucket(bucket).upload_file(local_path, s3_path)
+    except Exception as e:
+        logger.error(f"upload_file_to_s3, An error occurred: {e}")
+
+
 # Function to write data to S3
 def write_to_s3(data, bucket_name, dir1, dir2, file_name):
 
