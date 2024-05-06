@@ -9,7 +9,7 @@ aws:
   # SageMaker execution role used to run FMBench, this parameter is templatized, no need to change
   sagemaker_execution_role: {role_arn}
   # S3 bucket to which metrics, plots and reports would be written to
-  bucket: {write_bucket} ## add the name of your desired bucket
+  bucket: {write_bucket}
 
 # directory paths in the write bucket, no need to change these
 dir_paths:
@@ -24,7 +24,7 @@ dir_paths:
 s3_read_data:
   # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
   read_bucket: {read_bucket}
-  scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+  scripts_prefix: scripts
   
   # S3 prefix in the read bucket where deployment and inference scripts should be placed
   scripts_prefix: scripts
@@ -56,7 +56,7 @@ s3_read_data:
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
-  #           so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
+  #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in llama2_tokenizer and so on and so forth.
   tokenizer_prefix: tokenizer
   
   # S3 prefix for prompt templates
@@ -64,7 +64,7 @@ s3_read_data:
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama2.txt ## add your desired prompt template type
+  prompt_template_file: prompt_template_llama2.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -72,16 +72,20 @@ s3_read_data:
 # set the 2_deploy_model.ipynb to no if you are re-running
 # the same config file and the model is already deployed
 run_steps:
-    0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes
-    3_run_inference.ipynb: yes
-    4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
+  3_run_inference.ipynb: yes
+  4_model_metric_analysis.ipynb: yes
+  5_cleanup.ipynb: yes
 
 
 datasets:
-  # dataset related configuration
+  # Refer to the 1_generate_data.ipynb notebook
+  # the dataset you use is expected to have the 
+  # columns you put in prompt_template_keys list
+  # and your prompt template also needs to have
+  # the same placeholders (refer to the prompt template folder)
   prompt_template_keys:
   - input
   - context
@@ -142,7 +146,6 @@ inference_parameters:
     top_k: 120  
     max_new_tokens: 100
     return_full_text: False
-    #truncate: at-prompt-token-length
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -153,7 +156,7 @@ experiments:
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
-    # see the DJL serving deployment script in the code repo for reference.  
+    # see the DJL serving deployment script in the code repo for reference.
     model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
     model_name: llama2-7b-f
@@ -161,10 +164,10 @@ experiments:
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
+    instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
     # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
-    # See repo for details
-    instance_count: 1
+    # See repo for details    
     deployment_script: jumpstart.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. See repo for details
@@ -239,7 +242,7 @@ experiments:
     - 1
     - 2
     - 4
-
+    # Added for models that require accepting a EULA
     accept_eula: true
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
@@ -254,10 +257,18 @@ experiments:
       SM_NUM_GPUS: "1"
       SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
+# parameters related to how the final report is generated
 report:
+  # constraints for latency, cost and error rate
+  # an experiment is considered successful or eligible for
+  # selection for a use-case if it satisfies all of the following
+  # constraints. Experiments are scored as per this criteria
+  # higher score is better (see 4_model_metric_analysis.ipynb score_run function)
   latency_budget: 2
   cost_per_10k_txn_budget: 20
   error_rate_budget: 0
+  # other misc reporting parameters, see 4_model_metric_analysis.ipynb
+  # for more information
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
