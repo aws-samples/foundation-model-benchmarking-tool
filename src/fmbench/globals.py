@@ -168,9 +168,12 @@ CONCURRENCY_VS_INFERENCE_LATENCY_PLOT_TEXT: str = "Concurrency Vs latency for di
 LATENCY_BUDGET: int = 5
 
 OVERALL_RESULTS_MD: str = """
-# Results for performance benchmarking
+# {title}
 
-**Last modified (UTC): {dttm}**
+|**Last modified (UTC)** | **FMBench version**  |
+|---|---|
+|{dttm}|{fmbench_version}|
+
 
 ## Summary
 

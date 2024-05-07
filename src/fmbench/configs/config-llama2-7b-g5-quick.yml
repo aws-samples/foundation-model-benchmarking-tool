@@ -259,6 +259,8 @@ experiments:
 
 # parameters related to how the final report is generated
 report:
+  # markdown report title
+  title: "Performance benchmarking results for Llama2-7b on `g5.xlarge` and `g5.2xlarge` using the HuggingFace TGI container"
   # constraints for latency, cost and error rate
   # an experiment is considered successful or eligible for
   # selection for a use-case if it satisfies all of the following
