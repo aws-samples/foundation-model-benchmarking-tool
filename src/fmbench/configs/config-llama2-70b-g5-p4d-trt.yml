@@ -176,6 +176,7 @@ experiments:
       HEALTH_CHECK_TIMEOUT: "300"
 
 report:
+  title: "Performance benchmarking results for Llama2-70b on `g5.48xlarge` (HF TGI) and `p4d.24xlarge` (DJL TensorRT)"
   latency_budget: 5
   cost_per_10k_txn_budget: 50
   error_rate_budget: 0
