@@ -37,8 +37,8 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 | **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
 | **Mistral-7b-AWQ** || | |✅ | |   |
 | **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
-| **Llama3-8b instruct**  |✅ ||✅  | |✅  |   |
-| **Llama3-70b instruct**  |✅ ||✅  | |✅ |   |
+| **Llama3-8b instruct**  |✅ |✅|✅  | |✅  |   |
+| **Llama3-70b instruct**  |✅ |✅|✅  | |✅ |   |
 | **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Amazon Titan text lite**  | | |  | | ✅ |   |
@@ -50,6 +50,12 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 | **distilbert-base-uncased**  |  ✅ | |  | ||   |
 
 ## New in this release
+
+### v1.0.32
+
+1. Report enhancements: New business summary chart, config file embedded in the report, version numbering and others.
+
+1. Additional config files: Meta Llama3 on Inf2, Mistral instruct with `lmi-dist` on `p4d` and `p5` instances.
 
 ### v1.0.31
 
