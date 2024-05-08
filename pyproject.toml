@@ -24,6 +24,7 @@ pyyaml = "*"
 sagemaker = "2.203.0"
 litellm = "1.35.8"
 plotly = "5.22.0"
+kaleido = "0.2.1"
 
 [tool.poetry.dev-dependencies]
 
