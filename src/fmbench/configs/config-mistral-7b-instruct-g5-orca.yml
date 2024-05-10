@@ -1,0 +1,123 @@
+general:
+  name: "Mistral-7B-Instruct-v0-2-p4d"
+  model_name: "Mistral-7B-Instruct-v0-2"
+
+
+aws:
+  region: {region}
+  sagemaker_execution_role: {role_arn}
+  bucket: {write_bucket}
+
+datasets:
+  filters:
+  - language: en
+    max_length_in_tokens: 500
+    min_length_in_tokens: 1
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    max_length_in_tokens: 1000
+    min_length_in_tokens: 500
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    max_length_in_tokens: 2000
+    min_length_in_tokens: 1000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    max_length_in_tokens: 3000
+    min_length_in_tokens: 2000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    max_length_in_tokens: 4000
+    min_length_in_tokens: 3000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    max_length_in_tokens: 3997
+    min_length_in_tokens: 305
+    payload_file: payload_en_305-3997.jsonl
+  prompt_template_keys:
+  - system_prompt
+  - input
+dir_paths:
+  all_prompts_file: all_prompts.csv
+  data_prefix: data
+  metadata_dir: metadata
+  metrics_dir: metrics
+  models_dir: models
+  prompts_prefix: prompts
+experiments:
+- concurrency_levels:
+  - 1
+  - 2
+  - 4
+  deploy: true
+  deployment_script: jumpstart.py
+  env:
+    ENDPOINT_SERVER_TIMEOUT: '3600'
+    HF_MODEL_ID: /opt/ml/model
+    MAX_BATCH_PREFILL_TOKENS: '8191'
+    MAX_INPUT_LENGTH: '8191'
+    MAX_TOTAL_TOKENS: '8192'
+    MODEL_CACHE_ROOT: /opt/ml/model
+    SAGEMAKER_ENV: '1'
+    SAGEMAKER_MODEL_SERVER_WORKERS: '1'
+    SAGEMAKER_PROGRAM: inference.py
+    SM_NUM_GPUS: '1'
+  ep_name: mistral-7b-g5-2xlarge
+  image_uri: 763104351884.dkr.ecr.us-west-2.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.0-gpu-py310-cu121-ubuntu20.04
+  inference_script: sagemaker_predictor.py
+  inference_spec:
+    parameter_set: sagemaker
+  instance_count: 1
+  instance_type: ml.g5.2xlarge
+  model_id: huggingface-llm-mistral-7b-instruct
+  model_name: mistral-7b-instruct
+  model_version: '*'
+  name: mistral-7b--instruct-g5-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+  payload_files:
+  - payload_en_1-500.jsonl
+  - payload_en_500-1000.jsonl
+  - payload_en_1000-2000.jsonl
+  - payload_en_2000-3000.jsonl
+general:
+  model_name: mistral7b
+  name: mistral-7b-instruct-g5-v2
+inference_parameters:
+  sagemaker:
+    do_sample: true
+    max_new_tokens: 100
+    temperature: 0.1
+    top_k: 120
+    top_p: 0.92
+metrics:
+  dataset_of_interest: en_2000-3000
+pricing: pricing.yml
+report:
+  all_metrics_file: all_metrics.csv
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
+  latency_budget: 5
+  per_inference_request_file: per_inference_request_results.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_gt_one_instance: 0.025
+  v_shift_w_single_instance: 0.025
+run_steps:
+  0_setup.ipynb: true
+  1_generate_data.ipynb: true
+  2_deploy_model.ipynb: true
+  3_run_inference.ipynb: true
+  4_model_metric_analysis.ipynb: true
+  5_cleanup.ipynb: true
+s3_read_data:
+  config_files:
+  - pricing.yml
+  configs_prefix: configs
+  prompt_template_dir: prompt_template
+  prompt_template_file: prompt_template_mistral_with_system_prompt.txt
+  read_bucket: {read_bucket}
+  script_files:
+  - hf_token.txt
+  scripts_prefix: scripts
+  source_data_files:
+  - OpenOrca.jsonl
+  source_data_prefix: source_data/Open-Orca
+  tokenizer_prefix: mistral_tokenizer

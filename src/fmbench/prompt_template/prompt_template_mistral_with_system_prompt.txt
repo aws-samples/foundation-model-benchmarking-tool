@@ -1,0 +1,10 @@
+
+<s>[INST]
+<<SYS>>
+{system_prompt}
+<</SYS>>
+
+Question: {input}
+
+[/INST]
+Answer:
