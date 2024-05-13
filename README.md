@@ -61,6 +61,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.34
+
+1. Don't delete endpoints for the bring your own endpoint case.
+1. Fix bug with business summary chart.
+
 ### v1.0.32
 
 1. Report enhancements: New business summary chart, config file embedded in the report, version numbering and others.
