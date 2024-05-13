@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "fmbench"
-version = "1.0.32"
+version = "1.0.34"
 description ="Benchmark performance of **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** or deployed by you on an AWS service of choice (such as Amazon EKS or Amazon EC2) a.k.a **Bring your own endpoint**."
 authors = ["Amit Arora <aroraai@amazon.com>", "Madhur prashant <Madhurpt@amazon.com>"]
 readme = "README_pypi.md"
