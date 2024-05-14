@@ -51,8 +51,11 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
-### v1.0.34
+### v1.0.35
 
+1. Support for [Open-Orca](https://huggingface.co/datasets/Open-Orca/OpenOrca) dataset and corresponding prompts for Llama3, Llama2 and Mistral.
+
+### v1.0.34
 1. Don't delete endpoints for the bring your own endpoint case.
 1. Fix bug with business summary chart.
 
