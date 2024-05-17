@@ -16,7 +16,7 @@ from botocore.exceptions import NoCredentialsError
 import shutil
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 def _normalize(text, form='NFC'):
     # The files in LongBench contain nonstandard or irregular Unicode.
