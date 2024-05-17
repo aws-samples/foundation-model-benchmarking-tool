@@ -91,6 +91,7 @@ class RESTPredictor(FMBenchPredictor):
     # modify this function.
     def calculate_cost(self,
                        instance_type: str,
+                       instance_count: int,
                        pricing: Dict,
                        duration: float,
                        prompt_tokens: int,
@@ -100,9 +101,10 @@ class RESTPredictor(FMBenchPredictor):
         try:
             instance_based_pricing = pricing['pricing']['instance_based']
             hourly_rate = instance_based_pricing.get(instance_type, None)
-            logger.info(f"the hourly rate for running on {instance_type} is {hourly_rate}")
+            logger.info(f"the hourly rate for running on {instance_type} is {hourly_rate}, instance_count={instance_count}")
             # calculating the experiment cost for instance based pricing
-            experiment_cost = (hourly_rate / 3600) * duration
+            instance_count = instance_count if instance_count else 1
+            experiment_cost = (hourly_rate / 3600) * duration * instance_count
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost

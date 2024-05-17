@@ -17,6 +17,7 @@ class FMBenchPredictor(ABC):
     @abstractmethod
     def calculate_cost(self,
                        instance_type: str,
+                       instance_count: int,
                        config: Dict,
                        duration: float,
                        metrics: Dict) -> float:

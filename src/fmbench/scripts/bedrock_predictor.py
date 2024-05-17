@@ -155,6 +155,7 @@ class BedrockPredictor(FMBenchPredictor):
 
     def calculate_cost(self,
                        instance_type: str,
+                       instance_count: int,
                        pricing: Dict,
                        duration: float,
                        prompt_tokens: int,
