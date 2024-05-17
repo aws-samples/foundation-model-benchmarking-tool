@@ -61,6 +61,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.36
+1. Fix bug at higher concurrency levels (20 and above).
+1. Support for instance count > 1.
+
+
 ### v1.0.35
 
 1. Support for [Open-Orca](https://huggingface.co/datasets/Open-Orca/OpenOrca) dataset and corresponding prompts for Llama3, Llama2 and Mistral.
