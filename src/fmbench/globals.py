@@ -170,7 +170,7 @@ LATENCY_BUDGET: int = 5
 OVERALL_RESULTS_MD: str = """
 # {title}
 
-|**Last modified (UTC)** | **FMBench version**  |
+|**Created (UTC)** | **FMBench version**  |
 |---|---|
 |{dttm}|{fmbench_version}|
 
@@ -188,7 +188,7 @@ The following table provides the best combinations for running inference for dif
 """
 
 # Dataset=`{dataset}`, instance_type=`{instance_type}`
-RESULT_DESC: str = """The best option for staying within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset is a `concurrency level of {concurrency}`. A concurrency level of {concurrency} achieves an `average latency of {latency_mean} seconds`, for an `average prompt size of {prompt_size} tokens` and `completion size of {completion_size} tokens` with `{tpm} transactions/minute`."""
+RESULT_DESC: str = """The best option for staying within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset is a `concurrency level of {concurrency}`. A concurrency level of {concurrency} achieves an `p95 latency of {latency_p95} seconds`, for an `average prompt size of {prompt_size} tokens` and `completion size of {completion_size} tokens` with `{tpm} transactions/minute`."""
 
 RESULT_ROW: str = "|`{dataset}`|`{instance_type}`|{desc}|"
 
