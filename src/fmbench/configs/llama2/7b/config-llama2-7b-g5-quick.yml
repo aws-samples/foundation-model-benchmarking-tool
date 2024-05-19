@@ -164,7 +164,7 @@ experiments:
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
-    instance_count: 2
+    instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
     # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
     # See repo for details    

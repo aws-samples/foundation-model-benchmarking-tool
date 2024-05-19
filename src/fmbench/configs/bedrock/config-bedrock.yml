@@ -43,10 +43,10 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    0_setup.ipynb: no
-    1_generate_data.ipynb: no
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
-    3_run_inference.ipynb: no
+    3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: no
 
@@ -107,17 +107,17 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
     - 4
-    # - 6
-    # - 8
-    # - 10
+    - 6
+    - 8
+    - 10
     env:
   - name: mistral.mixtral-8x7b-instruct-v0:1
     model_id: mistral.mixtral-8x7b-instruct-v0:1
@@ -135,17 +135,17 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
     - 4
     - 6
-    # - 8
-    # - 10
+    - 8
+    - 10
     env:
     
 
@@ -165,17 +165,17 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: meta.llama2-70b-chat-v1
     model_id: meta.llama2-70b-chat-v1
@@ -193,17 +193,17 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: amazon.titan-text-lite-v1
     model_id: amazon.titan-text-lite-v1
@@ -221,16 +221,16 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
-    # - 4
-    # - 6
-    # - 8
+    - 4
+    - 6
+    - 8
     - 10
     env:
   - name: amazon.titan-text-express-v1
@@ -249,16 +249,16 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
+    - 2
+    - 4
+    - 6
+    - 8
     - 10
     env: 
   - name: anthropic.claude-3-sonnet-20240229-v1:0
@@ -276,16 +276,16 @@ experiments:
       split_input_and_parameters: no
       parameter_set: bedrock
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
-    # - 4
-    # - 6
+    - 4
+    - 6
     - 8
     - 10
     env:
@@ -304,14 +304,14 @@ experiments:
       split_input_and_parameters: no
       parameter_set: bedrock
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
-    # - 1
-    # - 2
+    - 1
+    - 2
     - 4
     - 6
     - 8
@@ -333,15 +333,15 @@ experiments:
       parameter_set: bedrock
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
-    # - 1
-    # - 2
-    # - 4
-    # - 6
+    - 1
+    - 2
+    - 4
+    - 6
     - 8
     - 10
     env:
@@ -362,15 +362,15 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
-    # - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
     - 10
     env:
   - name: ai21.j2-mid-v1
@@ -388,17 +388,17 @@ experiments:
       split_input_and_parameters: no
       parameter_set: bedrock
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
-    # - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
     - 10
     env:
   - name: ai21.j2-ultra-v1
@@ -416,16 +416,16 @@ experiments:
       split_input_and_parameters: no
       parameter_set: bedrock
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     concurrency_levels:
-    # - 1
-    # - 2
-    # - 4
-    # - 6
+    - 1
+    - 2
+    - 4
+    - 6
     - 8
     - 10
     env:
