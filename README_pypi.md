@@ -126,7 +126,7 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
         ```{.bash}
         account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
-        fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/config-llama2-7b-g5-quick.yml
+        fmbench --config-file s3://sagemaker-fmbench-read-${account}/configs/llama2/7b/config-llama2-7b-g5-quick.yml
         ```
 
 1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.

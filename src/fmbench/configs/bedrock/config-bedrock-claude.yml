@@ -53,7 +53,8 @@ run_steps:
 datasets:
   prompt_template_keys:
   - input
-  - context
+  - system_prompt
+  #- context
   # - text
   filters:
   - language: en    
