@@ -61,6 +61,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.37
+1. `g5`/`p4d`/`p5`/`inf2`/`trn1` specific config files for [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
+    1. `p4d` config file for both `vllm` and `lmi-dist`.
+
 ### v1.0.36
 1. Fix bug at higher concurrency levels (20 and above).
 1. Support for instance count > 1.
