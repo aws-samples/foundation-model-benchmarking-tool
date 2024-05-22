@@ -13,7 +13,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             instance_type=experiment_config['instance_type']
         )
 
-    # Deploy the model using asyncio.to_thread to run in a separate thread
     sec, us = str(time.time()).split(".")
     ep_name = f"{experiment_config['ep_name']}-{sec}-{us}"
     accept_eula = experiment_config.get('accept_eula')

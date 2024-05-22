@@ -1,5 +1,5 @@
 general:
-  name: "llama3-8b-g5-12xl-4-instances"      
+  name: "llama3-8b-g5-24xl"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -57,13 +57,34 @@ datasets:
   - input
   - context
   filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
   - language: en
     min_length_in_tokens: 500
     max_length_in_tokens: 1000
     payload_file: payload_en_500-1000.jsonl
- 
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+
+
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml
 
@@ -79,18 +100,22 @@ experiments:
   - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
     model_version: "*"
-    model_name: llama3-8b-instruct-g5.12xl
-    ep_name: llama-3-8b-instruct-g5-12xl
-    instance_type: "ml.g5.12xlarge"
+    model_name: llama3-8b-instruct-g5.24xl
+    ep_name: llama-3-8b-instruct-g5-24xl
+    instance_type: "ml.g5.24xlarge"
     image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
-    instance_count: 4
+    instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     inference_spec:
       parameter_set: sagemaker
     payload_files:
+    - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
