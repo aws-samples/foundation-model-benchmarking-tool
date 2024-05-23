@@ -1,5 +1,5 @@
 general:
-  name: "llama3-8b-inf2-g5-v1"      
+  name: "llama3-8b-trn1-byoe"      
   model_name: "llama3-8b"
   
 # AWS and SageMaker settings
@@ -43,9 +43,10 @@ s3_read_data:
   - pricing.yml
 
   # S3 prefix for the dataset files
-  source_data_prefix: source_data
+  source_data_prefix: source_data #/Open-Orca
   # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
   source_data_files:
+  #- OpenOrca.jsonl
   - 2wikimqa_e.jsonl
   - 2wikimqa.jsonl
   - hotpotqa_e.jsonl
@@ -65,6 +66,7 @@ s3_read_data:
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
   prompt_template_file: prompt_template_llama3.txt
+  # prompt_template_Open-Orca-OpenOrca-llama3.txt
 
 
 # steps to run, usually all of these would be
@@ -73,12 +75,12 @@ s3_read_data:
 # set the 2_deploy_model.ipynb to no if you are re-running
 # the same config file and the model is already deployed
 run_steps:
-    0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes
-    3_run_inference.ipynb: yes
-    4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
+  3_run_inference.ipynb: yes
+  4_model_metric_analysis.ipynb: yes
+  5_cleanup.ipynb: yes
 
 
 datasets:
@@ -89,6 +91,7 @@ datasets:
   # the same placeholders (refer to the prompt template folder)
   prompt_template_keys:
   - input
+  #- system_prompt
   - context
   
   # if your dataset has multiple languages and it has a language
@@ -145,7 +148,7 @@ inference_parameters:
     top_p: 0.92
     temperature: 0.1
     details: True
-    stop: '<|eot_id|>'
+    #stop: '<|eot_id|>'
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -157,18 +160,18 @@ experiments:
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
-    model_id: meta-textgenerationneuron-llama-3-8b-instruct
-    model_version: "*"
-    model_name: llama3-8b-inf2.24xl
-    ep_name: llama-3-8b-instruct-inf2-24xl
-    instance_type: "ml.inf2.24xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1'
-    deploy: yes
+    model_id: llama-3-8b-instruct
+    model_version:
+    model_name: llama3-8b-trn1.32xl
+    ep_name: "meta-llama-Meta-Llama-3-8B-Instruct-inf-2024-05-21-01-53-53-648"
+    instance_type: "ml.trn1.32xlarge"
+    image_uri: 
+    deploy: no
     instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
     # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
     # See repo for details
-    deployment_script: jumpstart.py
+    deployment_script: 
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. See repo for details
     inference_script: sagemaker_predictor.py
@@ -188,61 +191,60 @@ experiments:
     # currently the llama3-8b jumpstart model is compiled with a batch size of 1
     concurrency_levels:
     - 1
+    - 2
+    - 4
+    - 8
+    - 10
+    - 15
+    - 20
+    - 30
 
     accept_eula: true
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      SAGEMAKER_MODEL_SERVER_WORKERS: '1'
-      SERVING_LOAD_MODELS: 'test::Python=/opt/ml/model'
-      OPTION_ENTRYPOINT: 'inference.py'
-      OPTION_TENSOR_PARALLEL_DEGREEL: '12'
-      OPTION_N_POSITIONS: '8192'
-      OPTION_ROLLING_BATCH: 'auto'
-      OPTION_LOAD_SPLIT_MODEL: 'False'
-      OPTION_NEURON_OPTIMIZE_LEVEL: '2'
-      OPTION_DTYPE: 'bf16'
-      OPTION_MAX_ROLLING_BATCH_SIZE: '1'
-      OPTION_MODEL_LOADING_TIMEOUT: '6000'
-      OPTION_TRUST_REMOTE_CODE: 'true'
-      OPTION_FUSE_QKV: 'true'
-      OPTION_ATTENTION_LAYOUT: 'BSH'
-      OPTION_GROUP_QUERY_ATTENTION: 'replicated-heads'
-
-  - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
-    model_id: meta-textgeneration-llama-3-8b-instruct
-    model_version: "*"
-    model_name: llama3-8b-instruct-g5.12xl
-    ep_name: llama-3-8b-instruct-g5-12xl
-    instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor.py
-    inference_spec:
-      parameter_set: sagemaker
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "1"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+    # optional metadata about the model, this is not used for anything other than
+    # just being logged in the report as is as part of the config file dump
+    additional_metadata: |
+      model_id_or_path='/tmp/.djl.ai/download/ae03dd100c208acd82b5dbed563c971de864c408'
+      rolling_batch=<RollingBatchEnum.auto: 'auto'>
+      tensor_parallel_degree=8
+      trust_remote_code=False
+      enable_streaming=<StreamingEnum.false: 'false'>
+      batch_size=4
+      max_rolling_batch_size=4
+      dtype=<Dtype.f16: 'fp16'>
+      revision=None
+      output_formatter=None
+      waiting_steps=None
+      is_mpi=False
+      draft_model_id=None
+      spec_length=0
+      neuron_optimize_level=None
+      enable_mixed_precision_accumulation=False
+      enable_saturate_infinity=False
+      n_positions=4096
+      unroll=None
+      load_in_8bit=False
+      low_cpu_mem_usage=False
+      load_split_model=True
+      context_length_estimate=None
+      amp='f16'
+      quantize=None
+      compiled_graph_path=None
+      task=None
+      save_mp_checkpoint_path=None
+      group_query_attention=None
+      model_loader=<TnXModelLoaders.tnx: 'tnx'>
+      rolling_batch_strategy=<TnXGenerationStrategy.continuous_batching: 'continuous_batching'>
+      fuse_qkv=False
+      on_device_embedding=False
+      attention_layout=None
+      collectives_layout=None
+      cache_layout=None
+      partition_schema=None
+      all_reduce_dtype=None
+      cast_logits_dtype=None
 
 # parameters related to how the final report is generated    
 report:
@@ -252,7 +254,7 @@ report:
   # constraints. Experiments are scored as per this criteria
   # higher score is better (see 4_model_metric_analysis.ipynb score_run function)
   latency_budget: 2
-  cost_per_10k_txn_budget: 30
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   # other misc reporting parameters, see 4_model_metric_analysis.ipynb
   # for more information

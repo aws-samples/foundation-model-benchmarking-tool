@@ -1,7 +1,7 @@
 general:
-  name: "llama3-70b-p4d-v1"      
-  model_name: "llama3-70b-instruct"
-  
+  name: "Llama3-8B-Instruct-p4d-djl-vllm"
+  model_name: "Llama3-8B"
+
 # AWS and SageMaker settings
 aws:
   region: {region}
@@ -24,13 +24,12 @@ s3_read_data:
     read_bucket: {read_bucket}
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
-    - hf_token.txt ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
     configs_prefix: configs
     config_files:
-    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    - pricing.yml
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    # - rajpurkar/squad_v2.jsonl
     - 2wikimqa_e.jsonl
     - 2wikimqa.jsonl
     - hotpotqa_e.jsonl
@@ -38,9 +37,9 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: llama3_70b_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: mistral_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_llama3.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_mistral.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -49,8 +48,7 @@ run_steps:
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: yes
-
+    5_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
@@ -75,37 +73,50 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
- 
+
+
 metrics:
   dataset_of_interest: en_3000-3840
   
 pricing: pricing.yml
-
+  
 inference_parameters:
   sagemaker:
-    max_new_tokens: 100
-    top_p: 0.92
+    do_sample: yes
     temperature: 0.1
-    details: True
-    stop: '<|eot_id|>'
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
 
+# Model configurations
 experiments:
-      
-  - name: llama-3-70b-instruct-p4d-djl-deepspeed0.12.6-cu121
-    model_id: meta-textgeneration-llama-3-70b-instruct
+  - name: Meta-Llama-3-8B-Instruct-p4d-vllm
+    model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
-    model_name: llama-3-70b-instruct
-    ep_name: llama-3-70b-instruct-p4d
+    model_name: Llama-3-8B-Instruct
+    ep_name: Llama-3-8B-Instruct-p4d-vllm
+    download_from_hf_place_in_s3: no
+    model_s3_path:
     instance_type: "ml.p4d.24xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121
     deploy: yes
     instance_count: 1
-    deployment_script: jumpstart.py
+    deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
     inference_spec:
       parameter_set: sagemaker
+    serving.properties: |
+        engine=Python
+        option.tensor_parallel_degree=max
+        option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
+        option.max_rolling_batch_size=64
+        option.rolling_batch=vllm
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -116,29 +127,24 @@ experiments:
     - 1
     - 2
     - 4
-    - 6
     - 8
     - 10
-    - 12
     - 15
-
+    - 20
+    - 30
     accept_eula: true
     env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "8"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+
 report:
-  latency_budget: 3
-  cost_per_10k_txn_budget: 100
+  latency_budget: 2
+  cost_per_10k_txn_budget: 50
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+  latency_vs_token_len_chart: 
+    y_ticks: 
+    title: "Effect of token length on inference latency for \"meta-llama/Meta-Llama-3-8B-Instruct\""
+

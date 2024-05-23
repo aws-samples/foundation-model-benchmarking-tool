@@ -1,5 +1,5 @@
 general:
-  name: "llama3-8b-p4d-v1"      
+  name: "llama3-8b-p4d-djl-lmi-dist"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -99,7 +99,7 @@ experiments:
     model_name: llama3-8b-instruct
     ep_name: llama-3-8b-instruct-p4d
     instance_type: "ml.p4d.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
@@ -119,10 +119,27 @@ experiments:
     - 6
     - 8
     - 10
-    - 12
     - 15
+    - 20
+    - 30
 
     accept_eula: true
+    # optional metadata about the model, this is not used for anything other than
+    # just being logged in the report as is as part of the config file dump
+    additional_metadata: |
+      job_queue_size: 1000
+      max_dynamic_batch_size: 1
+      max_batch_delay: 100
+      max_idle_time: 60
+      load_on_devices: *
+      engine: MPI
+      mpi_mode: true
+      option.entryPoint: null
+      option.tensor_parallel_degree: 8
+      option.max_rolling_batch_size: 256
+      option.mpi_mode: true
+      option.model_id: /opt/ml/model
+      option.rolling_batch: lmi-dist
     env:
       SAGEMAKER_PROGRAM: "inference.py"
       ENDPOINT_SERVER_TIMEOUT: "3600"
@@ -131,10 +148,11 @@ experiments:
       HF_MODEL_ID: "/opt/ml/model"
       MAX_INPUT_LENGTH: "4095"
       MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "1"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+      # SM_NUM_GPUS: "1"
+      # SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+      
 report:
-  latency_budget: 1
+  latency_budget: 2
   cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
