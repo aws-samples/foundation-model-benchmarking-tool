@@ -116,8 +116,14 @@ def run_notebooks(config_file: str) -> None:
 def main():
     parser = argparse.ArgumentParser(description='Run FMBench with a specified config file.')
     parser.add_argument('--config-file', type=str, help='The S3 URI of your Config File', required=True)
+    role_help = 'The ARN of the role to be used for FMBench. If an \
+                 Amazon SageMaker endpoint is being deployed \
+                 through FMBench then this role would also be used \
+                 by that endpoint'
+    parser.add_argument('--role-arn', type=str, default=None, required=False, help=role_help)
+
     args = parser.parse_args()
-    print(f"{args} = args")
+    print(f"main, {args} = args")
 
     # Set the environment variable based on the parsed argument
     os.environ["CONFIG_FILE_FMBENCH"] = args.config_file
@@ -125,6 +131,13 @@ def main():
     
     # set env var to indicate that fmbench is being run from main and not interactively via a notebook
     os.environ["INTERACTIVE_MODE_SET"] = "no"
+
+    # if a role arn is specified then set it as an env var so that the rest of the code
+    # can use it. This will then be used to set the templatized "sagemaker_execution_role"
+    # parameter in the config file
+    if args.role_arn:
+        print(f"setting FMBENCH_ROLE_ARN env variable to {args.role_arn}")
+        os.environ['FMBENCH_ROLE_ARN'] = args.role_arn
 
     # Proceed with the rest of your script's logic, passing the config file as needed
     run_notebooks(args.config_file)    

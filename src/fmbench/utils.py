@@ -5,6 +5,7 @@ import math
 import boto3
 import logging
 import requests
+import tempfile
 import posixpath
 import unicodedata
 from pathlib import Path
@@ -87,14 +88,27 @@ def load_config(config_file) -> Dict:
     """
     session = boto3.session.Session()
     region_name = session.region_name
+    if region_name is None:
+        print(f"boto3.session.Session().region_name is {region_name}, "
+              f"going to use an s3 client to determine region name")
+        region_name = boto3.client('s3').meta.region_name
+
     caller = boto3.client('sts').get_caller_identity()
+    role_arn_from_env = os.environ.get('FMBENCH_ROLE_ARN')
+    if role_arn_from_env:
+        print(f"role_arn_from_env={role_arn_from_env}, using it to set arn_string")
+        arn_string = role_arn_from_env
+    else:
+        print(f"role_arn_from_env={role_arn_from_env}, using current sts caller identity to set arn_string")
+        arn_string = caller.get('Arn')
     account_id = caller.get('Account')
-    arn_string = caller.get('Arn')
 
     # check if the file is still parameterized and if so replace the parameters with actual values
     # if the file is not parameterized then the following statements change nothing
-    args = dict(region=session.region_name,
+    args = dict(region=region_name,
                 role_arn=arn_string,
+                read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
+                write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
                 write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
                 read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 
