@@ -103,7 +103,7 @@ experiments:
     model_name: llama3-8b-instruct-g5.48xl
     ep_name: llama-3-8b-instruct-g5-48xl
     instance_type: "ml.g5.48xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py

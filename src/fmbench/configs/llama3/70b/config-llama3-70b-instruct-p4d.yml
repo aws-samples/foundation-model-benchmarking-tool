@@ -99,7 +99,7 @@ experiments:
     model_name: llama-3-70b-instruct
     ep_name: llama-3-70b-instruct-p4d
     instance_type: "ml.p4d.24xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py

@@ -165,12 +165,12 @@ experiments:
     model_name: llama3-8b-trn1.32xl
     model_data:
       S3DataSource:
-        S3Uri: "s3://jumpstart-private-cache-prod-us-east-1/meta-textgenerationneuron/meta-textgenerationneuron-llama-3-8b-instruct/artifacts/inference-prepack/v1.0.0/"
+        S3Uri: "s3://jumpstart-private-cache-prod-{region}/meta-textgenerationneuron/meta-textgenerationneuron-llama-3-8b-instruct/artifacts/inference-prepack/v1.0.0/"
         S3DataType: "S3Prefix"
         CompressionType: "None"
     ep_name: llama-3-8b-instruct-trn1-32xl
     instance_type: "ml.trn1.32xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1'
     deploy: yes
     instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
