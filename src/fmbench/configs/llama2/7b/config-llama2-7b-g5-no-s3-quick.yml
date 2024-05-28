@@ -8,6 +8,10 @@ aws:
   region: {region}
   # SageMaker execution role used to run FMBench, this parameter is templatized, no need to change
   sagemaker_execution_role: {role_arn}
+  # Use S3 only, local file system only, or both (values are s3, local or both)
+  # If set to local or both, set the local_file_system_path parameter
+  s3_and_or_local_file_system: local
+  local_file_system_path: {write_tmpdir}
   # S3 bucket to which metrics, plots and reports would be written to
   bucket: {write_bucket}
 
@@ -22,6 +26,10 @@ dir_paths:
 
 # S3 information for reading datasets, scripts and tokenizer
 s3_read_data:
+  # Use S3 only or local file system only (values are s3 or local)
+  # If set to local, set the local_file_system_path parameter
+  s3_or_local_file_system: local
+  local_file_system_path: {read_tmpdir}
   # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
   read_bucket: {read_bucket}
   scripts_prefix: scripts
