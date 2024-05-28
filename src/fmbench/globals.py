@@ -21,8 +21,8 @@ session = boto3.session.Session()
 region_name = session.region_name
 if region_name is None:
     print(f"boto3.session.Session().region_name is {region_name}, "
-            f"going to use an s3 client to determine region name")
-    region_name = boto3.client('s3').meta.region_name
+          f"going to use an metadata api to determine region name")
+    region_name = requests.get("http://169.254.169.254/latest/meta-data/placement/availability-zone").text[:-1]
     print(f"region_name={region_name}, also setting the AWS_DEFAULT_REGION env var")
     os.environ["AWS_DEFAULT_REGION"] = region_name
 print(f"region_name={region_name}")

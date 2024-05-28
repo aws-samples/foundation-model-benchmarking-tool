@@ -25,8 +25,30 @@ def _normalize(text, form='NFC'):
     return unicodedata.normalize(form, str(text))
 
 
-def _download_from_s3(bucket_name, prefix, local_dir):
+def _is_write_local_or_both():
+    is_write_local_or_both = globals.config.get('aws').get('s3_and_or_local_file_system')
+    logger.debug(f"is_write_local_or_both: {is_write_local_or_both}")
+    return is_write_local_or_both is not None and (is_write_local_or_both == 'local' or is_write_local_or_both == 'both')
+
+
+def _download_multiple_files_from_local(prefix, local_dir):
+    src = _get_local_write_path(prefix)
+    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+
+def _get_local_write_path(dir_or_file: str = None) -> str:
+    if dir_or_file is not None:
+        local_write_path = globals.config['aws']['local_file_system_path'] + '/' + dir_or_file
+    else:
+        local_write_path = globals.config['aws']['local_file_system_path'] + '/'
+    logger.debug(f"local_write_path: {local_write_path}")
+    return local_write_path
+
+def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
+    if _is_write_local_or_both():
+        return _download_multiple_files_from_local(prefix, local_dir)
+
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
+    logger.info(f"download_multiple_files_from_s3, bucket_name={bucket_name}, prefix={prefix}, local_dir={local_dir}")
     s3_client = boto3.client('s3')
 
     # Ensure the local directory exists
@@ -36,19 +58,27 @@ def _download_from_s3(bucket_name, prefix, local_dir):
     # List and download files
     try:
         response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        if 'Contents' in response:
-            for obj in response['Contents']:
-                file_key = obj['Key']
-                if file_key.endswith('/'):
-                    continue
-                local_file_path = os.path.join(local_dir, os.path.basename(file_key))
-                s3_client.download_file(bucket_name, file_key, local_file_path)
-                logger.debug(f"Downloaded: {local_file_path}")
-        else:
-            logger.warning(f"No files found in S3 Bucket: '{bucket_name}' with Prefix: '{prefix}'")
+        key_list = list_s3_files(bucket_name, prefix, suffix=None)
+        for file_key in key_list:
+            logger.debug(f"file_key={file_key}, prefix={prefix}")
+            local_file_key = file_key.replace(prefix, "")
+            parent_dir_in_s3 = os.path.dirname(local_file_key)
+            logger.debug(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
+            # the first char for parent_dir_in_s3 would always be a '/' so skip that
+            local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
+            os.makedirs(local_dir_to_create, exist_ok=True)
+            logger.debug(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
+            local_file_to_create = os.path.basename(local_file_key)
+            if file_key.endswith('/'):
+                logger.info(f"skipping file_key={file_key}")
+                continue
+
+            local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
+            logger.debug(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
+            s3_client.download_file(bucket_name, file_key, local_file_path)
+            logger.debug(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
     except Exception as e:
         logger.error(f"An error occurred while downloading from S3: {e}")
-
 
 class CustomTokenizer:
     """A custom tokenizer class"""
@@ -56,18 +86,18 @@ class CustomTokenizer:
     WORDS: int = 750
 
     def __init__(self, bucket, prefix, local_dir):
-        logger.info(f"CustomTokenizer, based on HF transformers, {bucket} "
-                    f"prefix: {prefix} local_dir: {local_dir}")
+        print(f"CustomTokenizer, based on HF transformers, {bucket} "
+              f"prefix: {prefix} local_dir: {local_dir}")
         # Check if the tokenizer files exist in s3 and if not, use the autotokenizer
-        _download_from_s3(bucket, prefix, local_dir)
+        download_multiple_files_from_s3(bucket, prefix, local_dir)
         # Load the tokenizer from the local directory
         dir_not_empty = any(Path(local_dir).iterdir())
         if dir_not_empty is True:
-            logger.info("loading the provided tokenizer from local_dir={local_dir}")
+            print("loading the provided tokenizer from local_dir={local_dir}")
             self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
         else:
-            logger.error(f"no tokenizer provided, the {local_dir} is empty, "
-                         f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
+            print(f"no tokenizer provided, the {local_dir} is empty, "
+                  f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
             self.tokenizer = None
 
     def count_tokens(self, text):
@@ -90,8 +120,8 @@ def load_config(config_file) -> Dict:
     region_name = session.region_name
     if region_name is None:
         print(f"boto3.session.Session().region_name is {region_name}, "
-              f"going to use an s3 client to determine region name")
-        region_name = boto3.client('s3').meta.region_name
+              f"going to use an metadata api to determine region name")
+        region_name = requests.get("http://169.254.169.254/latest/meta-data/placement/availability-zone").text[:-1]
         print(f"region_name={region_name}, also setting the AWS_DEFAULT_REGION env var")
         os.environ["AWS_DEFAULT_REGION"] = region_name
     print(f"region_name={region_name}")
@@ -209,19 +239,6 @@ def _is_write_local_only():
     is_write_local_only = globals.config.get('aws').get('s3_and_or_local_file_system')
     logger.debug(f"is_write_local_only: {is_write_local_only}")
     return is_write_local_only is not None and is_write_local_only == 'local'
-
-def _is_write_local_or_both():
-    is_write_local_or_both = globals.config.get('aws').get('s3_and_or_local_file_system')
-    logger.debug(f"is_write_local_or_both: {is_write_local_or_both}")
-    return is_write_local_or_both is not None and (is_write_local_or_both == 'local' or is_write_local_or_both == 'both')
-    
-def _get_local_write_path(dir_or_file: str = None) -> str:
-    if dir_or_file is not None:
-        local_write_path = globals.config['aws']['local_file_system_path'] + '/' + dir_or_file
-    else:
-        local_write_path = globals.config['aws']['local_file_system_path'] + '/'
-    logger.debug(f"local_write_path: {local_write_path}")
-    return local_write_path
 
 def _upload_file_to_local(local_path: str, s3_path: str) -> None:
     dest = _get_local_write_path(s3_path)
@@ -372,43 +389,4 @@ def list_s3_files(bucket, prefix, suffix='.json'):
     logger.info(f"there are total of {len(return_list)} items in bucket={bucket}, prefix={prefix}, suffix={suffix}")
     return return_list
 
-def _download_multiple_files_from_local(prefix, local_dir):
-    src = _get_local_write_path(prefix)
-    shutil.copytree(src, local_dir, dirs_exist_ok=True)
 
-def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
-    if _is_write_local_or_both():
-        return _download_multiple_files_from_local(prefix, local_dir)
-
-    """Downloads files from an S3 bucket and a specified prefix to a local directory."""
-    logger.info(f"download_multiple_files_from_s3, bucket_name={bucket_name}, prefix={prefix}, local_dir={local_dir}")
-    s3_client = boto3.client('s3')
-
-    # Ensure the local directory exists
-    if not os.path.exists(local_dir):
-        os.makedirs(local_dir)
-
-    # List and download files
-    try:
-        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-        key_list = list_s3_files(bucket_name, prefix, suffix=None)
-        for file_key in key_list:
-            logger.debug(f"file_key={file_key}, prefix={prefix}")
-            local_file_key = file_key.replace(prefix, "")
-            parent_dir_in_s3 = os.path.dirname(local_file_key)
-            logger.debug(f"local_file_key={local_file_key}, parent_dir_in_s3={parent_dir_in_s3}")
-            # the first char for parent_dir_in_s3 would always be a '/' so skip that
-            local_dir_to_create = os.path.join(local_dir, parent_dir_in_s3[1:])
-            os.makedirs(local_dir_to_create, exist_ok=True)
-            logger.debug(f"local_dir_to_create={local_dir_to_create}, local_file_key={local_file_key}")
-            local_file_to_create = os.path.basename(local_file_key)
-            if file_key.endswith('/'):
-                logger.info(f"skipping file_key={file_key}")
-                continue
-
-            local_file_path = os.path.join(local_dir_to_create, local_file_to_create)
-            logger.debug(f"bucket_name={bucket_name}, file_key={file_key}, local_file_path={local_file_path}")
-            s3_client.download_file(bucket_name, file_key, local_file_path)
-            logger.debug(f"download_multiple_files_from_s3, Downloaded: {local_file_path}")
-    except Exception as e:
-        logger.error(f"An error occurred while downloading from S3: {e}")
