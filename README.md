@@ -244,7 +244,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 1. Clone the [`FMBench`](https://github.com/aarora79/foundation-model-benchmarking-tool) repo from GitHub.
 
     ```{.bash}
-    git clone https://github.com/aarora79/foundation-model-benchmarking-tool.git
+    git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
     cd foundation-model-benchmarking-tool
     ```
 
@@ -268,7 +268,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-no-s3-quick.yml >> fmbench.log 2>&1
     ```
 
-1. Open a new Terminal and navigate to `foundation-model-benchmarking-tool` and do a `tail` on `fmbench.log` to see a live log of the run.
+1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
 
     ```{.bash}
     tail -f fmbench.log

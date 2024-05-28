@@ -23,6 +23,7 @@ configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-vllm.yml
 configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml
 configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-lmi-dist.yml
 configs/llama3/8b/config-llama3-8b-trn1-32xl-tp=16-bs=4-byoe.yml
+configs/llama3/8b/config-llama3-8b-instruct-p5-djl-lmi-dist.yml
 configs/llama3/8b/config-bedrock.yml
 configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml
 configs/llama3/8b/config-llama3-8b-instruct-g5-48xl.yml
