@@ -2,6 +2,7 @@ import os
 import yaml
 import boto3
 import requests
+import tempfile
 from enum import Enum
 from pathlib import Path
 from datetime import datetime
@@ -18,11 +19,21 @@ CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 s3_client = boto3.client('s3')
 session = boto3.session.Session()
 region_name = session.region_name
+if region_name is None:
+    print(f"boto3.session.Session().region_name is {region_name}, "
+            f"going to use an s3 client to determine region name")
+    region_name = boto3.client('s3').meta.region_name
 
 # Configuring the role ARN -- extract the role name
 caller = boto3.client('sts').get_caller_identity()
 account_id = caller.get('Account')
-arn_string = caller.get('Arn')
+role_arn_from_env = os.environ.get('FMBENCH_ROLE_ARN')
+if role_arn_from_env:
+    print(f"role_arn_from_env={role_arn_from_env}, using it to set arn_string")
+    arn_string = role_arn_from_env
+else:
+    print(f"role_arn_from_env={role_arn_from_env}, using current sts caller identity to set arn_string")
+    arn_string = caller.get('Arn')
 ROLE_NAME = arn_string.split('/')[-1]
 
 current_config_file = os.environ.get("CONFIG_FILE_FMBENCH")
@@ -56,6 +67,8 @@ else:
 # if the file is not parameterized then the following statements change nothing
 args = dict(region=session.region_name,
             role_arn=arn_string,
+            read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
+            write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
             write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
             read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
@@ -170,7 +183,7 @@ LATENCY_BUDGET: int = 5
 OVERALL_RESULTS_MD: str = """
 # {title}
 
-|**Created (UTC)** | **FMBench version**  |
+|**Last modified (UTC)** | **FMBench version**  |
 |---|---|
 |{dttm}|{fmbench_version}|
 
@@ -188,7 +201,7 @@ The following table provides the best combinations for running inference for dif
 """
 
 # Dataset=`{dataset}`, instance_type=`{instance_type}`
-RESULT_DESC: str = """The best option for staying within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset is a `concurrency level of {concurrency}`. A concurrency level of {concurrency} achieves an `p95 latency of {latency_p95} seconds`, for an `average prompt size of {prompt_size} tokens` and `completion size of {completion_size} tokens` with `{tpm} transactions/minute`."""
+RESULT_DESC: str = """The best option for staying within a latency budget of `{latency_budget} seconds` on a `{instance_type}` for the `{dataset}` dataset is a `concurrency level of {concurrency}`. A concurrency level of {concurrency} achieves an `average latency of {latency_mean} seconds`, for an `average prompt size of {prompt_size} tokens` and `completion size of {completion_size} tokens` with `{tpm} transactions/minute`."""
 
 RESULT_ROW: str = "|`{dataset}`|`{instance_type}`|{desc}|"
 

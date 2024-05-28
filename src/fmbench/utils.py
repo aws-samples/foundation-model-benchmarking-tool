@@ -5,6 +5,7 @@ import math
 import boto3
 import logging
 import requests
+import tempfile
 import posixpath
 import unicodedata
 from pathlib import Path
@@ -13,10 +14,10 @@ from fmbench import defaults
 from typing import Dict, List
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
+import shutil
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-
 
 def _normalize(text, form='NFC'):
     # The files in LongBench contain nonstandard or irregular Unicode.
@@ -87,14 +88,27 @@ def load_config(config_file) -> Dict:
     """
     session = boto3.session.Session()
     region_name = session.region_name
+    if region_name is None:
+        print(f"boto3.session.Session().region_name is {region_name}, "
+              f"going to use an s3 client to determine region name")
+        region_name = boto3.client('s3').meta.region_name
+
     caller = boto3.client('sts').get_caller_identity()
+    role_arn_from_env = os.environ.get('FMBENCH_ROLE_ARN')
+    if role_arn_from_env:
+        print(f"role_arn_from_env={role_arn_from_env}, using it to set arn_string")
+        arn_string = role_arn_from_env
+    else:
+        print(f"role_arn_from_env={role_arn_from_env}, using current sts caller identity to set arn_string")
+        arn_string = caller.get('Arn')
     account_id = caller.get('Account')
-    arn_string = caller.get('Arn')
 
     # check if the file is still parameterized and if so replace the parameters with actual values
     # if the file is not parameterized then the following statements change nothing
-    args = dict(region=session.region_name,
+    args = dict(region=region_name,
                 role_arn=arn_string,
+                read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
+                write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
                 write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
                 read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 
@@ -168,17 +182,68 @@ def process_item(item, prompt_template_keys: List, prompt_fmt: str) -> Dict:
 def nt_to_posix(p: str) -> str:
     return p.replace("\\", "/")
 
+def is_read_local() -> str:
+    is_read_local = globals.config.get('s3_read_data').get('s3_or_local_file_system')
+    logger.debug(f"is_read_local: {is_read_local}")
+    return is_read_local is not None and is_read_local == 'local'
+
+def _get_local_read_path(dir_or_file: str = None) -> str:
+    if dir_or_file is not None:
+        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/' + dir_or_file
+    else:
+        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/'
+    logger.debug(f"local_read_path: {local_read_path}")
+    return local_read_path
+
+def _is_write_local_only():
+    is_write_local_only = globals.config.get('aws').get('s3_and_or_local_file_system')
+    logger.debug(f"is_write_local_only: {is_write_local_only}")
+    return is_write_local_only is not None and is_write_local_only == 'local'
+
+def _is_write_local_or_both():
+    is_write_local_or_both = globals.config.get('aws').get('s3_and_or_local_file_system')
+    logger.debug(f"is_write_local_or_both: {is_write_local_or_both}")
+    return is_write_local_or_both is not None and (is_write_local_or_both == 'local' or is_write_local_or_both == 'both')
+    
+def _get_local_write_path(dir_or_file: str = None) -> str:
+    if dir_or_file is not None:
+        local_write_path = globals.config['aws']['local_file_system_path'] + '/' + dir_or_file
+    else:
+        local_write_path = globals.config['aws']['local_file_system_path'] + '/'
+    logger.debug(f"local_write_path: {local_write_path}")
+    return local_write_path
+
+def _upload_file_to_local(local_path: str, s3_path: str) -> None:
+    dest = _get_local_write_path(s3_path)
+    shutil.copy(local_path, dest)
 
 def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
+    if _is_write_local_or_both():
+        _upload_file_to_local(local_path, s3_path)
+    if _is_write_local_only():
+        return
+    
     s3 = boto3.resource('s3')
     try:
         s3.Bucket(bucket).upload_file(local_path, s3_path)
     except Exception as e:
         logger.error(f"upload_file_to_s3, An error occurred: {e}")
 
+def _write_to_local(data, dir1, dir2, file_name):
+    dir = _get_local_write_path(dir1 + "/" + dir2 + "/")
+    Path(dir).mkdir(parents=True, exist_ok=True)
+    file = dir + file_name
+    if type(data) == str:
+        Path(file).write_text(data)
+    else:
+        Path(file).write_bytes(data)
 
 # Function to write data to S3
 def write_to_s3(data, bucket_name, dir1, dir2, file_name):
+    if _is_write_local_or_both():
+        _write_to_local(data, dir1, dir2, file_name)
+    if _is_write_local_only():
+        return
 
     # Initialize S3 client
     s3_client = boto3.client('s3')
@@ -195,9 +260,19 @@ def write_to_s3(data, bucket_name, dir1, dir2, file_name):
     except Exception as e:
         logger.error(f"write_to_s3, An error occurred: {e}")
 
-        
+def _read_from_local(s3_file_path: str) -> str:
+    try:
+        s3_file_path = nt_to_posix(_get_local_read_path(s3_file_path))
+        logger.debug(f"get_local_object, key={s3_file_path}")
+        return Path(s3_file_path).read_bytes().decode('utf-8')
+    except FileNotFoundError as e:
+        logger.error(f"read_from_local, An error occurred: {e}")
+        return None
+
 ## function to read from s3
 def read_from_s3(bucket_name, s3_file_path):
+    if is_read_local():
+        return _read_from_local(s3_file_path)
 
     # Initialize S3 client
     s3_client = boto3.client('s3')
@@ -216,9 +291,23 @@ def read_from_s3(bucket_name, s3_file_path):
         logger.error(f"read_from_s3, An error occurred: {e}")
         return None
 
+def _get_local_object(bucket: str, key: str, decode: bool) -> str:
+    key = nt_to_posix(key)
+    logger.debug(f"get_local_object, key={key}")
+    if bucket == globals.config['s3_read_data']['read_bucket']:
+        pathname = _get_local_read_path(key)
+    else:
+        pathname = _get_local_write_path(key)
+    if decode:
+        return Path(pathname).read_bytes().decode('utf-8')
+    else:
+        return Path(pathname).read_bytes()
+
 ## gets a single s3 file
-def get_s3_object(bucket: str, key: str) -> str:
- 
+def get_s3_object(bucket: str, key: str, decode='True') -> str:
+    if is_read_local():
+        return _get_local_object(bucket, key, decode)
+
     key = nt_to_posix(key)
     logger.debug(f"get_s3_object, bucket_name={bucket}, key={key}")
 
@@ -229,12 +318,31 @@ def get_s3_object(bucket: str, key: str) -> str:
     response = s3_client.get_object(Bucket=bucket, Key=key)
 
     # Read the content of the file
-    content = response['Body'].read().decode('utf-8')
+    if decode:
+        content = response['Body'].read().decode('utf-8')
+    else:
+        content = response['Body'].read()
 
     return content
 
+def _list_local_files(bucket, prefix, suffix):
+    if bucket == globals.config['s3_read_data']['read_bucket']:
+        dir = _get_local_read_path(prefix)
+    else:
+        dir = _get_local_write_path(prefix)
+    path_list = list(Path(dir).glob('*' + suffix))
+    pathname_list = [str(item) for item in path_list]
+    if bucket == globals.config['s3_read_data']['read_bucket']:
+        return_list = [item.replace(_get_local_read_path(), '') for item in pathname_list]
+    else:
+        return_list = [item.replace(_get_local_write_path(), '') for item in pathname_list]
+    return return_list
+
 # Function to list files in S3 bucket with a specific prefix
 def list_s3_files(bucket, prefix, suffix='.json'):
+    if is_read_local():
+        return _list_local_files(bucket, prefix, suffix)
+
     filter_key_by_suffix = lambda k,s: True if s is None else k.endswith(s)
     s3_client = boto3.client('s3')
     next_continuation_token = None
@@ -254,7 +362,14 @@ def list_s3_files(bucket, prefix, suffix='.json'):
     logger.info(f"there are total of {len(return_list)} items in bucket={bucket}, prefix={prefix}, suffix={suffix}")
     return return_list
 
+def _download_multiple_files_from_local(prefix, local_dir):
+    src = _get_local_write_path(prefix)
+    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+
 def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
+    if _is_write_local_or_both():
+        return _download_multiple_files_from_local(prefix, local_dir)
+
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
     logger.info(f"download_multiple_files_from_s3, bucket_name={bucket_name}, prefix={prefix}, local_dir={local_dir}")
     s3_client = boto3.client('s3')
