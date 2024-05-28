@@ -23,6 +23,9 @@ if region_name is None:
     print(f"boto3.session.Session().region_name is {region_name}, "
             f"going to use an s3 client to determine region name")
     region_name = boto3.client('s3').meta.region_name
+    print(f"region_name={region_name}, also setting the AWS_DEFAULT_REGION env var")
+    os.environ["AWS_DEFAULT_REGION"] = region_name
+print(f"region_name={region_name}")
 
 # Configuring the role ARN -- extract the role name
 caller = boto3.client('sts').get_caller_identity()
@@ -34,6 +37,17 @@ if role_arn_from_env:
 else:
     print(f"role_arn_from_env={role_arn_from_env}, using current sts caller identity to set arn_string")
     arn_string = caller.get('Arn')
+    # if this is an assumed role then remove the assumed role related pieces
+    # because we are also using this role for deploying the SageMaker endpoint
+    # arn:aws:sts::015469603702:assumed-role/SSMDefaultRoleForOneClickPvreReporting/i-0c5bba16a8b3dac51
+    # should be converted to arn:aws:iam::015469603702:role/SSMDefaultRoleForOneClickPvreReporting
+    if ":assumed-role/" in arn_string:
+        role_name = arn_string.split("/")[-2]
+        arn_string = f"arn:aws:iam::{account_id}:role/{role_name}"
+        print(f"the sts role is an assumed role, setting arn_string to {arn_string}")
+    else:
+        arn_string = caller.get('Arn')
+
 ROLE_NAME = arn_string.split('/')[-1]
 
 current_config_file = os.environ.get("CONFIG_FILE_FMBENCH")

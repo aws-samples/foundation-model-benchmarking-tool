@@ -237,6 +237,59 @@ Follow the prerequisites below to set up your environment before running the cod
             ├── <test-name>/data/prompts
         ````
 
+### Run `FMBench` on Amazon EC2 with no dependency on Amazon S3
+
+For some enterprise scenarios it might be desirable to run `FMBench` directly on an EC2 instance with no dependency on S3. Here are the steps to do this:
+
+1. Clone the [`FMBench`](https://github.com/aarora79/foundation-model-benchmarking-tool) repo from GitHub.
+
+    ```{.bash}
+    git clone https://github.com/aarora79/foundation-model-benchmarking-tool.git
+    cd foundation-model-benchmarking-tool
+    ```
+
+1. Setup the `fmbench_python311` conda environment. This step required conda to be installed on the EC2 instance, see [instructions](https://docs.anaconda.com/free/anaconda/install/) for installing Anaconda.
+
+    ```{.bash}
+    conda create --name fmbench_python311 -y python=3.11 ipykernel
+    source activate fmbench_python311;
+    pip install -U fmbench
+    ```
+
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo.
+
+    ```{.bash}
+    ./copy_s3_content.sh
+    ```
+
+1. Run `FMBench` with a quickstart config file.
+
+    ```{.bash}
+    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-no-s3-quick.yml >> fmbench.log 2>&1
+    ```
+
+1. Open a new Terminal and navigate to `foundation-model-benchmarking-tool` and do a `tail` on `fmbench.log` to see a live log of the run.
+
+    ```{.bash}
+    tail -f fmbench.log
+    ```
+
+1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
+
+1. Running `FMBench` without any S3 dependency requires the following two configuration parameters to be set in the config file under the `aws` key:
+    ```{.bash}
+    aws:
+      s3_and_or_local_file_system: local
+      local_file_system_path: {write_tmpdir}   
+    ```
+    and the following two parameters under the `s3_read_bucket` key:
+    ```{.bash}
+    s3_read_data:
+      s3_and_or_local_file_system: local
+      local_file_system_path: {read_tmpdir}   
+    ```
+    If you wish to run other config files without S3 dependency simply add these parameters in those files in the `aws` and `s3_read_data` sections, no other changes are required.
+
 ### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
 
 `FMBench` now provides an example of bringing your own endpoint as a `REST Predictor` for benchmarking. View this [`script`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/REST-predictor-fmbench/src/fmbench/scripts/rest_predictor.py) as an example. This script is an inference file for the `NousResearch/Llama-2-13b-chat-hf` model deployed on an [Amazon EKS](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/amazon-elastic-kubernetes-service.html) cluster using [Ray Serve](https://docs.ray.io/en/latest/ray-overview/examples.html). The model is deployed via `data-on-eks` which is a comprehensive resource for scaling your data and machine learning workloads on Amazon EKS and unlocking the power of Gen AI. Using `data-on-eks`, you can harness the capabilities of AWS Trainium, AWS Inferentia and NVIDIA GPUs to scale and optimize your Gen AI workloads and benchmark those models on FMBench with ease. 
