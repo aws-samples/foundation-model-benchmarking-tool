@@ -47,7 +47,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Mistral-7b-instruct** |✅ | |✅  |✅ | ✅ |   |
 | **Mistral-7b-AWQ** || | |✅ | |   |
 | **Mixtral-8x7b-instruct**  | | |  | | ✅ |   |
-| **Llama3-8b instruct**  |✅ |✅|✅  | |✅  |   |
+| **Llama3-8b instruct**  |✅ |✅|✅  | ✅|✅  |   |
 | **Llama3-70b instruct**  |✅ |✅|✅  | |✅ |   |
 | **Llama2-13b chat**  |✅ |✅ |✅  | | ✅  |   |
 | **Llama2-70b chat**  |✅ |✅ |✅  | | ✅  |   |
@@ -61,8 +61,12 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.38
+1. Support for running `FMBench` on Amazon EC2 without any dependency on Amazon S3.
+1. [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) config file for `ml.p5.48xlarge`.
+
 ### v1.0.37
-1. `g5`/`p4d`/`p5`/`inf2`/`trn1` specific config files for [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
+1. `g5`/`p4d`/`inf2`/`trn1` specific config files for [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
     1. `p4d` config file for both `vllm` and `lmi-dist`.
 
 ### v1.0.36
@@ -241,7 +245,18 @@ Follow the prerequisites below to set up your environment before running the cod
 
 For some enterprise scenarios it might be desirable to run `FMBench` directly on an EC2 instance with no dependency on S3. Here are the steps to do this:
 
-1. Clone the [`FMBench`](https://github.com/aarora79/foundation-model-benchmarking-tool) repo from GitHub.
+1. Have a `t3.xlarge` (or larger) instance in the `Running` stage. Make sure that the IAM role associated with your EC2 instance has `AmazonSageMakerFullAccess` policy associated with it and `sagemaker.amazonaws.com` added to its Trust relationships.
+    ```{.bash}
+    {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "sagemaker.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+    }
+    ```
+
+1. Clone the [`FMBench`](https://github.com/aarora79/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
 
     ```{.bash}
     git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
