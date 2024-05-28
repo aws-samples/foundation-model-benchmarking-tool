@@ -221,7 +221,8 @@ Resources:
                                              role_arn=os.environ.get('ROLE_ARN'),
                                              write_bucket=write_bucket,
                                              read_bucket=read_bucket,
-                                             local_file_system_path="")
+                                             write_tmpdir="/tmp/fmbench-write",
+                                             read_tmpdir="/tmp/fmbench-read")
                     s3.put_object(Bucket=read_bucket, Key=dst_key, Body=content)
                     logger.info(f"going to copy config file after editing from {copy_source} -> s3://{read_bucket}/{dst_key}")
                 else:                    
