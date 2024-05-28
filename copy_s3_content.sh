@@ -5,14 +5,14 @@ FMBENCH_READ_DIR=/tmp/fmbench-read
 BUCKET=aws-blogs-artifacts-public
 
 mkdir $FMBENCH_READ_DIR
-aws s3 cp s3://${BUCKET}/artifacts/ML-FMBT/manifest.txt ${FMBENCH_READ_DIR}/
+wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/manifest.txt -P ${FMBENCH_READ_DIR}/
 
 # copy each file of the public content for FMBench
 for i in `cat ${FMBENCH_READ_DIR}/manifest.txt`
 do
   dir_path=`dirname $i`
   mkdir -p ${FMBENCH_READ_DIR}/$dir_path
-  aws s3 cp s3://${BUCKET}/artifacts/ML-FMBT/$i ${FMBENCH_READ_DIR}/$i
+  wget https://${BUCKET}.s3.amazonaws.com/artifacts/$i -P ${FMBENCH_READ_DIR}/$i
 done
 
 
