@@ -2,9 +2,11 @@
 # without any s3 dependency and copies all relevant files
 # for public FMBench content
 FMBENCH_READ_DIR=/tmp/fmbench-read
+FMBENCH_WRITE_DIR=/tmp/fmbench-write
 BUCKET=aws-blogs-artifacts-public
 
 mkdir $FMBENCH_READ_DIR
+mkdir -p $FMBENCH_WRITE_DIR/tokenizer
 wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/manifest.txt -P ${FMBENCH_READ_DIR}/
 
 # copy each file of the public content for FMBench

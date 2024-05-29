@@ -121,8 +121,11 @@ def load_config(config_file) -> Dict:
     if region_name is None:
         print(f"boto3.session.Session().region_name is {region_name}, "
               f"going to use an metadata api to determine region name")
-        region_name = requests.get("http://169.254.169.254/latest/meta-data/placement/availability-zone").text[:-1]
-        print(f"region_name={region_name}, also setting the AWS_DEFAULT_REGION env var")
+        resp = requests.put("http://169.254.169.254/latest/api/token",
+                            headers={"X-aws-ec2-metadata-token-ttl-seconds": "21600"})
+        token = resp.text
+        region_name = requests.get("http://169.254.169.254/latest/meta-data/placement/region",
+                                   headers={"X-aws-ec2-metadata-token": token}).text
         os.environ["AWS_DEFAULT_REGION"] = region_name
     print(f"region_name={region_name}")
     caller = boto3.client('sts').get_caller_identity()
