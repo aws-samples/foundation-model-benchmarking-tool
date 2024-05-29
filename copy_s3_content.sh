@@ -12,7 +12,7 @@ for i in `cat ${FMBENCH_READ_DIR}/manifest.txt`
 do
   dir_path=`dirname $i`
   mkdir -p ${FMBENCH_READ_DIR}/$dir_path
-  wget https://${BUCKET}.s3.amazonaws.com/artifacts/$i -P ${FMBENCH_READ_DIR}/$i
+  wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/$i -P ${FMBENCH_READ_DIR}/$dir_path
 done
 
 
