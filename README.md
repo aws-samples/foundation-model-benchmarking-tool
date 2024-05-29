@@ -61,6 +61,9 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.39
+1. Add an internal `FMBench` website.
+
 ### v1.0.38
 1. Support for running `FMBench` on Amazon EC2 without any dependency on Amazon S3.
 1. [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) config file for `ml.p5.48xlarge`.
@@ -245,7 +248,7 @@ Follow the prerequisites below to set up your environment before running the cod
 
 For some enterprise scenarios it might be desirable to run `FMBench` directly on an EC2 instance with no dependency on S3. Here are the steps to do this:
 
-1. Have a `t3.xlarge` (or larger) instance in the `Running` stage. Make sure that the IAM role associated with your EC2 instance has `AmazonSageMakerFullAccess` policy associated with it and `sagemaker.amazonaws.com` added to its Trust relationships.
+1. Have a `t3.xlarge` (or larger) instance in the `Running` stage. Make sure that the instance has at least 50GB of disk space and the IAM role associated with your EC2 instance has `AmazonSageMakerFullAccess` policy associated with it and `sagemaker.amazonaws.com` added to its Trust relationships.
     ```{.bash}
     {
             "Effect": "Allow",
@@ -263,7 +266,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     cd foundation-model-benchmarking-tool
     ```
 
-1. Setup the `fmbench_python311` conda environment. This step required conda to be installed on the EC2 instance, see [instructions](https://docs.anaconda.com/free/anaconda/install/) for installing Anaconda.
+1. Setup the `fmbench_python311` conda environment. This step required conda to be installed on the EC2 instance, see [instructions](https://www.anaconda.com/download) for downloading Anaconda.
 
     ```{.bash}
     conda create --name fmbench_python311 -y python=3.11 ipykernel
