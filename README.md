@@ -303,7 +303,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     and the following two parameters under the `s3_read_bucket` key:
     ```{.bash}
     s3_read_data:
-      s3_and_or_local_file_system: local
+      s3_or_local_file_system: local
       local_file_system_path: {read_tmpdir}   
     ```
     If you wish to run other config files without S3 dependency simply add these parameters in those files in the `aws` and `s3_read_data` sections, no other changes are required.
