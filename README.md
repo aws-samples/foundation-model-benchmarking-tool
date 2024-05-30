@@ -283,7 +283,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 1. Run `FMBench` with a quickstart config file.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-no-s3-quick.yml >> fmbench.log 2>&1
+    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-quick.yml --local-mode yes >> fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.

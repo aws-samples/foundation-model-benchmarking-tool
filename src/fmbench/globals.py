@@ -95,6 +95,15 @@ CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration
 config = yaml.safe_load(CONFIG_FILE_CONTENT)
+local_mode = os.environ.get("LOCAL_MODE")
+if local_mode == "yes":
+    print("globals.py, local_mode = yes")
+    config['aws']['s3_and_or_local_file_system'] = 'local'
+    config['s3_read_data']['s3_or_local_file_system'] = 'local'
+    if config['s3_read_data'].get('local_file_system_path') is None:
+        config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
+    if config['aws'].get('local_file_system_path') is None:
+        config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
 
 # iterate through each experiment and populate the parameters section in the inference spec
 for i in range(len(config['experiments'])):
