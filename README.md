@@ -297,20 +297,6 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
-1. Running `FMBench` without any S3 dependency requires the following two configuration parameters to be set in the config file under the `aws` key:
-    ```{.bash}
-    aws:
-      s3_and_or_local_file_system: local
-      local_file_system_path: {write_tmpdir}   
-    ```
-    and the following two parameters under the `s3_read_bucket` key:
-    ```{.bash}
-    s3_read_data:
-      s3_or_local_file_system: local
-      local_file_system_path: {read_tmpdir}   
-    ```
-    If you wish to run other config files without S3 dependency simply add these parameters in those files in the `aws` and `s3_read_data` sections, no other changes are required.
-
 ### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
 
 `FMBench` now provides an example of bringing your own endpoint as a `REST Predictor` for benchmarking. View this [`script`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/REST-predictor-fmbench/src/fmbench/scripts/rest_predictor.py) as an example. This script is an inference file for the `NousResearch/Llama-2-13b-chat-hf` model deployed on an [Amazon EKS](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/amazon-elastic-kubernetes-service.html) cluster using [Ray Serve](https://docs.ray.io/en/latest/ray-overview/examples.html). The model is deployed via `data-on-eks` which is a comprehensive resource for scaling your data and machine learning workloads on Amazon EKS and unlocking the power of Gen AI. Using `data-on-eks`, you can harness the capabilities of AWS Trainium, AWS Inferentia and NVIDIA GPUs to scale and optimize your Gen AI workloads and benchmark those models on FMBench with ease. 
