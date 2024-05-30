@@ -30,10 +30,13 @@ def _is_write_local_or_both():
     logger.debug(f"is_write_local_or_both: {is_write_local_or_both}")
     return is_write_local_or_both is not None and (is_write_local_or_both == 'local' or is_write_local_or_both == 'both')
 
-
-def _download_multiple_files_from_local(prefix, local_dir):
-    src = _get_local_write_path(prefix)
-    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+def _get_local_read_path(dir_or_file: str = None) -> str:
+    if dir_or_file is not None:
+        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/' + dir_or_file
+    else:
+        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/'
+    logger.debug(f"local_read_path: {local_read_path}")
+    return local_read_path
 
 def _get_local_write_path(dir_or_file: str = None) -> str:
     if dir_or_file is not None:
@@ -43,9 +46,25 @@ def _get_local_write_path(dir_or_file: str = None) -> str:
     logger.debug(f"local_write_path: {local_write_path}")
     return local_write_path
 
+def _download_multiple_files_from_local_write_path(prefix, local_dir):    
+    src = _get_local_write_path(prefix)
+    print(f"_download_multiple_files_from_local_write_path, prefix={prefix}, src={src}, local_dir={local_dir}")
+    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+
+def _download_multiple_files_from_local_read_path(prefix, local_dir):    
+    src = _get_local_read_path(prefix)
+    print(f"_download_multiple_files_from_local_read_path, prefix={prefix}, src={src}, local_dir={local_dir}")
+    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+
 def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
     if _is_write_local_or_both():
-        return _download_multiple_files_from_local(prefix, local_dir)
+        if bucket_name == globals.config['aws']['bucket']:
+            return _download_multiple_files_from_local_write_path(prefix, local_dir)
+        elif bucket_name == globals.config['s3_read_data']['read_bucket']:
+            return _download_multiple_files_from_local_read_path(prefix, local_dir)
+        else:
+            logger.error(f"bucket_name={bucket_name} which does not match write bucket={globals.config['aws']['bucket']} "
+                         f"or read bucket={globals.config['s3_read_data']['read_bucket']}")
 
     """Downloads files from an S3 bucket and a specified prefix to a local directory."""
     logger.info(f"download_multiple_files_from_s3, bucket_name={bucket_name}, prefix={prefix}, local_dir={local_dir}")
@@ -230,13 +249,6 @@ def is_read_local() -> str:
     logger.debug(f"is_read_local: {is_read_local}")
     return is_read_local is not None and is_read_local == 'local'
 
-def _get_local_read_path(dir_or_file: str = None) -> str:
-    if dir_or_file is not None:
-        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/' + dir_or_file
-    else:
-        local_read_path = globals.config['s3_read_data']['local_file_system_path'] + '/'
-    logger.debug(f"local_read_path: {local_read_path}")
-    return local_read_path
 
 def _is_write_local_only():
     is_write_local_only = globals.config.get('aws').get('s3_and_or_local_file_system')
