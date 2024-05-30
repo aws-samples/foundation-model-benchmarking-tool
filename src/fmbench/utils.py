@@ -99,18 +99,9 @@ def load_config(config_file) -> Dict:
         except Exception as e:
             print(f"Error loading config from local file system: {e}")
             raise
-    
+
     content = content.format(**args)
     config = yaml.safe_load(content)
-    local_mode = os.environ.get("LOCAL_MODE")
-    if local_mode == "yes":
-        print("utils.py, local_mode = yes")
-        config['aws']['s3_and_or_local_file_system'] = 'local'
-        config['s3_read_data']['s3_or_local_file_system'] = 'local'
-        if config['s3_read_data'].get('local_file_system_path') is None:
-            config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
-        if config['aws'].get('local_file_system_path') is None:
-            config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
     return config
 
 def load_main_config(config_file) -> Dict:
@@ -123,6 +114,15 @@ def load_main_config(config_file) -> Dict:
         # parameters in that experiment
         parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
         config['experiments'][i]['inference_spec']['parameters'] = parameters
+    local_mode = os.environ.get("LOCAL_MODE")
+    if local_mode == "yes":
+        print("utils.py, local_mode = yes")
+        config['aws']['s3_and_or_local_file_system'] = 'local'
+        config['s3_read_data']['s3_or_local_file_system'] = 'local'
+        if config['s3_read_data'].get('local_file_system_path') is None:
+            config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
+        if config['aws'].get('local_file_system_path') is None:
+            config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
     return config
     
 def count_tokens(text: str) -> int:
