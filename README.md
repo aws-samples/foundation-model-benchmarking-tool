@@ -61,6 +61,9 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.40
+1. Make it easy to run in the Amazon EC2 without any dependency on Amazon S3 dependency mode.
+
 ### v1.0.39
 1. Add an internal `FMBench` website.
 

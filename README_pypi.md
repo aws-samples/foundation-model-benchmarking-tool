@@ -51,6 +51,15 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
+### v1.0.40
+1. Make it easy to run in the Amazon EC2 without any dependency on Amazon S3 dependency mode.
+
+### v1.0.39
+1. Add an internal `FMBench` website.
+
+### v1.0.38
+1. Support for running `FMBench` on Amazon EC2 without any dependency on Amazon S3.
+1. [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) config file for `ml.p5.48xlarge`.
 
 ### v1.0.37
 1. `g5`/`p4d`/`p5`/`inf2`/`trn1` specific config files for [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
