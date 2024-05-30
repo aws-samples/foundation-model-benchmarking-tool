@@ -163,7 +163,7 @@ experiments:
     model_id: llama-3-8b-instruct
     model_version:
     model_name: llama3-8b-trn1.32xl
-    ep_name: "meta-llama-Meta-Llama-3-8B-Instruct-inf-2024-05-21-01-53-53-648"
+    ep_name: <your-endpoint-name>
     instance_type: "ml.trn1.32xlarge"
     image_uri: 
     deploy: no
@@ -230,16 +230,16 @@ experiments:
       load_split_model=True
       context_length_estimate=None
       amp='f16'
-      quantize=None
+      quantize=static_int8
       compiled_graph_path=None
       task=None
       save_mp_checkpoint_path=None
-      group_query_attention=None
+      group_query_attention=replicated-heads
       model_loader=<TnXModelLoaders.tnx: 'tnx'>
       rolling_batch_strategy=<TnXGenerationStrategy.continuous_batching: 'continuous_batching'>
-      fuse_qkv=False
+      fuse_qkv=true
       on_device_embedding=False
-      attention_layout=None
+      attention_layout=BSH
       collectives_layout=None
       cache_layout=None
       partition_schema=None
