@@ -59,11 +59,12 @@ def load_config(config_file) -> Dict:
     
     # check if the file is still parameterized and if so replace the parameters with actual values
     # if the file is not parameterized then the following statements change nothing
-    args = dict(region=region_name,
+    write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}")
+    args = dict(region=session.region_name,
                 role_arn=arn_string,
                 read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
                 write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
-                write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
+                write_bucket=write_bucket,
                 read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 
     # Check if config_file is an S3 URI
@@ -114,6 +115,8 @@ def load_main_config(config_file) -> Dict:
         # parameters in that experiment
         parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
         config['experiments'][i]['inference_spec']['parameters'] = parameters
+        if config['experiments'][i].get('bucket') is None:
+            config['experiments'][i]['bucket'] = config['aws']['bucket']
     local_mode = os.environ.get("LOCAL_MODE")
     if local_mode == "yes":
         print("utils.py, local_mode = yes")

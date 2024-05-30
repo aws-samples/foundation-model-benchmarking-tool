@@ -85,11 +85,12 @@ else:
 
 # check if the file is still parameterized and if so replace the parameters with actual values
 # if the file is not parameterized then the following statements change nothing
+write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}")
 args = dict(region=session.region_name,
             role_arn=arn_string,
             read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
             write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
-            write_bucket=f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}",
+            write_bucket=write_bucket,
             read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
@@ -113,6 +114,8 @@ for i in range(len(config['experiments'])):
     # parameters in that experiment
     parameters = config['inference_parameters'][config['experiments'][i]['inference_spec']['parameter_set']]
     config['experiments'][i]['inference_spec']['parameters'] = parameters
+    if config['experiments'][i].get('bucket') is None:
+        config['experiments'][i]['bucket'] = config['aws']['bucket']
 print(f"loaded config: {config}")
 
 # data directory and prompts
