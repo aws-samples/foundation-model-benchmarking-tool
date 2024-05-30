@@ -124,6 +124,7 @@ def main():
     # add an option to run FMBench local mode. If local mode is set to yes, then FMBench uses read and write data locally and if no, 
     # then the test will continue to interact with S3
     parser.add_argument('--local-mode', type=str, default=None, choices=['yes', 'no'], help='Specify if running in local mode or not. Options: yes, no. Default is no.')
+    parser.add_argument('--write-bucket', type=str, help='Write bucket that is used for sagemaker endpoints in local mode and storing metrics in s3 mode.')
 
     args = parser.parse_args()
     print(f"main, {args} = args")
@@ -139,6 +140,16 @@ def main():
     if args.local_mode:
         print(f"setting the LOCAL_MODE to {args.local_mode}")
         os.environ["LOCAL_MODE"] = args.local_mode
+        if args.write_bucket is None:
+            logger.error("Write bucket is not provided when local mode is set to 'yes'")
+            sys.exit(1)
+        else:
+            # set the environment variable for the write bucket name to be configured and used for sagemaker endpoints and 
+            # metrics stored in s3 mode with local mode is set to "yes" by the user
+            os.environ["WRITE_BUCKET"] = args.write_bucket
+            logger.info(f"Write bucket specified in local mode: {args.write_bucket}")
+
+
 
     # if a role arn is specified then set it as an env var so that the rest of the code
     # can use it. This will then be used to set the templatized "sagemaker_execution_role"
