@@ -140,7 +140,7 @@ def main():
     if args.local_mode:
         print(f"setting the LOCAL_MODE to {args.local_mode}")
         os.environ["LOCAL_MODE"] = args.local_mode
-        if args.write_bucket is None:
+        if args.local_mode == "yes" and args.write_bucket is None
             logger.error("Write bucket is not provided when local mode is set to 'yes'")
             sys.exit(1)
         else:
