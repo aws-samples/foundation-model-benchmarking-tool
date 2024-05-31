@@ -163,7 +163,7 @@ experiments:
     model_id: llama-3-8b-instruct
     model_version:
     model_name: llama3-8b-inf2.24xl
-    ep_name: "meta-llama-Meta-Llama-3-8B-Instruct-inf-2024-05-21-18-04-12-330"
+    ep_name: <your-endpoint-name>
     instance_type: "ml.inf2.24xlarge"
     image_uri: 
     deploy: no
