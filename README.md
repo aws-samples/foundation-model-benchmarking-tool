@@ -61,6 +61,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.41
+1. Config file for running `Llama3-8b` on all instance types except `p5`.
+1. Fix bug with business summary chart.
+1. Fix bug with deploying model using a DJL DeepSpeed container in the no S3 dependency mode.
+
 ### v1.0.40
 1. Make it easy to run in the Amazon EC2 without any dependency on Amazon S3 dependency mode.
 
@@ -262,7 +267,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     }
     ```
 
-1. Clone the [`FMBench`](https://github.com/aarora79/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
+1. Clone the [`FMBench`](https://github.com/aws-samples/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
 
     ```{.bash}
     git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
@@ -344,7 +349,7 @@ If you have an endpoint deployed on say `Amazon EKS` or `Amazon EC2` or have you
     ```{.bash}
     # the config file path could be an S3 path and https path 
     # or even a path to a file on the local filesystem
-    fmbench --config-file \path\to\config\file
+    fmbench --config-file /path/to/config/file
     ```
 
 1. Depending upon the experiments in the config file, the `FMBench` run may take a few minutes to several hours. Once the run completes, you can find the report and metrics in the write S3 bucket set in the [config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/config-mistral-7b-tgi-g5.yml#L12). The report is generated as a markdown file called `report.md` and is available in the metrics directory in the write S3 bucket.
