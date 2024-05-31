@@ -61,7 +61,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
-### v1.0.41
+### v1.0.42
 1. Config file for running `Llama3-8b` on all instance types except `p5`.
 1. Fix bug with business summary chart.
 1. Fix bug with deploying model using a DJL DeepSpeed container in the no S3 dependency mode.
