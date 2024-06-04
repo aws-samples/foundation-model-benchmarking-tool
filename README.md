@@ -61,7 +61,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
-### v1.0.43
+### v1.0.44
 1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
 1. `Llama3-8b` config files for `g6` instances.
 

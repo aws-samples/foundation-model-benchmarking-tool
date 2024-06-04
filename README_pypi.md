@@ -51,7 +51,7 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
-### v1.0.43
+### v1.0.44
 1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
 1. `Llama3-8b` config files for `g6` instances.
 
