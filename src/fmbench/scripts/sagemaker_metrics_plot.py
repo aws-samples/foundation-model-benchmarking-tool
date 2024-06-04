@@ -1,19 +1,19 @@
+import logging
 import pandas as pd
 import seaborn as sns
-import logging
 import matplotlib.pyplot as plt
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def plot_sm_utilization_metrics(file_path : str) -> sns.FacetGrid:
+def plot_sm_utilization_metrics(endpoint_metrics_df : pd.DataFrame) -> sns.FacetGrid:
     '''
     This function reads a CSV file containing endpoint metrics data, processes the data,
     and generates a FacetGrid line plot to visualize utilization metrics for different 
     concurrency levels and instance types. The function returns the FacetGrid object.
 
     Parameters:
-    file_path (str): The path to the CSV file containing the endpoint metrics data.
+    dataframe (pd.DataFrame): Dataframe containing the endpoint metrics data.
 
     Returns:
     FacetGrid: The FacetGrid object containing the plotted data.
@@ -25,10 +25,9 @@ def plot_sm_utilization_metrics(file_path : str) -> sns.FacetGrid:
     ```
     '''
     # Load the data from CSV file
-    endpoint_metrics_df = pd.read_csv(file_path)
 
     logger.info("======================================")
-    logger.info(f"loaded dataframe from {file_path}")
+    logger.info(f"loaded dataframe, shape is: {endpoint_metrics_df.shape}")
     logger.info("======================================")
     
 
