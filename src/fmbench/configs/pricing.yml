@@ -17,6 +17,11 @@ pricing:
     ml.p5.48xlarge: 113.068
     ml.p3.2xlarge: 3.825
     ml.g4dn.12xlarge: 4.89
+    ml.g6.2xlarge: 1.222
+    ml.g6.16xlarge: 4.246
+    ml.g6.12xlarge: 5.752
+    ml.g6.24xlarge: 8.344
+    ml.g6.48xlarge: 16.688
     anthropic.claude-v3-sonnet-pt-nc: 88
 
   token_based:
