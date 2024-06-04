@@ -13,7 +13,7 @@ def plot_sm_utilization_metrics(endpoint_metrics_df : pd.DataFrame) -> sns.Facet
     concurrency levels and instance types. The function returns the FacetGrid object.
 
     Parameters:
-    dataframe (pd.DataFrame): Dataframe containing the endpoint metrics data.
+    endpoint_metrics_df (pd.DataFrame): Dataframe containing the endpoint metrics data.
 
     Returns:
     FacetGrid: The FacetGrid object containing the plotted data.
