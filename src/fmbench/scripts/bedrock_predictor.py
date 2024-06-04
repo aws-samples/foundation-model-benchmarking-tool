@@ -2,6 +2,8 @@ import os
 import math
 import boto3
 import logging
+import pandas as pd
+from datetime import datetime
 from litellm import completion
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -199,6 +201,13 @@ class BedrockPredictor(FMBenchPredictor):
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
 
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        # not implemented
+        return None
+    
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""

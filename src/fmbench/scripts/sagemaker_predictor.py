@@ -2,10 +2,13 @@ import time
 import json
 import logging
 import sagemaker
+import pandas as pd
+from datetime import datetime
 from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
+from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
 
@@ -108,6 +111,12 @@ class SageMakerPredictor(FMBenchPredictor):
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
 
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        return get_endpoint_metrics(self._endpoint_name, start_time, end_time)
+        
     @property
     def inference_parameters(self) -> Dict:
         """The inference parameters property."""

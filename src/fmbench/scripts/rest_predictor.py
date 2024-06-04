@@ -5,6 +5,8 @@ import time
 import boto3
 import logging
 import requests
+import pandas as pd
+from datetime import datetime
 from fmbench.utils import count_tokens
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -108,6 +110,13 @@ class RESTPredictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
+    
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        # not implemented
+        return None
 
     @property
     def inference_parameters(self) -> Dict:

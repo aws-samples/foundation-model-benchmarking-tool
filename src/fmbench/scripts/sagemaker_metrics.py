@@ -1,9 +1,22 @@
-import boto3
+"""
+Retrieves metrics for SageMaker Endpoints from CloudWatch.
+See https://docs.aws.amazon.com/sagemaker/latest/dg/monitoring-cloudwatch.html for
+full list of metrics.
+"""
 import json
+import boto3
+import logging
 import pandas as pd
 from datetime import datetime, timedelta
 
-def _get_endpoint_utilization_metrics(endpoint_name : str, start_time : datetime, end_time : datetime, period : int = 60):
+# Setup logging
+logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def _get_endpoint_utilization_metrics(endpoint_name: str,
+                                      start_time: datetime,
+                                      end_time: datetime,
+                                      period : int = 60) -> pd.DataFrame:
     """
     Retrieves utilization metrics for a specified SageMaker endpoint within a given time range.
 
@@ -16,16 +29,17 @@ def _get_endpoint_utilization_metrics(endpoint_name : str, start_time : datetime
     Returns:
     - Dataframe: A Dataframe containing metric values for utilization metrics like CPU and GPU Usage.
     """
-    metrics = [
-    "CPUUtilization",
-    "MemoryUtilization",
-    "DiskUtilization",
-    "InferenceLatency",
-    "GPUUtilization",
-    "GPUMemoryUtilization"]
+    
+    metrics = ["CPUUtilization",
+               "MemoryUtilization",
+               "DiskUtilization",
+               "InferenceLatency",
+               "GPUUtilization",
+               "GPUMemoryUtilization"]
     
     client = boto3.client('cloudwatch')
     data = []
+    namespace = "/aws/sagemaker/Endpoints"
     
     for metric_name in metrics:
         response = client.get_metric_statistics(
@@ -67,7 +81,10 @@ def _get_endpoint_utilization_metrics(endpoint_name : str, start_time : datetime
     return sm_utilization_metrics_df
 
 
-def _get_endpoint_invocation_metrics(endpoint_name : str, start_time : datetime, end_time : datetime, period : int = 60):
+def _get_endpoint_invocation_metrics(endpoint_name: str,
+                                     start_time: datetime,
+                                     end_time: datetime,
+                                     period : int = 60):
     """
     Retrieves Invocation metrics for a specified SageMaker endpoint within a given time range.
 
@@ -80,13 +97,11 @@ def _get_endpoint_invocation_metrics(endpoint_name : str, start_time : datetime,
     Returns:
     - Dataframe: A Dataframe containing metric values for Invocation metrics like Invocations and Model Latency.
     """
-    metric_names = [
-        "Invocations",
-        "Invocation4XXErrors",
-        "Invocation5XXErrors",
-        "ModelLatency",
-        "InvocationsPerInstance"
-        ]
+    metric_names = ["Invocations",
+                    "Invocation4XXErrors",
+                    "Invocation5XXErrors",
+                    "ModelLatency",
+                    "InvocationsPerInstance"]
     
     # Initialize a session using Amazon CloudWatch
     client = boto3.client('cloudwatch')
@@ -95,6 +110,10 @@ def _get_endpoint_invocation_metrics(endpoint_name : str, start_time : datetime,
     data = []
     
     for metric_name in metric_names:
+        if metric_name == 'ModelLatency':
+            stat = 'Average'
+        else:
+            stat = 'Sum'
         # Get metric data for the specified metric
         response = client.get_metric_data(
             MetricDataQueries=[
@@ -116,7 +135,7 @@ def _get_endpoint_invocation_metrics(endpoint_name : str, start_time : datetime,
                             ]
                         },
                         'Period': period,  # Period in seconds
-                        'Stat': 'Average'  # Statistic to retrieve
+                        'Stat': stat  # Statistic to retrieve
                     },
                     'ReturnData': True,
                 },
@@ -149,7 +168,10 @@ def _get_endpoint_invocation_metrics(endpoint_name : str, start_time : datetime,
     return sm_invocation_metrics_df
 
 
-def get_endpoint_metrics(endpoint_name : str, start_time : datetime, end_time : datetime, period : int = 60):
+def get_endpoint_metrics(endpoint_name: str,
+                         start_time: datetime,
+                         end_time: datetime,
+                         period: int = 60):
     """
     Retrieves Invocation and Utilization metrics for a specified SageMaker endpoint within a given time range.
 
@@ -162,14 +184,30 @@ def get_endpoint_metrics(endpoint_name : str, start_time : datetime, end_time : 
     Returns:
     - Dataframe: A Dataframe containing metric values for Utilization and Invocation metrics.
     """
-    utilization_metrics_df = _get_endpoint_utilization_metrics(endpoint_name = endpoint_name,
-                                                               start_time = start_time,
-                                                               end_time = end_time,
-                                                               period = period)
-    invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name = endpoint_name, 
-                                                            start_time = start_time,
-                                                            end_time = end_time,
-                                                            period = period)
-    endpoint_metrics_df = pd.merge(utilization_metrics_df, invocation_metrics_df, on=['Timestamp', 'EndpointName'], how='outer')
     
+    endpoint_metrics_df: Optional[pd.DataFrame] = None
+    try:
+        logger.info(f"get_endpoint_metrics, going to retrieve endpoint utlization metrics for "
+                    f"endpoint={endpoint_name}")
+        utilization_metrics_df = _get_endpoint_utilization_metrics(endpoint_name=endpoint_name,
+                                                                   start_time=start_time,
+                                                                   end_time=end_time,
+                                                                   period=period)
+        logger.info(f"get_endpoint_metrics, going to retrieve invocation metrics for "
+                    f"endpoint={endpoint_name}")
+        invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name, 
+                                                                start_time=start_time,
+                                                                end_time=end_time,
+                                                                period=period)
+
+        endpoint_metrics_df = pd.merge(utilization_metrics_df,
+                                       invocation_metrics_df,
+                                       on=['Timestamp', 'EndpointName'],
+                                       how='outer')
+        logger.info(f"get_endpoint_metrics, shape of invocation and utilization metrics for "
+                    f"endpoint={endpoint_name} is {endpoint_metrics_df.shape}")
+    except Exception as e:
+        logger.error(f"get_endpoint_metrics, exception occured while retrieving metrics for {endpoint_name}, "
+                     f"exception={e}")
+        
     return endpoint_metrics_df
