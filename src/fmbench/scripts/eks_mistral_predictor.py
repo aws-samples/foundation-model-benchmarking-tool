@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import json
 import math
@@ -80,7 +81,7 @@ class RESTPredictor(FMBenchPredictor):
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
                                          completion_tokens=completion_tokens,
-                                         prompt_tokens=prompt_tokens)
+                                         prompt_tokens=prompt_tokens)    
 
     @property
     def endpoint_name(self) -> str:
