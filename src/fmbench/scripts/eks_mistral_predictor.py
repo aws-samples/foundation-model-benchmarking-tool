@@ -4,6 +4,7 @@ import json
 import math
 import time
 import boto3
+import pandas as pd
 import logging
 import requests
 from fmbench.utils import count_tokens
@@ -87,6 +88,15 @@ class RESTPredictor(FMBenchPredictor):
     def endpoint_name(self) -> str:
         """The endpoint name property."""
         return self._endpoint_name
+
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        # not implemented
+        return None
+    
+        
 
     # The rest ep is deployed on an instance that incurs hourly cost hence, the calculcate cost function
     # computes the cost of the experiment on an hourly basis. If your instance has a different pricing structure

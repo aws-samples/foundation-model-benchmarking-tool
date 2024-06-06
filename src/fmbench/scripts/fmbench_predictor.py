@@ -28,15 +28,15 @@ class FMBenchPredictor(ABC):
         """
         pass
     
-    # @abstractmethod
-    # def get_metrics(self,
-    #                 start_time: datetime,
-    #                 end_time: datetime,
-    #                 period: int = 60) -> pd.DataFrame:
-    #     """Represents the function to calculate the
-    #        metrics for each endpoint
-    #     """
-    #     pass
+    @abstractmethod
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        """Represents the function to calculate the
+           metrics for each endpoint
+        """
+        pass
 
     @abstractproperty
     def endpoint_name(self) -> str:
