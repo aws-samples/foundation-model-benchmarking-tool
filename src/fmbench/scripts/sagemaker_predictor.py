@@ -21,10 +21,15 @@ class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict],
+                 metadata: Optional[Dict]):
         self._predictor: Optional[sagemaker.base_predictor.Predictor] = None
         self._endpoint_name: str = endpoint_name
         self._inference_spec: Dict = inference_spec
+        self._variant_name: Optional[str] = None
+        if metadata is not None:
+            self._variant_name = metadata.get("variant_name")
+
         try:
             # Create a SageMaker Predictor object
             self._predictor = Predictor(
@@ -115,7 +120,7 @@ class SageMakerPredictor(FMBenchPredictor):
                     start_time: datetime,
                     end_time: datetime,
                     period: int = 60) -> pd.DataFrame:
-        return get_endpoint_metrics(self._endpoint_name, start_time, end_time)
+        return get_endpoint_metrics(self._endpoint_name, self._variant_name, start_time, end_time)
         
     @property
     def inference_parameters(self) -> Dict:
@@ -123,5 +128,5 @@ class SageMakerPredictor(FMBenchPredictor):
         return self._inference_spec.get("parameters")
 
 
-def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):
-    return SageMakerPredictor(endpoint_name, inference_spec)
+def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
+    return SageMakerPredictor(endpoint_name, inference_spec, metadata)
