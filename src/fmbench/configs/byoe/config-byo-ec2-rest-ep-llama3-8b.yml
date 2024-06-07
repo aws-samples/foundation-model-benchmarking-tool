@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "byo-ec2-REST-ep-llama3"      
+  name: "llama3-8b-g5.2xl-ec2"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -145,7 +145,7 @@ pricing: pricing.yml
 # Use the section name (sagemaker in this example) in the inference_spec.parameter_set
 # section under experiments.
 inference_parameters: 
-  ec2_djl_rest_set:
+  ec2_djl:
     do_sample: yes
     temperature: 0.1
     top_p: 0.92
@@ -167,8 +167,8 @@ experiments:
     model_id: # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "llama3-8b-instruct"
-    # the ep_name will contain the endpoint url that is used to invoke your model and get the response
-    ep_name: 'http://<your-local-ec2-server>/invocations' 
+    # this can be changed to the IP address of a your specific EC2 instance where the model is hosted
+    ep_name: 'http://127.0.0.1/invocations' 
     instance_type: "g5.2xlarge"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed on an EKS cluster
@@ -183,7 +183,7 @@ experiments:
     inference_script: ec2_djl_predictor.py
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
-      parameter_set: ec2_djl_rest_set
+      parameter_set: ec2_djl
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -201,16 +201,13 @@ experiments:
     - 6
     - 8
     - 10 
-    - 12 
-    - 15
-    - 18
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
 
 report:
-  latency_budget: 5
-  cost_per_10k_txn_budget: 50
+  latency_budget: 2
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

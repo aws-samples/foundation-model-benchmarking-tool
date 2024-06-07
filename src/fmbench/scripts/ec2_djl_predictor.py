@@ -11,12 +11,12 @@ from fmbench.utils import count_tokens
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-                                               
+                                            
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RESTPredictor(FMBenchPredictor):
+class EC2Predictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
@@ -106,4 +106,4 @@ class RESTPredictor(FMBenchPredictor):
         return self._inference_spec.get("parameters")
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):
-    return RESTPredictor(endpoint_name, inference_spec)
+    return EC2Predictor(endpoint_name, inference_spec)
