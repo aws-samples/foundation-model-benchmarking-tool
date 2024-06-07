@@ -20,10 +20,11 @@ class EC2Predictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict], 
+                 metadata: Optional[Dict]):
         try:
             self._endpoint_name: str = endpoint_name
-            self._inference_spec: Dict = inference_spec 
+            self._inference_spec: Dict = inference_spec
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
@@ -105,5 +106,5 @@ class EC2Predictor(FMBenchPredictor):
         """The inference parameters property."""
         return self._inference_spec.get("parameters")
 
-def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):
-    return EC2Predictor(endpoint_name, inference_spec)
+def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
+    return EC2Predictor(endpoint_name, inference_spec, metadata)
