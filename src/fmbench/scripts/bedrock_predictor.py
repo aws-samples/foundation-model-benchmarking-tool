@@ -2,6 +2,8 @@ import os
 import math
 import boto3
 import logging
+import pandas as pd
+from datetime import datetime
 from litellm import completion
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -27,7 +29,8 @@ class BedrockPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict],
+                 metadata: Optional[Dict]):
         try:
             # initialize private member variables
             self._endpoint_name = endpoint_name
@@ -199,6 +202,13 @@ class BedrockPredictor(FMBenchPredictor):
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
 
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        # not implemented
+        return None
+    
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
@@ -212,9 +222,9 @@ class BedrockPredictor(FMBenchPredictor):
                     top_p=self._top_p)
 
 
-def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):
+def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     if endpoint_name in EMBEDDING_MODELS:
         logger.error(f"embeddings models not supported for now")
         return None
     else:
-        return BedrockPredictor(endpoint_name, inference_spec)
+        return BedrockPredictor(endpoint_name, inference_spec, metadata)

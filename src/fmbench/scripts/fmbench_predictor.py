@@ -1,3 +1,5 @@
+import pandas as pd
+from datetime import datetime
 from typing import Dict, Optional
 from abc import ABC, abstractmethod, abstractproperty
 
@@ -7,7 +9,8 @@ class FMBenchPredictor(ABC):
     @abstractmethod
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict],
+                 metadata: Optional[Dict]):
         pass
 
     @abstractmethod
@@ -23,6 +26,16 @@ class FMBenchPredictor(ABC):
                        metrics: Dict) -> float:
         """Represents the function to calculate the
            cost of each experiment run.
+        """
+        pass
+    
+    @abstractmethod
+    def get_metrics(self,
+                    start_time: datetime,
+                    end_time: datetime,
+                    period: int = 60) -> pd.DataFrame:
+        """Represents the function to calculate the
+           metrics for each endpoint
         """
         pass
 

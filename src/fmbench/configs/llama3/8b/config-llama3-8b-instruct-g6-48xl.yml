@@ -1,5 +1,5 @@
 general:
-  name: "llama3-8b-p5-djl-lmi-dist"      
+  name: "llama3-8b-g6-48xl-djl-lmi-dist"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -93,12 +93,12 @@ inference_parameters:
 
 experiments:
  
-  - name: llama-3-8b-instruct-p5-djl-deepspeed0.12.6-cu121
+  - name: llama-3-8b-instruct-g6-48xl-djl-deepspeed0.12.6-cu121
     model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct
-    ep_name: llama-3-8b-instruct-p5
-    instance_type: "ml.p5.48xlarge"
+    ep_name: llama-3-8b-instruct-g6-48xl
+    instance_type: "ml.g6.48xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
     instance_count: 1
@@ -151,7 +151,7 @@ experiments:
       ENDPOINT_SERVER_TIMEOUT: "3600"
       MODEL_CACHE_ROOT: "/opt/ml/model"
       SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
+      #HF_MODEL_ID: "/opt/ml/model"
       MAX_INPUT_LENGTH: "4095"
       MAX_TOTAL_TOKENS: "4096"
       # SM_NUM_GPUS: "1"
