@@ -1,6 +1,8 @@
+# config file for a rest endpoint supported on fmbench - 
+# this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "fmbench-bedrock-llama3"      
-  model_name: "Llama3 on Bedrock"
+  name: "llama3-8b-g5.2xl-ec2"      
+  model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -75,7 +77,7 @@ s3_read_data:
 run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: yes
-  2_deploy_model.ipynb: yes
+  2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
   5_cleanup.ipynb: no
@@ -118,6 +120,10 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
+  - language: en
+    min_length_in_tokens: 1
+    max_length_in_tokens: 924
+    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -139,41 +145,45 @@ pricing: pricing.yml
 # Use the section name (sagemaker in this example) in the inference_spec.parameter_set
 # section under experiments.
 inference_parameters: 
-  bedrock:
+  ec2_djl:
+    do_sample: yes
     temperature: 0.1
-    max_tokens: 100
     top_p: 0.92
-    caching: False
+    top_k: 120  
+    max_new_tokens: 100
+    Content-type: application/json
+    return_full_text: False
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
-# options (such as one experiment is SageMaker and the other is Bedrock).
+# options.
 experiments:
-  - name: meta.llama3-70b-instruct-v1:0
+  - name: "llama3-8b-instruct"
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
-    # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-70b-instruct-v1:0
-    model_version: 
-    model_name: meta.llama3-70b-instruct-v1:0
-    ep_name: meta.llama3-70b-instruct-v1:0
-    instance_type: meta.llama3-70b-instruct-v1:0
+    # see the DJL serving deployment script in the code repo for reference. 
+    model_id: # model id, version and image uri not needed for byo endpoint
+    model_version:
+    model_name: "llama3-8b-instruct"
+    # this can be changed to the IP address of your specific EC2 instance where the model is hosted
+    ep_name: 'http://127.0.0.1/invocations' 
+    instance_type: "g5.2xlarge"
     image_uri:
-    deploy: no
+    deploy: no #setting to no since the endpoint has already been deployed on an EKS cluster
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
     # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
     # See repo for details
-    instance_count:
-    deployment_script:
+    instance_count: 
+    deployment_script: 
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
-    # and Bedrock. You can also add your own. See repo for details
-    inference_script: bedrock_predictor.py
+    # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
+    # for a llama3-8b-instruct deployed on ec2
+    inference_script: ec2_djl_predictor.py
     inference_spec:
-      split_input_and_parameters: no
       # this should match one of the sections in the inference_parameters section above
-      parameter_set: bedrock
+      parameter_set: ec2_djl
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -190,64 +200,17 @@ experiments:
     - 4
     - 6
     - 8
-    - 10
-    - 12
-    - 15
+    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-  - name: meta.llama3-8b-instruct-v1:0
-    # model_id is interpreted in conjunction with the deployment_script, so if you
-    # use a JumpStart model id then set the deployment_script to jumpstart.py.
-    # if deploying directly from HuggingFace this would be a HuggingFace model id
-    # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-8b-instruct-v1:0
-    model_version: 
-    model_name: meta.llama3-8b-instruct-v1:0
-    ep_name: meta.llama3-8b-instruct-v1:0
-    instance_type: meta.llama3-8b-instruct-v1:0
-    image_uri:
-    deploy: no
-    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
-    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
-    # See repo for details
-    instance_count:
-    deployment_script:
-    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
-    # and Bedrock. You can also add your own. See repo for details
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      # this should match one of the sections in the inference_parameters section above
-      parameter_set: bedrock
-    # runs are done for each combination of payload file and concurrency level
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
-    # concurrency level refers to number of requests sent in parallel to an endpoint
-    # the next set of requests is sent once responses for all concurrent requests have
-    # been received.
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 15
-    # Environment variables to be passed to the container
-    # this is not a fixed list, you can add more parameters as applicable.
-    env:
+
 report:
   latency_budget: 2
-  cost_per_10k_txn_budget: 100
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
-  v_shift_w_gt_one_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025  

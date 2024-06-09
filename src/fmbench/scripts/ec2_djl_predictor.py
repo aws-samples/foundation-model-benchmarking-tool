@@ -11,20 +11,20 @@ from fmbench.utils import count_tokens
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-
+                                            
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RESTPredictor(FMBenchPredictor):
+class EC2Predictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict],
+                 inference_spec: Optional[Dict], 
                  metadata: Optional[Dict]):
         try:
             self._endpoint_name: str = endpoint_name
-            self._inference_spec: Dict = inference_spec 
+            self._inference_spec: Dict = inference_spec
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
@@ -36,39 +36,21 @@ class RESTPredictor(FMBenchPredictor):
         latency: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
-        timeout: Optional[int] = None
-        auth: Optional[Dict] = None
         # get the prompt for the EKS endpoint
         prompt: str = payload['inputs']
         # represents the number of tokens in the prompt payload
-        prompt_tokens = count_tokens(payload["inputs"])
+        prompt_tokens = count_tokens(payload['inputs'])
         try:
             st = time.perf_counter()
             split_input_and_inference_params: Optional[bool] = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
                 logger.info(f"split input parameters is: {split_input_and_inference_params}")
-                timeout = self._inference_spec.get("timeout", 180)
-                auth = self._inference_spec.get("auth", None)
-                logger.info(f"Initializing the timeout to: {timeout}, auth to configured authentication information")
-                # Use the parameters that the model needs at inference. In this case, the model does not require inference
-                # parameters and it is handled in the ray serve script that is used to deploy this model 'ray_serve_llama2.py'
-                # parameters: Optional[Dict] = inference_spec.get('parameters')
-
-            # the self._endpoint_name will contain the endpoint url that is used to invoke the model and get the response
-            # In this case, we use ray serve with `NousResearch/Llama-2-13b-chat-hf` model deployed on an EKS cluster.
-            # the endpoint url format used in this example is "http://<NLB_DNS_NAME>/serve/infer?sentence=<PROMPT_PAYLOAD>"
-
-            # This endpoint only supports the GET method now, you can add support for POST method if your endpoint supports it.
-            # As an example, the following URL is used with a query added at the end of the URL.
-            # http://<NLB_DNS_NAME>/serve/infer?sentence=what is data parallelism and tensor parallelism and the differences
-            response = requests.get(self._endpoint_name, params={"sentence": prompt,
-                                                                    timeout: timeout,
-                                                                    auth: auth}) # the auth dictionary contains
-                                                                                 # authentication parameters. 
-                                                                                 # You can do any custom auth handling that your endpoint supports.
-
-            # the response from the model on ray serve from the url prompt is given in this format. 
+            # this is the POST request to the endpoint url for invocations that 
+            # is given to you as you deploy a model on EC2 using the DJL serving stack
+            response = requests.post(self._endpoint_name, payload) 
+            # record the latency for the response generated
+            latency = time.perf_counter() - st
             # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
             response.raise_for_status()
             full_output = response.text
@@ -125,4 +107,4 @@ class RESTPredictor(FMBenchPredictor):
         return self._inference_spec.get("parameters")
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
-    return RESTPredictor(endpoint_name, inference_spec, metadata)
+    return EC2Predictor(endpoint_name, inference_spec, metadata)

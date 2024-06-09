@@ -140,7 +140,8 @@ METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
-
+ENDPOINT_METRICS_FNAME = "endpoint_metrics.csv"
+ENDPOINT_METRICS_SUMMARIZED_FNAME = "endpoint_metrics_summarized.csv"
 
 # Models directory based on date and time 
 MODELS_DIR = f"{DATA_DIR}/models"

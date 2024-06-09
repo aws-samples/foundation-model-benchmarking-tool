@@ -61,6 +61,14 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.45
+1. Analytics for results across multiple runs.
+1. `Llama3-70b` config files for `g5.48xlarge` instances.
+
+### v1.0.44
+1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
+1. `Llama3-8b` config files for `g6` instances.
+
 ### v1.0.42
 1. Config file for running `Llama3-8b` on all instance types except `p5`.
 1. Fix bug with business summary chart.
