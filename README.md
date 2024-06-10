@@ -1,17 +1,10 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-
-- [Foundation Model benchmarking tool (FMBench)](#foundation-model-benchmarking-tool-fmbench)
-- [
-        
-    ](#)
-      - [Amazon SageMaker | Amazon Bedrock](#amazon-sagemaker--amazon-bedrock)
-      - [
-    
-        
-        
-](#)
+# Foundation Model benchmarking tool (FMBench)
+**Table of contents**
+- [Overview](#overview)
+- - [Amazon SageMaker | Amazon Bedrock](#amazon-sagemaker--amazon-bedrock)
   - [Models benchmarked](#models-benchmarked)
     - [🚨 Llama3 on Amazon SageMaker 🚨](#-llama3-on-amazon-sagemaker-)
     - [Full list of benchmarked models](#full-list-of-benchmarked-models)
@@ -48,7 +41,7 @@
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-# Foundation Model benchmarking tool (FMBench)
+# Overview
 
 <h1 align="center">
         <img src="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true"></img>
