@@ -2,6 +2,7 @@
 Analyze data across multiple fmbench runs
 """
 import os
+import sys
 import math
 import glob
 import json
@@ -10,6 +11,7 @@ import logging
 import argparse
 import pandas as pd
 from pathlib import Path
+from sagemaker_cost_rpm_plot import plot_best_cost_instance_heatmap
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -17,15 +19,20 @@ logger = logging.getLogger(__name__)
 RPM_LIST = [1, 10, 100, 1000, 10000]
 LATENCY_THRESHOLD: int = 2
 RESULTS_DIR: str = "./"
+ANALYTICS_RESULTS_DIR: str = os.path.join("analytics", "results")
+os.makedirs(ANALYTICS_RESULTS_DIR, exist_ok=True)
 PAYLOAD_FILE_OF_INTEREST: str = "payload_en_3000-3840.jsonl"
 MODEL: str = "llama3-8b-instruct"
-PRICING_FILE_PATH: str = os.path.join("src", "fmbench", "configs", "pricing.yml")
+PRICING_FILE_PATH: str = os.path.join("src", "fmbench", "configs",
+                                      "pricing.yml")
+DEFAULT_COST_WEIGHT: float = 0.6
 
 def cost_per_txn(row, pricing):
     txns_per_hour = row['transactions_per_minute'] * 60
     instance_cost_per_hour = pricing['pricing']['instance_based'][row['instance_type']]
     cost_per_txn = round(instance_cost_per_hour / txns_per_hour, 4)
     return cost_per_txn
+
 
 def cost_per_1k_tokens(row, pricing):
     txns_per_hour = row['transactions_per_minute'] * 60
@@ -66,26 +73,43 @@ def main():
                         default=MODEL,
                         help=f'Model for which data is being analyzed, default={MODEL}',
                         required=False)
+    parser.add_argument('--cost-weight',
+                        type=float,
+                        default=DEFAULT_COST_WEIGHT,
+                        help=f"Weightage to assign to cost while choosing best instance type, "
+                             f"instance count is assigned \"1 - cost weightage\" automatically, "
+                             f"default={DEFAULT_COST_WEIGHT}",
+                        required=False)
+    
     args = parser.parse_args()
     print(f"main, {args} = args")
-    
+
     # load pricing info
     pricing =  yaml.safe_load(Path(PRICING_FILE_PATH).read_text())
     logger.info(f"pricing={json.dumps(pricing, indent=2)}")
-    
+
     # all results file to be parsed
-    all_metrics_summary_files = glob.glob(os.path.join(RESULTS_DIR, "results-*",
-                                                       "all_metrics_summary.csv"),
+    summary_file_pattern: str = os.path.join(RESULTS_DIR,
+                                             f"results-{args.model_id}-*",
+                                             "all_metrics_summary.csv")
+    all_metrics_summary_files = glob.glob(summary_file_pattern,
                                           recursive=True)
-    logger.info(f"found {len(all_metrics_summary_files)} files {all_metrics_summary_files} ")
+    files_found: int = len(all_metrics_summary_files)
+    logger.info(f"found {files_found} files "
+                f"{all_metrics_summary_files} ")
+    if files_found == 0:
+        logger.error(f"no file found using the following pattern={summary_file_pattern}, exiting")
+        sys.exit(1)
 
     # read all results file in a single dataframe
     df = pd.concat(list(map(pd.read_csv, all_metrics_summary_files)))
-    logger.info(f"read {len(all_metrics_summary_files)} files in a dataframe of shape {df.shape}")
+    logger.info(f"read {len(all_metrics_summary_files)} files in a dataframe "
+                f"of shape {df.shape}")
 
     # filter to keep only relevant data
     df_selected = df[df.latency_p95 <= args.latency_threshold]
-    logger.info(f"after filtering to keep rows with latency_p95 <= {args.latency_threshold}s, df shape {df_selected.shape}")
+    logger.info(f"after filtering to keep rows with latency_p95 <= "
+                f"{args.latency_threshold}s, df shape {df_selected.shape}")
 
     # select row with highest concurrency level
     grouping_cols = ["experiment_name", "payload_file", "instance_type", "instance_count"]
@@ -102,11 +126,13 @@ def main():
 
     df_summary_all = df_summary_all.sort_values(by="cost_per_1k_tokens")
 
-    summary_file: str = f"{args.model_id}-summary-p95-latency={args.latency_threshold}s.csv"
+    summary_file: str = os.path.join(ANALYTICS_RESULTS_DIR,
+                                     f"{args.model_id}-summary-p95-latency={args.latency_threshold}s.csv")
     df_summary_all.to_csv(summary_file, index=False)
     logger.info(f"saved df_summary_all dataframe of shape={df_summary_all.shape} in {summary_file}")
     
-    summary_file_payload_of_interest: str = f"{args.model_id}-summary-{Path(args.payload_file).stem}-p95-latency={LATENCY_THRESHOLD}s.csv"
+    summary_file_payload_of_interest: str = os.path.join(ANALYTICS_RESULTS_DIR,
+                                                         f"{args.model_id}-summary-{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.csv")
     df_summary_payload_of_interest = df_summary_all[df_summary_all.payload_file == args.payload_file]
     df_summary_payload_of_interest = df_summary_payload_of_interest.sort_values(by="cost_per_1k_tokens")
 
@@ -115,6 +141,27 @@ def main():
                 f"shape={df_summary_payload_of_interest.shape} in {summary_file_payload_of_interest}")
     logger.info("all done")
 
-    
+    # cost RPM plot, the function saves the html to a file
+    heatmap_fname: str = os.path.join(ANALYTICS_RESULTS_DIR,
+                                      f"{args.model_id}-cost-rpm-heatmap-for-"
+                                      f"{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.html")
+    df1 = pd.read_csv(summary_file_payload_of_interest)
+    # if an instance type has multiple entries then keep the one with the least cost per token
+    shape_before = df1.shape
+    df1 = df1.loc[df1.groupby('instance_type').cost_per_1k_tokens.idxmin()].reset_index(drop=True)
+    shape_after = df1.shape
+    if shape_before[0] != shape_after[0]:
+        logger.warning(f"there were multiple entries for some instance types, kept ones with min per token cost, "
+                       f"shape_before={shape_before}, shape_after={shape_after}")
+    prompt_spec: str = args.payload_file.split(".")[0]
+    subtitle: str = f"Prompt: {prompt_spec} tokens, latency p95 threshold: {args.latency_threshold}s"
+    _ = plot_best_cost_instance_heatmap(df1,
+                                        heatmap_fname,
+                                        args.model_id,
+                                        subtitle,
+                                        args.cost_weight,
+                                        1 - args.cost_weight)
+
+
 if __name__ == "__main__":
     main()
