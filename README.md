@@ -1,3 +1,53 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [Foundation Model benchmarking tool (FMBench)](#foundation-model-benchmarking-tool-fmbench)
+- [
+        
+    ](#)
+      - [Amazon SageMaker | Amazon Bedrock](#amazon-sagemaker--amazon-bedrock)
+      - [
+    
+        
+        
+](#)
+  - [Models benchmarked](#models-benchmarked)
+    - [🚨 Llama3 on Amazon SageMaker 🚨](#-llama3-on-amazon-sagemaker-)
+    - [Full list of benchmarked models](#full-list-of-benchmarked-models)
+  - [New in this release](#new-in-this-release)
+    - [v1.0.45](#v1045)
+    - [v1.0.44](#v1044)
+    - [v1.0.42](#v1042)
+    - [v1.0.40](#v1040)
+    - [v1.0.39](#v1039)
+    - [v1.0.38](#v1038)
+    - [v1.0.37](#v1037)
+    - [v1.0.36](#v1036)
+    - [v1.0.35](#v1035)
+    - [v1.0.34](#v1034)
+    - [v1.0.32](#v1032)
+  - [Description](#description)
+  - [Getting started](#getting-started)
+    - [Quickstart](#quickstart)
+    - [The DIY version (with gory details)](#the-diy-version-with-gory-details)
+    - [Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
+    - [Bring your own `Rest Predictor` (`data-on-eks` version)](#bring-your-own-rest-predictor-data-on-eks-version)
+    - [Bring your own `dataset` | `endpoint`](#bring-your-own-dataset--endpoint)
+      - [Bring your own dataset](#bring-your-own-dataset)
+        - [Support for Open-Orca dataset](#support-for-open-orca-dataset)
+      - [Bring your own endpoint (a.k.a. support for external endpoints)](#bring-your-own-endpoint-aka-support-for-external-endpoints)
+    - [Steps to run](#steps-to-run)
+  - [Results](#results)
+    - [An internal `FMBench` website](#an-internal-fmbench-website)
+  - [Building the `FMBench` Python package](#building-the-fmbench-python-package)
+  - [Pending enhancements](#pending-enhancements)
+  - [Security](#security)
+  - [License](#license)
+  - [Star History](#star-history)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # Foundation Model benchmarking tool (FMBench)
 
 <h1 align="center">
