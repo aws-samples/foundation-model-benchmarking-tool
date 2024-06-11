@@ -16,7 +16,7 @@ rm -rf dist
 
 # build a new version
 poetry build
-pip install -U dist/*.whl
+pip install -U --force-reinstall dist/*.whl
 
 # run the newly installed version
 echo "going to run fmbench now"
