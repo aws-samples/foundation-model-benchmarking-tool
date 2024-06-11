@@ -1,6 +1,7 @@
 __pycache__/
 *.zip
 *.zip
+*.env
 e.json
 .DS_Store
 .locks/*
