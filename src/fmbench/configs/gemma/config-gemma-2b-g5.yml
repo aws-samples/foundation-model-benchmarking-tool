@@ -156,7 +156,7 @@ experiments:
     model_name: gemma-2b
     ep_name: gemma-2b
     instance_type: "ml.g5.2xlarge"
-    image_uri: '763104351884.dkr.ecr.us-east-1.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.2-gpu-py310-cu121-ubuntu22.04'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.1.1-tgi1.4.2-gpu-py310-cu121-ubuntu22.04'
     deploy: yes
     instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
