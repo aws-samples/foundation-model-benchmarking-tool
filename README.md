@@ -1,4 +1,37 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
 # Foundation Model benchmarking tool (FMBench)
+**Table of contents**
+- [Overview](#overview)
+- - [Amazon SageMaker | Amazon Bedrock](#amazon-sagemaker--amazon-bedrock)
+  - [Models benchmarked](#models-benchmarked)
+    - [🚨 Llama3 on Amazon SageMaker 🚨](#-llama3-on-amazon-sagemaker-)
+    - [Full list of benchmarked models](#full-list-of-benchmarked-models)
+  - [New in this release](#new-in-this-release)
+    - [v1.0.45](#v1045)
+  - [Description](#description)
+  - [Getting started](#getting-started)
+    - [Quickstart](#quickstart)
+    - [The DIY version (with gory details)](#the-diy-version-with-gory-details)
+    - [Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
+    - [Bring your own `Rest Predictor` (`data-on-eks` version)](#bring-your-own-rest-predictor-data-on-eks-version)
+    - [Bring your own `dataset` | `endpoint`](#bring-your-own-dataset--endpoint)
+      - [Bring your own dataset](#bring-your-own-dataset)
+        - [Support for Open-Orca dataset](#support-for-open-orca-dataset)
+      - [Bring your own endpoint (a.k.a. support for external endpoints)](#bring-your-own-endpoint-aka-support-for-external-endpoints)
+    - [Steps to run](#steps-to-run)
+  - [Results](#results)
+    - [An internal `FMBench` website](#an-internal-fmbench-website)
+  - [Building the `FMBench` Python package](#building-the-fmbench-python-package)
+  - [Pending enhancements](#pending-enhancements)
+  - [Security](#security)
+  - [License](#license)
+  - [Star History](#star-history)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+# Overview
 
 <h1 align="center">
         <img src="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true"></img>
@@ -60,6 +93,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **distilbert-base-uncased**  |  ✅ | |  | ||   |
 
 ## New in this release
+
+### v1.0.45
+1. Analytics for results across multiple runs.
+1. `Llama3-70b` config files for `g5.48xlarge` instances.
 
 ### v1.0.44
 1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.

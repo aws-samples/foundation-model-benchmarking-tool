@@ -14,6 +14,7 @@ logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d}
 logger = logging.getLogger(__name__)
 
 def _get_endpoint_utilization_metrics(endpoint_name: str,
+                                      variant_name: str,
                                       start_time: datetime,
                                       end_time: datetime,
                                       period : int = 60) -> pd.DataFrame:
@@ -42,6 +43,8 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
     namespace = "/aws/sagemaker/Endpoints"
     
     for metric_name in metrics:
+        logger.debug(f"_get_endpoint_utilization_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
+                     f"metric_name={metric_name}, start_time={start_time}, end_time={end_time}")
         response = client.get_metric_statistics(
             Namespace=namespace,
             MetricName=metric_name,
@@ -52,7 +55,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                 },
                 {
                     'Name': 'VariantName',
-                    'Value': 'AllTraffic'
+                    'Value': variant_name
                 }
             ],
             StartTime=start_time,
@@ -60,7 +63,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
             Period=period,
             Statistics=['Average']  # You can also use 'Sum', 'Minimum', 'Maximum', 'SampleCount'
         )
-
+        logger.debug(response)
         for datapoint in response['Datapoints']:
             data.append({
                 'EndpointName': endpoint_name, 
@@ -82,6 +85,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
 
 
 def _get_endpoint_invocation_metrics(endpoint_name: str,
+                                     variant_name: str,
                                      start_time: datetime,
                                      end_time: datetime,
                                      period : int = 60):
@@ -114,6 +118,8 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
             stat = 'Average'
         else:
             stat = 'Sum'
+        logger.debug(f"_get_endpoint_invocation_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
+                     f"metric_name={metric_name}, start_time={start_time}, end_time={end_time}")
         # Get metric data for the specified metric
         response = client.get_metric_data(
             MetricDataQueries=[
@@ -130,7 +136,7 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
                                 },
                                 {
                                     'Name': 'VariantName',
-                                    'Value': 'AllTraffic'
+                                    'Value': variant_name
                                 }
                             ]
                         },
@@ -143,7 +149,7 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
             StartTime=start_time,
             EndTime=end_time
         )
-        
+        logger.debug(response)
         # Extract the data points from the response
         timestamps = response['MetricDataResults'][0]['Timestamps']
         values = response['MetricDataResults'][0]['Values']
@@ -169,6 +175,7 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
 
 
 def get_endpoint_metrics(endpoint_name: str,
+                         variant_name: str,
                          start_time: datetime,
                          end_time: datetime,
                          period: int = 60):
@@ -188,17 +195,21 @@ def get_endpoint_metrics(endpoint_name: str,
     endpoint_metrics_df: Optional[pd.DataFrame] = None
     try:
         logger.info(f"get_endpoint_metrics, going to retrieve endpoint utlization metrics for "
-                    f"endpoint={endpoint_name}")
+                    f"endpoint={endpoint_name}, variant_name={variant_name}, start_time={start_time}, "
+                    f"end_time={end_time}, period={period}")
         utilization_metrics_df = _get_endpoint_utilization_metrics(endpoint_name=endpoint_name,
+                                                                   variant_name=variant_name,
                                                                    start_time=start_time,
                                                                    end_time=end_time,
                                                                    period=period)
-        logger.info(f"get_endpoint_metrics, going to retrieve invocation metrics for "
-                    f"endpoint={endpoint_name}")
-        invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name, 
-                                                                start_time=start_time,
-                                                                end_time=end_time,
-                                                                period=period)
+        logger.info(f"get_endpoint_metrics, going to retrieve endpoint invocation metrics for "
+                    f"endpoint={endpoint_name}, variant_name={variant_name}, start_time={start_time}, "
+                    f"end_time={end_time}, period={period}")
+        invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name,
+                                                                 variant_name=variant_name,
+                                                                 start_time=start_time,
+                                                                 end_time=end_time,
+                                                                 period=period)
 
         endpoint_metrics_df = pd.merge(utilization_metrics_df,
                                        invocation_metrics_df,
@@ -206,8 +217,9 @@ def get_endpoint_metrics(endpoint_name: str,
                                        how='outer')
         logger.info(f"get_endpoint_metrics, shape of invocation and utilization metrics for "
                     f"endpoint={endpoint_name} is {endpoint_metrics_df.shape}")
+        logger.info(f"get_endpoint_metrics, endpoint_metrics_df={endpoint_metrics_df.head()}")
     except Exception as e:
         logger.error(f"get_endpoint_metrics, exception occured while retrieving metrics for {endpoint_name}, "
                      f"exception={e}")
-        
+
     return endpoint_metrics_df

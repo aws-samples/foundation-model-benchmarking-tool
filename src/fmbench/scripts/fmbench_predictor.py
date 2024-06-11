@@ -9,7 +9,8 @@ class FMBenchPredictor(ABC):
     @abstractmethod
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict],
+                 metadata: Optional[Dict]):
         pass
 
     @abstractmethod
