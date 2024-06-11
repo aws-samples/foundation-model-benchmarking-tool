@@ -95,11 +95,11 @@ inference_parameters:
 
 # Model configurations
 experiments:
-  - name: Mistral-7B-Instruct-v0.2-DoEKS
+  - name: Mistral-7B-Instruct-v0.2-DoEKS 
     model_id: Mistral-7B-Instruct-v0.2
     model_version: "*"
     model_name: mistral-7b-instruct
-    ep_name: "http://k8s-ingressn-ingressn-cd02c6450e-cf4951079a6938af.elb.us-west-2.amazonaws.com/mistral/serve/infer"
+    ep_name: "<YOUR_ELB_EP_URL>"
     instance_type: "inf2.24xlarge"    
     image_uri: public.ecr.aws/data-on-eks/ray2.11.0-py310-mistral7b-neuron:latest
     deploy: yes

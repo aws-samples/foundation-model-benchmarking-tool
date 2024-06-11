@@ -3,8 +3,8 @@
 # 2. Builds and installs a new one
 # 3. Runs fmbench as usual
 
-CONDA_ENV_PATH=/Users/bainskb/opt/anaconda3/envs/fmbench_python311
-CONFIG_FILE_PATH=src/fmbench/configs/mistral/config-mistral-7b-inf2.yml
+CONDA_ENV_PATH=~/anaconda3/envs/fmbench_python311/lib/python3.11/site-packages
+CONFIG_FILE_PATH=src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
 LOGFILE=fmbench.log
 
 # delete existing install

@@ -11,7 +11,6 @@ pricing:
     ml.inf2.xlarge: 0.99
     ml.inf2.8xlarge: 2.36
     ml.inf2.24xlarge: 7.79
-    inf2.24xlarge: 6.49
     ml.inf2.48xlarge: 15.58
     ml.trn1.32xlarge: 28.497
     ml.p4d.24xlarge: 37.688
