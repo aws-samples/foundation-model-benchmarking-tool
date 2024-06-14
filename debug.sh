@@ -4,9 +4,10 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=~/anaconda3/envs/fmbench_python311/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
+CONFIG_FILE_PATH=src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml
 LOGFILE=fmbench.log
 
+pip uninstall fmbench -y
 # delete existing install
 rm -rf $CONDA_ENV_PATH/fmbench*
 
@@ -16,5 +17,5 @@ pip install -U dist/*.whl
 
 # run the newly installed version
 echo "going to run fmbench now"
-fmbench --config-file $CONFIG_FILE_PATH  > $LOGFILE 2>&1
+fmbench --config-file $CONFIG_FILE_PATH --local-mode yes --write-bucket abstaticwebsitetest1 > $LOGFILE 2>&1
 echo "all done"
