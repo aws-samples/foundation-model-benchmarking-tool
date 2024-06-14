@@ -49,6 +49,7 @@ configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml
 configs/mistral/config-mistral-7b-tgi-g5.yml
 configs/mistral/config-mistral-instruct-AWQ-p4d.yml
 configs/mistral/config-mistral-instruct-v2-p4d-trtllm.yml
+configs/pricing.yml
 prompt_template/.keep
 scripts/.keep
 source_data/2wikimqa_e.jsonl
