@@ -20,7 +20,8 @@ class RESTPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
-                 inference_spec: Optional[Dict]):
+                 inference_spec: Optional[Dict],
+                 metadata: Optional[Dict]):
         try:
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec 
@@ -126,5 +127,5 @@ class RESTPredictor(FMBenchPredictor):
         """The inference parameters property."""
         return self._inference_spec.get("parameters")
 
-def create_predictor(endpoint_name: str, inference_spec: Optional[Dict]):
-    return RESTPredictor(endpoint_name, inference_spec)
+def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
+    return RESTPredictor(endpoint_name, inference_spec, metadata)
