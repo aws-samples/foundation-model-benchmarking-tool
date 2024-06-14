@@ -7,13 +7,11 @@ import requests
 import subprocess
 from typing import Dict
 from pathlib import Path
-#Path("/my/directory").mkdir(parents=True, exist_ok=True)
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 # globals
 # HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
-# PORT=8080
 def set_up(model_name, model_id):    
     directory = os.path.join(os.path.expanduser("~/foundation-model-benchmarking-tool"), model_name)
     os.makedirs(directory, exist_ok=True)
@@ -97,7 +95,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info(f"model_name: {model_name}")
     ep_name: str=experiment_config['ep_name']
     model_id: str=experiment_config['model_id']
-    region: str="us-east-1"
+    region: str=experiment_config['region']
     HF_TOKEN='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'
     try:
         print(ep_name)
