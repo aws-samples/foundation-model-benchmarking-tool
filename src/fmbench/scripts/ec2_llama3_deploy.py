@@ -96,7 +96,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     ep_name: str=experiment_config['ep_name']
     model_id: str=experiment_config['model_id']
     region: str=experiment_config['region']
-    HF_TOKEN='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'
+    HF_TOKEN='hf_AAAAAAAAAaaaaaaaaaaaaaaaaa'
     try:
         print(ep_name)
         directory = set_up(model_name, model_id)
