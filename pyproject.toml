@@ -10,7 +10,7 @@ keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "
 
 [tool.poetry.dependencies]
 python = "^3.11"
-requests = "^2.31.0"
+requests = "^2.32.2"
 ipywidgets = "8.1.1"
 transformers = "4.41.2"
 pandas = "2.1.4"
@@ -21,10 +21,13 @@ jupyter = "^1.0.0"
 boto3 = "^1.34.109"
 papermill = "^2.5.0"
 pyyaml = "*"
-sagemaker = "2.220.0"
-litellm = "1.35.8"
+sagemaker = "2.223.0"
+litellm = "1.40.0"
 plotly = "5.22.0"
 kaleido = "0.2.1"
+jinja2 = "3.1.4"
+tqdm = "4.66.4"
+pydantic = "2.7.4"
 
 [tool.poetry.dev-dependencies]
 
