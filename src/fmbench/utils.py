@@ -11,10 +11,11 @@ import unicodedata
 from pathlib import Path
 from fmbench import globals
 from fmbench import defaults
-from typing import Dict, List
+from typing import Dict, List, Tuple
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
 import shutil
+import concurrent.futures
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -205,6 +206,21 @@ def write_to_s3(data, bucket_name, dir1, dir2, file_name):
         logger.error("write_to_s3, Error: AWS credentials not found.")
     except Exception as e:
         logger.error(f"write_to_s3, An error occurred: {e}")
+
+
+# Function to concurrently write multiple data to S3
+# input_list: List[Tuple[data, bucket_name, dir1, dir2, file_name]
+def write_multiple_to_s3(input_list: List[Tuple[None, str, str, str, str]]) -> None:
+    with concurrent.futures.ThreadPoolExecutor(max_workers = 8) as executor:
+        tasks = []
+        for input_tuple in input_list:
+            tasks.append(
+                executor.submit(lambda: write_to_s3(*input_tuple))
+            )
+
+    for completed_task in concurrent.futures.as_completed(tasks):
+        completed_task.result()
+
 
 def _read_from_local(s3_file_path: str) -> str:
     try:
