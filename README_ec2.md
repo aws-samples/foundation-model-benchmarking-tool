@@ -8,7 +8,7 @@ The goal of this document is for the user to be able to create an EC2 instance s
 
 ## Creating EC2 Instance
 
-Go to ‘EC2’ - it is likely in recently visited:
+On the homepage of AWS Console go to ‘EC2’ - it is likely in recently visited:
 
 [Image: Image.jpg]
 If not found, go to the search bar on the top of the page. Type `ec2` into the search box and click the entry that pops up with name `EC2` :
