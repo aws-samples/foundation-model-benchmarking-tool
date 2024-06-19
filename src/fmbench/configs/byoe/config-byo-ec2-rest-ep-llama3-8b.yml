@@ -76,11 +76,11 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
-  2_deploy_model.ipynb: no
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -130,7 +130,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_500-800
+  dataset_of_interest: en_3000-3840
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -160,6 +160,8 @@ inference_parameters:
 # options.
 experiments:
   - name: "llama3-8b-instruct"
+    # AWS region, this parameter is templatized, no need to change
+    region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
@@ -174,7 +176,7 @@ experiments:
     image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
-    deployment_script: ec2_llama3_deploy.py
+    deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-8b-instruct deployed on ec2
@@ -182,11 +184,18 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+    # modify the serving properties to match your model and requirements
+    serving.properties: |
+      engine=MPI
+      option.tensor_parallel_degree=1
+      option.max_rolling_batch_size=256
+      option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
+      option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    #- payload_en_1000-2000.jsonl
+    - payload_en_1000-2000.jsonl
     #- payload_en_2000-3000.jsonl
     #- payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
@@ -196,7 +205,7 @@ experiments:
     - 1
     - 2
     - 4
-    #- 6
+    - 6
    # - 8
    #- 10 
     # Environment variables to be passed to the container
