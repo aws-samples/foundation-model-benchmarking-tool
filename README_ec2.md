@@ -9,43 +9,52 @@ The goal of this document is for the user to be able to create an EC2 instance s
 ## Creating EC2 Instance
 
 On the homepage of AWS Console go to ‘EC2’ - it is likely in recently visited:
+![](img/ec2connect1.png)
 
-[Image: Image.jpg]
 If not found, go to the search bar on the top of the page. Type `ec2` into the search box and click the entry that pops up with name `EC2` :
-[Image: Image.jpg][Image: Image.jpg]
-Click “Instances”:
-[Image: Image.jpg]Click “Launch Instances”
-[Image: Image.jpg]Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. (An AMI is an “Amazon Machine Image”, which comes pre-loaded with software.)
+![](img/ec2connect2.png)
 
-[Image: Image.jpg]Select one that says “Deep Learning AMI GPU PyTorch”. **Your version number might be different.** 
-[Image: Screenshot 2024-06-11 at 11.56.21 AM.png]
+Click “Instances”:
+![](img/ec2connect3.png)
+
+Click "Launch Instances":
+![](img/ec2connect4.png)
+
+Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. (An AMI is an “Amazon Machine Image”, which comes pre-loaded with software.)
+
+Select one that says “Deep Learning AMI GPU PyTorch”. **Your version number might be different.** 
+![](img/ec2connect5.png)
+
+Name your instance "FMBenchInstance"
+
 ### Instance Type
 
 Scroll down to “Instance Type”. For large model inference, the g5.12xlarge is recommended. (Note: Don’t be confused, the g5.2xlarge and the g5.4xlarge only have ONE gpu, not two or four. g5.12xlarge, on the other hand, has 4.)
 
+![](img/ec2connect6.png)
 [Image: Image.jpg]
 ### Make a key pair
 
 Make a key pair by clicking “Create new key pair”. Give it a name, keep all settings as is, and then click “Create key pair”.
-[Image: Image.jpg]
+![](img/ec2connect7.png)
 ### Configure storage
 
-Skip over “Network settings” (leave it as it is), going straight to “Configure storage”. 45 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
+Skip over “Network settings” (leave it as it is), going straight to “Configure storage”. 60 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
 
-[Image: Image.jpg]
+![](img/ec2connect8.png)
 ### Advanced Details
 Go to the advanced details section in you ec2 and enter the following in EC2 User-data:
-
 
 ```
 #install poetry in EC2 Instance
 pip install poetry
 curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
 ```
-
-Then, we’re done with the settings of the instance. Click “Launch Instance” to finish.
-
-[Image: Image.jpg]
+![](img/ec2connect9
+.png)
+Then, we’re done with the settings of the instance. Click “Launch Instance” to finish. You can connect to your EC2 instance using any of these option
+![](img/ec2connect10
+.png)
 
 IAM Role
 Attach an IAM role to your instance called **FmbenchEc2Role 
