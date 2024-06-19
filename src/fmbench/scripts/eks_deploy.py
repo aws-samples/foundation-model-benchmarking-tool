@@ -1,3 +1,4 @@
+# import the required libraries
 import os
 import time
 import json
@@ -6,10 +7,12 @@ import sagemaker
 import subprocess
 from pathlib import Path
 from typing import Dict, Optional
+
 # session/account specific variables
 sess = sagemaker.session.Session()
 # Define the location of your s3 prefix for model artifacts
 region: str =sess._region_name
+# define the path to the manifests file within the FMBench directory
 MANIFESTS_FOLDER: str = "src/fmbench/configs/eks_manifests"
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
@@ -29,34 +32,34 @@ def _init_eks_checks(eks_cluster_name: str):
         describe_command_args = ["aws", "eks", "--region", region, "describe-cluster", "--name", eks_cluster_name]
         describe_result = subprocess.run(describe_command_args, capture_output=True, text=True)
 
-        # Check the describe_result
+        # Check the describe_result to make sure the eks cluster exists
         if describe_result.returncode != 0:
             logger.error("Error: EKS cluster does not exists. Please run the Terraform script")
-
+            return
         else:
             logger.info("Describe cluster step done, cluster exists!")
 
         # Update the kubeconfig - same
-        logger.info("Updating kubeconfig...")
+        logger.info("Updating the kubeconfig...")
         update_command_args = ["aws", "eks", "--region", region, "update-kubeconfig", "--name", eks_cluster_name]
         update_result = subprocess.run(update_command_args, capture_output=True, text=True)
         logger.info(update_result.stdout)
+        # check if the kubeconfig has been updated
         if update_result.returncode != 0:
             logger.error("Error: kubeconfg not updated")
-
+            return
         else:
             logger.info("kubeconfig updated")
 
-        # remains the same
+        # check for the available nodes
         logger.info("Showing kubectl")
         show_nodes_command_args = ["kubectl", "version"]
         show_nodes_result = subprocess.run(show_nodes_command_args, capture_output=True, text=True)
         if show_nodes_result.returncode != 0:
             logger.error("Error: nodes not shown")
-
+            return
         else:
-            logger.info("version shown:")
-            logger.info(show_nodes_result.stdout)
+            logger.info(f"available kubectl version: {show_nodes_result.stdout}")
 
         # show the nodes
         logger.info("Showing nodes...")
@@ -64,7 +67,7 @@ def _init_eks_checks(eks_cluster_name: str):
         show_nodes_result = subprocess.run(show_nodes_command_args, capture_output=True, text=True)
         if show_nodes_result.returncode != 0:
             logger.error("Error: nodes not shown")
-
+            return
         else:
             logger.info(f"Nodes shown: {show_nodes_result.stdout}")
     except Exception as e:
@@ -73,12 +76,12 @@ def _init_eks_checks(eks_cluster_name: str):
 
 def _deploy_ray(manifest_file_name: str):
     """
-    This function deploys the model using ray using a kubectl apply
+    This function deploys the model using ray with a kubectl apply command
     """
     try:
-        ray_path: str = os.path.join(MANIFESTS_FOLDER, manifest_file_name)
-        logger.info(f"Manifest file absolute path: {ray_path}")
-        logger.info("Deploying the model")
+        # check the path to the ray file within the configs/eks_manifests directory
+        manifest_ray_fpath: str = os.path.join(MANIFESTS_FOLDER, manifest_file_name)
+        logger.info(f"Manifest file absolute path: {manifest_ray_fpath}")
         # HF token required for gated model downloads form HF
         hf_token_file_path = Path(HF_TOKEN_FNAME)
         if hf_token_file_path.is_file() is True:
@@ -89,11 +92,12 @@ def _deploy_ray(manifest_file_name: str):
         os.environ["AWS_REGION"] = region
         os.environ["HUGGING_FACE_HUB_TOKEN"] = hf_token
         # make sure the file is at the path
-        if not os.path.isfile(ray_path):
+        if not os.path.isfile(manifest_ray_fpath):
             logger.error("Error: Ray file not found")
             subprocess.run("pwd")
             return
-        deploy_result = subprocess.run(f"envsubst < {ray_path} | kubectl apply -f -", shell=True, capture_output=True)
+        logger.info(f"Deploying the model using the {manifest_file_name} manifest file")
+        deploy_result = subprocess.run(f"envsubst < {manifest_ray_fpath} | kubectl apply -f -", shell=True, capture_output=True)
         logger.info(deploy_result.stdout)
         if deploy_result.returncode != 0:
             logger.error(f"Error: Ray not deployed: {deploy_result.stderr}")
@@ -112,22 +116,19 @@ def _check_ray_service_status(eks_model_namespace: str):
         # Set time limit
         start_time: float = time.time()
         # 20 minutes
-        timeout: int = (20 * 60) 
+        timeout: int = (20 * 60)
 
-        while time.time() - start_time < timeout:
+        while (time.time() - start_time) < timeout:
             logger.info("Checking if Ray service is deployed...")
-
             # Check the status of the services
             check_command_args = ["kubectl", "-n", eks_model_namespace, "get", "services", "-o", "json"]
             check_result = subprocess.run(check_command_args, capture_output=True, text=True)
-
-            # get the count of svc
+            # get the svc count
             status_json = json.loads(check_result.stdout)
             status_list = status_json['items']
             svc_count = len(status_list)
-
             # Check if all services are in the "Active" state
-            if (logger.info == 3):
+            if (svc_count == 3):
                 logger.info("Ray service is deployed")
                 break
             else:
@@ -176,23 +177,19 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
     eks_endpoint_info: Optional[Dict] = None
     try:
-        logger.info("updating the kubeconfig")
         # first update the kubeconfig
         eks_cluster_name: str = experiment_config['eks']['eks_cluster_name']
         _init_eks_checks(eks_cluster_name)
         # deploy the model
-        logger.info("Deploying Ray")
         manifest_file_name: str = experiment_config['eks']['manifest_file']
         _deploy_ray(manifest_file_name)
         # check the status every 15 seconds during deployment
-        logger.info("check service status")
         eks_model_namespace: str = experiment_config['eks']['eks_model_namespace']
         _check_ray_service_status(eks_model_namespace)
-        logger.info("printing ingress")
         # fetch the endpoint url once the model is deployed
         inference_url_format: str = experiment_config['eks']['inference_url_format']
         endpoint_url: str = _print_ingress(eks_model_namespace, inference_url_format)
-        logger.info(f"here is the ep: {endpoint_url}")
+        logger.info(f"Deployed endpoint URL: {endpoint_url}")
         eks_endpoint_info = dict(endpoint_name= endpoint_url, experiment_name=experiment_config['name'],
                 instance_type=experiment_config['instance_type'],
                 instance_count=experiment_config['instance_count'])
