@@ -33,6 +33,7 @@ Make a key pair by clicking “Create new key pair”. Give it a name, keep all 
 Skip over “Network settings” (leave it as it is), going straight to “Configure storage”. 45 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
 
 [Image: Image.jpg]
+### Advanced Details
 Go to the advanced details section in you ec2 and enter the following in EC2 User-data:
 
 
