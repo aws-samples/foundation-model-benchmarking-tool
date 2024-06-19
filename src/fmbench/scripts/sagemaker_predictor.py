@@ -27,8 +27,10 @@ class SageMakerPredictor(FMBenchPredictor):
         self._endpoint_name: str = endpoint_name
         self._inference_spec: Dict = inference_spec
         self._variant_name: Optional[str] = None
+        self._use_messages_api_format: Optional[bool] = None
         if metadata is not None:
             self._variant_name = metadata.get("variant_name")
+            self._use_messages_api_format = metadata.get("use_messages_api_format")
 
         try:
             # Create a SageMaker Predictor object
@@ -40,7 +42,10 @@ class SageMakerPredictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
-        logger.info(f"__init__ _predictor={self._predictor}, _inference_spec={self._inference_spec}")
+        logger.info(f"__init__ _predictor={self._predictor}, "
+                    f"_variant_name={self._variant_name}_"
+                    f"inference_spec={self._inference_spec}, "
+                    f"_use_messages_api_format={self._use_messages_api_format}")
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         response_json: Optional[Dict] = None
@@ -63,7 +68,33 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
             else:
-                payload = payload | dict(parameters=self._inference_spec["parameters"])
+                if self._use_messages_api_format is True:
+                    # if needed in future add support for system prompt as well
+                    # and multiple system/user prompts but all that is not needed for now
+                    payload = {"messages": [{"role": "user",
+                                             "content": payload["inputs"]}]}
+                    # the final payload should look like this:
+                    # {
+                    #   "top_p": 0.9,
+                    #   "max_tokens": 100,
+                    #   "messages": [
+                    #     {
+                    #       "role": "user",
+                    #       "content": "this is the prompt"
+                    #     }
+                    #   ]
+                    # }
+                    payload = payload | dict(self._inference_spec["parameters"])
+                else:
+                    # the final payload should look like this:
+                    # {
+                    #   "parameters": { 
+                    #     "top_p": 0.9,
+                    #     "max_tokens": 100
+                    #    },
+                    #   "inputs": "this is the prompt"
+                    # }
+                    payload = payload | dict(parameters=self._inference_spec["parameters"])
                 #import json
                 #logger.info(json.dumps(payload, indent=2, default=str))
                 response = self._predictor.predict(payload)
