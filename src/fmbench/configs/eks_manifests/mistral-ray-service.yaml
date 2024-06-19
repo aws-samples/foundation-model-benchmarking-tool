@@ -139,7 +139,7 @@ spec:
   - http:
       paths:
       # Ray Dashboard
-      - path: /mistral/dashboard/(.*)
+      - path: /dashboard/(.*)
         pathType: ImplementationSpecific
         backend:
           service:
@@ -149,12 +149,10 @@ spec:
   - http:
       paths:
       # Ray Serve
-      - path: /mistral/serve/(.*)
+      - path: /serve/(.*)
         pathType: ImplementationSpecific
         backend:
           service:
             name: mistral-service
             port:
               number: 8000
-
-
