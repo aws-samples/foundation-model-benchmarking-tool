@@ -60,9 +60,11 @@ IAM Role
 Attach an IAM role to your instance called **FmbenchEc2Role 
 **
 
-1. attach the following permission policies: [AmazonSageMakerFullAccess](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/policies/details/arn%3Aaws%3Aiam%3A%3Aaws%3Apolicy%2FAmazonSageMakerFullAccess)
-2. Edit the trust policy to be the following:
-3. {
+Attach the following permission policies: [AmazonSageMakerFullAccess](https://us-east-1.console.aws.amazon.com/iam/home?region=us-east-1#/policies/details/arn%3Aaws%3Aiam%3A%3Aaws%3Apolicy%2FAmazonSageMakerFullAccess)
+
+Edit the trust policy to be the following:
+```
+    {
         "Version": "2012-10-17",
         "Statement": [
             {
@@ -81,15 +83,15 @@ Attach an IAM role to your instance called **FmbenchEc2Role
             }
         ]
     }
+```
 
 # **Connect to instance**
 
-Connect to your instance using any of the options in ec2 (ssh in to it) then follow steps 1-4 in section on FMbench that says
+After connecting to your instance using any of the options in EC2 (ssh/ec2 connect), follow steps 1-4 in section on FMbench
+[Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/ec2-deployment?tab=readme-ov-file#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
 
-### [Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/ec2-deployment?tab=readme-ov-file#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
-
-then run 
+Then run the following in the EC2 terminal
 
 ```
-fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket abstaticwebsitetest1 >> fmbenchLocal.log 2>&1
+fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket {a_s3_bucket} >> fmbenchLocal.log 2>&1
 ```
