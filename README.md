@@ -349,7 +349,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 
 For some enterprise scenarios it might be desirable to run `FMBench` directly on EKS to leverage the scalability and customization of models. Here are the steps to do this:
 
-1. Setup `FMBench` in your AWS Environment (SageMaker Notebook Instance/EC2 instance/any AWS environment). This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or any AWS environment. Once you have set up FMBench in your AWS environment, add the following EKS policies to the role associated to the FMBench set up.
+1. Setup `FMBench` in your AWS Environment. This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or any AWS environment.
 
 1. Add the following IAM EKS Policies to the existing `FMBench` Role:
 
@@ -379,9 +379,9 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
         
     1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12), [`main.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/main.tf#L7) and match your current AWS region.
     
-    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before the cluster creation, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
+    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
 
-    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script. This repository uses the `data-on-eks` repository to deploy the cluster in an AWS account as an example.
+    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script. This repository uses the [`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/main) repository as an example to deploy the cluster in an AWS account.
 
         ``` {.bash}
         cd data-on-eks/ai-ml/trainium-inferentia/
