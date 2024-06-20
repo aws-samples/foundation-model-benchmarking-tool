@@ -400,7 +400,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     
     ***To view more information about the [blueprints](https://github.com/madhurprash/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests) used by FMBench to deploy these models, view: https://awslabs.github.io/data-on-eks/docs/gen-ai***
     
-1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deploymnet script that deploys models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences against the endpoint URLs of the models deployed on EKS.
+1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deployment script that deploys models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences against the endpoint URLs of the models deployed on EKS.
 
 1. Other usefull `kubectl` commands to try out while deploying and benchmarking the FM on EKS:
 
