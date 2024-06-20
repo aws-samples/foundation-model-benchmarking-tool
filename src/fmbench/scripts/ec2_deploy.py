@@ -85,6 +85,7 @@ def _check_model_deployment(endpoint):
     data = {"inputs": ["tell me a story of the little red riding hood"]}
     headers = {"content-type": "application/json"}
     while time.time() - start_time < timeout:
+        time.sleep(60)
         try:
             response = requests.post(endpoint, headers=headers, json=data)
             logger.info(f"response is: {response.text}")
