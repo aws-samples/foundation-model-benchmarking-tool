@@ -379,7 +379,9 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
         
     1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12) file before running the cluster creation script.
     
-    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
+    1. Ensure that the ELB to be created would be external facing. Change the helm value from `internal` to `internet-facing` [here](https://github.com/awslabs/data-on-eks/blob/3ef55e21cf30b54341bb771a2bb2dbd1280c3edd/ai-ml/trainium-inferentia/helm-values/ingress-nginx-values.yaml#L8).
+    
+    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role [here](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126)
 
     1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script.
 
