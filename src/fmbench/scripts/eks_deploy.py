@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def _init_eks_checks(eks_cluster_name: str):
     """
     This function describes the EKS cluster, and updates the kubeconfig for the cluser 
-    before deploying the model.
+    before deploying the model
     """
     try:
         # Describe the EKS Cluster
@@ -30,14 +30,14 @@ def _init_eks_checks(eks_cluster_name: str):
         describe_command_args = ["aws", "eks", "--region", region, "describe-cluster", "--name", eks_cluster_name]
         describe_result = subprocess.run(describe_command_args, capture_output=True, text=True)
 
-        # Check the describe_result to make sure the eks cluster exists
+        # Check if the cluster exists in the user account
         if describe_result.returncode != 0:
             logger.error("Error: EKS cluster does not exists. Please run the Terraform script")
             return
         else:
             logger.info("Describe cluster step done, cluster exists!")
 
-        # Update the kubeconfig - same
+        # Update the kubeconfig before deploying the model
         logger.info("Updating the kubeconfig...")
         update_command_args = ["aws", "eks", "--region", region, "update-kubeconfig", "--name", eks_cluster_name]
         update_result = subprocess.run(update_command_args, capture_output=True, text=True)
@@ -49,7 +49,7 @@ def _init_eks_checks(eks_cluster_name: str):
         else:
             logger.info("kubeconfig updated")
 
-        # check for the available nodes
+        # Check for the nodes available in the cluster
         logger.info("Showing kubectl")
         show_nodes_command_args = ["kubectl", "version"]
         show_nodes_result = subprocess.run(show_nodes_command_args, capture_output=True, text=True)
@@ -113,7 +113,7 @@ def _deploy_ray(manifest_file_name: str, manifest_dir_path: str):
 def _check_ray_service_status(eks_model_namespace: str):
     """
     After the deployment step begins, this function checks the status of the model deployment
-    every 15 seconds for 20 minutes. If the deployment fails, it errors out.
+    every 15 seconds for 30 minutes. If the deployment fails, it errors out.
     """
     try:
         # Set time limit
@@ -191,7 +191,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         eks_model_namespace: str = experiment_config['eks']['eks_model_namespace']
         _check_ray_service_status(eks_model_namespace)
         # fetch the endpoint url once the model is deployed
-        inference_url_format: str = experiment_config['eks']['inference_url_format']
+        inference_url_format: str = experiment_config['inference_spec']['inference_url_format']
         endpoint_url: str = _print_ingress(eks_model_namespace, inference_url_format)
         logger.info(f"Deployed endpoint URL: {endpoint_url}")
         eks_endpoint_info = dict(endpoint_name= endpoint_url, experiment_name=experiment_config['name'],
