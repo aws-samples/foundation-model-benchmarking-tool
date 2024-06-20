@@ -53,8 +53,7 @@ class EKSPredictor(FMBenchPredictor):
                 timeout = self._inference_spec.get("timeout", 180)
                 auth = self._inference_spec.get("auth", None)
                 logger.info(f"Initializing the timeout to: {timeout}, auth to configured authentication information")
-                # Use the parameters that the model needs at inference. In this case, the model does not require inference
-                # parameters and it is handled in the ray serve script that is used to deploy this model 'ray_serve_llama2.py'
+                # Use the parameters that the model needs at inference. 
                 # parameters: Optional[Dict] = inference_spec.get('parameters')
 
             # This endpoint only supports the GET method now, you can add support for POST method if your endpoint supports it.
