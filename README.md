@@ -349,7 +349,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 
 For some enterprise scenarios it might be desirable to run `FMBench` directly on EKS to leverage the scalability and customization of models. Here are the steps to do this:
 
-1. Setup `FMBench` in your AWS Environment. This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or any AWS environment.
+1. Setup `FMBench` in your AWS Environment. This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or on any AWS environment.
 
 1. Add the following IAM EKS Policies to the existing `FMBench` Role:
 
@@ -368,7 +368,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 
     ```
     
-1. Cluster Creation (*Optional - if cluster already exists*): Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli).
+1. Cluster Creation (*Optional - if cluster already exists*): Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). FMBench uses the [`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/main) repository as an example to deploy the cluster infrastructure in an AWS account.
 
 
     1. Clone the [`data-on-eks`](https://github.com/awslabs/data-on-eks) repository
@@ -381,7 +381,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     
     1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
 
-    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script. This repository uses the [`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/main) repository as an example to deploy the cluster in an AWS account.
+    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script.
 
         ``` {.bash}
         cd data-on-eks/ai-ml/trainium-inferentia/
@@ -390,7 +390,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
         
         Note: This step takes about 12-15 minutes to deploy the EKS infrastructure and cluster in the AWS account. To view more details on cluster creation, view an example here: [Deploy Llama3 on EKS](https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2) in the _prerequisites_ section.
 
-1. After the cluster cleation, `FMBench` provides sample config files to deploy models on the existing EKS cluster. View examples of deploying Llama3-8B Instruct and Mistral-7b models using the config files below:
+1. After the cluster cleation, view the sample config files that `FMBench` provides to deploy models on the existing EKS cluster. View examples of deploying Llama3-8B Instruct and Mistral-7b models using the config files below:
 
     1. [config-llama3-8b-eks-inf2.yml](https://github.com/madhurprash/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml): Deploys Llama3-8B): Deploy Llama3 on trn1/inf2 (powered by AWS Trainium and Inferentia) instances.
     
@@ -398,7 +398,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     
     ***To view more information about the [blueprints](https://github.com/madhurprash/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests) used by FMBench to deploy these models, view: https://awslabs.github.io/data-on-eks/docs/gen-ai***
     
-1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deploymnet script that is used to deploy models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences agains the endpoint URLs of the models deployed on EKS.
+1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deploymnet script that deploys models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences against the endpoint URLs of the models deployed on EKS.
 
 1. Other usefull `kubectl` commands to try out while deploying and benchmarking the FM on EKS:
 
