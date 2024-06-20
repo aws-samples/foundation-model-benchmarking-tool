@@ -42,16 +42,7 @@ Make a key pair by clicking “Create new key pair”. Give it a name, keep all 
 Skip over “Network settings” (leave it as it is), going straight to “Configure storage”. 60 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
 
 ![](img/ec2connect8.png)
-### Advanced Details
-Go to the advanced details section in you ec2 and enter the following in EC2 User-data:
 
-```
-#install poetry in EC2 Instance
-pip install poetry
-curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
-```
-![](img/ec2connect9
-.png)
 Then, we’re done with the settings of the instance. Click “Launch Instance” to finish. You can connect to your EC2 instance using any of these option
 ![](img/ec2connect10
 .png)
@@ -93,5 +84,13 @@ After connecting to your instance using any of the options in EC2 (ssh/ec2 conne
 Then run the following in the EC2 terminal
 
 ```
-fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket {a_s3_bucket} >> fmbenchLocal.log 2>&1
+#install poetry in EC2 Instance
+pip install poetry
+curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
+cd foundation-model-benchmarking-tool
+```
+To run FMBench, run the following:
+```
+fmbench --config-file /tmp/fmbench-read/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket abstaticwebsitetest1 >> fmbench.log 2>&1
 ```
