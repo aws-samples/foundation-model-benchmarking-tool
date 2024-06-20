@@ -72,7 +72,6 @@ Edit the trust policy to be the following:
 # **Connect to instance**
 1. After connecting to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal
      ```
-    #install poetry in EC2 Instance
     pip install poetry
     curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
     ```
