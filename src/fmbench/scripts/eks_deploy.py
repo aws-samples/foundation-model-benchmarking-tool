@@ -12,8 +12,6 @@ from typing import Dict, Optional
 sess = sagemaker.session.Session()
 # Define the location of your s3 prefix for model artifacts
 region: str =sess._region_name
-# define the path to the manifests file within the FMBench directory
-MANIFESTS_FOLDER: str = "src/fmbench/configs/eks_manifests"
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
 # set a logger
@@ -74,13 +72,18 @@ def _init_eks_checks(eks_cluster_name: str):
         logger.error(f"Error occurred while updating the kubeconfig: {e}")
 
 
-def _deploy_ray(manifest_file_name: str):
+def _deploy_ray(manifest_file_name: str, manifest_dir_path: str):
     """
     This function deploys the model using ray with a kubectl apply command
     """
     try:
         # check the path to the ray file within the configs/eks_manifests directory
-        manifest_ray_fpath: str = os.path.join(MANIFESTS_FOLDER, manifest_file_name)
+        # manifest_ray_fpath: str = os.path.join(MANIFESTS_FOLDER, manifest_file_name)
+        current_dir: str = os.path.dirname(os.path.realpath(__file__))
+        parent_dir: str = os.path.abspath(os.path.join(current_dir, os.pardir))
+        manifest_dir_path = os.path.join(parent_dir, manifest_dir_path)
+        # Get the absolute path of the manifest file
+        manifest_ray_fpath = os.path.join(manifest_dir_path, manifest_file_name)
         logger.info(f"Manifest file absolute path: {manifest_ray_fpath}")
         # HF token required for gated model downloads form HF
         hf_token_file_path = Path(HF_TOKEN_FNAME)
@@ -115,8 +118,8 @@ def _check_ray_service_status(eks_model_namespace: str):
     try:
         # Set time limit
         start_time: float = time.time()
-        # 20 minutes
-        timeout: int = (20 * 60)
+        # 30 minutes
+        timeout: int = (30 * 60)
 
         while (time.time() - start_time) < timeout:
             logger.info("Checking if Ray service is deployed...")
@@ -182,7 +185,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         _init_eks_checks(eks_cluster_name)
         # deploy the model
         manifest_file_name: str = experiment_config['eks']['manifest_file']
-        _deploy_ray(manifest_file_name)
+        manifest_dir_path: str = experiment_config['eks']['manifest_dir']
+        _deploy_ray(manifest_file_name, manifest_dir_path)
         # check the status every 15 seconds during deployment
         eks_model_namespace: str = experiment_config['eks']['eks_model_namespace']
         _check_ray_service_status(eks_model_namespace)

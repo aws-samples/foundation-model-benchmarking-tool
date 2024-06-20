@@ -118,7 +118,7 @@ experiments:
       eks_model_namespace: llama3 
       # name of the manifest directory where all of the EKS manifest files
       # reside
-      manifest_dir: eks_manifests
+      manifest_dir: configs/eks_manifests
       # this is the yaml file to deploy the mistral model
       manifest_file: llama3-ray-service.yaml
       # this is the url format that gets appended to the 

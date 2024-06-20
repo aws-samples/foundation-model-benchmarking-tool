@@ -45,10 +45,10 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: no
-    2_deploy_model.ipynb: no
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: no
     4_model_metric_analysis.ipynb: no
-    5_cleanup.ipynb: yes
+    5_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
@@ -121,12 +121,12 @@ experiments:
       eks_model_namespace: mistral 
       # name of the manifest directory where all of the EKS manifest files
       # reside
-      manifest_dir: eks_manifests
+      manifest_dir: configs/eks_manifests
       # this is the yaml file to deploy the mistral model
       manifest_file: mistral-ray-service.yaml
       # this is the url format that gets appended to the 
       # model endpoint URL to run inferences from
-      inference_url_format: /serve/infer?sentence=
+      inference_url_format: /serve/infer
     inference_spec:
       parameter_set: eks_parameter_set
     payload_files:
