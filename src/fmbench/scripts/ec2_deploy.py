@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import json
+import docker
 import logging
 import requests
 import tempfile
@@ -41,12 +42,14 @@ def _set_up(model_name: str, serving_properties: str, local_model_path: str):
 
 def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory):
 # Create the deploy_model.sh script
+#give container name and kill 
+#stop container if it already exists check if container exists 
     deploy_script_content = f"""#!/bin/bash
 echo "Going to download model now"
 echo "Content in docker command: {region}, {image_uri}, {model_name},{HF_TOKEN}"
 aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
 docker pull {image_uri}
-docker run -d --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
+docker run -d --name=fmbench_container --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
  -v /home/ubuntu/{model_name}:/opt/ml/model:ro \\
  -v /home/ubuntu/model_server_logs:/opt/djl/logs \\
  -e HF_TOKEN={HF_TOKEN} \\
@@ -64,7 +67,21 @@ def _run_container(script_file_path):
     Runs the deploy_model.sh bash script with the provided arguments.
     """
     logger.info(f"Running container script at {script_file_path}")
+    # Create a Docker client
+    client = docker.from_env()
+
     try:
+        # Check if the container exists and is running
+        container = client.containers.get("fmbench_container")
+        if container.status == "running":
+            logger.info("Container 'fmbench_container' is already running.")
+        else:
+            logger.info("Container 'fmbench_container' is not running. Running the script directly.")
+            subprocess.run(["bash", script_file_path], check=True)
+            logger.info(f"done running bash script")
+        return True
+    except docker.errors.NotFound:
+        logger.info("Container 'fmbench_container' not found. Running the script directly.")
         subprocess.run(["bash", script_file_path], check=True)
         logger.info(f"done running bash script")
         return True
