@@ -45,10 +45,10 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: no
-    2_deploy_model.ipynb: yes
-    3_run_inference.ipynb: yes
-    4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no
+    2_deploy_model.ipynb: no
+    3_run_inference.ipynb: no
+    4_model_metric_analysis.ipynb: no
+    5_cleanup.ipynb: yes
 
 datasets:
   prompt_template_keys:
@@ -116,6 +116,9 @@ experiments:
       # to mistral will be in this namespace. Change this to 
       # llama3/llama2 for your use case
       eks_model_namespace: llama3 
+      # name of the manifest directory where all of the EKS manifest files
+      # reside
+      manifest_dir: eks_manifests
       # this is the yaml file to deploy the mistral model
       manifest_file: llama3-ray-service.yaml
       # this is the url format that gets appended to the 
@@ -125,6 +128,7 @@ experiments:
       parameter_set: eks_parameter_set
     payload_files:
     - payload_en_1-500.jsonl
+    - payload_en_500-100.jsonl
     concurrency_levels:
     - 1
     - 2

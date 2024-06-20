@@ -17,18 +17,16 @@ spec:
   deploymentUnhealthySecondThreshold: 900
   serveConfigV2: |
     applications:
-      - name: llama3-deployment
-        import_path: "ray_serve_llama:entrypoint"
-        route_prefix: "/"
+      - name: llama3
+        import_path: ray_serve_llama3:entrypoint
         runtime_env:
           env_vars:
             MODEL_ID: "meta-llama/Meta-Llama-3-8B-Instruct"
             HUGGING_FACE_HUB_TOKEN: $HUGGING_FACE_HUB_TOKEN
+            LD_LIBRARY_PATH: "/home/ray/anaconda3/lib"
   rayClusterConfig:
     rayVersion: '2.11.0'
-    enableInTreeAutoscaling: true
     headGroupSpec:
-      serviceType: NodePort
       headService:
         metadata:
           name: llama3-service
@@ -60,14 +58,17 @@ spec:
             resources:
               limits:
                 cpu: "4"
-                memory: "20G"
+                memory: "20Gi"
               requests:
                 cpu: "4"
-                memory: "20G"
+                memory: "20Gi"
+            env:
+              - name: LD_LIBRARY_PATH
+                value: "/home/ray/anaconda3/lib"
           nodeSelector:
             instanceType: mixed-x86
             provisionerType: Karpenter
-            workload: head
+            workload: rayhead
           volumes:
           - name: ray-logs
             emptyDir: {}
@@ -76,7 +77,7 @@ spec:
     - groupName: inf2-worker-group
       replicas: 1
       minReplicas: 1
-      maxReplicas: 5
+      maxReplicas: 1
       rayStartParams: {}
       template:
         spec:
@@ -98,6 +99,9 @@ spec:
                 cpu: "180" # All vCPUs of inf2.24xlarge; 6vCPU daemonset overhead
                 memory: "700G" # All memory of inf2.24xlarge; 24G for daemonset overhead
                 aws.amazon.com/neuron: "12" # All Neuron cores of inf2.24xlarge
+            env:
+              - name: LD_LIBRARY_PATH
+                value: /home/ray/anaconda3/lib
           nodeSelector:
             instanceType: inferentia-inf2
             provisionerType: Karpenter
@@ -137,6 +141,6 @@ spec:
         pathType: ImplementationSpecific
         backend:
           service:
-            name: mistral-service
+            name: llama3-service
             port:
               number: 8000
