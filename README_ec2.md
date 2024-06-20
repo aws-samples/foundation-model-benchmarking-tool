@@ -28,7 +28,7 @@ Type in a name for your instance (recommended to include your alias in the name)
 
 Select one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. **Your version number might be different.** 
 
-![](img/ec2connect5.png)
+![](img/ec2connect5a.png)
 
 Name your instance "FMBenchInstance"
 
