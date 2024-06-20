@@ -22,7 +22,7 @@ Click "Launch Instances":
 
 Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. (An AMI is an “Amazon Machine Image”, which comes pre-loaded with software.)
 
-Select one that says “Deep Learning AMI GPU PyTorch”. **Your version number might be different.** 
+Select one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. **Your version number might be different.** 
 ![](img/ec2connect5.png)
 
 Name your instance "FMBenchInstance"
