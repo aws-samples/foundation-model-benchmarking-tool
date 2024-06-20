@@ -377,7 +377,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
         git clone https://github.com/awslabs/data-on-eks.git
         ```
         
-    1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12), [`main.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/main.tf#L7) and match your current AWS region.
+    1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12) file before running the cluster creation script.
     
     1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
 
