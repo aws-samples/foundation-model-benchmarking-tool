@@ -377,11 +377,11 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
         git clone https://github.com/awslabs/data-on-eks.git
         ```
         
-    1. Ensure that the region names are correct in `variables.tf`, `main.tf` and match your current AWS region.
+    1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12), [`main.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/main.tf#L7) and match your current AWS region.
     
     1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before the cluster creation, add the FMBench role here: https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126
 
-    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script. This repository uses the `data-on-eks` repository to deploy the cluster in an AWS account.
+    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script. This repository uses the `data-on-eks` repository to deploy the cluster in an AWS account as an example.
 
         ``` {.bash}
         cd data-on-eks/ai-ml/trainium-inferentia/
@@ -402,9 +402,9 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 
 1. Other usefull `kubectl` commands to try out while deploying and benchmarking the FM on EKS:
 
-    1. kubectl get pods -n <model_namespace> -w: Watch the pods in the mistral namespace.
-    1. kubectl -n karpenter get pods: Get the pods in the karpenter namespace.
-    1. kubectl describe pod -n <model_namespace> <pod-name>: Describe a specific pod in the mistral namespace.
+    1. `kubectl get pods -n <model_namespace> -w`: Watch the pods in the model specific namespace.
+    1. `kubectl -n karpenter get pods`: Get the pods in the karpenter namespace.
+    1. `kubectl describe pod -n <model_namespace> <pod-name>`: Describe a specific pod in the mistral namespace to view the live logs.
 
 
 ### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
