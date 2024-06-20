@@ -38,7 +38,7 @@ spec:
           containers:
           - name: ray-head
             image: public.ecr.aws/data-on-eks/ray-serve-inf2-llama3:latest
-            imagePullPolicy: Always # Ensure the image is always pulled when updated
+            imagePullPolicy: Always
             lifecycle:
               preStop:
                 exec:
@@ -58,10 +58,10 @@ spec:
             resources:
               limits:
                 cpu: "4"
-                memory: "20Gi"
+                memory: "20G"
               requests:
                 cpu: "4"
-                memory: "20Gi"
+                memory: "20G"
             env:
               - name: LD_LIBRARY_PATH
                 value: "/home/ray/anaconda3/lib"
@@ -84,21 +84,20 @@ spec:
           containers:
           - name: ray-worker
             image: public.ecr.aws/data-on-eks/ray-serve-inf2-llama3:latest
-            imagePullPolicy: Always # Ensure the image is always pulled when updated
+            imagePullPolicy: Always
             lifecycle:
               preStop:
                 exec:
                   command: ["/bin/sh", "-c", "ray stop"]
-            # We are using 2 Neuron cores per HTTP request hence this configuration handles 6 requests per second
             resources:
               limits:
-                cpu: "180" # All vCPUs of inf2.24xlarge; 6vCPU daemonset overhead
-                memory: "700G" # All memory of inf2.24xlarge; 24G for daemonset overhead
-                aws.amazon.com/neuron: "12" # All Neuron cores of inf2.24xlarge
+                cpu: "180"
+                memory: "700G"
+                aws.amazon.com/neuron: "12"
               requests:
-                cpu: "180" # All vCPUs of inf2.24xlarge; 6vCPU daemonset overhead
-                memory: "700G" # All memory of inf2.24xlarge; 24G for daemonset overhead
-                aws.amazon.com/neuron: "12" # All Neuron cores of inf2.24xlarge
+                cpu: "180"
+                memory: "700G"
+                aws.amazon.com/neuron: "12"
             env:
               - name: LD_LIBRARY_PATH
                 value: /home/ray/anaconda3/lib
@@ -113,6 +112,7 @@ spec:
             operator: "Equal"
             value: "user"
             effect: "NoSchedule"
+
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -126,7 +126,6 @@ spec:
   rules:
   - http:
       paths:
-      # Ray Dashboard
       - path: /dashboard/(.*)
         pathType: ImplementationSpecific
         backend:
@@ -134,9 +133,6 @@ spec:
             name: llama3-service
             port:
               number: 8265
-  - http:
-      paths:
-      # Ray Serve
       - path: /serve/(.*)
         pathType: ImplementationSpecific
         backend:
