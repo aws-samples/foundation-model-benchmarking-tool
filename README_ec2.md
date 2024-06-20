@@ -9,20 +9,25 @@ The goal of this document is for the user to be able to create an EC2 instance s
 ## Creating EC2 Instance
 
 On the homepage of AWS Console go to ‘EC2’ - it is likely in recently visited:
+
 ![](img/ec2connect1.png)
 
 If not found, go to the search bar on the top of the page. Type `ec2` into the search box and click the entry that pops up with name `EC2` :
+
 ![](img/ec2connect2.png)
 
 Click “Instances”:
+
 ![](img/ec2connect3.png)
 
 Click "Launch Instances":
+
 ![](img/ec2connect4.png)
 
 Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. (An AMI is an “Amazon Machine Image”, which comes pre-loaded with software.)
 
 Select one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. **Your version number might be different.** 
+
 ![](img/ec2connect5.png)
 
 Name your instance "FMBenchInstance"
