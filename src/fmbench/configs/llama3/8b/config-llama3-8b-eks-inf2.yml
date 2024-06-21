@@ -187,7 +187,7 @@ experiments:
       # for the mistral model. All kubernetes resources related
       # to mistral will be in this namespace. Change this to 
       # llama3/llama2 for your use case
-      eks_model_namespace: mistral 
+      eks_model_namespace: llama3 
       # name of the manifest directory where all of the EKS manifest files
       # reside
       manifest_dir: configs/eks_manifests
