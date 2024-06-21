@@ -99,7 +99,7 @@ Edit the trust policy to be the following:
 1. Run `FMBench` with a quickstart config file.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes >> fmbench.log 2>&1
+    fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket abstaticwebsitetest1 >> fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
