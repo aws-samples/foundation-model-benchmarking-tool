@@ -77,10 +77,10 @@ s3_read_data:
 run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: yes
-  2_deploy_model.ipynb: no
+  2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -160,23 +160,23 @@ inference_parameters:
 # options.
 experiments:
   - name: "llama3-8b-instruct"
+    # AWS region, this parameter is templatized, no need to change
+    region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
-    model_id: # model id, version and image uri not needed for byo endpoint
+    #from huggingface to grab
+    model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "llama3-8b-instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://127.0.0.1/invocations' 
+    ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: "g5.2xlarge"
-    image_uri:
-    deploy: no #setting to no since the endpoint has already been deployed on an EKS cluster
-    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
-    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
-    # See repo for details
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121
+    deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
-    deployment_script: 
+    deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-8b-instruct deployed on ec2
@@ -184,6 +184,13 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+    # modify the serving properties to match your model and requirements
+    serving.properties: |
+      engine=MPI
+      option.tensor_parallel_degree=1
+      option.max_rolling_batch_size=256
+      option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
+      option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
