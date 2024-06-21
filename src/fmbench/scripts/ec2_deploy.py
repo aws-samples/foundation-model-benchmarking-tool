@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import json
+import stat
 import docker
 import logging
 import requests
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 SHM_SIZE: str = "12g"
-MODEL_DEPLOYMENT_TIMEOUT: int = 2400
+MODEL_DEPLOYMENT_TIMEOUT: int = 1000
 
 def _set_up(model_name: str, serving_properties: str, local_model_path: str):
     """
@@ -38,20 +39,27 @@ def _set_up(model_name: str, serving_properties: str, local_model_path: str):
     file_path = os.path.join(directory, "serving.properties")
     Path(file_path).write_text(serving_properties)
     logger.info(f"The serving.properties file has been created in {file_path}")
-    return file_path
+    st = os.stat(file_path)
+    os.chmod(file_path, st.st_mode | stat.S_IEXEC)
+    # Make the serving.properties file executable
+    logger.info(f"chmod happening")
+    logger.info(f"The serving.properties file has been made executable.")
+
+    #return the directory we created
+    return directory
 
 def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory):
 # Create the deploy_model.sh script
 #give container name and kill 
 #stop container if it already exists check if container exists 
-    deploy_script_content = f"""#!/bin/bash
+    deploy_script_content = f"""#!/bin/sh
 echo "Going to download model now"
 echo "Content in docker command: {region}, {image_uri}, {model_name},{HF_TOKEN}"
 aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
 docker pull {image_uri}
 docker run -d --name=fmbench_container --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
- -v /home/ubuntu/{model_name}:/opt/ml/model:ro \\
- -v /home/ubuntu/model_server_logs:/opt/djl/logs \\
+ -v {directory}:/opt/ml/model:ro \\
+ -v {directory}/model_server_logs:/opt/djl/logs \\
  -e HF_TOKEN={HF_TOKEN} \\
  -p 8080:8080 \\
  {image_uri}
@@ -59,6 +67,7 @@ echo "Done pulling model"
 """
     script_file_path = os.path.join(directory, "deploy_model.sh")
     Path(script_file_path).write_text(deploy_script_content)
+    logger.info(f"deploy_model.sh content: {deploy_script_content}")
     logger.info(f"The 'deploy_model.sh' file has been created in {script_file_path}")
     return script_file_path
 
@@ -129,13 +138,13 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     region: str = experiment_config['region']
     serving_properties: str = experiment_config['serving.properties']
     HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()
-    
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    serving_properties_path = _set_up(model_name, serving_properties, dir_path)
-    logger.info(f"Writing serving.properties {serving_properties} to {serving_properties_path}")
+    dir_path = home_dir = os.getenv("HOME", str(Path.home()))
+    logger.info(f"Home directory: {dir_path}")
+    model_directory = _set_up(model_name, serving_properties, dir_path)
+    logger.info(f"Writing serving.properties {serving_properties} to {model_directory}")
 
-    logger.info("Creating the deployment script")
-    deployment_script_path = _create_deployment_script(image_uri, region, model_name, HF_TOKEN, dir_path)
+    logger.info("Creating the deployment script in model directory")
+    deployment_script_path = _create_deployment_script(image_uri, region, model_name, HF_TOKEN, model_directory)
 
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)
