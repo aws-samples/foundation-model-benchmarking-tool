@@ -196,8 +196,8 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    #- payload_en_2000-3000.jsonl
-    #- payload_en_3000-3840.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -206,8 +206,8 @@ experiments:
     - 2
     - 4
     - 6
-   # - 8
-   #- 10 
+    - 8
+    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
