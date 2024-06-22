@@ -1,12 +1,13 @@
-from datetime import datetime
 import os
 import json
 import math
 import time
 import boto3
-import pandas as pd
 import logging
 import requests
+import datetime
+import pandas as pd
+from datetime import datetime
 from fmbench.utils import count_tokens
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -16,7 +17,8 @@ from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class RESTPredictor(FMBenchPredictor):
+
+class EKSPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
@@ -51,21 +53,13 @@ class RESTPredictor(FMBenchPredictor):
                 timeout = self._inference_spec.get("timeout", 180)
                 auth = self._inference_spec.get("auth", None)
                 logger.info(f"Initializing the timeout to: {timeout}, auth to configured authentication information")
-                # Use the parameters that the model needs at inference. In this case, the model does not require inference
-                # parameters and it is handled in the ray serve script that is used to deploy this model 'ray_serve_llama2.py'
+                # Use the parameters that the model needs at inference. 
                 # parameters: Optional[Dict] = inference_spec.get('parameters')
-
-            # the self._endpoint_name will contain the endpoint url that is used to invoke the model and get the response
-            # In this case, we use ray serve with `NousResearch/Llama-2-13b-chat-hf` model deployed on an EKS cluster.
-            # the endpoint url format used in this example is "http://<NLB_DNS_NAME>/serve/infer?sentence=<PROMPT_PAYLOAD>"
 
             # This endpoint only supports the GET method now, you can add support for POST method if your endpoint supports it.
             # As an example, the following URL is used with a query added at the end of the URL.
-            # http://<NLB_DNS_NAME>/serve/infer?sentence=what is data parallelism and tensor parallelism and the differences
-            logger.info(f"EndpointName: {self._endpoint_name}")
-            logger.info(f"Prompt: {prompt}")
-            response = requests.get(self._endpoint_name, params={"sentence": prompt},
-                                                                    timeout=timeout) 
+            # http://<NLB_DNS_NAME>/serve/infer?sentence=<prompt_payload>
+            response = requests.get(f"{self._endpoint_name}/{prompt}",timeout=timeout) 
 
             latency = time.perf_counter() - st
             logger.info(response)
@@ -96,8 +90,6 @@ class RESTPredictor(FMBenchPredictor):
                     period: int = 60) -> pd.DataFrame:
         # not implemented
         return None
-    
-        
 
     # The rest ep is deployed on an instance that incurs hourly cost hence, the calculcate cost function
     # computes the cost of the experiment on an hourly basis. If your instance has a different pricing structure
@@ -128,4 +120,4 @@ class RESTPredictor(FMBenchPredictor):
         return self._inference_spec.get("parameters")
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
-    return RESTPredictor(endpoint_name, inference_spec, metadata)
+    return EKSPredictor(endpoint_name, inference_spec, metadata)

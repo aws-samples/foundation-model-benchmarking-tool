@@ -15,6 +15,7 @@
     - [Quickstart](#quickstart)
     - [The DIY version (with gory details)](#the-diy-version-with-gory-details)
     - [Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
+    - [Run `FMBench` on Amazon EKS](#run-fmbench-on-amazon-eks)
     - [Bring your own `Rest Predictor` (`data-on-eks` version)](#bring-your-own-rest-predictor-data-on-eks-version)
     - [Bring your own `dataset` | `endpoint`](#bring-your-own-dataset--endpoint)
       - [Bring your own dataset](#bring-your-own-dataset)
@@ -342,6 +343,71 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     ```
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
+
+
+### Run `FMBench` on Amazon EKS 
+
+For some enterprise scenarios it might be desirable to run `FMBench` directly on EKS to leverage the scalability and customization of models. Here are the steps to do this:
+
+1. Setup `FMBench` in your AWS Environment. This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or on any AWS environment.
+
+1. Add the following IAM EKS Policies to the existing `FMBench` Role:
+
+    1. [AmazonEKSClusterPolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSClusterPolicy.html): This policy provides Kubernetes the permissions it requires to manage resources on your behalf.
+    
+    1. [AmazonEKS_CNI_Policy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html): This policy provides the Amazon VPC CNI Plugin (amazon-vpc-cni-k8s) the permissions it requires to modify the IP address configuration on your EKS worker nodes. This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.
+    
+    1. [AmazonEKSWorkerNodePolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html): This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
+
+1. Clone the FMBench GitHub Repository, and install the latest FMBench package:
+
+    ``` {.bash}
+    conda create —name fmbench_python311 -y python=3.11 ipykernel
+    source activate fmbench_python311;
+    pip install -U fmbench
+
+    ```
+    
+1. Cluster Creation (*Optional - if cluster already exists*): Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). FMBench uses the [`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/main) repository as an example to deploy the cluster infrastructure in an AWS account.
+
+
+    1. Clone the [`data-on-eks`](https://github.com/awslabs/data-on-eks) repository
+
+        ``` {.bash}
+        git clone https://github.com/awslabs/data-on-eks.git
+        ```
+        
+    1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12) file before running the cluster creation script.
+    
+    1. Ensure that the ELB to be created would be external facing. Change the helm value from `internal` to `internet-facing` [here](https://github.com/awslabs/data-on-eks/blob/3ef55e21cf30b54341bb771a2bb2dbd1280c3edd/ai-ml/trainium-inferentia/helm-values/ingress-nginx-values.yaml#L8).
+    
+    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role [here](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126)
+
+    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script.
+
+        ``` {.bash}
+        cd data-on-eks/ai-ml/trainium-inferentia/
+        ./install.sh
+        ```
+        
+        Note: This step takes about 12-15 minutes to deploy the EKS infrastructure and cluster in the AWS account. To view more details on cluster creation, view an example here: [Deploy Llama3 on EKS](https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2) in the _prerequisites_ section.
+
+1. After the cluster cleation, view the sample config files that `FMBench` provides to deploy models on the existing EKS cluster. View examples of deploying Llama3-8B Instruct and Mistral-7b models using the config files below:
+
+    1. [config-llama3-8b-eks-inf2.yml](https://github.com/madhurprash/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml): Deploys Llama3-8B): Deploy Llama3 on trn1/inf2 (powered by AWS Trainium and Inferentia) instances.
+    
+    2. [config-mistral-7b-eks-inf2.yml](https://github.com/madhurprash/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/mistral/config-mistral-7b-eks-inf2.yml): Deploy Mistral 7b on trn1/inf2 (powered by AWS Trainium and Inferentia) instances.
+    
+    ***To view more information about the [blueprints](https://github.com/madhurprash/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests) used by FMBench to deploy these models, view: https://awslabs.github.io/data-on-eks/docs/gen-ai***
+    
+1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deployment script that deploys models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences against the endpoint URLs of the models deployed on EKS.
+
+1. Other usefull `kubectl` commands to try out while deploying and benchmarking the FM on EKS:
+
+    1. `kubectl get pods -n <model_namespace> -w`: Watch the pods in the model specific namespace.
+    1. `kubectl -n karpenter get pods`: Get the pods in the karpenter namespace.
+    1. `kubectl describe pod -n <model_namespace> <pod-name>`: Describe a specific pod in the mistral namespace to view the live logs.
+
 
 ### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
 

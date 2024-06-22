@@ -101,6 +101,7 @@ experiments:
     model_name: anthropic.claude-v3-sonnet-pt
     ep_name: <your-provisioned-throughput-arn>
     instance_type: anthropic.claude-v3-sonnet-pt-nc
+    instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
@@ -123,6 +124,7 @@ experiments:
     model_name: anthropic.claude-3-sonnet-20240229-v1:0
     ep_name: anthropic.claude-3-sonnet-20240229-v1:0
     instance_type: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
