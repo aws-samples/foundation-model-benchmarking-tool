@@ -38,10 +38,10 @@
         <img src="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true"></img>
     </h1>
     <p align="center">
-        <p align="center">Benchmark any Foundation Model (FM) on any AWS service [Amazon SageMaker, Amazon Bedrock, Amazon EKS, Bring your own endpoint etc.]
+        <p align="center">Benchmark any Foundation Model (FM) on any AWS Generative AI service [Amazon SageMaker, Amazon Bedrock, Amazon EKS, Bring your own endpoint etc.]
         <br>
     </p>
-<h4 align="center"><a href="" target="_blank">Amazon SageMaker</a> | <a href="" target="_blank">Amazon Bedrock</a></h4>
+<h4 align="center"><a href="" target="_blank">Amazon Bedrock</a> | <a href="" target="_blank">Amazon SageMaker</a> | <a href="" target="_blank">Amazon EKS</a> | <a href="" target="_blank">Amazon EC2</a></h4>
 <h4 align="center">
     <a href="https://pypi.org/project/fmbench/" target="_blank">
         <img src="https://img.shields.io/pypi/v/fmbench.svg" alt="PyPI Version">
@@ -91,6 +91,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Cohere Command light text**  | | |  | | ✅ |   |
 | **AI21 J2 Mid**  | | |  | | ✅ |   |
 | **AI21 J2 Ultra** | | |  | | ✅ |   |
+| **Gemma-2b** |✅ | |  | |  |   |
 | **distilbert-base-uncased**  |  ✅ | |  | ||   |
 
 ## New in this release
@@ -145,9 +146,17 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## Description
 
-`FMBench` is a Python package for running performance benchmarks for **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** or deployed by you on an AWS service of choice (such as Amazon EKS or Amazon EC2) a.k.a **Bring your own endpoint**. For SageMaker, `FMBench` provides both the option of deploying models on SageMaker as part of its workflow and use the endpoint or skip the deployment step and use an endpoint you provide to send inference requests to and measure metrics such as inference latency, error rate, transactions per second etc. This approach allows for benchmarking different combinations of instance types (`g5`, `p4d`, `p5`, `Inf2`), inference containers (`DeepSpeed`, `TensorRT`, `HuggingFace TGI` and others) and parameters such as tensor parallelism, rolling batch etc. Because `FMBench` is model agnostic therefore it can be used not only testing _third party models_ but also _open-source models_ and _proprietary models_ trained by enterprises on their own data.
+`FMBench` is a Python package for running performance benchmarks for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
-`FMBench` can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency.
+Here are some salient features of `FMBench`:
+
+1. **Highly flexible**: in that it allows for using any combinations of instance types (`g5`, `p4d`, `p5`, `Inf2`), inference containers (`DeepSpeed`, `TensorRT`, `HuggingFace TGI` and others) and parameters such as tensor parallelism, rolling batch etc. as long as those are supported by the underlying platform. 
+
+1. **Benchmark any model**: it can be used to be benchmark _open-source models_, _third party models_, and _proprietary models_ trained by enterprises on their own data.
+
+1. **Run anywhere**: it can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. _It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency_.
+
+### Workflow for `FMBench`
 
 The workflow for `FMBench` is as follows:
 
@@ -181,7 +190,13 @@ Create configuration file
 
 `FMBench` is available as a Python package on [PyPi](https://pypi.org/project/fmbench) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
 
+While technically you can run `FMBench` on any AWS compute but practically speaking we either run it on a SageMaker Notebook or on EC2. Both these options are described below.
+
+👉 The following sections are discussing running `FMBench` the tool, as different from where the FM is actually deployed. For example, we could run `FMBench` on EC2 but the model being deployed is on SageMaker or even Bedrock. 
+
 ### Quickstart
+
+**_FMBench on a SageMaker Notebook_**
 
 1. Each `FMBench` run works with a configuration file that contains the information about the model, the deployment steps, and the tests to run. A typical `FMBench` workflow involves either directly using an already provided config file from the [`configs`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs) folder in the `FMBench` GitHub repo or editing an already provided config file as per your own requirements (say you want to try benchmarking on a different instance type, or a different inference container etc.).
 
@@ -224,77 +239,9 @@ Create configuration file
     
 1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_region>-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
 
-### The DIY version (with gory details)
+_If you would like to understand what is being done under the hood by the CloudFormation template, see [the DIY version with gory details](./misc/the-diy-version-w-gory-details.md)_
 
-Follow the prerequisites below to set up your environment before running the code:
-
-1. **Python 3.11**: Setup a Python 3.11 virtual environment and install `FMBench`.
-
-    ```{.bash}
-    python -m venv .fmbench
-    pip install fmbench
-    ```
-
-1. **S3 buckets for test data, scripts, and results**: Create two buckets within your AWS account:
-
-    * _Read bucket_: This bucket contains `tokenizer files`, `prompt template`, `source data` and `deployment scripts` stored in a directory structure as shown below. `FMBench` needs to have read access to this bucket.
-    
-        ```{.bash}
-        s3://<read-bucket-name>
-            ├── source_data/
-            ├── source_data/<source-data-file-name>.json
-            ├── prompt_template/
-            ├── prompt_template/prompt_template.txt
-            ├── scripts/
-            ├── scripts/<deployment-script-name>.py
-            ├── tokenizer/
-            ├── tokenizer/tokenizer.json
-            ├── tokenizer/config.json
-        ```
-
-        * The details of the bucket structure is as follows:
-
-            1. **Source Data Directory**: Create a `source_data` directory that stores the dataset you want to benchmark with. `FMBench` uses `Q&A` datasets from the [`LongBench dataset`](https://github.com/THUDM/LongBench) or alternatively from [this link](https://huggingface.co/datasets/THUDM/LongBench/resolve/main/data.zip). _Support for bring your own dataset will be added soon_.
-
-                * Download the different files specified in the [LongBench dataset](https://github.com/THUDM/LongBench) into the `source_data` directory. Following is a good list to get started with:
-
-                    * `2wikimqa`
-                    * `hotpotqa`
-                    * `narrativeqa`
-                    * `triviaqa`
-                
-                    Store these files in the `source_data` directory.
-
-            1. **Prompt Template Directory**: Create a `prompt_template` directory that contains a `prompt_template.txt` file. This `.txt` file contains the prompt template that your specific model supports. `FMBench` already supports the [prompt template](src/fmbench/prompt_template/prompt_template.txt) compatible with `Llama` models.
-
-            1. **Scripts Directory**: `FMBench` also supports a `bring your own script (BYOS)` mode for deploying models that are not natively available via SageMaker JumpStart i.e. anything not included in [this](https://sagemaker.readthedocs.io/en/stable/doc_utils/pretrainedmodels.html) list. Here are the steps to use BYOS.
-
-                1. Create a Python script to deploy your model on a SageMaker endpoint. This script needs to have a `deploy` function that [`2_deploy_model.ipynb`](./src/fmbench/2_deploy_model.ipynb) can invoke. See [`p4d_hf_tgi.py`](./scripts/p4d_hf_tgi.py) for reference.
-
-                1. Place your deployment script in the `scripts` directory in your ***read bucket***. If your script deploys a model directly from HuggingFace and needs to have access to a HuggingFace auth token, then create a file called `hf_token.txt` and put the auth token in that file. The [`.gitignore`](.gitgnore) file in this repo has rules to not commit the `hf_token.txt` to the repo. Today, `FMBench` provides inference scripts for:
-
-                    * [All SageMaker Jumpstart Models](https://docs.aws.amazon.com/sagemaker/latest/dg/jumpstart-foundation-models.html)
-                    * [Text-Generation-Inference (TGI) container supported models](https://huggingface.co/text-generation-inference)
-                    * [Deep Java Library DeepSpeed container supported models](https://docs.djl.ai/docs/serving/serving/docs/lmi/configurations_large_model_inference_containers.html)
-
-
-                    Deployment scripts for the options above are available in the [scripts](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/s3_metrics/scripts) directory, you can use these as reference for creating your own deployment scripts as well.
-
-            1. **Tokenizer Directory**: Place the `tokenizer.json`, `config.json` and any other files required for your model's tokenizer in the `tokenizer` directory. The tokenizer for your model should be compatible with the [`tokenizers`](https://pypi.org/project/tokenizers/) package. `FMBench` uses `AutoTokenizer.from_pretrained` to load the tokenizer.
-                >As an example, to use the `Llama 2 Tokenizer` for counting prompt and generation tokens for the `Llama 2` family of models: Accept the License here: [meta approval form](https://ai.meta.com/resources/models-and-libraries/llama-downloads/) and download the `tokenizer.json` and `config.json` files from [Hugging Face website](https://huggingface.co/meta-llama/Llama-2-7b/tree/main) and place them in the `tokenizer` directory.
-
-    * _Write bucket_: All prompt payloads, model endpoint and metrics generated by `FMBench` are stored in this bucket. `FMBench` requires write permissions to store the results in this bucket. No directory structure needs to be pre-created in this bucket, everything is created by `FMBench` at runtime.
-
-        ```{.bash}
-        s3://<write-bucket-name>
-            ├── <test-name>
-            ├── <test-name>/data
-            ├── <test-name>/data/metrics
-            ├── <test-name>/data/models
-            ├── <test-name>/data/prompts
-        ````
-
-### Run `FMBench` on Amazon EC2 with no dependency on Amazon S3
+### Run `FMBench` on Amazon EC2
 
 For some enterprise scenarios it might be desirable to run `FMBench` directly on an EC2 instance with no dependency on S3. Here are the steps to do this:
 
@@ -333,7 +280,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 1. Run `FMBench` with a quickstart config file.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-quick.yml --local-mode yes >> fmbench.log 2>&1
+    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-quick.yml --local-mode yes > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
@@ -343,104 +290,6 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     ```
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
-
-
-### Run `FMBench` on Amazon EKS 
-
-For some enterprise scenarios it might be desirable to run `FMBench` directly on EKS to leverage the scalability and customization of models. Here are the steps to do this:
-
-1. Setup `FMBench` in your AWS Environment. This can be either on a SageMaker notebook instance (deployed via the [CloudFormation Stack](https://github.com/aws-samples/foundation-model-benchmarking-tool#quickstart)), an [EC2 instance](https://github.com/aws-samples/foundation-model-benchmarking-tool#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3), or on any AWS environment.
-
-1. Add the following IAM EKS Policies to the existing `FMBench` Role:
-
-    1. [AmazonEKSClusterPolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSClusterPolicy.html): This policy provides Kubernetes the permissions it requires to manage resources on your behalf.
-    
-    1. [AmazonEKS_CNI_Policy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html): This policy provides the Amazon VPC CNI Plugin (amazon-vpc-cni-k8s) the permissions it requires to modify the IP address configuration on your EKS worker nodes. This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.
-    
-    1. [AmazonEKSWorkerNodePolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html): This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
-
-1. Clone the FMBench GitHub Repository, and install the latest FMBench package:
-
-    ``` {.bash}
-    conda create —name fmbench_python311 -y python=3.11 ipykernel
-    source activate fmbench_python311;
-    pip install -U fmbench
-
-    ```
-    
-1. Cluster Creation (*Optional - if cluster already exists*): Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). FMBench uses the [`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/main) repository as an example to deploy the cluster infrastructure in an AWS account.
-
-
-    1. Clone the [`data-on-eks`](https://github.com/awslabs/data-on-eks) repository
-
-        ``` {.bash}
-        git clone https://github.com/awslabs/data-on-eks.git
-        ```
-        
-    1. Ensure that the region names are correct in [`variables.tf`](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L12) file before running the cluster creation script.
-    
-    1. Ensure that the ELB to be created would be external facing. Change the helm value from `internal` to `internet-facing` [here](https://github.com/awslabs/data-on-eks/blob/3ef55e21cf30b54341bb771a2bb2dbd1280c3edd/ai-ml/trainium-inferentia/helm-values/ingress-nginx-values.yaml#L8).
-    
-    1. Ensure that the FMBench role has authoritative access/sufficient permissions for the cluster. For example, before running the cluster creation script, add the FMBench role [here](https://github.com/awslabs/data-on-eks/blob/d532720d0746959daa6d3a3f5925fc8be114ccc4/ai-ml/trainium-inferentia/variables.tf#L126)
-
-    1. Navigate into the `ai-ml/trainium-inferentia/` directory and run install.sh script.
-
-        ``` {.bash}
-        cd data-on-eks/ai-ml/trainium-inferentia/
-        ./install.sh
-        ```
-        
-        Note: This step takes about 12-15 minutes to deploy the EKS infrastructure and cluster in the AWS account. To view more details on cluster creation, view an example here: [Deploy Llama3 on EKS](https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2) in the _prerequisites_ section.
-
-1. After the cluster cleation, view the sample config files that `FMBench` provides to deploy models on the existing EKS cluster. View examples of deploying Llama3-8B Instruct and Mistral-7b models using the config files below:
-
-    1. [config-llama3-8b-eks-inf2.yml](https://github.com/madhurprash/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml): Deploys Llama3-8B): Deploy Llama3 on trn1/inf2 (powered by AWS Trainium and Inferentia) instances.
-    
-    2. [config-mistral-7b-eks-inf2.yml](https://github.com/madhurprash/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/mistral/config-mistral-7b-eks-inf2.yml): Deploy Mistral 7b on trn1/inf2 (powered by AWS Trainium and Inferentia) instances.
-    
-    ***To view more information about the [blueprints](https://github.com/madhurprash/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests) used by FMBench to deploy these models, view: https://awslabs.github.io/data-on-eks/docs/gen-ai***
-    
-1. FMBench uses a standard [eks_deploy.py](src/fmbench/scripts/eks_deploy.py) deployment script that deploys models on the existing EKS clusters, and an [eks_predictor.py](src/fmbench/scripts/eks_predictor.py) inference script to run inferences against the endpoint URLs of the models deployed on EKS.
-
-1. Other usefull `kubectl` commands to try out while deploying and benchmarking the FM on EKS:
-
-    1. `kubectl get pods -n <model_namespace> -w`: Watch the pods in the model specific namespace.
-    1. `kubectl -n karpenter get pods`: Get the pods in the karpenter namespace.
-    1. `kubectl describe pod -n <model_namespace> <pod-name>`: Describe a specific pod in the mistral namespace to view the live logs.
-
-
-### Bring your own `Rest Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
-
-`FMBench` now provides an example of bringing your own endpoint as a `REST Predictor` for benchmarking. View this [`script`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/REST-predictor-fmbench/src/fmbench/scripts/rest_predictor.py) as an example. This script is an inference file for the `NousResearch/Llama-2-13b-chat-hf` model deployed on an [Amazon EKS](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/amazon-elastic-kubernetes-service.html) cluster using [Ray Serve](https://docs.ray.io/en/latest/ray-overview/examples.html). The model is deployed via `data-on-eks` which is a comprehensive resource for scaling your data and machine learning workloads on Amazon EKS and unlocking the power of Gen AI. Using `data-on-eks`, you can harness the capabilities of AWS Trainium, AWS Inferentia and NVIDIA GPUs to scale and optimize your Gen AI workloads and benchmark those models on FMBench with ease. 
-
-
-### Bring your own `dataset` | `endpoint`
-
-`FMBench` started out as supporting only SageMaker endpoints and while that is still true as far as _deploying_ the endpoint through `FMBench` is concerned but we now support the ability to support external endpoints and external datasets.
-
-#### Bring your own dataset
-
-By default `FMBench` uses the [`LongBench dataset`](https://github.com/THUDM/LongBench) dataset for testing the models, but this is not the only dataset you can test with. You may want to test with other datasets available on HuggingFace or use your own datasets for testing. You can do this by converting your dataset to the [`JSON lines`](https://jsonlines.org/) format. We provide a code sample for converting any HuggingFace dataset into JSON lines format and uploading it to the S3 bucket used by `FMBench` in the [`bring_your_own_dataset`](./src/fmbench/bring_your_own_dataset.ipynb) notebook. Follow the steps described in the notebook to bring your own dataset for testing with `FMBench`.
-
-##### Support for Open-Orca dataset
-
-Support for [Open-Orca](https://huggingface.co/datasets/Open-Orca/OpenOrca) dataset and corresponding prompts for Llama3, Llama2 and Mistral, see:
-
-1. [bring_your_own_dataset.ipynb](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/bring_your_own_dataset.ipynb)
-1. [prompt templates](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/prompt_template)
-1. [Llama3 config file with OpenOrca](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml)
-
-#### Bring your own endpoint (a.k.a. support for external endpoints)
-
-If you have an endpoint deployed on say `Amazon EKS` or `Amazon EC2` or have your models hosted on a fully-managed service such as `Amazon Bedrock`, you can still bring your endpoint to `FMBench` and run tests against your endpoint. To do this you need to do the following:
-
-1. Create a derived class from [`FMBenchPredictor`](./src/fmbench/scripts/fmbench_predictor.py) abstract class and provide implementation for the constructor, the `get_predictions` method and the `endpoint_name` property. See [`SageMakerPredictor`](./src/fmbench/scripts/sagemaker_predictor.py) for an example. Save this file locally as say `my_custom_predictor.py`.
-
-1. Upload your new Python file (`my_custom_predictor.py`) for your custom FMBench predictor to your `FMBench` read bucket and the scripts prefix specified in the `s3_read_data` section (`read_bucket` and `scripts_prefix`).
-
-1. Edit the configuration file you are using for your `FMBench` for the following:
-    - Skip the deployment step by setting the `2_deploy_model.ipynb` step under `run_steps` to `no`.
-    - Set the `inference_script` under any experiment in the `experiments` section for which you want to use your new custom inference script to point to your new Python file (`my_custom_predictor.py`) that contains your custom predictor.
 
 ### Steps to run
 
@@ -496,9 +345,157 @@ You can create an internal `FMBench` website to view results from multiple runs 
 
 ![FMBench website](img/fmbench-website.png)
 
-## Building the `FMBench` Python package
+## Benchmark models deployed on different AWS Generative AI services
 
-The following steps describe how to build the `FMBench` Python package.
+`FMBench` comes packaged with configuration files for benchmarking models on different AWS Generative AI services.
+
+### Benchmark models on Bedrock
+
+Choose any config file from the [`bedrock`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/bedrock) folder and either run these directly or use them as templates for creating new config files specific to your use-case. Here is an example for benchmarking the `Llama3` models on Bedrock.
+
+```{.bash}
+fmbench --config-file https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/bedrock/config-bedrock-llama3.yml > fmbench.log 2>&1
+```
+
+### Benchmark models on SageMaker
+
+Choose any config file from the model specific folders, for example the [`Llama3`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama3) folder for `Llama3` family of models. These configuration files also include instructions for `FMBench` to first deploy the model on SageMaker using your configured instance type and inference parameters of choice and then run the benchmarking. Here is an example for benchmarking `Llama3-8b` model on an `ml.inf2.24xlarge` and `ml.g5.12xlarge` instance. 
+
+```{.bash}
+fmbench --config-file https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5.yml > fmbench.log 2>&1
+```
+
+### Benchmark models on EKS
+
+You can use `FMBench` to benchmark models on hosted on EKS. This can be done in one of two ways:
+ - Deploy the model on your EKS cluster independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
+ - Deploy the model on your EKS cluster through `FMBench` and then benchmark it.
+ 
+The steps for deploying the model on your EKS cluster are described below.
+
+👉 **_EKS cluster creation itself is not a part of the `FMBench` functionality, the cluster needs to exist before you run the following steps_**. Steps for cluster creation are provided in [this](misc/eks_cluster-creation_steps.md) file but it would be best to consult the [DoEKS](https://github.com/awslabs/data-on-eks) repo on GitHub for comprehensive instructions.
+
+1. Add the following IAM policies to your existing `FMBench` Role:
+
+    1. [AmazonEKSClusterPolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSClusterPolicy.html): This policy provides Kubernetes the permissions it requires to manage resources on your behalf.
+    
+    1. [AmazonEKS_CNI_Policy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html): This policy provides the Amazon VPC CNI Plugin (amazon-vpc-cni-k8s) the permissions it requires to modify the IP address configuration on your EKS worker nodes. This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.
+    
+    1. [AmazonEKSWorkerNodePolicy](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html): This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.
+ 
+1. Once the EKS cluster is available you can use either the following two files or create your own config files using these files as examples for running benchmarking for these models. **_These config files require that the EKS cluster has been created as per the steps in these [instructions](https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2)_**.
+
+    1. [config-llama3-8b-eks-inf2.yml](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml): Deploy Llama3 on Trn1/Inf2 instances.
+    
+    2. [config-mistral-7b-eks-inf2.yml](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/mistral/config-mistral-7b-eks-inf2.yml): Deploy Mistral 7b on Trn1/Inf2 instances.
+    
+    For more information about the [blueprints](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests) used by FMBench to deploy these models, view: [DoEKS docs gen-ai](https://awslabs.github.io/data-on-eks/docs/gen-ai).
+    
+1. Run the `Llama3-8b` benchmarking using the command below (replace the config file as needed for a different model). This will first deploy the model on your EKS cluster and then run benchmarking on the deployed model.
+
+    ```{.bash}
+    fmbench --config-file https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml > fmbench.log 2>&1
+    ```
+
+1. As the model is getting deployed you might want to run the following `kubectl` commands to monitor the deployment progress. Set the _model_namespace_ to `llama3` or `mistral` or a different model as appropriate.
+
+    1. `kubectl get pods -n <model_namespace> -w`: Watch the pods in the model specific namespace.
+    1. `kubectl -n karpenter get pods`: Get the pods in the karpenter namespace.
+    1. `kubectl describe pod -n <model_namespace> <pod-name>`: Describe a specific pod in the mistral namespace to view the live logs.
+
+### Benchmark models on EC2
+
+You can use `FMBench` to benchmark models on hosted on EC2. This can be done in one of two ways:
+ - Deploy the model on your EC2 instance independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
+ - Deploy the model on your EC2 instance through `FMBench` and then benchmark it.
+ 
+The steps for deploying the model on your EC2 instance are described below. 
+
+👉 In this configuration both the model being benchmarked and `FMBench` are deployed on the same EC2 instance.
+
+1. Create a new EC2 instance suitable for hosting an LMI as per the steps described [here](misc/ec2_instance_creation_steps.md).
+
+1. Install `FMBench` on this instance and run benchmarking for a desired model using one of the config files included in the `FMbench` repo or create your own.
+
+    1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`.
+    
+        ```{.bash}
+        # see instructions for downloading anaconda from https://www.anaconda.com/download
+        curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+        ```
+        
+    1. Clone the [`FMBench`](https://github.com/aws-samples/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
+
+        ```{.bash}
+        git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
+        cd foundation-model-benchmarking-tool
+        ```
+
+    1. Setup the `fmbench_python311` conda environment.
+
+        ```{.bash}
+        conda create --name fmbench_python311 -y python=3.11 ipykernel
+        source activate fmbench_python311;
+        pip install -U fmbench
+        ```
+
+    1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo.
+
+        ```{.bash}
+        ./copy_s3_content.sh
+        ```
+
+    1. Run `FMBench` with a quickstart config file. **_This step will deploy the model on the EC2 instance_**.
+
+        ```{.bash}
+        # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+        fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
+        ```
+
+    1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
+
+        ```{.bash}
+        tail -f fmbench.log
+        ```
+
+    1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
+
+
+## Advanced functionality
+
+Beyond running `FMBench` with the configuraton files provided, you may want try out bringing your own dataset or endpoint to `FMBench`. 
+
+### Bring your own endpoint (a.k.a. support for external endpoints)
+
+If you have an endpoint deployed on say `Amazon EKS` or `Amazon EC2` or have your models hosted on a fully-managed service such as `Amazon Bedrock`, you can still bring your endpoint to `FMBench` and run tests against your endpoint. To do this you need to do the following:
+
+1. Create a derived class from [`FMBenchPredictor`](./src/fmbench/scripts/fmbench_predictor.py) abstract class and provide implementation for the constructor, the `get_predictions` method and the `endpoint_name` property. See [`SageMakerPredictor`](./src/fmbench/scripts/sagemaker_predictor.py) for an example. Save this file locally as say `my_custom_predictor.py`.
+
+1. Upload your new Python file (`my_custom_predictor.py`) for your custom FMBench predictor to your `FMBench` read bucket and the scripts prefix specified in the `s3_read_data` section (`read_bucket` and `scripts_prefix`).
+
+1. Edit the configuration file you are using for your `FMBench` for the following:
+    - Skip the deployment step by setting the `2_deploy_model.ipynb` step under `run_steps` to `no`.
+    - Set the `inference_script` under any experiment in the `experiments` section for which you want to use your new custom inference script to point to your new Python file (`my_custom_predictor.py`) that contains your custom predictor.
+
+### Bring your own `REST Predictor` ([`data-on-eks`](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)
+
+`FMBench` now provides an example of bringing your own endpoint as a `REST Predictor` for benchmarking. View this [`script`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/REST-predictor-fmbench/src/fmbench/scripts/rest_predictor.py) as an example. This script is an inference file for the `NousResearch/Llama-2-13b-chat-hf` model deployed on an [Amazon EKS](https://docs.aws.amazon.com/whitepapers/latest/overview-deployment-options/amazon-elastic-kubernetes-service.html) cluster using [Ray Serve](https://docs.ray.io/en/latest/ray-overview/examples.html). The model is deployed via `data-on-eks` which is a comprehensive resource for scaling your data and machine learning workloads on Amazon EKS and unlocking the power of Gen AI. Using `data-on-eks`, you can harness the capabilities of AWS Trainium, AWS Inferentia and NVIDIA GPUs to scale and optimize your Gen AI workloads and benchmark those models on FMBench with ease. 
+
+### Bring your own dataset
+
+By default `FMBench` uses the [`LongBench dataset`](https://github.com/THUDM/LongBench) dataset for testing the models, but this is not the only dataset you can test with. You may want to test with other datasets available on HuggingFace or use your own datasets for testing. You can do this by converting your dataset to the [`JSON lines`](https://jsonlines.org/) format. We provide a code sample for converting any HuggingFace dataset into JSON lines format and uploading it to the S3 bucket used by `FMBench` in the [`bring_your_own_dataset`](./src/fmbench/bring_your_own_dataset.ipynb) notebook. Follow the steps described in the notebook to bring your own dataset for testing with `FMBench`.
+
+#### Support for Open-Orca dataset
+
+Support for [Open-Orca](https://huggingface.co/datasets/Open-Orca/OpenOrca) dataset and corresponding prompts for Llama3, Llama2 and Mistral, see:
+
+1. [bring_your_own_dataset.ipynb](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/bring_your_own_dataset.ipynb)
+1. [prompt templates](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/prompt_template)
+1. [Llama3 config file with OpenOrca](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml)
+
+### Building the `FMBench` Python package
+
+If you would like to build a dev version of `FMBench` for your own development and testing purposes, the following steps describe how to do that.
 
 1. Clone the `FMBench` repo from GitHub.
 
