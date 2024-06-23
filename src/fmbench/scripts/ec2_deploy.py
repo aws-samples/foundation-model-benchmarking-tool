@@ -49,15 +49,18 @@ def _set_up(model_name: str, serving_properties: str, local_model_path: str):
     return directory
 
 def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory):
-# Create the deploy_model.sh script
-#give container name and kill 
-#stop container if it already exists check if container exists 
+    """
+    Write a deployment script for model container
+    """
+    #stop container if it already exists check if container exists 
+    container_name: str = "fmbench_model_container"
     deploy_script_content = f"""#!/bin/sh
 echo "Going to download model now"
 echo "Content in docker command: {region}, {image_uri}, {model_name},{HF_TOKEN}"
 aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
 docker pull {image_uri}
-docker run -d --name=fmbench_container --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
+docker stop {container_name} || true && docker rm {container_name} || true
+docker run -d --name={container_name} --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
  -v {directory}:/opt/ml/model:ro \\
  -v {directory}/model_server_logs:/opt/djl/logs \\
  -e HF_TOKEN={HF_TOKEN} \\
