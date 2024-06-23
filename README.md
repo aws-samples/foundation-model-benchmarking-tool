@@ -448,11 +448,17 @@ The steps for deploying the model on your EC2 instance are described below.
         ./copy_s3_content.sh
         ```
 
-    1. Run `FMBench` with a quickstart config file. **_This step will also deploy the model on the EC2 instance_**.
+    1. To download the model files from HuggingFace, create a `hf_token.txt` file in the `/tmp/fmbench-read/scripts/` directory containing the Hugging Face token you would like to use. In the command below replace the `hf_yourtokenstring` with your hugging Face token.
+    
+        ```{.bash}
+        echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
+        ```
+    
+    1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**.
 
         ```{.bash}
         # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
-        fmbench --config-file /home/ubuntu/foundation-model-benchmarking-tool/src/fmbench/configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
+        fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
         ```
 
     1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.

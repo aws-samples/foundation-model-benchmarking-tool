@@ -59,6 +59,9 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             wait=True
         )
     logger.info(f'Model deployment on Endpoint Name: {endpoint_name} finished\n')
-    return dict(endpoint_name=endpoint_name, experiment_name=experiment_config['name'])
+    return dict(endpoint_name=endpoint_name,
+                experiment_name=experiment_config['name'],
+                instance_type=experiment_config['instance_type'],
+                instance_count=experiment_config['instance_count'])
 
     

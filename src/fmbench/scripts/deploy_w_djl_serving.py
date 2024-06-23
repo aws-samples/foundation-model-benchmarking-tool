@@ -250,4 +250,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("endpoint is not in service.")
 
     return dict(endpoint_name=endpoint_name,
-                experiment_name=experiment_config['name'])
+                experiment_name=experiment_config['name'],
+                instance_type=experiment_config['instance_type'],
+                instance_count=experiment_config['instance_count'])

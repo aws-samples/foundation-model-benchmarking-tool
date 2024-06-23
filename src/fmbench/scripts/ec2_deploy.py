@@ -149,16 +149,25 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)
 
+    # initialize with None values for error case
+    deployment_result: Dict = dict(endpoint_name=None, 
+                        experiment_name=None
+                        instance_type=None,
+                        instance_count=None)
     if ran_container:
         logger.info("Container ran successfully")
         ep_status = _check_model_deployment(ep_name)
         logger.info(f"Endpoint status: {ep_status}")
         if ep_status == "InService":
             logger.info("Model endpoint running!")
-            return dict(endpoint_name=ep_name, experiment_name=experiment_config['name'])
+            deployment_result['endpoint_name'] = ep_name
+            deployment_result['experiment_name'] = experiment_config['name']
+            deployment_result['instance_type'] = experiment_config['instance_type']
+            deployment_result['instance_count'] = experiment_config['instance_count']
+            return deployment_result
         elif ep_status == "Failed":
             logger.error("Model endpoint not running!")
-            return dict(endpoint_name=None, experiment_name=None)
+            return deployment_result
     else:
         logger.error("Container did not run successfully")
-        return dict(endpoint_name=None, experiment_name=None)
+        return deployment_result

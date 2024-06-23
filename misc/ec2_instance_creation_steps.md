@@ -26,7 +26,7 @@ Follow the steps below to create an EC2 instance for hosting a model in an LMI.
 1. Make a key pair by clicking _Create new key pair_. Give it a name, keep all settings as is, and then click “Create key pair”.
    ![](../img/ec2connect7.png)
    
-1. Skip over _Network settings_ (leave it as it is), going straight to _Configure storage_. 60 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
+1. Skip over _Network settings_ (leave it as it is), going straight to _Configure storage_. 45 GB, the suggested amount, is not nearly enough, and using that will cause the LMI docker container to download for an arbitrarily long time and then error out. Change it to 100 GB or more:
     ![](../img/ec2connect8.png)
 
 1. Create an IAM role to your instance called _FMBenchEC2Role_. Attach the following permission policies: `AmazonSageMakerFullAccess`, `AmazonBedrockFullAccess`.
