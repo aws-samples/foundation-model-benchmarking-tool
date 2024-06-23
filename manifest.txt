@@ -1,6 +1,5 @@
 configs/bert/config-distilbert-base-uncased.yml
 configs/gemma/config-gemma-2b-g5.yml
-configs/byoe/config-byo-ec2-rest-ep-llama3-8b.yml
 configs/byoe/config-model-byo-sagemaker-endpoint.yml
 configs/mistral/config-mistral-instruct-AWQ-p5.yml
 configs/mistral/config-mistral-instruct-p4d.yml
@@ -43,6 +42,7 @@ configs/llama3/8b/config-llama3-8b-instruct-g5-12xl.yml
 configs/llama3/8b/config-llama3-8b-instruct-g5-12xl-4-instances.yml
 configs/llama3/8b/config-llama3-8b-eks-inf2.yml
 configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-vllm.yml
+configs/llama3/8b/config-ec2-llama3-8b.yml
 configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml
 configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-lmi-dist.yml
 configs/llama3/8b/config-llama3-8b-instruct-p5-djl-lmi-dist.yml
