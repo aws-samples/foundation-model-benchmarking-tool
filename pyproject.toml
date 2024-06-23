@@ -1,9 +1,10 @@
 [tool.poetry]
 name = "fmbench"
-version = "1.0.45"
-description ="Benchmark performance of **any model** deployed on **Amazon SageMaker** or available on **Amazon Bedrock** or deployed by you on an AWS service of choice (such as Amazon EKS or Amazon EC2) a.k.a **Bring your own endpoint**."
+version = "1.0.46"
+description ="Benchmark performance of **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
+"
 authors = ["Amit Arora <aroraai@amazon.com>", "Madhur prashant <Madhurpt@amazon.com>"]
-readme = "README_pypi.md"
+readme = "README.md"
 license = "MIT"
 repository = "https://github.com/aws-samples/foundation-model-benchmarking-tool"
 keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "generative-ai", "foundation-models"]

@@ -1,36 +1,44 @@
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
-<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-# Foundation Model benchmarking tool (FMBench)
-**Table of contents**
-- [Overview](#overview)
-- - [Amazon SageMaker | Amazon Bedrock](#amazon-sagemaker--amazon-bedrock)
-  - [Models benchmarked](#models-benchmarked)
-    - [🚨 Llama3 on Amazon SageMaker 🚨](#-llama3-on-amazon-sagemaker-)
-    - [Full list of benchmarked models](#full-list-of-benchmarked-models)
-  - [New in this release](#new-in-this-release)
-    - [v1.0.45](#v1045)
-  - [Description](#description)
-  - [Getting started](#getting-started)
-    - [Quickstart](#quickstart)
-    - [The DIY version (with gory details)](#the-diy-version-with-gory-details)
-    - [Run `FMBench` on Amazon EC2 with no dependency on Amazon S3](#run-fmbench-on-amazon-ec2-with-no-dependency-on-amazon-s3)
-    - [Run `FMBench` on Amazon EKS](#run-fmbench-on-amazon-eks)
-    - [Bring your own `Rest Predictor` (`data-on-eks` version)](#bring-your-own-rest-predictor-data-on-eks-version)
-    - [Bring your own `dataset` | `endpoint`](#bring-your-own-dataset--endpoint)
-      - [Bring your own dataset](#bring-your-own-dataset)
-        - [Support for Open-Orca dataset](#support-for-open-orca-dataset)
-      - [Bring your own endpoint (a.k.a. support for external endpoints)](#bring-your-own-endpoint-aka-support-for-external-endpoints)
-    - [Steps to run](#steps-to-run)
-  - [Results](#results)
-    - [An internal `FMBench` website](#an-internal-fmbench-website)
-  - [Building the `FMBench` Python package](#building-the-fmbench-python-package)
-  - [Pending enhancements](#pending-enhancements)
-  - [Security](#security)
-  - [License](#license)
-  - [Star History](#star-history)
+**Table of Contents**  *generated with [DocToc](https://github.com/ktechhub/doctoc)*
+
+<!---toc start-->
+
+* [Foundation Model benchmarking tool (FMBench)](#foundation-model-benchmarking-tool-fmbench)
+* [Overview](#overview)
+  * [Models benchmarked](#models-benchmarked)
+    * [Llama3 on Amazon SageMaker ](#llama3-on-amazon-sagemaker)
+    * [Full list of benchmarked models](#full-list-of-benchmarked-models)
+  * [New in this release](#new-in-this-release)
+    * [v1.0.46](#v1046)
+  * [Description](#description)
+    * [Workflow for `FMBench`](#workflow-for-fmbench)
+  * [Getting started](#getting-started)
+    * [Quickstart](#quickstart)
+    * [Run `FMBench` on Amazon EC2](#run-fmbench-on-amazon-ec2)
+    * [Steps to run](#steps-to-run)
+  * [Results](#results)
+    * [An internal `FMBench` website](#an-internal-fmbench-website)
+  * [Benchmark models deployed on different AWS Generative AI services](#benchmark-models-deployed-on-different-aws-generative-ai-services)
+    * [Benchmark models on Bedrock](#benchmark-models-on-bedrock)
+    * [Benchmark models on SageMaker](#benchmark-models-on-sagemaker)
+    * [Benchmark models on EKS](#benchmark-models-on-eks)
+    * [Benchmark models on EC2](#benchmark-models-on-ec2)
+  * [Advanced functionality](#advanced-functionality)
+    * [Bring your own endpoint (a.k.a. support for external endpoints)](#bring-your-own-endpoint-aka-support-for-external-endpoints)
+    * [Bring your own `REST Predictor` (\[`data-on-eks`\](https://github.com/awslabs/data-on-eks/tree/7173cd98c9be6f555afc42f8311cc7849f74a038) version)](#bring-your-own-rest-predictor-data-on-ekshttpsgithubcomawslabsdata-on-ekstree7173cd98c9be6f555afc42f8311cc7849f74a038-version)
+    * [Bring your own dataset](#bring-your-own-dataset)
+      * [Support for Open-Orca dataset](#support-for-open-orca-dataset)
+    * [Building the `FMBench` Python package](#building-the-fmbench-python-package)
+  * [Pending enhancements](#pending-enhancements)
+  * [Security](#security)
+  * [License](#license)
+  * [Star History](#star-history)
+
+<!---toc end-->
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 
 # Overview
 
@@ -64,7 +72,7 @@ This foundation model benchmarking tool (a.k.a. `FMBench`) is a tool to answer t
 
 Configuration files are available in the [configs](./src/fmbench/configs) folder for the following models in this repo.
 
-### 🚨 Llama3 on Amazon SageMaker 🚨
+### Llama3 on Amazon SageMaker
 
 Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/blogs/machine-learning/meta-llama-3-models-are-now-available-in-amazon-sagemaker-jumpstart/)), and you can now benchmark it using `FMBench`. Here are the config files for benchmarking `Llama3-8b-instruct` and `Llama3-70b-instruct` on `ml.p4d.24xlarge`, `ml.inf2.24xlarge` and `ml.g5.12xlarge` instances.
 
@@ -95,6 +103,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **distilbert-base-uncased**  |  ✅ | |  | ||   |
 
 ## New in this release
+
+### v1.0.46
+1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
+1. FMBench is now available in GovCloud.
+1. Update to latest version of several packages.
 
 ### v1.0.45
 1. Analytics for results across multiple runs.
@@ -200,7 +213,7 @@ While technically you can run `FMBench` on any AWS compute but practically speak
 
 1. Each `FMBench` run works with a configuration file that contains the information about the model, the deployment steps, and the tests to run. A typical `FMBench` workflow involves either directly using an already provided config file from the [`configs`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs) folder in the `FMBench` GitHub repo or editing an already provided config file as per your own requirements (say you want to try benchmarking on a different instance type, or a different inference container etc.).
 
-    >A simple config file with key parameters annotated is included in this repo, see [`config-llama2-7b-g5-quick.yml`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml). This file benchmarks performance of Llama2-7b on an `ml.g5.xlarge` instance and an `ml.g5.2xlarge` instance. You can use this config file as it is for this Quickstart.
+👉 A simple config file with key parameters annotated is included in this repo, see [`config-llama2-7b-g5-quick.yml`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml). This file benchmarks performance of Llama2-7b on an `ml.g5.xlarge` instance and an `ml.g5.2xlarge` instance. You can use this config file as it is for this Quickstart.
 
 1. Launch the AWS CloudFormation template included in this repository using one of the buttons from the table below. The CloudFormation template creates the following resources within your AWS account: Amazon S3 buckets, Amazon IAM role and an Amazon SageMaker Notebook with this repository cloned. A read S3 bucket is created which contains all the files (configuration files, datasets) required to run `FMBench` and a write S3 bucket is created which will hold the metrics and reports generated by `FMBench`. The CloudFormation stack takes about 5-minutes to create.
 
@@ -208,6 +221,7 @@ While technically you can run `FMBench` on any AWS compute but practically speak
    |:------------------------:|:-----------:|
    |us-east-1 (N. Virginia)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
    |us-west-2 (Oregon)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
+   |us-gov-east-1 (GovCloud N. Virginia)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-gov-east-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
 
 1. Once the CloudFormation stack is created, navigate to SageMaker Notebooks and open the `fmbench-notebook`.
 

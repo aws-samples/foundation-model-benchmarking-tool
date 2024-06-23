@@ -57,7 +57,7 @@ def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory
     container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     deploy_script_content = f"""#!/bin/sh
 echo "Going to download model now"
-echo "Content in docker command: {region}, {image_uri}, {model_name},{HF_TOKEN}"
+echo "Content in docker command: {region}, {image_uri}, {model_name}"
 aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
 docker pull {image_uri}
 docker stop {container_name} || true && docker rm {container_name} || true
