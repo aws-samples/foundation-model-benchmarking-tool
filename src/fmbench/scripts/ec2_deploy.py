@@ -25,7 +25,8 @@ logger = logging.getLogger(__name__)
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 SHM_SIZE: str = "12g"
-MODEL_DEPLOYMENT_TIMEOUT: int = 1000
+MODEL_DEPLOYMENT_TIMEOUT: int = 2400
+FMBENCH_MODEL_CONTAINER_NAME: str = "fmbench_model_container"
 
 def _set_up(model_name: str, serving_properties: str, local_model_path: str):
     """
@@ -53,7 +54,7 @@ def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory
     Write a deployment script for model container
     """
     #stop container if it already exists check if container exists 
-    container_name: str = "fmbench_model_container"
+    container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     deploy_script_content = f"""#!/bin/sh
 echo "Going to download model now"
 echo "Content in docker command: {region}, {image_uri}, {model_name},{HF_TOKEN}"
@@ -84,23 +85,23 @@ def _run_container(script_file_path):
 
     try:
         # Check if the container exists and is running
-        container = client.containers.get("fmbench_container")
+        container = client.containers.get(FMBENCH_MODEL_CONTAINER_NAME)
         if container.status == "running":
-            logger.info("Container 'fmbench_container' is already running.")
+            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is already running.")
         else:
-            logger.info("Container 'fmbench_container' is not running. Running the script directly.")
+            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is not running. Running the script directly.")
             subprocess.run(["bash", script_file_path], check=True)
             logger.info(f"done running bash script")
         return True
     except docker.errors.NotFound:
-        logger.info("Container 'fmbench_container' not found. Running the script directly.")
+        logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} not found. Running the script directly.")
         subprocess.run(["bash", script_file_path], check=True)
         logger.info(f"done running bash script")
         return True
     except subprocess.CalledProcessError as e:
         logger.error(f"Error running deploy_model.sh script: {e}")
     except Exception as e:
-       logger.error(f"An unexpected error occurred: {e}")
+        logger.error(f"An unexpected error occurred: {e}")
     return False
 
 def _check_model_deployment(endpoint):
