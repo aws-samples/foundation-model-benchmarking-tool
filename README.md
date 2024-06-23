@@ -422,6 +422,9 @@ The steps for deploying the model on your EC2 instance are described below.
         ```{.bash}
         # see instructions for downloading anaconda from https://www.anaconda.com/download
         curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+        chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
+        ./Anaconda3-2023.09-0-Linux-x86_64.sh
+        export PATH=/home/ubuntu/anaconda3/bin:$PATH
         ```
         
     1. Clone the [`FMBench`](https://github.com/aws-samples/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
@@ -445,7 +448,7 @@ The steps for deploying the model on your EC2 instance are described below.
         ./copy_s3_content.sh
         ```
 
-    1. Run `FMBench` with a quickstart config file. **_This step will deploy the model on the EC2 instance_**.
+    1. Run `FMBench` with a quickstart config file. **_This step will also deploy the model on the EC2 instance_**.
 
         ```{.bash}
         # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
