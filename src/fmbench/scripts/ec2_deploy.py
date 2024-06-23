@@ -154,7 +154,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
 
     # initialize with None values for error case
     deployment_result: Dict = dict(endpoint_name=None, 
-                        experiment_name=None
+                        experiment_name=None,
                         instance_type=None,
                         instance_count=None)
     if ran_container:
