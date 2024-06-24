@@ -117,44 +117,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
 1. `Llama3-8b` config files for `g6` instances.
 
-### v1.0.42
-1. Config file for running `Llama3-8b` on all instance types except `p5`.
-1. Fix bug with business summary chart.
-1. Fix bug with deploying model using a DJL DeepSpeed container in the no S3 dependency mode.
-
-### v1.0.40
-1. Make it easy to run in the Amazon EC2 without any dependency on Amazon S3 dependency mode.
-
-### v1.0.39
-1. Add an internal `FMBench` website.
-
-### v1.0.38
-1. Support for running `FMBench` on Amazon EC2 without any dependency on Amazon S3.
-1. [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct) config file for `ml.p5.48xlarge`.
-
-### v1.0.37
-1. `g5`/`p4d`/`inf2`/`trn1` specific config files for [`Llama3-8b-Instruct`](https://huggingface.co/meta-llama/Meta-Llama-3-8B-Instruct).
-    1. `p4d` config file for both `vllm` and `lmi-dist`.
-
-### v1.0.36
-1. Fix bug at higher concurrency levels (20 and above).
-1. Support for instance count > 1.
-
-
-### v1.0.35
-
-1. Support for [Open-Orca](https://huggingface.co/datasets/Open-Orca/OpenOrca) dataset and corresponding prompts for Llama3, Llama2 and Mistral.
-
-### v1.0.34
-1. Don't delete endpoints for the bring your own endpoint case.
-1. Fix bug with business summary chart.
-
-### v1.0.32
-
-1. Report enhancements: New business summary chart, config file embedded in the report, version numbering and others.
-
-1. Additional config files: Meta Llama3 on Inf2, Mistral instruct with `lmi-dist` on `p4d` and `p5` instances.
-
+[Release history](./release_history.md)
 
 ## Description
 
@@ -269,13 +232,6 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     }
     ```
 
-1. Clone the [`FMBench`](https://github.com/aws-samples/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
-
-    ```{.bash}
-    git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
-    cd foundation-model-benchmarking-tool
-    ```
-
 1. Setup the `fmbench_python311` conda environment. This step required conda to be installed on the EC2 instance, see [instructions](https://www.anaconda.com/download) for downloading Anaconda.
 
     ```{.bash}
@@ -287,7 +243,7 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
 1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo.
 
     ```{.bash}
-    ./copy_s3_content.sh
+    curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh
     ```
 
 1. Run `FMBench` with a quickstart config file.
@@ -322,6 +278,7 @@ You can create an internal `FMBench` website to view results from multiple runs 
 
     ```{.python}
     source activate fmbench_python311
+    curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/render_fmbench_website.py
     python render_fmbench_website.py
     ```
     
@@ -422,13 +379,6 @@ The steps for deploying the model on your EC2 instance are described below.
         ./Anaconda3-2023.09-0-Linux-x86_64.sh
         export PATH=/home/ubuntu/anaconda3/bin:$PATH
         ```
-        
-    1. Clone the [`FMBench`](https://github.com/aws-samples/foundation-model-benchmarking-tool) repo from GitHub on your EC2 instance.
-
-        ```{.bash}
-        git clone https://github.com/aws-samples/foundation-model-benchmarking-tool.git
-        cd foundation-model-benchmarking-tool
-        ```
 
     1. Setup the `fmbench_python311` conda environment.
 
@@ -441,7 +391,7 @@ The steps for deploying the model on your EC2 instance are described below.
     1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo.
 
         ```{.bash}
-        ./copy_s3_content.sh
+        curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh
         ```
 
     1. To download the model files from HuggingFace, create a `hf_token.txt` file in the `/tmp/fmbench-read/scripts/` directory containing the Hugging Face token you would like to use. In the command below replace the `hf_yourtokenstring` with your hugging Face token.
@@ -465,7 +415,30 @@ The steps for deploying the model on your EC2 instance are described below.
 
     1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
+## ⚠️Experimental
 
+You can now run `FMBench` on any platform where you can run a Docker container, for example on an EC2 VM, SageMaker Notebook etc. The advantage is that you do not have to install anything locally, so no `conda` installs needed anymore. Here are the steps to do that.
+
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. You can place model specific tokenizers and any new configuration files you create in the `/tmp/fmbench-read` directory that is created after running the following command. 
+
+    ```{.bash}
+    curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh
+    ```
+
+1. That's it! You are now ready to run the container.
+
+    ```{.bash}
+    # set the config file path to point to the config file of interest
+    CONFIG_FILE=https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
+    docker run -v $(pwd)/fmbench:/app \
+      -v /tmp/fmbench-read:/tmp/fmbench-read \
+      -v /tmp/fmbench-write:/tmp/fmbench-write \
+      aarora79/fmbench:v1.0.47 \
+     "fmbench --config-file ${CONFIG_FILE} --local-mode yes --write-bucket placeholder > fmbench.log 2>&1"
+    ```
+    
+1. The above command will create a `fmbench` directory inside the current working directory. This directory contains the `fmbench.log` and the `results-*` folder that is created once the run finished.
+    
 ## Advanced functionality
 
 Beyond running `FMBench` with the configuraton files provided, you may want try out bringing your own dataset or endpoint to `FMBench`. 

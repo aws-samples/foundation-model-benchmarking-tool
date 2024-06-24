@@ -24,13 +24,8 @@ RUN conda create --name fmbench_python311 -y python=3.11 ipykernel && \
 # Install fmbench
 RUN /opt/miniconda/bin/conda run -n fmbench_python311 pip install -U fmbench
 
-
-
-# Set working directory
+# Set working directorys
 WORKDIR /app
-
-# Copy the application files
-COPY . /app/
 
 # Set the entrypoint to run the fmbench command
 ENTRYPOINT ["conda", "run", "-n", "fmbench_python311", "sh", "-c"]

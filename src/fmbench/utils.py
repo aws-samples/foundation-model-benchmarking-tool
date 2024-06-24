@@ -404,6 +404,7 @@ class CustomTokenizer:
         if dir_not_empty is True:
             print(f"loading the provided tokenizer from local_dir={local_dir}, abs_path={abs_path}")
             self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
+            print("successfully loaded the tokenizer using AutoTokenizer.from_pretrained")
         else:
             print(f"no tokenizer provided, the {local_dir}, abs_path={abs_path} is empty, "
                   f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
