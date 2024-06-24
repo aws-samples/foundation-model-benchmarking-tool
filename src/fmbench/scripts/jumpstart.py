@@ -24,4 +24,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],
                                  endpoint_name=ep_name)
 
-    return dict(endpoint_name=predictor.endpoint_name, experiment_name=experiment_config['name'])
+    return dict(endpoint_name=predictor.endpoint_name, 
+                experiment_name=experiment_config['name'], 
+                instance_type=experiment_config['instance_type'], 
+                instance_count=experiment_config['instance_count'], 
+                deployed=True)

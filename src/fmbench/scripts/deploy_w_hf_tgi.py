@@ -77,4 +77,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict[str, str]:
     status = check_endpoint_status(llm_endpoint)
     logger.info(f"Endpoint status: {status}")
 
-    return dict(endpoint_name=llm_endpoint, experiment_name=experiment_config['name'])
+    return dict(endpoint_name=llm_endpoint, 
+                experiment_name=experiment_config['name'], 
+                instance_type=experiment_config['instance_type'], 
+                instance_count=experiment_config['instance_count'], 
+                deployed=True)

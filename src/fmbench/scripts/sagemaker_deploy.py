@@ -62,6 +62,5 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     return dict(endpoint_name=endpoint_name,
                 experiment_name=experiment_config['name'],
                 instance_type=experiment_config['instance_type'],
-                instance_count=experiment_config['instance_count'])
-
-    
+                instance_count=experiment_config['instance_count'], 
+                deployed=True)

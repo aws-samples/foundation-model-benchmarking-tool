@@ -183,16 +183,16 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         # first update the kubeconfig
         eks_cluster_name: str = experiment_config['eks']['eks_cluster_name']
         _init_eks_checks(eks_cluster_name)
-        
+
         # deploy the model
         manifest_file_name: str = experiment_config['eks']['manifest_file']
         manifest_dir_path: str = experiment_config['eks']['manifest_dir']
         _deploy_ray(manifest_file_name, manifest_dir_path)
-        
+
         # check the status every 15 seconds during deployment
         eks_model_namespace: str = experiment_config['eks']['eks_model_namespace']
         _check_ray_service_status(eks_model_namespace)
-        
+
         # fetch the endpoint url once the model is deployed
         inference_url_format: str = experiment_config['inference_spec']['inference_url_format']
         endpoint_url: str = _print_ingress(eks_model_namespace, inference_url_format)
@@ -200,7 +200,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         eks_endpoint_info = dict(endpoint_name= endpoint_url,
                                  experiment_name=experiment_config['name'],
                                  instance_type=experiment_config['instance_type'],
-                                 instance_count=experiment_config['instance_count'])
+                                 instance_count=experiment_config['instance_count'], 
+                                 deployed=True)
     except Exception as e:
         logger.error(f"Error occured while deploying the model: {e}")
         eks_endpoint_info = None
