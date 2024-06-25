@@ -11,6 +11,10 @@ from pathlib import Path
 MANIFEST_FILE: str = "manifest.txt"
 
 BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
+                             "tokenizer/.keep",
+                             "llama2_tokenizer/.keep",
+                             "llama3_tokenizer/.keep",
+                             "mistral_tokenizer/.keep",
                              "scripts/.keep",
                              "source_data/2wikimqa_e.jsonl",
                              "source_data/2wikimqa.jsonl",

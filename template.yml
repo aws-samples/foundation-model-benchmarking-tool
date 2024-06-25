@@ -196,14 +196,6 @@ Resources:
           s3 = boto3.client("s3")
           http = urllib3.PoolManager()
 
-          EMPTY_PREFIXES = [
-              "tokenizer",
-              "llama2_tokenizer",
-              "llama2_tokenizer",
-              "mistral_tokenizer",
-          ]
-
-
           # s3://aws-blogs-artifacts-public/artifacts/ML-15729/docs/manifest.txt
           def lambda_handler(event, context):
               logger.info("got event {}".format(event))
@@ -273,19 +265,6 @@ Resources:
                       s3.put_object(Bucket=read_bucket, Key=fname, Body=content)
                       logger.info(f"saving file to destination: Bucket:{read_bucket}/{key}")
                       ctr += 1
-
-                  for empty_prefix in EMPTY_PREFIXES:
-                      try:
-                          logger.debug(f"creating empty file: {empty_prefix}/.keep")
-                          s3.put_object(
-                              Bucket=read_bucket,
-                              Key=(empty_prefix + "/.keep"),
-                              Body="",
-                          )
-                          logger.debug(f"created empty file: {empty_prefix}/.keep")
-                      except Exception as e:
-                          logger.error(f"Error creating empty file: {e}")
-                          raise e
 
                   logger.info("Done!")
                   response = dict(files_copied=ctr, error=None)

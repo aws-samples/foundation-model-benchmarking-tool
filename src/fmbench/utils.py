@@ -399,7 +399,9 @@ class CustomTokenizer:
         # Check if the tokenizer files exist in s3 and if not, use the autotokenizer
         download_multiple_files_from_s3(bucket, prefix, local_dir)
         # Load the tokenizer from the local directory
-        dir_not_empty = any(Path(local_dir).iterdir())
+        all_files = [f for f in list(Path(local_dir).iterdir()) if f.name != ".keep"]
+        dir_not_empty = len(all_files)
+        print(f"CustomTokenizer, all_files = {all_files}")
         abs_path = Path(local_dir).absolute().resolve()
         if dir_not_empty is True:
             print(f"loading the provided tokenizer from local_dir={local_dir}, abs_path={abs_path}")
