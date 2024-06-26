@@ -1,5 +1,6 @@
 import time
 import json
+import boto3
 import logging
 import sagemaker
 import pandas as pd
@@ -11,10 +12,15 @@ from sagemaker.serializers import JSONSerializer
 from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
+from fmbench.scripts.stream_responses import (get_sagemaker_realtime_response_stream,
+                                               get_sagemaker_response_stream)
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the SageMaker runtime to support getting response streams
+sagemaker_runtime = boto3.client('sagemaker-runtime')
 
 
 class SageMakerPredictor(FMBenchPredictor):
@@ -51,8 +57,11 @@ class SageMakerPredictor(FMBenchPredictor):
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
+        ttft: Optional[float] = None
+        tpot: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
+        stream_response: Optional[bool] = None
 
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload["inputs"])
@@ -63,7 +72,7 @@ class SageMakerPredictor(FMBenchPredictor):
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
             response = None
-            response = None
+            stream_response = self._inference_spec.get("stream", False)
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
@@ -95,13 +104,27 @@ class SageMakerPredictor(FMBenchPredictor):
                     #   "inputs": "this is the prompt"
                     # }
                     payload = payload | dict(parameters=self._inference_spec["parameters"])
-                #import json
-                #logger.info(json.dumps(payload, indent=2, default=str))
+
+            # if the response streaming is step, call the get_response stream on the 
+            # sagemaker endpoint, else use the simple predict call
+            if stream_response is True:
+                payload["stream"] = stream_response
+                logger.info(f"Sending payload for streaming because stream is: {stream_response}")
+                response_stream = get_sagemaker_realtime_response_stream(sagemaker_runtime,
+                                                               self._endpoint_name,
+                                                               payload)
+                response_dict = get_sagemaker_response_stream(response_stream)
+                ttft = response_dict.get('TTFT')
+                tpot = response_dict.get('TPOT')
+                response = response_dict.get('Response')
+            else:
+                logger.info(f"Sending payload: {json.dumps(payload)}")
                 response = self._predictor.predict(payload)
 
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
                 response = response.decode('utf-8')
+            logger.info(f"response: {response}, type: {(type(response))}")
             response_json = json.loads(response)
 
             if isinstance(response_json, list):
@@ -118,6 +141,8 @@ class SageMakerPredictor(FMBenchPredictor):
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
+                                         time_to_first_token=ttft,
+                                         time_per_output_token=tpot,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
 

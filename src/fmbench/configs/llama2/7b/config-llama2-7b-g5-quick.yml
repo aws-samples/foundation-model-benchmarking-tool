@@ -77,7 +77,7 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  5_cleanup.ipynb: no
 
 
 datasets:
@@ -129,7 +129,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_2000-3000
+  dataset_of_interest: en_500-1000
 
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -180,12 +180,13 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: sagemaker
+      stream: True
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
     #- payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
@@ -193,7 +194,7 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    - 4
+    # - 4
 
     accept_eula: true
     # Environment variables to be passed to the container
@@ -232,12 +233,13 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: sagemaker
+      stream: True
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
     #- payload_en_3000-3840.jsonl
     
     # concurrency level refers to number of requests sent in parallel to an endpoint
@@ -246,7 +248,7 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    - 4
+    # - 4
     # Added for models that require accepting a EULA
     accept_eula: true
     # Environment variables to be passed to the container
