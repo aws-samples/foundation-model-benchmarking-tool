@@ -350,7 +350,9 @@ The steps for deploying the model on your EKS cluster are described below.
     fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml > fmbench.log 2>&1
     ```
 
-1. As the model is getting deployed you might want to run the following `kubectl` commands to monitor the deployment progress. Set the _model_namespace_ to `llama3` or `mistral` or a different model as appropriate.
+1. As the model is getting deployed you are able to track the progress using `kubectl` commands. Befor beign able to use this commands you have to make sure that your configuration file for kubectl is set apropriatly. if you have already installed the terraform script for DoEKS you can run the following comand to set the context for your future c=kubectl commands: `aws eks --region us-east-1 update-kubeconfig --name trainium-inferentia
+`
+Make sure to set the _model_namespace_ to `llama3` or `mistral` or a different model as appropriate.
 
     1. `kubectl get pods -n <model_namespace> -w`: Watch the pods in the model specific namespace.
     1. `kubectl -n karpenter get pods`: Get the pods in the karpenter namespace.

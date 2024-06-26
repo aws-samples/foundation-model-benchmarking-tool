@@ -2,8 +2,10 @@
 
 The steps below create an EKS cluster called `trainium-inferentia`.
 
-1. Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). We use the [`DoEKS`](https://github.com/awslabs/data-on-eks/tree/main) repository as a guide to deploy the cluster infrastructure in an AWS account.
+1. Before we begin, ensure you have all the prerequisites in place to make the deployment process smooth and hassle-free. Ensure that you have installed the following tools on your machine: [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html), [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/) and [terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli). We use the [`DoEKS`](https://github.com/awslabs/data-on-eks/tree/main) repository as a guide to deploy the cluster infrastructure in an AWS account.
 
+
+1. The first thing that needs to be done is to make sure that you have enough inf2 on-demand vCPUs as most of the DoEKS blueprints utilize this specific instance. to increase service quota navigate to the service quota page for your respective region [service quota](https://us-east-1.console.aws.amazon.com/servicequotas/home?region=us-east-1). Then select services under the left side menu and search for "Amazon Elastic Compute Cloud (Amazon EC2)"". This will bring up the service quota page, here search for "inf" and there should be an option for "Running On-Demand Inf instances". Increase this quota to 300. 
 
 1. Clone the [`DoEKS`](https://github.com/awslabs/data-on-eks) repository
 
