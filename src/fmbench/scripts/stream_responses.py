@@ -3,7 +3,7 @@ import time
 import json
 import boto3
 import logging
-from typing import Dict, Optional
+from typing import Dict, Optional, List
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -68,45 +68,119 @@ class LineIterator:
             self.buffer.write(chunk['PayloadPart']['Bytes'])
 
 
-def get_response_stream_token_metrics(response_stream) -> Dict:
+def get_sagemaker_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
     event_stream = response_stream['Body']
-    start_json = b'{'
-    stop_token = '</s>'
-    start_time = time.time()
-    first_token_time = None
-    token_times = []
+    start_json: str = b'{'
+    start_time: float = time.perf_counter()
+    first_token_time: Optional[float] = None
+    token_times: Optional[List[float]] = []
     last_token_time = start_time
-    response_text = ""
+    response_text: str = ""
+    TTFT: Optional[float] = None
+    TPOT: Optional[float] = None
+    TTLT: Optional[float] = None
     result: Optional[Dict] = None
-    ttft = None
-    tpot = None
 
-    for line in LineIterator(event_stream):
-        if line != b'' and start_json in line:
-            data = json.loads(line[line.find(start_json):].decode('utf-8'))
-            if data['token']['text'] != stop_token:
-                current_time = time.time()
+    try:
+        for line in LineIterator(event_stream):
+            if line != b'' and start_json in line:
+                data = json.loads(line[line.find(start_json):].decode('utf-8'))
+                if data['token']['text'] != stop_token:
+                    current_time = time.perf_counter()
 
-                if first_token_time is None:
-                    first_token_time = current_time
-                    ttft = first_token_time - start_time
-                    logger.info(f"Time to First Token: {ttft:.3f} seconds")
+                    if first_token_time is None:
+                        first_token_time = current_time
+                        TTFT = first_token_time - start_time
+                        logger.info(f"Time to First Token: {TTFT:.3f} seconds")
+                    else:
+                        token_time = current_time - last_token_time
+                        token_times.append(token_time)
+
+                    last_token_time = current_time
+                    response_text += data['token']['text']
                 else:
-                    token_time = current_time - last_token_time
-                    token_times.append(token_time)
+                    # Calculate TTLT at the reception of the last token
+                    current_time = time.perf_counter()
+                    TTLT = current_time - start_time
+                    logger.info(f"Time to Last Token (TTLT): {TTLT:.3f} seconds")
+                    break
 
-                last_token_time = current_time
-                response_text += data['token']['text']
+        if token_times:
+            TPOT = sum(token_times) / len(token_times)
+            logger.info(f"Time Per Output Token (TPOT): {TPOT:.3f} seconds")
 
-    if token_times:
-        tpot = sum(token_times) / len(token_times)
-        logger.info(f"Time Per Output Token (TPOT): {tpot:.3f} seconds")
+        response_data = [{"generated_text": response_text}]
+        response_json_str = json.dumps(response_data)
+        result = {
+            "TTFT": TTFT,
+            "TPOT": TPOT,
+            "TTLT": TTLT,
+            "Response": response_json_str
+        }
+    except Exception as e:
+        logger.error(f"Error occurred while generating and computing metrics associated with the streaming response: {e}")
+        result = None
 
-    response_data = [{"generated_text": response_text}]
-    response_json_str = json.dumps(response_data)
-    result = {
-        "TTFT": ttft,
-        "TPOT": tpot,
-        "Response": response_json_str
-    }
+    # Additional logging for diagnosis
+    logger.info(f"Final result: {result}")
+    return result
+
+def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
+    start_time: float = time.perf_counter()
+    first_token_time: Optional[float] = None
+    token_times: Optional[List[float]] = []
+    last_token_time = start_time
+    response_text: str = ""
+    TTFT: Optional[float] = None
+    TPOT: Optional[float] = None
+    TTLT: Optional[float] = None
+    result: Optional[Dict] = None
+
+    try:
+        for chunk in response_stream:
+            logger.info(f"chunk found")
+            if hasattr(chunk, 'choices') and hasattr(chunk.choices[0], 'delta'):
+                token_text = chunk.choices[0].delta.get('content', '')
+                current_time = time.perf_counter()
+                if token_text:
+                    if first_token_time is None:
+                        logger.info(f"computing the first token time")
+                        first_token_time = current_time
+                        TTFT = first_token_time - start_time
+                        logger.info(f"Time to First Token: {TTFT:.3f} seconds")
+                    else:
+                        token_time = current_time - last_token_time
+                        token_times.append(token_time)
+
+                    last_token_time = current_time
+                    response_text += token_text
+
+                    # Check for stop token
+                    if stop_token and stop_token in response_text:
+                        logger.info(f"got the last token: {stop_token}")
+                        break
+
+        # Calculate TTLT at the reception of the last token
+        current_time = time.perf_counter()
+        TTLT = current_time - start_time
+        logger.info(f"Time to Last Token (TTLT): {TTLT:.3f} seconds")
+
+        if token_times:
+            TPOT = sum(token_times) / len(token_times)
+            logger.info(f"Time Per Output Token (TPOT): {TPOT:.3f} seconds")
+
+        response_data = [{"generated_text": response_text}]
+        response_json_str = json.dumps(response_data)
+        result = {
+            "TTFT": TTFT,
+            "TPOT": TPOT,
+            "TTLT": TTLT,
+            "Response": response_json_str
+        }
+    except Exception as e:
+        logger.error(f"Error occurred while generating and computing bedrock metrics associated with the streaming response: {e}", exc_info=True)
+        result = None
+
+    # Additional logging for diagnosis
+    logger.info(f"Final result: {result}")
     return result

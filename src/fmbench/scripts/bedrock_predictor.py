@@ -1,13 +1,17 @@
 import os
 import math
+import json
+import time
 import boto3
+import litellm
 import logging
 import pandas as pd
 from datetime import datetime
-from litellm import completion
 from typing import Dict, Optional, List
+from litellm import completion, token_counter
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
+from fmbench.scripts.stream_responses import get_bedrock_response_stream_token_metrics
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -88,6 +92,8 @@ class BedrockPredictor(FMBenchPredictor):
                     self._temperature = parameters.get('temperature', self._temperature)
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
                     self._top_p = parameters.get('top_p', self._top_p)
+                    self._stream = inference_spec.get("stream", False)
+                    self._stop = inference_spec.get("stop_token", None)
             self._response_json = {}
             logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
                         f"_temperature={self._temperature} "
@@ -107,8 +113,14 @@ class BedrockPredictor(FMBenchPredictor):
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
         prompt_tokens: Optional[int] = None
+        response_dict_from_streaming: Optional[Dict] = None
+        TTFT: Optional[float] = None
+        TPOT: Optional[float] = None
+        TTLT: Optional[float] = None
 
         try:
+            # recording latency for when streaming is enabled
+            st = time.perf_counter()
             # this response is for text generation models on bedrock: Claude, Llama, Mistral etc.
             logger.info(f"Invoking {self._bedrock_model} to get inference")
             # cohere does not support top_p and apprarently LiteLLM does not
@@ -121,7 +133,8 @@ class BedrockPredictor(FMBenchPredictor):
                                       temperature=self._temperature,
                                       max_tokens=self._max_tokens,
                                       top_p=self._top_p,
-                                      caching=self._caching,)
+                                      caching=self._caching,
+                                      stream=self._stream)
             else:
                 response = completion(model=self._bedrock_model,
                                       model_id=self._pt_model_id,
@@ -129,30 +142,52 @@ class BedrockPredictor(FMBenchPredictor):
                                                  "role": "user"}],
                                       temperature=self._temperature,
                                       max_tokens=self._max_tokens,
-                                      caching=self._caching,)
+                                      caching=self._caching,
+                                      stream=self._stream)
+            logger.info(f"stop token: {self._stop}, streaming: {self._stream}, response: {response}")
 
-            # iterate through the entire model response
-            # since we are not sending bached request so we only expect
-            # a single completion
-            for choice in response.choices:
-                # extract the message and the message's content from litellm
-                if choice.message and choice.message.content:
-                    # extract the response from the dict
-                    self._response_json["generated_text"] = choice.message.content
-                    break
+            # Get the response and the TTFT, TPOT, TTLT metrics if the streaming for responses is set to true
+            if self._stream is True:
+                response_dict_from_streaming = get_bedrock_response_stream_token_metrics(response, self._stop)
+                TTFT = response_dict_from_streaming.get('TTFT')
+                TPOT = response_dict_from_streaming.get('TPOT')
+                TTLT = response_dict_from_streaming.get('TTLT')
+                self._response_json["generated_text"] = json.loads(response_dict_from_streaming['Response'])[0].get('generated_text')
+                # Getting in the total input and output tokens using token counter.
+                # Streaming on liteLLM does not support prompt tokens and completion tokens 
+                # in the invocation response format
+                prompt_tokens = token_counter(model=self._endpoint_name, 
+                                              messages=[{"content": prompt_input_data, "role": "user"}])
+                completion_tokens = litellm.token_counter(text=self._response_json["generated_text"])
+                # Extract latency in seconds
+                latency = time.perf_counter() - st
+                logger.info(f"streaming prompt token count: {prompt_tokens}, completion token count: {completion_tokens}, latency: {latency}")
+            # If streaming is set to false, then get the response in the normal
+            # without streaming format from LiteLLM
+            else:
+                # Iterate through the entire model response
+                # Since we are not sending batched requests so we only expect a single completion
+                for choice in response.choices:
+                    # Extract the message and the message's content from LiteLLM
+                    if choice.message and choice.message.content:
+                        # Extract the response from the dict
+                        self._response_json["generated_text"] = choice.message.content
+                        break
 
-            # Extract number of input and completion prompt tokens
-            prompt_tokens = response.usage.prompt_tokens
-            completion_tokens = response.usage.completion_tokens
-
-            # Extract latency in seconds
-            latency = response._response_ms / 1000
+                # Extract number of input and completion prompt tokens
+                prompt_tokens = response.usage.prompt_tokens
+                completion_tokens = response.usage.completion_tokens
+                # Extract latency in seconds
+                latency = response._response_ms / 1000
         except Exception as e:
             logger.error(f"exception during prediction, endpoint_name={self._endpoint_name}, "
                          f"exception={e}")
 
         return FMBenchPredictionResponse(response_json=self._response_json,
                                          latency=latency,
+                                         time_to_first_token=TTFT,
+                                         time_per_output_token=TPOT,
+                                         time_to_last_token=TTLT,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
 
@@ -208,7 +243,7 @@ class BedrockPredictor(FMBenchPredictor):
                     period: int = 60) -> pd.DataFrame:
         # not implemented
         return None
-    
+
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""

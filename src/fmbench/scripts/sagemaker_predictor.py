@@ -56,11 +56,13 @@ class SageMakerPredictor(FMBenchPredictor):
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
-        ttft: Optional[float] = None
-        tpot: Optional[float] = None
+        TTFT: Optional[float] = None
+        TPOT: Optional[float] = None
+        TTLT: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
-        stream_response: Optional[bool] = None
+        streaming: Optional[bool] = None
+        stop_token: Optional[str] = None
 
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload["inputs"])
@@ -71,7 +73,7 @@ class SageMakerPredictor(FMBenchPredictor):
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
             response = None
-            stream_response = self._inference_spec.get("stream", False)
+            streaming = self._inference_spec.get("stream", False)
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
@@ -106,18 +108,19 @@ class SageMakerPredictor(FMBenchPredictor):
 
             # if the response streaming is step, call the get_response stream on the 
             # sagemaker endpoint, else use the simple predict call
-            if stream_response is True:
-                payload["stream"] = stream_response
-                logger.info(f"Sending payload for streaming because stream is: {stream_response}")
+            if streaming is True:
+                stop_token = self._inference_spec.get("stop_token", None)
+                payload["stream"] = streaming
+                logger.info(f"Sending payload for streaming because stream is: {streaming}")
                 response_stream = sagemaker_runtime.invoke_endpoint_with_response_stream(
                                                     EndpointName=self._endpoint_name,
                                                     Body=json.dumps(payload),
-                                                    ContentType="application/json",
-                                                    CustomAttributes='accept_eula=true'
+                                                    ContentType="application/json"
                                                 )
-                response_dict = get_response_stream_token_metrics(response_stream)
-                ttft = response_dict.get('TTFT')
-                tpot = response_dict.get('TPOT')
+                response_dict = get_response_stream_token_metrics(response_stream, stop_token)
+                TTFT = response_dict.get('TTFT')
+                TPOT = response_dict.get('TPOT')
+                TTLT = response_dict.get('TTLT')
                 response = response_dict.get('Response')
             else:
                 logger.info(f"Sending payload: {json.dumps(payload)}")
@@ -126,7 +129,6 @@ class SageMakerPredictor(FMBenchPredictor):
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
                 response = response.decode('utf-8')
-            logger.info(f"response: {response}, type: {(type(response))}")
             response_json = json.loads(response)
 
             if isinstance(response_json, list):
@@ -143,8 +145,9 @@ class SageMakerPredictor(FMBenchPredictor):
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
-                                         time_to_first_token=ttft,
-                                         time_per_output_token=tpot,
+                                         time_to_first_token=TTFT,
+                                         time_per_output_token=TPOT,
+                                         time_to_last_token=TTLT,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
 
