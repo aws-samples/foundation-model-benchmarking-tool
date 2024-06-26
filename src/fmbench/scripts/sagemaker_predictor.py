@@ -12,8 +12,7 @@ from sagemaker.serializers import JSONSerializer
 from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-from fmbench.scripts.stream_responses import (get_sagemaker_realtime_response_stream,
-                                               get_sagemaker_response_stream)
+from fmbench.scripts.stream_responses import get_response_stream_token_metrics
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -110,10 +109,13 @@ class SageMakerPredictor(FMBenchPredictor):
             if stream_response is True:
                 payload["stream"] = stream_response
                 logger.info(f"Sending payload for streaming because stream is: {stream_response}")
-                response_stream = get_sagemaker_realtime_response_stream(sagemaker_runtime,
-                                                               self._endpoint_name,
-                                                               payload)
-                response_dict = get_sagemaker_response_stream(response_stream)
+                response_stream = sagemaker_runtime.invoke_endpoint_with_response_stream(
+                                                    EndpointName=self._endpoint_name,
+                                                    Body=json.dumps(payload),
+                                                    ContentType="application/json",
+                                                    CustomAttributes='accept_eula=true'
+                                                )
+                response_dict = get_response_stream_token_metrics(response_stream)
                 ttft = response_dict.get('TTFT')
                 tpot = response_dict.get('TPOT')
                 response = response_dict.get('Response')

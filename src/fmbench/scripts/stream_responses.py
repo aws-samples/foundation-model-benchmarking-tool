@@ -68,17 +68,7 @@ class LineIterator:
             self.buffer.write(chunk['PayloadPart']['Bytes'])
 
 
-def get_sagemaker_realtime_response_stream(sagemaker_runtime, endpoint_name, payload):
-    response_stream = sagemaker_runtime.invoke_endpoint_with_response_stream(
-        EndpointName=endpoint_name,
-        Body=json.dumps(payload), =
-        ContentType="application/json",
-        CustomAttributes='accept_eula=true'
-    )
-    return response_stream
-
-
-def get_sagemaker_response_stream(response_stream) -> Dict:
+def get_response_stream_token_metrics(response_stream) -> Dict:
     event_stream = response_stream['Body']
     start_json = b'{'
     stop_token = '</s>'
