@@ -17,9 +17,16 @@ Parameters:
     MaxLength: 63
     AllowedPattern: (?!(^xn--|.+-s3alias$))^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$
 
+Conditions:
+  IsGovCloudPartition: !Equals
+    - !Select [0, !Split [ "aws-us-gov", !Ref "AWS::Partition"]]
+    - ""
+  IsNotGovCloud: !Not [ !Condition IsGovCloudPartition ]
+
 Resources:
   CodeRepository:
     Type: AWS::SageMaker::CodeRepository
+    Condition: IsNotGovCloud
     Properties:
       GitConfig:
         RepositoryUrl: https://github.com/aws-samples/foundation-model-benchmarking-tool
@@ -30,7 +37,7 @@ Resources:
       NotebookInstanceName: !Sub ${AWS::StackName}-notebook
       InstanceType: ml.m6i.xlarge
       RoleArn: !GetAtt NotebookRole.Arn
-      DefaultCodeRepository: !GetAtt CodeRepository.CodeRepositoryName
+      DefaultCodeRepository: !If [ IsNotGovCloud, !GetAtt CodeRepository.CodeRepositoryName, !Ref "AWS::NoValue" ]
 
   NotebookRole:
     Type: AWS::IAM::Role
