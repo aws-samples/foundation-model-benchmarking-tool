@@ -5,16 +5,16 @@ import boto3
 import logging
 from typing import Dict, Optional, List
 
-# set a logger
+# Set up logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Initialize the sagemaker runtime to invoke the endpoint 
-# with a response stream using line iterator
+# Initialize the SageMaker runtime to invoke the endpoint
 sagemaker_runtime = boto3.client('sagemaker-runtime')
 
 
 class LineIterator:
+
     """
     A helper class for parsing the byte stream input.
 
@@ -62,103 +62,65 @@ class LineIterator:
                     continue
                 raise
             if 'PayloadPart' not in chunk:
-                print('Unknown event type:' + chunk)
+                logger.warning('Unknown event type:' + str(chunk))
                 continue
             self.buffer.seek(0, io.SEEK_END)
             self.buffer.write(chunk['PayloadPart']['Bytes'])
 
 
-def get_sagemaker_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
-    event_stream = response_stream['Body']
+def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = False) -> Dict:
+    start_time: float = time.perf_counter()
+    first_token_time: Optional[float] = None
+    token_times: List[float] = []
+    last_token_time = start_time
+    response_text: str = ""
+    TTFT: Optional[float] = None
+    TPOT: Optional[float] = None
+    TTLT: Optional[float] = None
+    result: Optional[Dict] = None
     start_json: str = b'{'
-    start_time: float = time.perf_counter()
-    first_token_time: Optional[float] = None
-    token_times: Optional[List[float]] = []
-    last_token_time = start_time
-    response_text: str = ""
-    TTFT: Optional[float] = None
-    TPOT: Optional[float] = None
-    TTLT: Optional[float] = None
-    result: Optional[Dict] = None
 
     try:
-        for line in LineIterator(event_stream):
-            if line != b'' and start_json in line:
-                data = json.loads(line[line.find(start_json):].decode('utf-8'))
-                if data['token']['text'] != stop_token:
-                    current_time = time.perf_counter()
+        # get the event from the sagemaker or bedrock response streams
+        event_iterator = LineIterator(response_stream) if is_sagemaker else response_stream
 
-                    if first_token_time is None:
-                        first_token_time = current_time
-                        TTFT = first_token_time - start_time
-                        logger.info(f"Time to First Token: {TTFT:.3f} seconds")
-                    else:
-                        token_time = current_time - last_token_time
-                        token_times.append(token_time)
-
-                    last_token_time = current_time
-                    response_text += data['token']['text']
+        for event in event_iterator:
+            # if the response stream is from a sagemaker call, then use the 
+            # line iterator to get the first token from the streaming response
+            if is_sagemaker:
+                if event != b'' and start_json in event:
+                    data = json.loads(event[event.find(start_json):].decode('utf-8'))
+                    token_text = data['token']['text']
                 else:
-                    # Calculate TTLT at the reception of the last token
-                    current_time = time.perf_counter()
-                    TTLT = current_time - start_time
-                    logger.info(f"Time to Last Token (TTLT): {TTLT:.3f} seconds")
-                    break
+                    continue
+            else:
+                # if the response stream is from a bedrock call, then get the chunks from the response
+                # and the first token
+                if hasattr(event, 'choices') and hasattr(event.choices[0], 'delta'):
+                    token_text = event.choices[0].delta.get('content', '')
+                else:
+                    continue
+            # record the current time
+            current_time = time.perf_counter()
+            if token_text and token_text != stop_token:
+                if first_token_time is None:
+                    first_token_time = current_time
+                    # get the time to first token latency
+                    TTFT = first_token_time - start_time
+                    logger.info(f"Time to First Token: {TTFT:.3f} seconds")
+                else:
+                    # if the token is not the first token, then get the inter-token
+                    # latency
+                    token_time = current_time - last_token_time
+                    # append all token times to get the time per output token
+                    token_times.append(token_time)
+                last_token_time = current_time
+                response_text += token_text
+                logger.info(f"Response generated: {response_text}")
 
-        if token_times:
-            TPOT = sum(token_times) / len(token_times)
-            logger.info(f"Time Per Output Token (TPOT): {TPOT:.3f} seconds")
-
-        response_data = [{"generated_text": response_text}]
-        response_json_str = json.dumps(response_data)
-        result = {
-            "TTFT": TTFT,
-            "TPOT": TPOT,
-            "TTLT": TTLT,
-            "Response": response_json_str
-        }
-    except Exception as e:
-        logger.error(f"Error occurred while generating and computing metrics associated with the streaming response: {e}")
-        result = None
-
-    # Additional logging for diagnosis
-    logger.info(f"Final result: {result}")
-    return result
-
-def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
-    start_time: float = time.perf_counter()
-    first_token_time: Optional[float] = None
-    token_times: Optional[List[float]] = []
-    last_token_time = start_time
-    response_text: str = ""
-    TTFT: Optional[float] = None
-    TPOT: Optional[float] = None
-    TTLT: Optional[float] = None
-    result: Optional[Dict] = None
-
-    try:
-        for chunk in response_stream:
-            logger.info(f"chunk found")
-            if hasattr(chunk, 'choices') and hasattr(chunk.choices[0], 'delta'):
-                token_text = chunk.choices[0].delta.get('content', '')
-                current_time = time.perf_counter()
-                if token_text:
-                    if first_token_time is None:
-                        logger.info(f"computing the first token time")
-                        first_token_time = current_time
-                        TTFT = first_token_time - start_time
-                        logger.info(f"Time to First Token: {TTFT:.3f} seconds")
-                    else:
-                        token_time = current_time - last_token_time
-                        token_times.append(token_time)
-
-                    last_token_time = current_time
-                    response_text += token_text
-
-                    # Check for stop token
-                    if stop_token and stop_token in response_text:
-                        logger.info(f"got the last token: {stop_token}")
-                        break
+            if stop_token and stop_token in response_text:
+                logger.info(f"got the last token: {stop_token}")
+                break
 
         # Calculate TTLT at the reception of the last token
         current_time = time.perf_counter()
@@ -166,6 +128,7 @@ def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) 
         logger.info(f"Time to Last Token (TTLT): {TTLT:.3f} seconds")
 
         if token_times:
+            # get the average of all token times to compute the time per output token
             TPOT = sum(token_times) / len(token_times)
             logger.info(f"Time Per Output Token (TPOT): {TPOT:.3f} seconds")
 
@@ -178,9 +141,25 @@ def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) 
             "Response": response_json_str
         }
     except Exception as e:
-        logger.error(f"Error occurred while generating and computing bedrock metrics associated with the streaming response: {e}", exc_info=True)
+        logger.error(f"Error occurred while generating and computing metrics associated with the streaming response: {e}", exc_info=True)
         result = None
 
-    # Additional logging for diagnosis
     logger.info(f"Final result: {result}")
     return result
+
+
+def get_sagemaker_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
+    """
+    this function returns the time to first token (TTFT), time per output token (TPOT), and 
+    time to last token (TTLT) metrics for each inference from a sagemaker streaming invocation
+    """
+    return _extract_metrics(response_stream['Body'], stop_token, is_sagemaker=True)
+
+
+def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
+    """
+    this function returns the time to first token (TTFT), time per output token (TPOT), and 
+    time to last token (TTLT) metrics for each inference from a bedrock streaming invocation
+    """
+    return _extract_metrics(response_stream, stop_token, is_sagemaker=False)
+
