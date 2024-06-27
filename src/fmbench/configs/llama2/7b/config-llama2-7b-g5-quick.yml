@@ -90,6 +90,11 @@ datasets:
   - input
   - context
   
+  # maximum number of iterations per concurrency and payload size combination
+  max_iters_per_combination: 105
+  # minimum number of iterations per concurrency and payload size combination
+  min_iters_per_combination: 5
+  
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
