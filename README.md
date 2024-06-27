@@ -10,7 +10,7 @@
     * [Llama3 on Amazon SageMaker ](#llama3-on-amazon-sagemaker)
     * [Full list of benchmarked models](#full-list-of-benchmarked-models)
   * [New in this release](#new-in-this-release)
-    * [v1.0.46](#v1046)
+    * [v1.0.47](#v1047)
   * [Description](#description)
     * [Workflow for `FMBench`](#workflow-for-fmbench)
   * [Getting started](#getting-started)
