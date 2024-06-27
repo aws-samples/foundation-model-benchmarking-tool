@@ -16,7 +16,7 @@ The steps below create an EKS cluster called `trainium-inferentia`.
 
 1. Ensure that the ELB to be created would be external facing. Change the helm value from `internal` to `internet-facing` [here](https://github.com/awslabs/data-on-eks/blob/3ef55e21cf30b54341bb771a2bb2dbd1280c3edd/ai-ml/trainium-inferentia/helm-values/ingress-nginx-values.yaml#L8).
 
-1. Ensure that the IAM role you are using has the permissions needed to create the cluster. **While we expect the following set of permissions to work but you face any errors while running the `install.sh` script add AdminstratorAccess permission to the IAM role.**
+1. Ensure that the IAM role you are using has the permissions needed to create the cluster. **While we expect the following set of permissions to work but the current recommendation is to also add the `AdminstratorAccess` permission to the IAM role. At a later date you could remove the  `AdminstratorAccess` and experiment with cluster creation without it.**
 
     1. Attach the following managed policies: `AmazonEKSClusterPolicy`, `AmazonEKS_CNI_Policy`, and `AmazonEKSWorkerNodePolicy`.
     1. In addition to the managed policies add the following as inline policy. Replace _your-account-id_ with the actual value of the AWS account id you are using.

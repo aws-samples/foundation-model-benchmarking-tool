@@ -1,3 +1,7 @@
+### v1.0.44
+1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
+1. `Llama3-8b` config files for `g6` instances.
+
 ### v1.0.42
 1. Config file for running `Llama3-8b` on all instance types except `p5`.
 1. Fix bug with business summary chart.

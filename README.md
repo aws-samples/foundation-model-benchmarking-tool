@@ -104,6 +104,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.47
+1. Run `FMBench` as a Docker container.
+1. Bug fixes for GovCloud support.
+1. Updated README for EKS cluster creation.
+
 ### v1.0.46
 1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
 1. FMBench is now available in GovCloud.
@@ -112,10 +117,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ### v1.0.45
 1. Analytics for results across multiple runs.
 1. `Llama3-70b` config files for `g5.48xlarge` instances.
-
-### v1.0.44
-1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
-1. `Llama3-8b` config files for `g6` instances.
 
 [Release history](./release_history.md)
 
