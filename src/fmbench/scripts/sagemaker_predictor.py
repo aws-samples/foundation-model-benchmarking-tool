@@ -12,7 +12,7 @@ from sagemaker.serializers import JSONSerializer
 from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-from fmbench.scripts.stream_responses import get_response_stream_token_metrics
+from fmbench.scripts.stream_responses import get_sagemaker_response_stream_token_metrics
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -109,6 +109,7 @@ class SageMakerPredictor(FMBenchPredictor):
             # if the response streaming is step, call the get_response stream on the 
             # sagemaker endpoint, else use the simple predict call
             if streaming is True:
+                start_token = self._inference_spec.get("start_token", None)
                 stop_token = self._inference_spec.get("stop_token", None)
                 payload["stream"] = streaming
                 logger.info(f"Sending payload for streaming because stream is: {streaming}")
@@ -117,7 +118,7 @@ class SageMakerPredictor(FMBenchPredictor):
                                                     Body=json.dumps(payload),
                                                     ContentType="application/json"
                                                 )
-                response_dict = get_response_stream_token_metrics(response_stream, stop_token)
+                response_dict = get_sagemaker_response_stream_token_metrics(response_stream, start_token, stop_token)
                 TTFT = response_dict.get('TTFT')
                 TPOT = response_dict.get('TPOT')
                 TTLT = response_dict.get('TTLT')

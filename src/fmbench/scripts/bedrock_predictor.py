@@ -56,7 +56,7 @@ class BedrockPredictor(FMBenchPredictor):
                                 pt_summary in response['provisionedModelSummaries'] \
                                   if pt_summary['provisionedModelArn'] == self._endpoint_name]
                     if len(fm_arn) > 0:                        
-                        # set the PT name which looks like arn:aws:bedrock:us-east-1:<account-id>:provisioned-model/<something>                        
+                        # set the PT name which looks like arn:aws:bedrock:us-east-1:<account-id>:provisioned-model/<something>               
                         self._pt_model_id = self._endpoint_name
                         # set the endpoint name which needs to look like the FM model id
                         # this can now be extracted from the fm_arn which looks like 
@@ -66,8 +66,8 @@ class BedrockPredictor(FMBenchPredictor):
                                     f"self._endpoint_name={self._endpoint_name}")
                     else:
                         logger.error(f"no matching PT was found, BedrockPredictor cannot be created")
-                    
-                
+
+
             # model_id for the litellm API with the specific bedrock model of choice
             # endpoint_name in case of bedrock refers to the model_id such as 
             # cohere.command-text-v14 for example
@@ -79,6 +79,7 @@ class BedrockPredictor(FMBenchPredictor):
             self._top_p = 0.9
             # not used for now but kept as placeholders for future
             self._stream = None
+            self._start = None
             self._stop = None
 
             # no caching of responses since we want every inference
@@ -94,6 +95,7 @@ class BedrockPredictor(FMBenchPredictor):
                     self._top_p = parameters.get('top_p', self._top_p)
                     self._stream = inference_spec.get("stream", False)
                     self._stop = inference_spec.get("stop_token", None)
+                    self._start = inference_spec.get("start_token", None)
             self._response_json = {}
             logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
                         f"_temperature={self._temperature} "
@@ -148,7 +150,7 @@ class BedrockPredictor(FMBenchPredictor):
 
             # Get the response and the TTFT, TPOT, TTLT metrics if the streaming for responses is set to true
             if self._stream is True:
-                response_dict_from_streaming = get_bedrock_response_stream_token_metrics(response, self._stop)
+                response_dict_from_streaming = get_bedrock_response_stream_token_metrics(response, self._start, self._stop)
                 TTFT = response_dict_from_streaming.get('TTFT')
                 TPOT = response_dict_from_streaming.get('TPOT')
                 TTLT = response_dict_from_streaming.get('TTLT')

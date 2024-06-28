@@ -68,7 +68,14 @@ class LineIterator:
             self.buffer.write(chunk['PayloadPart']['Bytes'])
 
 
-def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = False) -> Dict:
+def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sagemaker: bool = False) -> Dict:
+    """
+    Helper function to get the response streams from bedrock or sagemaker invocations
+    and parse each as appropriate to calculate the Time To First Token (TTFT), Time Per Output Token (TPOT), 
+    and Time To Last Token (TTLT)
+
+    return: This function returns a dictionary containing the entire response, and the TTFT, TTLT, TPOT metrics
+    """
     start_time: float = time.perf_counter()
     first_token_time: Optional[float] = None
     token_times: List[float] = []
@@ -78,7 +85,6 @@ def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = Fals
     TPOT: Optional[float] = None
     TTLT: Optional[float] = None
     result: Optional[Dict] = None
-    start_json: str = b'{'
 
     try:
         # get the event from the sagemaker or bedrock response streams
@@ -88,8 +94,8 @@ def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = Fals
             # if the response stream is from a sagemaker call, then use the 
             # line iterator to get the first token from the streaming response
             if is_sagemaker:
-                if event != b'' and start_json in event:
-                    data = json.loads(event[event.find(start_json):].decode('utf-8'))
+                if event != b'' and start_token in event:
+                    data = json.loads(event[event.find(start_token):].decode('utf-8'))
                     token_text = data['token']['text']
                 else:
                     continue
@@ -116,7 +122,6 @@ def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = Fals
                     token_times.append(token_time)
                 last_token_time = current_time
                 response_text += token_text
-                logger.info(f"Response generated: {response_text}")
 
             if stop_token and stop_token in response_text:
                 logger.info(f"got the last token: {stop_token}")
@@ -148,18 +153,18 @@ def _extract_metrics(response_stream, stop_token: str, is_sagemaker: bool = Fals
     return result
 
 
-def get_sagemaker_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
+def get_sagemaker_response_stream_token_metrics(response_stream, start_token: str, stop_token: str) -> Dict:
     """
     this function returns the time to first token (TTFT), time per output token (TPOT), and 
     time to last token (TTLT) metrics for each inference from a sagemaker streaming invocation
     """
-    return _extract_metrics(response_stream['Body'], stop_token, is_sagemaker=True)
+    return _extract_metrics(response_stream['Body'], start_token, stop_token, is_sagemaker=True)
 
 
-def get_bedrock_response_stream_token_metrics(response_stream, stop_token: str) -> Dict:
+def get_bedrock_response_stream_token_metrics(response_stream, start_token: str, stop_token: str) -> Dict:
     """
     this function returns the time to first token (TTFT), time per output token (TPOT), and 
     time to last token (TTLT) metrics for each inference from a bedrock streaming invocation
     """
-    return _extract_metrics(response_stream, stop_token, is_sagemaker=False)
+    return _extract_metrics(response_stream, start_token, stop_token, is_sagemaker=False)
 
