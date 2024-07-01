@@ -419,7 +419,7 @@ class CustomTokenizer:
         dir_not_empty = len(all_files)
         print(f"CustomTokenizer, all_files = {all_files}")
         abs_path = Path(local_dir).absolute().resolve()
-        if dir_not_empty is True:
+        if dir_not_empty > 0:
             print(f"loading the provided tokenizer from local_dir={local_dir}, abs_path={abs_path}")
             self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
             print("successfully loaded the tokenizer using AutoTokenizer.from_pretrained")
