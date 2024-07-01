@@ -77,6 +77,7 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
     return: This function returns a dictionary containing the entire response, and the TTFT, TTLT, TPOT metrics
     """
     start_time: float = time.perf_counter()
+    sm_start_token = b"{"
     first_token_time: Optional[float] = None
     token_times: List[float] = []
     last_token_time = start_time
@@ -94,8 +95,8 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
             # if the response stream is from a sagemaker call, then use the 
             # line iterator to get the first token from the streaming response
             if is_sagemaker:
-                if event != b'' and start_token in event:
-                    data = json.loads(event[event.find(start_token):].decode('utf-8'))
+                if event != b'' and sm_start_token in event:
+                    data = json.loads(event[event.find(sm_start_token):].decode('utf-8'))
                     token_text = data['token']['text']
                 else:
                     continue
