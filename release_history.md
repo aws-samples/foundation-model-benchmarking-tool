@@ -1,3 +1,7 @@
+### v1.0.45
+1. Analytics for results across multiple runs.
+1. `Llama3-70b` config files for `g5.48xlarge` instances.
+
 ### v1.0.44
 1. Endpoint metrics (CPU/GPU utilization, memory utiliztion, model latency) and invocation metrics (including errors) for SageMaker Endpoints.
 1. `Llama3-8b` config files for `g6` instances.

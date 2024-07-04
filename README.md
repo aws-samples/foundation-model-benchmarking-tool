@@ -10,7 +10,7 @@
     * [Llama3 on Amazon SageMaker ](#llama3-on-amazon-sagemaker)
     * [Full list of benchmarked models](#full-list-of-benchmarked-models)
   * [New in this release](#new-in-this-release)
-    * [v1.0.47](#v1047)
+    * [v1.0.48](#v1048)
   * [Description](#description)
     * [Workflow for `FMBench`](#workflow-for-fmbench)
   * [Getting started](#getting-started)
@@ -100,9 +100,15 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **AI21 J2 Mid**  | | |  | | ✅ |   |
 | **AI21 J2 Ultra** | | |  | | ✅ |   |
 | **Gemma-2b** |✅ | |  | |  |   |
+| **Phi-3-mini-4k-instruct** |✅ | |  | |  |   |
 | **distilbert-base-uncased**  |  ✅ | |  | ||   |
 
 ## New in this release
+
+### v1.0.48
+1. Faster result file download at the end of a test run.
+1. `Phi-3-mini-4k-instruct` configuration file.
+1. Tokenizer and misc. bug fixes.
 
 ### v1.0.47
 1. Run `FMBench` as a Docker container.
@@ -113,10 +119,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
 1. FMBench is now available in GovCloud.
 1. Update to latest version of several packages.
-
-### v1.0.45
-1. Analytics for results across multiple runs.
-1. `Llama3-70b` config files for `g5.48xlarge` instances.
 
 [Release history](./release_history.md)
 
