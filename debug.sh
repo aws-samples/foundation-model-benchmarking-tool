@@ -3,8 +3,11 @@
 # 2. Builds and installs a new one
 # 3. Runs fmbench as usual
 
-CONDA_ENV_PATH=~/anaconda3/envs/fmbench_python311/lib/python3.11/site-packages
+CONDA_ENV_NAME=fmbench_python311
+CONDA_ENV_PATH=~/anaconda3/envs/$CONDA_ENV_NAME/lib/python3.11/site-packages
 CONFIG_FILE_PATH=src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
+#src/fmbench/configs/llama3/8b/config-llama3-8b-g5-streaming.yml
+#config-bedrock-llama3-streaming.yml #config-llama3-8b-g5-stream.yml
 LOGFILE=fmbench.log
 
 # delete existing install

@@ -9,9 +9,10 @@ import pandas as pd
 from datetime import datetime
 from typing import Dict, Optional, List
 from litellm import completion, token_counter
+from fmbench.scripts.stream_responses import get_response_stream
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-from fmbench.scripts.stream_responses import get_bedrock_response_stream_token_metrics
+
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -56,17 +57,16 @@ class BedrockPredictor(FMBenchPredictor):
                                 pt_summary in response['provisionedModelSummaries'] \
                                   if pt_summary['provisionedModelArn'] == self._endpoint_name]
                     if len(fm_arn) > 0:                        
-                        # set the PT name which looks like arn:aws:bedrock:us-east-1:<account-id>:provisioned-model/<something>               
+                        # set the PT name which looks like arn:aws:bedrock:us-east-1:<account-id>:provisioned-model/<something>
                         self._pt_model_id = self._endpoint_name
                         # set the endpoint name which needs to look like the FM model id
                         # this can now be extracted from the fm_arn which looks like 
-                        # 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0:28k',                        
+                        # 'arn:aws:bedrock:us-east-1::foundation-model/anthropic.claude-3-sonnet-20240229-v1:0:28k',
                         self._endpoint_name = fm_arn[0].split("/")[1]
                         logger.info(f"a matching PT was found, self._pt_model_id={self._pt_model_id}, "
                                     f"self._endpoint_name={self._endpoint_name}")
                     else:
                         logger.error(f"no matching PT was found, BedrockPredictor cannot be created")
-
 
             # model_id for the litellm API with the specific bedrock model of choice
             # endpoint_name in case of bedrock refers to the model_id such as 
@@ -93,9 +93,9 @@ class BedrockPredictor(FMBenchPredictor):
                     self._temperature = parameters.get('temperature', self._temperature)
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
                     self._top_p = parameters.get('top_p', self._top_p)
-                    self._stream = inference_spec.get("stream", False)
-                    self._stop = inference_spec.get("stop_token", None)
-                    self._start = inference_spec.get("start_token", None)
+                    self._stream = inference_spec.get("stream", self._stream)
+                    self._stop = inference_spec.get("stop_token", self._stop)
+                    self._start = inference_spec.get("start_token", self._start)
             self._response_json = {}
             logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
                         f"_temperature={self._temperature} "
@@ -146,24 +146,33 @@ class BedrockPredictor(FMBenchPredictor):
                                       max_tokens=self._max_tokens,
                                       caching=self._caching,
                                       stream=self._stream)
-            logger.info(f"stop token: {self._stop}, streaming: {self._stream}, response: {response}")
+            logger.info(f"stop token: {self._stop}, streaming: {self._stream}, "
+                        f"response: {response}")
 
-            # Get the response and the TTFT, TPOT, TTLT metrics if the streaming for responses is set to true
+            # Get the response and the TTFT, TPOT, TTLT metrics if the streaming
+            # for responses is set to true
             if self._stream is True:
-                response_dict_from_streaming = get_bedrock_response_stream_token_metrics(response, self._start, self._stop)
+                response_dict_from_streaming = get_response_stream(response,
+                                                                   st,
+                                                                   self._start,
+                                                                   self._stop,
+                                                                   is_sagemaker=False)
                 TTFT = response_dict_from_streaming.get('TTFT')
                 TPOT = response_dict_from_streaming.get('TPOT')
                 TTLT = response_dict_from_streaming.get('TTLT')
-                self._response_json["generated_text"] = json.loads(response_dict_from_streaming['Response'])[0].get('generated_text')
+                response = response_dict_from_streaming['response']
+                self._response_json["generated_text"] = json.loads(response)[0].get('generated_text')
                 # Getting in the total input and output tokens using token counter.
                 # Streaming on liteLLM does not support prompt tokens and completion tokens 
                 # in the invocation response format
-                prompt_tokens = token_counter(model=self._endpoint_name, 
-                                              messages=[{"content": prompt_input_data, "role": "user"}])
-                completion_tokens = litellm.token_counter(text=self._response_json["generated_text"])
+                prompt_tokens = token_counter(model=self._endpoint_name,
+                                              messages=[{"content": prompt_input_data,
+                                                         "role": "user"}])
+                completion_tokens = token_counter(text=self._response_json["generated_text"])
                 # Extract latency in seconds
                 latency = time.perf_counter() - st
-                logger.info(f"streaming prompt token count: {prompt_tokens}, completion token count: {completion_tokens}, latency: {latency}")
+                logger.info(f"streaming prompt token count: {prompt_tokens}, "
+                            f"completion token count: {completion_tokens}, latency: {latency}")
             # If streaming is set to false, then get the response in the normal
             # without streaming format from LiteLLM
             else:

@@ -9,10 +9,10 @@ from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
+from fmbench.scripts.stream_responses import get_response_stream
 from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
-from fmbench.scripts.stream_responses import get_sagemaker_response_stream_token_metrics
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -112,19 +112,22 @@ class SageMakerPredictor(FMBenchPredictor):
                 start_token = self._inference_spec.get("start_token", None)
                 stop_token = self._inference_spec.get("stop_token", None)
                 payload["stream"] = streaming
-                logger.info(f"Sending payload for streaming because stream is: {streaming}")
+                logger.info(f"streaming={streaming}, calling invoke_endpoint_with_response_stream")
                 response_stream = sagemaker_runtime.invoke_endpoint_with_response_stream(
                                                     EndpointName=self._endpoint_name,
                                                     Body=json.dumps(payload),
-                                                    ContentType="application/json"
-                                                )
-                response_dict = get_sagemaker_response_stream_token_metrics(response_stream, start_token, stop_token)
+                                                    ContentType="application/json")
+                response_dict = get_response_stream(response_stream['Body'],
+                                                    st,
+                                                    start_token,
+                                                    stop_token,
+                                                    is_sagemaker=True)
                 TTFT = response_dict.get('TTFT')
                 TPOT = response_dict.get('TPOT')
                 TTLT = response_dict.get('TTLT')
-                response = response_dict.get('Response')
+                response = response_dict.get('response')
             else:
-                logger.info(f"Sending payload: {json.dumps(payload)}")
+                logger.info(f"streaming={streaming}, calling predict")
                 response = self._predictor.predict(payload)
 
             latency = time.perf_counter() - st

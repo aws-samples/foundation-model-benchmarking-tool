@@ -2,8 +2,10 @@ import io
 import time
 import json
 import boto3
+import litellm
 import logging
-from typing import Dict, Optional, List
+import botocore
+from typing import Dict, Optional, List, Union
 
 # Set up logger
 logging.basicConfig(level=logging.INFO)
@@ -68,7 +70,11 @@ class LineIterator:
             self.buffer.write(chunk['PayloadPart']['Bytes'])
 
 
-def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sagemaker: bool = False) -> Dict:
+def get_response_stream(response_stream: Union[litellm.utils.CustomStreamWrapper, botocore.eventstream.EventStream],
+                        start_time: float,
+                        start_token: str,
+                        stop_token: str,
+                        is_sagemaker: bool = False) -> Dict:
     """
     Helper function to get the response streams from bedrock or sagemaker invocations
     and parse each as appropriate to calculate the Time To First Token (TTFT), Time Per Output Token (TPOT), 
@@ -76,7 +82,7 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
 
     return: This function returns a dictionary containing the entire response, and the TTFT, TTLT, TPOT metrics
     """
-    start_time: float = time.perf_counter()
+    logger.info(f"get_response_stream, type(response_stream)={type(response_stream)}")
     sm_start_token = b"{"
     first_token_time: Optional[float] = None
     token_times: List[float] = []
@@ -94,10 +100,16 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
         for event in event_iterator:
             # if the response stream is from a sagemaker call, then use the 
             # line iterator to get the first token from the streaming response
+            token_id: Optional[int] = None
             if is_sagemaker:
                 if event != b'' and sm_start_token in event:
                     data = json.loads(event[event.find(sm_start_token):].decode('utf-8'))
-                    token_text = data['token']['text']
+                    #logger.info(f"data={data}")
+                    token_id = data['token']['id']
+                    if token_id != [-1]:
+                        token_text = data['token']['text']
+                    else:
+                        token_text = None
                 else:
                     continue
             else:
@@ -114,7 +126,7 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
                     first_token_time = current_time
                     # get the time to first token latency
                     TTFT = first_token_time - start_time
-                    logger.info(f"Time to First Token: {TTFT:.3f} seconds")
+                    logger.info(f"Time to First Token: {TTFT:.6f} seconds")
                 else:
                     # if the token is not the first token, then get the inter-token
                     # latency
@@ -127,16 +139,19 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
             if stop_token and stop_token in response_text:
                 logger.info(f"got the last token: {stop_token}")
                 break
+            elif token_id == [-1]:
+                logger.info(f"end of stream because token id is {token_id}")
+                break
 
         # Calculate TTLT at the reception of the last token
         current_time = time.perf_counter()
         TTLT = current_time - start_time
-        logger.info(f"Time to Last Token (TTLT): {TTLT:.3f} seconds")
+        logger.info(f"Time to Last Token (TTLT): {TTLT:.6f} seconds, total tokens received {len(token_times)}")
 
         if token_times:
             # get the average of all token times to compute the time per output token
             TPOT = sum(token_times) / len(token_times)
-            logger.info(f"Time Per Output Token (TPOT): {TPOT:.3f} seconds")
+            logger.info(f"Time Per Output Token (TPOT): {TPOT:.6f} seconds")
 
         response_data = [{"generated_text": response_text}]
         response_json_str = json.dumps(response_data)
@@ -144,28 +159,13 @@ def _extract_metrics(response_stream, start_token: str, stop_token: str, is_sage
             "TTFT": TTFT,
             "TPOT": TPOT,
             "TTLT": TTLT,
-            "Response": response_json_str
+            "response": response_json_str
         }
     except Exception as e:
-        logger.error(f"Error occurred while generating and computing metrics associated with the streaming response: {e}", exc_info=True)
+        logger.error(f"Error occurred while generating and computing metrics "
+                     f"associated with the streaming response: {e}", exc_info=True)
         result = None
 
     logger.info(f"Final result: {result}")
     return result
-
-
-def get_sagemaker_response_stream_token_metrics(response_stream, start_token: str, stop_token: str) -> Dict:
-    """
-    this function returns the time to first token (TTFT), time per output token (TPOT), and 
-    time to last token (TTLT) metrics for each inference from a sagemaker streaming invocation
-    """
-    return _extract_metrics(response_stream['Body'], start_token, stop_token, is_sagemaker=True)
-
-
-def get_bedrock_response_stream_token_metrics(response_stream, start_token: str, stop_token: str) -> Dict:
-    """
-    this function returns the time to first token (TTFT), time per output token (TPOT), and 
-    time to last token (TTLT) metrics for each inference from a bedrock streaming invocation
-    """
-    return _extract_metrics(response_stream, start_token, stop_token, is_sagemaker=False)
 
