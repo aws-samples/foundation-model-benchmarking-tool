@@ -1,3 +1,8 @@
+### v1.0.46
+1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
+1. FMBench is now available in GovCloud.
+1. Update to latest version of several packages.
+
 ### v1.0.45
 1. Analytics for results across multiple runs.
 1. `Llama3-70b` config files for `g5.48xlarge` instances.

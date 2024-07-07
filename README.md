@@ -10,7 +10,7 @@
     * [Llama3 on Amazon SageMaker ](#llama3-on-amazon-sagemaker)
     * [Full list of benchmarked models](#full-list-of-benchmarked-models)
   * [New in this release](#new-in-this-release)
-    * [v1.0.48](#v1048)
+    * [v1.0.49](#v1049)
   * [Description](#description)
     * [Workflow for `FMBench`](#workflow-for-fmbench)
   * [Getting started](#getting-started)
@@ -105,6 +105,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+### v1.0.49
+1. Streaming support for Amazon SageMaker and Amazon Bedrock.
+1. Per-token latency metrics such as time to first token (TTFT) and mean time per-output token (TPOT).
+1. Misc. bug fixes.
+
 ### v1.0.48
 1. Faster result file download at the end of a test run.
 1. `Phi-3-mini-4k-instruct` configuration file.
@@ -115,10 +120,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Bug fixes for GovCloud support.
 1. Updated README for EKS cluster creation.
 
-### v1.0.46
-1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
-1. FMBench is now available in GovCloud.
-1. Update to latest version of several packages.
 
 [Release history](./release_history.md)
 
@@ -186,7 +187,7 @@ While technically you can run `FMBench` on any AWS compute but practically speak
    |:------------------------:|:-----------:|
    |us-east-1 (N. Virginia)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
    |us-west-2 (Oregon)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
-   |us-gov-east-1 (GovCloud N. Virginia)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://us-gov-east-1.console.amazonaws-us-gov.com/cloudformation/home?region=us-gov-east-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
+   |us-gov-west-1 (GovCloud N. California)    | [<img src="./img/ML-FMBT-cloudformation-launch-stack.png">](https://us-gov-west-1.console.amazonaws-us-gov.com/cloudformation/home?region=us-gov-west-1#/stacks/new?stackName=fmbench&templateURL=https://aws-blogs-artifacts-public.s3.amazonaws.com/artifacts/ML-FMBT/template.yml) |
 
 1. Once the CloudFormation stack is created, navigate to SageMaker Notebooks and open the `fmbench-notebook`.
 
@@ -207,7 +208,7 @@ While technically you can run `FMBench` on any AWS compute but practically speak
         ```{.bash}
         account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
         region=`aws configure get region`
-        fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/llama2/7b/config-llama2-7b-g5-quick.yml >> fmbench.log 2>&1
+        fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/llama2/7b/config-llama2-7b-g5-quick.yml > fmbench.log 2>&1
         ```
 
     1. Open another terminal window and do a `tail -f` on the `fmbench.log` file to see all the traces being generated at runtime.
@@ -215,10 +216,26 @@ While technically you can run `FMBench` on any AWS compute but practically speak
         ```{.bash}
         tail -f fmbench.log
         ```
+        
+    1. 👉 For streaming support on SageMaker and Bedrock checkout these config files:
+        1. [config-llama3-8b-g5-streaming.yml](src/configs/llama3/8b/config-llama3-8b-g5-streaming.yml)
+        1. [config-bedrock-llama3-streaming.yml](src/configs/bedrock/config-bedrock-llama3-streaming.yml)
     
 1. The generated reports and metrics are available in the `sagemaker-fmbench-write-<replace_w_your_aws_region>-<replace_w_your_aws_account_id>` bucket. The metrics and report files are also downloaded locally and in the `results` directory (created by `FMBench`) and the benchmarking report is available as a markdown file called `report.md` in the `results` directory. You can view the rendered Markdown report in the SageMaker notebook itself or download the metrics and report files to your machine for offline analysis.
 
 _If you would like to understand what is being done under the hood by the CloudFormation template, see [the DIY version with gory details](./misc/the-diy-version-w-gory-details.md)_
+
+#### `FMBench` on GovCloud
+
+No special steps are required for running `FMBench` on GovCloud. The CloudFormation link for `us-gov-west-1` has been provided in the section above.
+
+1. Not all models available via Bedrock or other services may be available in GovCloud. The following commands show how to run `FMBench` to benchmark the [Amazon Titan Text Express](https://docs.aws.amazon.com/bedrock/latest/userguide/titan-text-models.html#titantx-express) model in the GovCloud. See the [Amazon Bedrock GovCloud](https://docs.aws.amazon.com/govcloud-us/latest/UserGuide/govcloud-bedrock.html) page for more details.
+
+```{.bash}
+account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
+region=`aws configure get region`
+fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/bedrock/config-bedrock-titan-text-express.yml > fmbench.log 2>&1
+```
 
 ### Run `FMBench` on Amazon EC2
 

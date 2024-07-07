@@ -1,5 +1,5 @@
 general:
-  name: "llama3-8b-inf2-g5-v1"      
+  name: "llama3-8b-g5-inf2-stream"      
   model_name: "llama3-8b"
   
 # AWS and SageMaker settings
@@ -152,6 +152,44 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options (such as one experiment is SageMaker and the other is Bedrock).
 experiments:
+  - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
+    model_id: meta-textgeneration-llama-3-8b-instruct
+    model_version: "*"
+    model_name: llama3-8b-instruct-g5.12xl
+    ep_name: llama-3-8b-instruct-g5-12xl
+    instance_type: "ml.g5.12xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
+      stream: True
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 8
+    - 10
+
+    accept_eula: true
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      HF_MODEL_ID: "/opt/ml/model"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "1"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
   - name: llama-3-8b-instruct-inf2-djl-inference:0.27.0-neuronx-sdk2.18.1
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
@@ -159,9 +197,9 @@ experiments:
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: meta-textgenerationneuron-llama-3-8b-instruct
     model_version: "*"
-    model_name: llama3-8b-inf2.24xl
-    ep_name: llama-3-8b-instruct-inf2-24xl
-    instance_type: "ml.inf2.24xlarge"
+    model_name: llama3-8b-inf2.48xl
+    ep_name: llama-3-8b-instruct-inf2-48xl
+    instance_type: "ml.inf2.48xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1'
     deploy: yes
     instance_count: 1
@@ -175,6 +213,7 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: sagemaker
+      stream: True
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -200,56 +239,18 @@ experiments:
       SAGEMAKER_MODEL_SERVER_WORKERS: '1'
       SERVING_LOAD_MODELS: 'test::Python=/opt/ml/model'
       OPTION_ENTRYPOINT: 'inference.py'
-      OPTION_TENSOR_PARALLEL_DEGREEL: '12'
+      OPTION_TENSOR_PARALLEL_DEGREEL: '24'
       OPTION_N_POSITIONS: '8192'
       OPTION_ROLLING_BATCH: 'auto'
       OPTION_LOAD_SPLIT_MODEL: 'False'
       OPTION_NEURON_OPTIMIZE_LEVEL: '2'
       OPTION_DTYPE: 'bf16'
-      OPTION_MAX_ROLLING_BATCH_SIZE: '1'
+      OPTION_MAX_ROLLING_BATCH_SIZE: '8'
       OPTION_MODEL_LOADING_TIMEOUT: '6000'
       OPTION_TRUST_REMOTE_CODE: 'true'
       OPTION_FUSE_QKV: 'true'
       OPTION_ATTENTION_LAYOUT: 'BSH'
       OPTION_GROUP_QUERY_ATTENTION: 'replicated-heads'
-
-  - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
-    model_id: meta-textgeneration-llama-3-8b-instruct
-    model_version: "*"
-    model_name: llama3-8b-instruct-g5.12xl
-    ep_name: llama-3-8b-instruct-g5-12xl
-    instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
-    deploy: yes
-    instance_count: 1
-    deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor.py
-    inference_spec:
-      parameter_set: sagemaker
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 8
-    - 10
-
-    accept_eula: true
-    env:
-      SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-      SM_NUM_GPUS: "1"
-      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
 
 # parameters related to how the final report is generated    
 report:
@@ -258,7 +259,7 @@ report:
   # selection for a use-case if it satisfies all of the following
   # constraints. Experiments are scored as per this criteria
   # higher score is better (see 4_model_metric_analysis.ipynb score_run function)
-  latency_budget: 2
+  latency_budget: 5
   cost_per_10k_txn_budget: 30
   error_rate_budget: 0
   # other misc reporting parameters, see 4_model_metric_analysis.ipynb

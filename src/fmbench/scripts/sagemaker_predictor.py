@@ -1,5 +1,6 @@
 import time
 import json
+import boto3
 import logging
 import sagemaker
 import pandas as pd
@@ -8,6 +9,7 @@ from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
+from fmbench.scripts.stream_responses import get_response_stream
 from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
@@ -15,6 +17,9 @@ from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the SageMaker runtime to support getting response streams
+sagemaker_runtime = boto3.client('sagemaker-runtime')
 
 
 class SageMakerPredictor(FMBenchPredictor):
@@ -51,8 +56,13 @@ class SageMakerPredictor(FMBenchPredictor):
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
+        TTFT: Optional[float] = None
+        TPOT: Optional[float] = None
+        TTLT: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
+        streaming: Optional[bool] = None
+        stop_token: Optional[str] = None
 
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload["inputs"])
@@ -63,7 +73,7 @@ class SageMakerPredictor(FMBenchPredictor):
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
             response = None
-            response = None
+            streaming = self._inference_spec.get("stream", False)
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
@@ -95,8 +105,29 @@ class SageMakerPredictor(FMBenchPredictor):
                     #   "inputs": "this is the prompt"
                     # }
                     payload = payload | dict(parameters=self._inference_spec["parameters"])
-                #import json
-                #logger.info(json.dumps(payload, indent=2, default=str))
+
+            # if the response streaming is step, call the get_response stream on the 
+            # sagemaker endpoint, else use the simple predict call
+            if streaming is True:
+                start_token = self._inference_spec.get("start_token", None)
+                stop_token = self._inference_spec.get("stop_token", None)
+                payload["stream"] = streaming
+                logger.info(f"streaming={streaming}, calling invoke_endpoint_with_response_stream")
+                response_stream = sagemaker_runtime.invoke_endpoint_with_response_stream(
+                                                    EndpointName=self._endpoint_name,
+                                                    Body=json.dumps(payload),
+                                                    ContentType="application/json")
+                response_dict = get_response_stream(response_stream['Body'],
+                                                    st,
+                                                    start_token,
+                                                    stop_token,
+                                                    is_sagemaker=True)
+                TTFT = response_dict.get('TTFT')
+                TPOT = response_dict.get('TPOT')
+                TTLT = response_dict.get('TTLT')
+                response = response_dict.get('response')
+            else:
+                logger.info(f"streaming={streaming}, calling predict")
                 response = self._predictor.predict(payload)
 
             latency = time.perf_counter() - st
@@ -118,6 +149,9 @@ class SageMakerPredictor(FMBenchPredictor):
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
+                                         time_to_first_token=TTFT,
+                                         time_per_output_token=TPOT,
+                                         time_to_last_token=TTLT,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
 
