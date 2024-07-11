@@ -428,7 +428,7 @@ The steps for deploying the model on your EC2 instance are described below.
         ```
     
     1. For example, to run `FMBench` on a `llama3-8b-Instruct` model on an `inf2.48xlarge` instance, run the command 
-    command below. The config file for `llama3-8b-Instruct` on an `inf2.48xlarge` can be viewed [here](src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml).
+    command below. The config file for this example can be viewed [here](src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml).
 
         ```{.bash}
         # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
