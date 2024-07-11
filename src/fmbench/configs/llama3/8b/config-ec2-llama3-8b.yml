@@ -181,6 +181,16 @@ experiments:
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-8b-instruct deployed on ec2
     inference_script: ec2_djl_predictor.py
+    # This section defines the settings for Amazon EC2 instances
+    ec2:
+      # The following line specifies the runtime and GPU settings for the instance
+      # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
+      # '--gpus all' makes all GPUs available to the container
+      # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
+      gpu_or_neuron_setting: --runtime=nvidia --gpus all --shm-size 12g
+      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
+      # If the model takes longer than 40 minutes to load, the process will time out and fail.
+      model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
