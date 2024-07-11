@@ -162,6 +162,11 @@ PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 # Initialize the scripts directory
 SCRIPTS_DIR: str = "fmbench/scripts"
 
+# Contruct the path to the evaluation prompt and the different rules in 
+# the rules directory for respective subjective eval criteria
+EVAL_RULES_DIR: str = "fmbench/eval_criteria_prompts/rules"
+EVAL_PROMPT_TEMPLATES: str = "fmbench/eval_criteria_prompts/prompt_template"
+
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
 METRICS_PATH_FNAME: str = "metrics_path.txt"
@@ -191,7 +196,7 @@ class TRUNCATE_POLICY(str, Enum):
 PLACE_HOLDER: int = -1705338041
 RESULTS_DIR: str = f"results-{config['general']['name']}"
 
-# metric filenames
+# benchmarking - metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"
 ERROR_RATES_FNAME: str = "error_rates.csv"
 RESULTS_DESC_MD_FNAME: str = "report.md"
@@ -204,6 +209,9 @@ SUMMARY_MODEL_ENDPOINT_COST_PER_INSTANCE: str = "endpoint_per_instance_per_run_c
 BUSINESS_SUMMARY_PLOT_FNAME: str = "business_summary.png"
 BUSINESS_SUMMARY_PLOT_FNAME2: str = "business_summary_barchart.png"
 LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
+
+# evaluation - metric filenames
+PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_cosine_similarity.csv"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
