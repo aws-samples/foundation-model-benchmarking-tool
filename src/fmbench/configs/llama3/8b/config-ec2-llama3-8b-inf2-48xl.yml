@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-8b-inf2.24xl-ec2"      
+  name: "llama3-8b-inf2.48xl-ec2"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -173,7 +173,7 @@ experiments:
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: "inf2.48xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1
+    image_uri: 63104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py

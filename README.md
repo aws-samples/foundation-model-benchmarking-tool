@@ -426,6 +426,14 @@ The steps for deploying the model on your EC2 instance are described below.
         # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
         fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
         ```
+    
+    1. For example, to run `FMBench` on a `llama3-8b-Instruct` model on an `inf2.48xlarge` instance, run the command 
+    command below. The config file for `llama3-8b-Instruct` on an `inf2.48xlarge` can be viewed [here](src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml).
+
+        ```{.bash}
+        # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+        fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
+        ```
 
     1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
 
