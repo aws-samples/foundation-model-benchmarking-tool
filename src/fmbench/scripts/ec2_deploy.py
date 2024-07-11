@@ -112,7 +112,7 @@ def _check_model_deployment(endpoint, model_loading_timeout):
     """
     start_time = time.time()
     #global variable 
-    timeout = MODEL_DEPLOYMENT_TIMEOUT
+    timeout = model_loading_timeout
     logger.info(f"Checking deployment status at {endpoint}")
     data = {"inputs": ["tell me a story of the little red riding hood"]}
     headers = {"content-type": "application/json"}
