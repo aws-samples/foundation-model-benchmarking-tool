@@ -164,7 +164,7 @@ SCRIPTS_DIR: str = "fmbench/scripts"
 
 # Contruct the path to the evaluation prompt and the different rules in 
 # the rules directory for respective subjective eval criteria
-EVAL_RULES_DIR: str = "fmbench/eval_criteria_prompts/rules"
+EVAL_RULES_DIR: str = "fmbench/eval_criteria_prompts/evaluation_instructions_max_voting.txt"
 EVAL_PROMPT_TEMPLATES: str = "fmbench/eval_criteria_prompts/prompt_template"
 
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
@@ -212,6 +212,11 @@ LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
 
 # evaluation - metric filenames
 PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_cosine_similarity.csv"
+EVAL_DIR: str = config['s3_read_data']['eval_prompts_dir']
+EVAL_COL_SUFFIX: str = '_eval_prompt'
+EVAL_INSTRUCTIONS_DIR: str = config['s3_read_data']['eval_instructions_dir']
+PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
+MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"

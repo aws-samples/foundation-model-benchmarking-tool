@@ -1,1 +1,1 @@
-configs/bedrock/config-bedrock-llama3.yml
+configs/llama2/7b/config-llama2-7b-g5-quick.yml
