@@ -566,6 +566,9 @@ experiments:
     
 report:
   latency_budget: 2
+  cosine_similarity_budget: 0.3
+  accuracy_budget: 1
+  accuracy_error_rate_budget: 0
   cost_per_10k_txn_budget: 50
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
