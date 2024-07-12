@@ -24,8 +24,8 @@ logger = logging.getLogger(__name__)
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
-SHM_SIZE: str = "12g"
-MODEL_DEPLOYMENT_TIMEOUT: int = 2400
+# SHM_SIZE: str = "12g"
+# MODEL_DEPLOYMENT_TIMEOUT: int = 2400
 FMBENCH_MODEL_CONTAINER_NAME: str = "fmbench_model_container"
 
 def _set_up(model_name: str, serving_properties: str, local_model_path: str):
@@ -49,7 +49,7 @@ def _set_up(model_name: str, serving_properties: str, local_model_path: str):
     #return the directory we created
     return directory
 
-def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory):
+def _create_deployment_script(image_uri, region, model_name, HF_TOKEN, directory, gpu_or_neuron_setting, model_loading_timeout):
     """
     Write a deployment script for model container
     """
@@ -61,9 +61,11 @@ echo "Content in docker command: {region}, {image_uri}, {model_name}"
 aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
 docker pull {image_uri}
 docker stop {container_name} || true && docker rm {container_name} || true
-docker run -d --name={container_name} --runtime=nvidia --gpus all --shm-size {SHM_SIZE} \\
+docker run -d --name={container_name} \\
+ {gpu_or_neuron_setting} \\
  -v {directory}:/opt/ml/model:ro \\
  -v {directory}/model_server_logs:/opt/djl/logs \\
+ -e MODEL_LOADING_TIMEOUT={model_loading_timeout} \\
  -e HF_TOKEN={HF_TOKEN} \\
  -p 8080:8080 \\
  {image_uri}
@@ -104,13 +106,13 @@ def _run_container(script_file_path):
         logger.error(f"An unexpected error occurred: {e}")
     return False
 
-def _check_model_deployment(endpoint):
+def _check_model_deployment(endpoint, model_loading_timeout):
     """
     Check the model deployment status and wait for the model to be ready.
     """
     start_time = time.time()
     #global variable 
-    timeout = MODEL_DEPLOYMENT_TIMEOUT
+    timeout = model_loading_timeout
     logger.info(f"Checking deployment status at {endpoint}")
     data = {"inputs": ["tell me a story of the little red riding hood"]}
     headers = {"content-type": "application/json"}
@@ -141,6 +143,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model_id: str = experiment_config['model_id']
     region: str = experiment_config['region']
     serving_properties: str = experiment_config['serving.properties']
+    model_loading_timeout: int = experiment_config['ec2']['model_loading_timeout']
+    gpu_or_neuron_setting: str = experiment_config['ec2']['gpu_or_neuron_setting']
     HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()
     dir_path = home_dir = os.getenv("HOME", str(Path.home()))
     logger.info(f"Home directory: {dir_path}")
@@ -148,7 +152,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info(f"Writing serving.properties {serving_properties} to {model_directory}")
 
     logger.info("Creating the deployment script in model directory")
-    deployment_script_path = _create_deployment_script(image_uri, region, model_name, HF_TOKEN, model_directory)
+    deployment_script_path = _create_deployment_script(image_uri, region, model_name, HF_TOKEN, model_directory, gpu_or_neuron_setting, model_loading_timeout )
 
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)
@@ -161,7 +165,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
                         deployed=False)
     if ran_container:
         logger.info("Container ran successfully")
-        ep_status = _check_model_deployment(ep_name)
+        ep_status = _check_model_deployment(ep_name, model_loading_timeout)
         logger.info(f"Endpoint status: {ep_status}")
         if ep_status == "InService":
             logger.info("Model endpoint running!")

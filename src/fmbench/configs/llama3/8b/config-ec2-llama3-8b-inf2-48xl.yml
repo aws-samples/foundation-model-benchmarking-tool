@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
-# this file uses a llama-3-8b-chat-hf deployed on ec2
+# this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-8b-g5.2xl-ec2"      
+  name: "llama3-8b-inf2.48xl-ec2"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -80,7 +80,7 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  5_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
@@ -172,8 +172,8 @@ experiments:
     model_name: "llama3-8b-instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "g5.2xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-lmi10.0.0-cu124
+    instance_type: "inf2.48xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
@@ -183,24 +183,29 @@ experiments:
     inference_script: ec2_djl_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and GPU settings for the instance
-      # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
-      # '--gpus all' makes all GPUs available to the container
-      # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
-      gpu_or_neuron_setting: --runtime=nvidia --gpus all --shm-size 12g
-      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
-      # If the model takes longer than 40 minutes to load, the process will time out and fail.
-      model_loading_timeout: 2400
+      # The following line specifies the runtime and Inferentia settings for the instance
+      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
+      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
+      gpu_or_neuron_setting: -u djl --device /dev/neuron0  --device /dev/neuron3  --device /dev/neuron2  --device /dev/neuron4  --device /dev/neuron5  --device /dev/neuron1 
+      #This setting specifies the timeout (in seconds) for loading the model. 
+      model_loading_timeout: 1200
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
     # modify the serving properties to match your model and requirements
     serving.properties: |
-      engine=MPI
-      option.tensor_parallel_degree=1
-      option.max_rolling_batch_size=256
+      engine=Python
+      option.entryPoint=djl_python.transformers_neuronx
       option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
-      option.rolling_batch=lmi-dist
+      option.load_split_model=True
+      option.tensor_parallel_degree=8
+      option.n_positions=4096
+      option.rolling_batch=auto
+      option.max_rolling_batch_size=8
+      option.dtype=fp16
+      option.model_loading_timeout=1200
+      option.neuron_optimize_level=3
+
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl

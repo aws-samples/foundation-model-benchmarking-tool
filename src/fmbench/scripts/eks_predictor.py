@@ -36,6 +36,9 @@ class EKSPredictor(FMBenchPredictor):
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
+        TTFT: Optional[float] = None
+        TPOT: Optional[float] = None
+        TTLT: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
         timeout: Optional[int] = None
@@ -76,6 +79,9 @@ class EKSPredictor(FMBenchPredictor):
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
+                                         time_to_first_token=TTFT,
+                                         time_per_output_token=TPOT,
+                                         time_to_last_token=TTLT,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)    
 
