@@ -280,8 +280,11 @@ A Detailed Analysis of Model Performance Based on Accuracy using Panel of LLM Ev
 
 This accuracy benchmarking was done using a Panel of LLM evaluators. {judge_model_ids} were used as judges.
 
-Top Performing Models ({highest_accuracy}% Accuracy):
+Top Performing Models for Accuracy ({highest_accuracy}% Accuracy):
 {top_models}
+
+Top Performing Model for Cosine Similarity ({highest_cosine_similarity} Cosine Similarity Score):
+{top_cosine_similarity_model}
 
 Other Ranked Models:
 {ranked_models}
