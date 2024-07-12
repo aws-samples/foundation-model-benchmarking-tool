@@ -162,7 +162,7 @@ experiments:
     model_name: llama3-8b-inf2.24xl
     ep_name: llama-3-8b-instruct-inf2-24xl
     instance_type: "ml.inf2.24xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-neuronx-sdk2.18.1'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2'
     deploy: yes
     instance_count: 1
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -219,7 +219,7 @@ experiments:
     model_name: llama3-8b-instruct-g5.12xl
     ep_name: llama-3-8b-instruct-g5-12xl
     instance_type: "ml.g5.12xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-lmi10.0.0-cu124'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py

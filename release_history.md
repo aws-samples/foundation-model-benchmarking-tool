@@ -1,3 +1,8 @@
+### v1.0.47
+1. Run `FMBench` as a Docker container.
+1. Bug fixes for GovCloud support.
+1. Updated README for EKS cluster creation.
+
 ### v1.0.46
 1. Native model deployment support for EC2 and EKS (i.e. you can now deploy and benchmark models on EC2 and EKS).
 1. FMBench is now available in GovCloud.

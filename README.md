@@ -10,7 +10,7 @@
     * [Llama3 on Amazon SageMaker ](#llama3-on-amazon-sagemaker)
     * [Full list of benchmarked models](#full-list-of-benchmarked-models)
   * [New in this release](#new-in-this-release)
-    * [v1.0.49](#v1049)
+    * [v1.0.49](#v1050)
   * [Description](#description)
     * [Workflow for `FMBench`](#workflow-for-fmbench)
   * [Getting started](#getting-started)
@@ -105,6 +105,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## v1.0.50
+1. `Llama3-8b` on Amazon EC2 `inf2.48xlarge` config file.
+1. Update to new version of DJL LMI (0.28.0).
+
 ### v1.0.49
 1. Streaming support for Amazon SageMaker and Amazon Bedrock.
 1. Per-token latency metrics such as time to first token (TTFT) and mean time per-output token (TPOT).
@@ -114,11 +118,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Faster result file download at the end of a test run.
 1. `Phi-3-mini-4k-instruct` configuration file.
 1. Tokenizer and misc. bug fixes.
-
-### v1.0.47
-1. Run `FMBench` as a Docker container.
-1. Bug fixes for GovCloud support.
-1. Updated README for EKS cluster creation.
 
 
 [Release history](./release_history.md)
