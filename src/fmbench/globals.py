@@ -278,7 +278,8 @@ Answer:
 MAX_VOTING_RESULT_STATEMENT: str = """ 
 A Detailed Analysis of Model Performance Based on Accuracy using Panel of LLM Evaluators (PoLL):
 
-This accuracy benchmarking was done using a Panel of LLM evaluators. {judge_model_ids} were used as judges.
+This accuracy benchmarking was done using a Panel of LLM evaluators. {judge_model_ids} were used as judges. 
+This analysis is on the entire data that candidate models used to generate inference.
 
 Top Performing Models for Accuracy ({highest_accuracy}% Accuracy):
 {top_models}
