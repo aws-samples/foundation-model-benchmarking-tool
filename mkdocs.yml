@@ -1,0 +1,44 @@
+site_name: Foundation Model Benchmarking Tools
+repo_name: aws-samples/foundation-model-benchmarking-tool
+repo_url: https://github.com/aws-samples/foundation-model-benchmarking-tool
+edit_uri: https://github.com/aws-samples/foundation-model-benchmarking-tool/edit/master/
+site_url: https://foundation-model-benchmarking-tool.github.io
+use_directory_urls: false
+markdown_extensions:
+  - codehilite
+  - toc:
+      permalink: true
+theme:
+  name: material
+  logo: website/img/DJL.svg
+  favicon: website/img/favicon.png
+  features:
+    - navigation
+  palette:
+      - scheme: default
+        primary: light-blue
+        accent: light-blue
+        toggle:
+            icon: material/weather-sunny
+            name: Switch to dark mode
+      - scheme: slate
+        primary: black
+        accent: deep-orange
+        toggle:
+            icon: material/weather-night
+            name: Switch to light mode
+  edit_uri: ''
+
+extra:
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/aws-samples/foundation-model-benchmarking-tool
+    - icon: fontawesome/brands/slack
+      link: https://github.com/aws-samples/foundation-model-benchmarking-tool
+plugins:
+  - search
+  - mknotebooks
+
+nav: 
+  - 'overview.md'
+  - 'report.md'
