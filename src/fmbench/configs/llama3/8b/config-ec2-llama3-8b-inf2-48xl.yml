@@ -188,7 +188,7 @@ experiments:
       # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
       gpu_or_neuron_setting: -u djl --device /dev/neuron0  --device /dev/neuron3  --device /dev/neuron2  --device /dev/neuron4  --device /dev/neuron5  --device /dev/neuron1 
       #This setting specifies the timeout (in seconds) for loading the model. 
-      model_loading_timeout: 1200
+      model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
@@ -203,7 +203,7 @@ experiments:
       option.rolling_batch=auto
       option.max_rolling_batch_size=8
       option.dtype=fp16
-      option.model_loading_timeout=1200
+      option.model_loading_timeout=2400
       option.neuron_optimize_level=3
 
     # runs are done for each combination of payload file and concurrency level
