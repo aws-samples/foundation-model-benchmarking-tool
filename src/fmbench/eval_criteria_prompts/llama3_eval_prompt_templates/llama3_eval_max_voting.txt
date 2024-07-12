@@ -20,4 +20,9 @@ answer: {answer}
 Refer to the ground truth to the question in the context below in the ground_truth section:
 ground_truth: {ground_truth}
 
+Do not add anything else in your response. Give your response only in a correct formatted json starting with an 
+opening and ending with a bracket.
+
+Do not add any pre filler words. Your response should contain the JSON structured output only.
+
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>

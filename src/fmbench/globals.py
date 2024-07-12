@@ -219,6 +219,9 @@ PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
 MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
 MODEL_EVAL_COMPLETIONS_CSV: str = "raw_llm_as_a_judge_evals.csv"
 LLM_JUDGE_PANEL_RESPONSE_SUMMARIES: str = "llm_as_a_judge_per_eval_summary.csv"
+SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
+PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
+OVERALL_POLL_REPORT: str = "overall_PoLL_report.txt"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
@@ -269,4 +272,20 @@ Question: {input}
 [/INST]
 Answer:
 
+"""
+
+# Result statement for Evaluating PoLL evals on Max Voting
+MAX_VOTING_RESULT_STATEMENT: str = """ 
+A Detailed Analysis of Model Performance Based on Accuracy using Panel of LLM Evaluators (PoLL):
+
+This accuracy benchmarking was done using a Panel of LLM evaluators. {judge_model_ids} were used as judges.
+
+Top Performing Models ({highest_accuracy}% Accuracy):
+{top_models}
+
+Other Ranked Models:
+{ranked_models}
+
+Summary:
+The top-performing models, including {top_performing_model_ids}, have achieved {highest_accuracy}% accuracy with no errors, setting a benchmark for accuracy. The remaining models are ranked based on their accuracy and error rates.
 """
