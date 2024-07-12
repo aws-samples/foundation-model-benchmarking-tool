@@ -188,19 +188,19 @@ model_evaluations:
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "claude_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "claude_eval"
+        eval_prompt_template_name_max_voting: "claude_eval_max_voting"
       # Information on judge 2 on the evaluation judge panel
       - model_id: meta.llama3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "llama3_eval"
+        eval_prompt_template_name_prefix: "llama3_eval_max_voting"
       # Information on judge 3 on the evaluation judge panel
       - model_id: cohere.command-r-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "cohere_eval"
+        eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
     # Common inference parameters used in the evaluation process
     # We use LiteLLM for interfacing with Bedrock
     inference_parameters:
