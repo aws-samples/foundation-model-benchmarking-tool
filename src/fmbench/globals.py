@@ -164,8 +164,7 @@ SCRIPTS_DIR: str = "fmbench/scripts"
 
 # Contruct the path to the evaluation prompt and the different rules in 
 # the rules directory for respective subjective eval criteria
-EVAL_RULES_DIR: str = "fmbench/eval_criteria_prompts/evaluation_instructions_max_voting.txt"
-EVAL_PROMPT_TEMPLATES: str = "fmbench/eval_criteria_prompts/prompt_template"
+EVAL_PROMPT_TEMPLATES: str = "fmbench/prompt_template/eval_criteria_prompts"
 
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
@@ -291,5 +290,8 @@ Other Ranked Models:
 {ranked_models}
 
 Summary:
-The top-performing models, including {top_performing_model_ids}, have achieved {highest_accuracy}% accuracy with no errors, setting a benchmark for accuracy. The remaining models are ranked based on their accuracy and error rates.
+The top-performing models, including {top_performing_model_ids}, have achieved {highest_accuracy}% accuracy, setting a benchmark for accuracy. The remaining models are ranked based on their accuracy and error rates. 
+
+The top-performing model in quantitative evaluation, using the Cosine similarity
+score, is {top_cosine_similarity_model} with a score of {highest_cosine_similarity}.
 """

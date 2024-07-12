@@ -1,1 +1,1 @@
-configs/bedrock/config-bedrock-llama3.yml
+configs/bedrock/config-bedrock.yml

@@ -162,7 +162,8 @@ model_evaluations:
     # can use the max_voting method to get binary decisions and do a
     # majority vote from all panel judges on each model used in the inference
     # process
-    method: max_voting # average_pooling
+    # method: max_voting # average_pooling
+    method: average_pooling
   
   # This represents the information that is used to get the quantitative metrics 
   # from the evaluation step. This includes calculating the cosine similarity. 
