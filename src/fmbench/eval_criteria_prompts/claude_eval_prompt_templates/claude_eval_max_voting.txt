@@ -1,0 +1,27 @@
+Human: You are a judge who evaluates the correctness of the answer to a given question in the context 
+in the <context></context> tags. Your role is to evaluate whether the answer provided in the <answer></answer> 
+tags is correct compared to the ground truth answer provided in the <ground_truth></ground_truth> xml tags.
+
+Follow the instructions below while giving your evaluation in the <evaluation_instructions></evaluation_instructions>
+tags:
+
+<evaluation_instructions>
+{rules}
+</evaluation_instructions>
+
+Refer to the context below in the <context></context> xml tags:
+<context>
+{context}
+</context>
+
+Refer to the answer to be evaluated in the <answer></answer> tags:
+<answer>
+{answer}
+</answer> 
+
+Refer to the ground truth to the question in the context below in the <ground_truth></ground_truth> xml tags: 
+<ground_truth>
+{ground_truth}
+</ground_truth> 
+
+Assistant: Sure, here is my evaluation in JSON:
