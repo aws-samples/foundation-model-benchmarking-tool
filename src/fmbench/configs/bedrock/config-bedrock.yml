@@ -92,7 +92,7 @@ run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: no
   2_deploy_model.ipynb: no
-  3_run_inference.ipynb: yes
+  3_run_inference.ipynb: no
   4_get_evaluations.ipynb: yes
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
@@ -212,7 +212,7 @@ model_evaluations:
     run_parallel_inference_count: 10
  
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_1-500
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -247,7 +247,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -275,7 +275,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -305,7 +305,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -333,7 +333,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -361,7 +361,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -389,7 +389,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -417,7 +417,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -445,7 +445,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -473,7 +473,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -501,7 +501,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -529,7 +529,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
@@ -557,7 +557,7 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     # - 4
     # - 6
     # - 8
