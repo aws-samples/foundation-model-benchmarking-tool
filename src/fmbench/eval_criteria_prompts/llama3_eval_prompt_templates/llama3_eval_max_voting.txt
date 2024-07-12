@@ -1,0 +1,23 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+You are a judge who evaluates the correctness of the answer to a given question in the context 
+demarcated by "```" below. Your role is to evaluate whether the answer provided in the answer section
+is correct compared to the ground truth answer provided in the ground_truth section.
+
+Follow the instructions below while giving your evaluation in the evaluation_instructions section below:
+
+evaluation_instructions:
+{rules}
+
+Refer to the context below demarcated by "```"
+```
+{context}
+```
+
+Refer to the answer to below that needs to be evaluated:
+answer: {answer}
+
+
+Refer to the ground truth to the question in the context below in the ground_truth section:
+ground_truth: {ground_truth}
+
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
