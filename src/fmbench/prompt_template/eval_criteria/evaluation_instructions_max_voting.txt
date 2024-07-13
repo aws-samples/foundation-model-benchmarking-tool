@@ -17,3 +17,7 @@ context, then your verdict is incorrect.
 
 5. Do not have any pre filler words in your response. Your response should only contain the JSON format response with
 your evaluation. 
+
+6. The answer does not have to be an exact word match with the ground truth. If it semantically answers the question
+and gives the same answer as the ground truth, then mark it as correct. Just make sure according to the context and
+ground truth, the answer is correct or incorrect while giving your verdict.
