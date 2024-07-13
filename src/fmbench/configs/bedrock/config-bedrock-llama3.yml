@@ -36,7 +36,7 @@ s3_read_data:
   
   # This is the directory in S3 and locally where all the rules are stored. Each rule 
   # file represents a subjective criteria to be evaluated
-  eval_prompts_dir: eval_criteria_prompts
+  eval_prompts_dir: eval_criteria
   # the directory contains a folder that contains all the files with rules for evaluations
   # and another directory that stores the standard prompt template that is used for evlauation
   # of different answers at runtime
@@ -92,12 +92,12 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: no
-  5_model_metric_analysis.ipynb: no
-  6_cleanup.ipynb: no
+  4_get_evaluations.ipynb: yes
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -162,8 +162,7 @@ model_evaluations:
     # can use the max_voting method to get binary decisions and do a
     # majority vote from all panel judges on each model used in the inference
     # process
-    # method: max_voting # average_pooling
-    method: average_pooling
+    method: max_voting # average_pooling
   
   # This represents the information that is used to get the quantitative metrics 
   # from the evaluation step. This includes calculating the cosine similarity. 
@@ -186,19 +185,27 @@ model_evaluations:
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "claude_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "claude_eval"
+        eval_prompt_template_name_max_voting: "claude_eval_max_voting"
       # Information on judge 2 on the evaluation judge panel
       - model_id: meta.llama3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "llama3_eval"
+        eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
       # Information on judge 3 on the evaluation judge panel
-      - model_id: cohere.command-r-v1:0
+      # We use the most powerful cohere model - cohere command R +
+      - model_id: cohere.command-r-plus-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
-        eval_prompt_template_name_prefix: "cohere_eval"
+        eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
+    # number of parallel calls made asyncronously to bedrock using Ray
+    run_parallel_inference_count: 10
+    # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
+    # users can spot trends, patterns and observation across multiple candidate models and get suggestions
+    # as to how certain models can improve their evaluation performance through prompt engineering, etc
+    final_evaluation_summarizer: anthropic.claude-3-sonnet-20240229-v1:0
+    final_evaluation_prompt_template: "final_evaluations_summarizer_prompt_template.txt"
     # Common inference parameters used in the evaluation process
     # We use LiteLLM for interfacing with Bedrock
     inference_parameters:
@@ -206,15 +213,13 @@ model_evaluations:
       max_tokens: 300
       top_p: 0.92
       caching: False
-    # number of parallel calls made asyncronously to bedrock using Ray
-    run_parallel_inference_count: 10
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_1-500
+  dataset_of_interest: en_1000-2000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -269,22 +274,22 @@ experiments:
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
-    # - 12
-    # - 15
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 15
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -317,22 +322,22 @@ experiments:
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
-    # - 12
-    # - 15
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 15
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
