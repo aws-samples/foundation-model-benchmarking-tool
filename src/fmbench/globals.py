@@ -171,7 +171,7 @@ EVAL_PROMPT_TEMPLATES: str = "fmbench/prompt_template/eval_criteria_prompts"
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
 METRICS_PATH_FNAME: str = "metrics_path.txt"
 
-DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
+DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR, METRICS_PER_POLL_EVAL_DIR]
 
 # this is for custom tokenizers
 TOKENIZER_DIR_S3 = config['s3_read_data']['tokenizer_prefix']
