@@ -137,6 +137,7 @@ METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}/mm=
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_POLL_EVAL_DIR: str = os.path.join(METRICS_DIR, "per_poll_eval")
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
@@ -218,6 +219,10 @@ PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
 MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
 MODEL_EVAL_COMPLETIONS_CSV: str = "raw_llm_as_a_judge_evals.csv"
 LLM_JUDGE_PANEL_RESPONSE_SUMMARIES: str = "llm_as_a_judge_per_eval_summary.csv"
+# this csv contains all of the incorrect verdict responses from the PoLL
+# evaluation of responses using Max Voting. View this csv to get more insight
+# into where the model went wrong, and what to fix
+INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
 SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
 PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
 OVERALL_POLL_REPORT: str = "overall_PoLL_report.txt"

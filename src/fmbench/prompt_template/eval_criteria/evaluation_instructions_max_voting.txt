@@ -8,16 +8,21 @@ reason why the answer is correct or incorrect after your evaluation of it agains
 
 3. Make sure to be completely accurate and give your response in a proper JSON format containing the two fields.
 Evaluate the ground truth carefully, and based on the question in the context provided, think about whether the 
-answer is correct or incorrect. It does not have to be an exact match to the ground response, but should answer the
-question given in the context.
+answer is correct or incorrect.
 
-4. If the answer is a close match to the ground truth and answers the same answer to the question as the ground truth, 
-then your verdict is correct. If the answer does not match the ground truth and does not answer the question from the 
-context, then your verdict is incorrect.
+4. If the answer is a close match to the ground truth and answers the question in the similar manner to the question as the ground
+truth, then your verdict is correct. If the answer is not related to the ground truth and does not answer the question from the 
+context, then your verdict is incorrect. If the answer is not a complete match but is related to the ground truth and answers the question
+in the context correctly, then it is correct. The answer is only incorrect when it is not related to the ground truth at all
+or does not answer the question in the context in any way.
 
 5. Do not have any pre filler words in your response. Your response should only contain the JSON format response with
 your evaluation. 
 
 6. The answer does not have to be an exact word match with the ground truth. If it semantically answers the question
-and gives the same answer as the ground truth, then mark it as correct. Just make sure according to the context and
+and is not contradicting the ground truth, then mark it as correct. Just make sure according to the context and
 ground truth, the answer is correct or incorrect while giving your verdict.
+
+7. Do not be completely strict about string matching while evaluating whether an answer is correct or incorrect. What
+matters more is whether it is answering the question given in the context and it is not contradicting the response
+given in the ground truth, but instead supporting it.
