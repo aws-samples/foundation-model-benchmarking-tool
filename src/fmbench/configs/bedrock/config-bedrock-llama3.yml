@@ -92,12 +92,12 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: yes
+  1_generate_data.ipynb: no
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
   4_get_evaluations.ipynb: yes
   5_model_metric_analysis.ipynb: yes
-  6_cleanup.ipynb: yes
+  6_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
@@ -219,7 +219,7 @@ model_evaluations:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_500-1000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -275,21 +275,21 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 15
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    # - 12
+    # - 15
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -323,21 +323,21 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 15
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    # - 12
+    # - 15
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
