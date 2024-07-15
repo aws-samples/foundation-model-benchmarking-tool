@@ -90,10 +90,10 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
+  4_get_evaluations.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
@@ -183,8 +183,14 @@ model_evaluations:
   subjective_eval_info:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
+      # Information on judge 3 on the evaluation judge panel
+      - model_id: mistral.mistral-large-2402-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: either max voting or average pooling
+        eval_prompt_template_dir: "mistral_eval_prompt_templates"
+        eval_prompt_template_name_max_voting: "mistral_eval_max_voting"
       # Information on judge 1 on the evaluation judge panel
-      - model_id: anthropic.claude-3-haiku-20240307-v1:0
+      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "claude_eval_prompt_templates"
@@ -202,8 +208,9 @@ model_evaluations:
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
         eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
+
     # number of parallel calls made asyncronously to bedrock using Ray
-    run_parallel_inference_count: 10
+    run_parallel_inference_count: 15
     # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
     # users can spot trends, patterns and observation across multiple candidate models and get suggestions
     # as to how certain models can improve their evaluation performance through prompt engineering, etc
@@ -218,7 +225,7 @@ model_evaluations:
       caching: False
  
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_2000-3000
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
@@ -249,15 +256,15 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: mistral.mixtral-8x7b-instruct-v0:1
     model_id: mistral.mixtral-8x7b-instruct-v0:1
@@ -277,298 +284,242 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
     
 
-#   - name: meta.llama2-13b-chat-v1
-#     model_id: meta.llama2-13b-chat-v1
-#     model_version: "*"
-#     model_name: meta.llama2-13b-chat-v1
-#     ep_name: meta.llama2-13b-chat-v1
-#     instance_type: meta.llama2-13b-chat-v1
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: meta.llama2-70b-chat-v1
-#     model_id: meta.llama2-70b-chat-v1
-#     model_version: "*"
-#     model_name: meta.llama2-70b-chat-v1
-#     ep_name: meta.llama2-70b-chat-v1
-#     instance_type: meta.llama2-70b-chat-v1
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-# #   # - name: amazon.titan-text-lite-v1
-# #   #   model_id: amazon.titan-text-lite-v1
-# #   #   model_version: "*"
-# #   #   model_name: amazon.titan-text-lite-v1
-# #   #   ep_name: amazon.titan-text-lite-v1
-# #   #   instance_type: 'amazon.titan-text-lite-v1'
-# #   #   image_uri: 
-# #   #   deploy: no 
-# #   #   instance_count: 
-# #   #   deployment_script:
-# #   #   inference_script: bedrock_predictor.py
-# #   #   inference_spec:
-# #   #     split_input_and_parameters: no
-# #   #     parameter_set: bedrock
-# #   #   payload_files:
-# #   #   - payload_en_1-500.jsonl
-# #   #   - payload_en_500-1000.jsonl
-# #   #   - payload_en_1000-2000.jsonl
-# #   #   # - payload_en_2000-3000.jsonl
-# #   #   # - payload_en_3000-3840.jsonl
-# #   #   concurrency_levels:
-# #   #   - 1
-# #   #   # - 2
-# #   #   # - 4
-# #   #   # - 6
-# #   #   # - 8
-# #   #   # - 10
-# #   #   env:
-# #   # - name: amazon.titan-text-express-v1
-# #   #   model_id: amazon.titan-text-express-v1
-# #   #   model_version: "*"
-# #   #   model_name: amazon.titan-text-express-v1
-# #   #   ep_name: amazon.titan-text-express-v1
-# #   #   instance_type: amazon.titan-text-express-v1
-# #   #   image_uri:
-# #   #   deploy: no
-# #   #   instance_count:
-# #   #   deployment_script:
-# #   #   inference_script: bedrock_predictor.py
-# #   #   inference_spec:
-# #   #     split_input_and_parameters: no
-# #   #     parameter_set: bedrock
-# #   #   payload_files:
-# #   #   - payload_en_1-500.jsonl
-# #   #   - payload_en_500-1000.jsonl
-# #   #   - payload_en_1000-2000.jsonl
-# #   #   # - payload_en_2000-3000.jsonl
-# #   #   # - payload_en_3000-3840.jsonl
-# #   #   concurrency_levels:
-# #   #   - 1
-# #   #   # - 2
-# #   #   # - 4
-# #   #   # - 6
-# #   #   # - 8
-# #   #   # - 10
-# #   #   env: 
-#   - name: anthropic.claude-3-sonnet-20240229-v1:0
-#     model_id: anthropic.claude-3-sonnet-20240229-v1:0
-#     model_version: "*"
-#     model_name: anthropic.claude-3-sonnet-20240229-v1:0
-#     ep_name: anthropic.claude-3-sonnet-20240229-v1:0
-#     instance_type: anthropic.claude-3-sonnet-20240229-v1:0
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: anthropic.claude-3-haiku-20240307-v1:0
-#     model_id: anthropic.claude-3-haiku-20240307-v1:0
-#     model_version: "*"
-#     model_name: anthropic.claude-3-haiku-20240307-v1:0
-#     ep_name: anthropic.claude-3-haiku-20240307-v1:0
-#     instance_type: anthropic.claude-3-haiku-20240307-v1:0
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: cohere.command-text-v14
-#     model_id: cohere.command-text-v14
-#     model_version: "*"
-#     model_name: cohere.command-text-v14
-#     ep_name: cohere.command-text-v14
-#     instance_type: cohere.command-text-v14
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: cohere.command-light-text-v14
-#     model_id: cohere.command-light-text-v14
-#     model_version: "*"
-#     model_name: cohere.command-light-text-v14
-#     ep_name: cohere.command-light-text-v14
-#     instance_type: cohere.command-light-text-v14
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: ai21.j2-mid-v1
-#     model_id: ai21.j2-mid-v1
-#     model_version: "*"
-#     model_name: ai21.j2-mid-v1
-#     ep_name: ai21.j2-mid-v1
-#     instance_type: ai21.j2-mid-v1
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
-#   - name: ai21.j2-ultra-v1
-#     model_id: ai21.j2-ultra-v1
-#     model_version: "*"
-#     model_name: ai21.j2-ultra-v1
-#     ep_name: ai21.j2-ultra-v1
-#     instance_type: ai21.j2-ultra-v1
-#     image_uri:
-#     deploy: no
-#     instance_count:
-#     deployment_script:
-#     inference_script: bedrock_predictor.py
-#     inference_spec:
-#       split_input_and_parameters: no
-#       parameter_set: bedrock
-#     payload_files:
-#     - payload_en_1-500.jsonl
-#     - payload_en_500-1000.jsonl
-#     - payload_en_1000-2000.jsonl
-#     - payload_en_2000-3000.jsonl
-#     # - payload_en_3000-3840.jsonl
-#     concurrency_levels:
-#     - 1
-#     # - 2
-#     # - 4
-#     # - 6
-#     # - 8
-#     # - 10
-#     env:
+  - name: meta.llama2-13b-chat-v1
+    model_id: meta.llama2-13b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-13b-chat-v1
+    ep_name: meta.llama2-13b-chat-v1
+    instance_type: meta.llama2-13b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: meta.llama2-70b-chat-v1
+    model_id: meta.llama2-70b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-70b-chat-v1
+    ep_name: meta.llama2-70b-chat-v1
+    instance_type: meta.llama2-70b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: anthropic.claude-3-sonnet-20240229-v1:0
+    model_id: anthropic.claude-3-sonnet-20240229-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-sonnet-20240229-v1:0
+    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_type: anthropic.claude-3-sonnet-20240229-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: anthropic.claude-3-haiku-20240307-v1:0
+    model_id: anthropic.claude-3-haiku-20240307-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-haiku-20240307-v1:0
+    ep_name: anthropic.claude-3-haiku-20240307-v1:0
+    instance_type: anthropic.claude-3-haiku-20240307-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: cohere.command-text-v14
+    model_id: cohere.command-text-v14
+    model_version: "*"
+    model_name: cohere.command-text-v14
+    ep_name: cohere.command-text-v14
+    instance_type: cohere.command-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: cohere.command-light-text-v14
+    model_id: cohere.command-light-text-v14
+    model_version: "*"
+    model_name: cohere.command-light-text-v14
+    ep_name: cohere.command-light-text-v14
+    instance_type: cohere.command-light-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: ai21.j2-mid-v1
+    model_id: ai21.j2-mid-v1
+    model_version: "*"
+    model_name: ai21.j2-mid-v1
+    ep_name: ai21.j2-mid-v1
+    instance_type: ai21.j2-mid-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: ai21.j2-ultra-v1
+    model_id: ai21.j2-ultra-v1
+    model_version: "*"
+    model_name: ai21.j2-ultra-v1
+    ep_name: ai21.j2-ultra-v1
+    instance_type: ai21.j2-ultra-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
     
 report:
   latency_budget: 2
