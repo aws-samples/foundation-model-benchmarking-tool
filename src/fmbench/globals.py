@@ -137,7 +137,7 @@ METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}/mm=
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
-METRICS_PER_POLL_EVAL_DIR: str = os.path.join(METRICS_DIR, "per_poll_eval")
+METRICS_PER_POLL_EVAL_DIR_NAME: str = "per_poll_eval"
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
@@ -171,7 +171,7 @@ EVAL_PROMPT_TEMPLATES: str = "fmbench/prompt_template/eval_criteria_prompts"
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
 METRICS_PATH_FNAME: str = "metrics_path.txt"
 
-DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR, METRICS_PER_POLL_EVAL_DIR]
+DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 
 # this is for custom tokenizers
 TOKENIZER_DIR_S3 = config['s3_read_data']['tokenizer_prefix']
