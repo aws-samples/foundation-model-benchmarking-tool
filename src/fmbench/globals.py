@@ -223,6 +223,7 @@ LLM_JUDGE_PANEL_RESPONSE_SUMMARIES: str = "llm_as_a_judge_per_eval_summary.csv"
 # evaluation of responses using Max Voting. View this csv to get more insight
 # into where the model went wrong, and what to fix
 INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
+CORRECT_VERDICT_RESPONSES_FILE: str = "correct_verdict_responses.csv"
 SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
 PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
 OVERALL_POLL_REPORT: str = "overall_PoLL_report.txt"
