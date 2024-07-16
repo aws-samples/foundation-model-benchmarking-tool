@@ -226,7 +226,7 @@ model_evaluations:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_3000-3840
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -354,6 +354,7 @@ report:
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
+  all_panel_of_evaluators_resp_file: raw_llm_as_a_judge_evals.csv
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
