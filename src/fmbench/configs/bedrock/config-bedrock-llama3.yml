@@ -95,7 +95,7 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
+  4_get_evaluations.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
@@ -226,7 +226,7 @@ model_evaluations:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1000-2000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -283,8 +283,8 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -331,8 +331,8 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -358,3 +358,7 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+  # token set ratio budget - this the threshold that defines the correctness
+  # of a candidate model response before it goes through the Panel of LLM Evaluation process
+  token_set_ratio_threshold: 0.85
+  cosine_similarity_threshold: 0.85

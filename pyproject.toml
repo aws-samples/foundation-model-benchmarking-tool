@@ -30,6 +30,7 @@ tqdm = "4.66.4"
 pydantic = "2.7.4"
 ray = "2.32.0"
 sentence-transformers = "3.0.1"
+fuzzywuzzy="0.18.0"
 
 
 [tool.poetry.dev-dependencies]
