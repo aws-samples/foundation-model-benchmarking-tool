@@ -40,5 +40,7 @@ plugins:
   - mknotebooks
 
 nav: 
-  - 'overview.md'
-  - 'report.md'
+  - Home: index.md
+  - Benchmark models: benchmarking.md
+  - Evaluate Models: evaluation.md
+  - Releases: releases.md
