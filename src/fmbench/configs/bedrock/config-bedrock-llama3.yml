@@ -180,24 +180,24 @@ model_evaluations:
   subjective_eval_info:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
-      # Information on judge 3 on the evaluation judge panel
-      - model_id: mistral.mistral-large-2402-v1:0
-        # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
-        eval_prompt_template_dir: "mistral_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "mistral_eval_max_voting"
+      # # Information on judge 3 on the evaluation judge panel
+      # - model_id: mistral.mistral-large-2402-v1:0
+      #   # this is the prompt template that is used in the evaluation process
+      #   # based on the method: either max voting or average pooling
+      #   eval_prompt_template_dir: "mistral_eval_prompt_templates"
+      #   eval_prompt_template_name_max_voting: "mistral_eval_max_voting"
       # Information on judge 1 on the evaluation judge panel
-      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
-        # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
-        eval_prompt_template_dir: "claude_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "claude_eval_max_voting"
-      # Information on judge 2 on the evaluation judge panel
-      - model_id: meta.llama3-70b-instruct-v1:0
-        # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
-        eval_prompt_template_dir: "llama3_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
+      # - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+      #   # this is the prompt template that is used in the evaluation process
+      #   # based on the method: either max voting or average pooling
+      #   eval_prompt_template_dir: "claude_eval_prompt_templates"
+      #   eval_prompt_template_name_max_voting: "claude_eval_max_voting"
+      # # Information on judge 2 on the evaluation judge panel
+      # - model_id: meta.llama3-70b-instruct-v1:0
+      #   # this is the prompt template that is used in the evaluation process
+      #   # based on the method: either max voting or average pooling
+      #   eval_prompt_template_dir: "llama3_eval_prompt_templates"
+      #   eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
@@ -290,64 +290,64 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 15
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    # - 12
+    # - 15
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-  - name: meta.llama3-8b-instruct-v1:0
-    # model_id is interpreted in conjunction with the deployment_script, so if you
-    # use a JumpStart model id then set the deployment_script to jumpstart.py.
-    # if deploying directly from HuggingFace this would be a HuggingFace model id
-    # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-8b-instruct-v1:0
-    model_version: 
-    model_name: meta.llama3-8b-instruct-v1:0
-    ep_name: meta.llama3-8b-instruct-v1:0
-    instance_type: meta.llama3-8b-instruct-v1:0
-    image_uri:
-    deploy: no
-    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
-    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
-    # See repo for details
-    instance_count:
-    deployment_script:
-    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
-    # and Bedrock. You can also add your own. See repo for details
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      # this should match one of the sections in the inference_parameters section above
-      parameter_set: bedrock
-      stream: True
-      stop_token: "<|eot_id|>"
-    # runs are done for each combination of payload file and concurrency level
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
-    # concurrency level refers to number of requests sent in parallel to an endpoint
-    # the next set of requests is sent once responses for all concurrent requests have
-    # been received.
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    - 12
-    - 15
-    # Environment variables to be passed to the container
-    # this is not a fixed list, you can add more parameters as applicable.
-    env:
+  # - name: meta.llama3-8b-instruct-v1:0
+  #   # model_id is interpreted in conjunction with the deployment_script, so if you
+  #   # use a JumpStart model id then set the deployment_script to jumpstart.py.
+  #   # if deploying directly from HuggingFace this would be a HuggingFace model id
+  #   # see the DJL serving deployment script in the code repo for reference.    
+  #   model_id: meta.llama3-8b-instruct-v1:0
+  #   model_version: 
+  #   model_name: meta.llama3-8b-instruct-v1:0
+  #   ep_name: meta.llama3-8b-instruct-v1:0
+  #   instance_type: meta.llama3-8b-instruct-v1:0
+  #   image_uri:
+  #   deploy: no
+  #   # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
+  #   # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
+  #   # See repo for details
+  #   instance_count:
+  #   deployment_script:
+  #   # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+  #   # and Bedrock. You can also add your own. See repo for details
+  #   inference_script: bedrock_predictor.py
+  #   inference_spec:
+  #     split_input_and_parameters: no
+  #     # this should match one of the sections in the inference_parameters section above
+  #     parameter_set: bedrock
+  #     stream: True
+  #     stop_token: "<|eot_id|>"
+  #   # runs are done for each combination of payload file and concurrency level
+  #   payload_files:
+  #   - payload_en_1-500.jsonl
+  #   - payload_en_500-1000.jsonl
+  #   - payload_en_1000-2000.jsonl
+  #   - payload_en_2000-3000.jsonl
+  #   - payload_en_3000-3840.jsonl
+  #   # concurrency level refers to number of requests sent in parallel to an endpoint
+  #   # the next set of requests is sent once responses for all concurrent requests have
+  #   # been received.
+  #   concurrency_levels:
+  #   - 1
+  #   - 2
+  #   - 4
+  #   - 6
+  #   - 8
+  #   - 10
+  #   - 12
+  #   - 15
+  #   # Environment variables to be passed to the container
+  #   # this is not a fixed list, you can add more parameters as applicable.
+  #   env:
 report:
   latency_budget: 2
   cost_per_10k_txn_budget: 100
@@ -358,7 +358,11 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
-  # token set ratio budget - this the threshold that defines the correctness
-  # of a candidate model response before it goes through the Panel of LLM Evaluation process
-  token_set_ratio_threshold: 0.95
+  # this is the budget for the answer to be correct from a candidate model
+  # if the cosine similarity for the model response is beyond 0.85, we consider 
+  # 'cosine_similarity_threshold' correct
   cosine_similarity_threshold: 0.85
+  # this is the second criteria. This depends on the token set ratio
+  token_set_ratio_threshold: 1.00
+  # this is the third criteria for the check against the levenshtein distance
+  levenshtein_distance_threshold: 0.85
