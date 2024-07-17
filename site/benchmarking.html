@@ -1,0 +1,771 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/benchmarking.html">
+      
+      
+        <link rel="prev" href="index.html">
+      
+      
+        <link rel="next" href="evaluation.html">
+      
+      
+      <link rel="icon" href="website/img/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.29">
+    
+    
+      
+        <title>Benchmark models - Foundation Model Benchmarking Tools</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.76a95c52.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#benchmark-models-deployed-on-different-aws-generative-ai-services" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="index.html" title="Foundation Model Benchmarking Tools" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
+      
+  <img src="website/img/DJL.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Foundation Model Benchmarking Tools
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Benchmark models
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5c-.84 0-1.65.15-2.39.42L12 2M3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29L3.34 7m.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14L3.36 17M20.65 7l-1.77 3.79a7.023 7.023 0 0 0-2.38-4.15l4.15.36m-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29L20.64 17M12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44L12 22Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3 3.19.09m3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95 2.06.05m-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws-samples/foundation-model-benchmarking-tool
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="index.html" title="Foundation Model Benchmarking Tools" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
+      
+  <img src="website/img/DJL.svg" alt="logo">
+
+    </a>
+    Foundation Model Benchmarking Tools
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws-samples/foundation-model-benchmarking-tool
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Benchmark models
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="benchmarking.html" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Benchmark models
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-models-deployed-on-different-aws-generative-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models deployed on different AWS Generative AI services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benchmark models deployed on different AWS Generative AI services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-bedrock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on Bedrock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-sagemaker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on SageMaker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on EKS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on EC2
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" class="md-nav__link">
+    <span class="md-ellipsis">
+      see instructions for downloading anaconda from https://www.anaconda.com/download
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="evaluation.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Evaluate Models
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="releases.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-models-deployed-on-different-aws-generative-ai-services" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models deployed on different AWS Generative AI services
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Benchmark models deployed on different AWS Generative AI services">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-bedrock" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on Bedrock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-sagemaker" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on SageMaker
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-eks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on EKS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmark-models-on-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark models on EC2
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" class="md-nav__link">
+    <span class="md-ellipsis">
+      see instructions for downloading anaconda from https://www.anaconda.com/download
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h2 id="benchmark-models-deployed-on-different-aws-generative-ai-services">Benchmark models deployed on different AWS Generative AI services<a class="headerlink" href="#benchmark-models-deployed-on-different-aws-generative-ai-services" title="Permanent link">&para;</a></h2>
+<p><code>FMBench</code> comes packaged with configuration files for benchmarking models on different AWS Generative AI services.</p>
+<h3 id="benchmark-models-on-bedrock">Benchmark models on Bedrock<a class="headerlink" href="#benchmark-models-on-bedrock" title="Permanent link">&para;</a></h3>
+<p>Choose any config file from the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/bedrock"><code>bedrock</code></a> folder and either run these directly or use them as templates for creating new config files specific to your use-case. Here is an example for benchmarking the <code>Llama3</code> models on Bedrock.</p>
+<div class="codehilite"><pre><span></span><code>fmbench<span class="w"> </span>--config-file<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/bedrock/config-bedrock-llama3.yml<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+<h3 id="benchmark-models-on-sagemaker">Benchmark models on SageMaker<a class="headerlink" href="#benchmark-models-on-sagemaker" title="Permanent link">&para;</a></h3>
+<p>Choose any config file from the model specific folders, for example the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama3"><code>Llama3</code></a> folder for <code>Llama3</code> family of models. These configuration files also include instructions for <code>FMBench</code> to first deploy the model on SageMaker using your configured instance type and inference parameters of choice and then run the benchmarking. Here is an example for benchmarking <code>Llama3-8b</code> model on an <code>ml.inf2.24xlarge</code> and <code>ml.g5.12xlarge</code> instance. </p>
+<div class="codehilite"><pre><span></span><code>fmbench<span class="w"> </span>--config-file<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5.yml<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</code></pre></div>
+
+<h3 id="benchmark-models-on-eks">Benchmark models on EKS<a class="headerlink" href="#benchmark-models-on-eks" title="Permanent link">&para;</a></h3>
+<p>You can use <code>FMBench</code> to benchmark models on hosted on EKS. This can be done in one of two ways:
+ - Deploy the model on your EKS cluster independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.
+ - Deploy the model on your EKS cluster through <code>FMBench</code> and then benchmark it.</p>
+<p>The steps for deploying the model on your EKS cluster are described below.</p>
+<p>👉 <strong><em>EKS cluster creation itself is not a part of the <code>FMBench</code> functionality, the cluster needs to exist before you run the following steps</em></strong>. Steps for cluster creation are provided in <a href="misc/eks_cluster-creation_steps.md">this</a> file but it would be best to consult the <a href="https://github.com/awslabs/data-on-eks">DoEKS</a> repo on GitHub for comprehensive instructions.</p>
+<ol>
+<li>
+<p>Add the following IAM policies to your existing <code>FMBench</code> Role:</p>
+<ol>
+<li>
+<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSClusterPolicy.html">AmazonEKSClusterPolicy</a>: This policy provides Kubernetes the permissions it requires to manage resources on your behalf.</p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html">AmazonEKS_CNI_Policy</a>: This policy provides the Amazon VPC CNI Plugin (amazon-vpc-cni-k8s) the permissions it requires to modify the IP address configuration on your EKS worker nodes. This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.</p>
+</li>
+<li>
+<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html">AmazonEKSWorkerNodePolicy</a>: This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.</p>
+</li>
+</ol>
+</li>
+<li>
+<p>Once the EKS cluster is available you can use either the following two files or create your own config files using these files as examples for running benchmarking for these models. <strong><em>These config files require that the EKS cluster has been created as per the steps in these <a href="https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2">instructions</a></em></strong>.</p>
+<ol>
+<li>
+<p><a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml">config-llama3-8b-eks-inf2.yml</a>: Deploy Llama3 on Trn1/Inf2 instances.</p>
+</li>
+<li>
+<p><a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/mistral/config-mistral-7b-eks-inf2.yml">config-mistral-7b-eks-inf2.yml</a>: Deploy Mistral 7b on Trn1/Inf2 instances.</p>
+</li>
+</ol>
+<p>For more information about the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests">blueprints</a> used by FMBench to deploy these models, view: <a href="https://awslabs.github.io/data-on-eks/docs/gen-ai">DoEKS docs gen-ai</a>.</p>
+</li>
+<li>
+<p>Run the <code>Llama3-8b</code> benchmarking using the command below (replace the config file as needed for a different model). This will first deploy the model on your EKS cluster and then run benchmarking on the deployed model.</p>
+<p><code>{.bash}
+fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml &gt; fmbench.log 2&gt;&amp;1</code></p>
+</li>
+<li>
+<p>As the model is getting deployed you might want to run the following <code>kubectl</code> commands to monitor the deployment progress. Set the <em>model_namespace</em> to <code>llama3</code> or <code>mistral</code> or a different model as appropriate.</p>
+<ol>
+<li><code>kubectl get pods -n &lt;model_namespace&gt; -w</code>: Watch the pods in the model specific namespace.</li>
+<li><code>kubectl -n karpenter get pods</code>: Get the pods in the karpenter namespace.</li>
+<li><code>kubectl describe pod -n &lt;model_namespace&gt; &lt;pod-name&gt;</code>: Describe a specific pod in the mistral namespace to view the live logs.</li>
+</ol>
+</li>
+</ol>
+<h3 id="benchmark-models-on-ec2">Benchmark models on EC2<a class="headerlink" href="#benchmark-models-on-ec2" title="Permanent link">&para;</a></h3>
+<p>You can use <code>FMBench</code> to benchmark models on hosted on EC2. This can be done in one of two ways:
+ - Deploy the model on your EC2 instance independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.
+ - Deploy the model on your EC2 instance through <code>FMBench</code> and then benchmark it.</p>
+<p>The steps for deploying the model on your EC2 instance are described below. </p>
+<p>👉 In this configuration both the model being benchmarked and <code>FMBench</code> are deployed on the same EC2 instance.</p>
+<ol>
+<li>
+<p>Create a new EC2 instance suitable for hosting an LMI as per the steps described <a href="misc/ec2_instance_creation_steps.md">here</a>.</p>
+</li>
+<li>
+<p>Install <code>FMBench</code> on this instance and run benchmarking for a desired model using one of the config files included in the <code>FMbench</code> repo or create your own.</p>
+<ol>
+<li>
+<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>.</p>
+<p>```{.bash}</p>
+<h1 id="see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload">see instructions for downloading anaconda from https://www.anaconda.com/download<a class="headerlink" href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" title="Permanent link">&para;</a></h1>
+<p>curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
+./Anaconda3-2023.09-0-Linux-x86_64.sh
+export PATH=/home/ubuntu/anaconda3/bin:$PATH
+```</p>
+</li>
+<li>
+<p>Setup the <code>fmbench_python311</code> conda environment.</p>
+<p><code>{.bash}
+conda create --name fmbench_python311 -y python=3.11 ipykernel
+source activate fmbench_python311;
+pip install -U fmbench</code></p>
+</li>
+<li>
+<p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo.</p>
+<p><code>{.bash}
+curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh</code></p>
+</li>
+<li>
+<p>To download the model files from HuggingFace, create a <code>hf_token.txt</code> file in the <code>/tmp/fmbench-read/scripts/</code> directory containing the Hugging Face token you would like to use. In the command below replace the <code>hf_yourtokenstring</code> with your hugging Face token.</p>
+<p><code>{.bash}
+echo hf_yourtokenstring &gt; /tmp/fmbench-read/scripts/hf_token.txt</code></p>
+</li>
+<li>
+<p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>.</p>
+<p>```{.bash}</p>
+<h1 id="the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required">the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required<a class="headerlink" href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" title="Permanent link">&para;</a></h1>
+<p>fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1
+```</p>
+</li>
+<li>
+<p>For example, to run <code>FMBench</code> on a <code>llama3-8b-Instruct</code> model on an <code>inf2.48xlarge</code> instance, run the command 
+command below. The config file for this example can be viewed <a href="src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml">here</a>.</p>
+<p>```{.bash}</p>
+<h1 id="the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1">the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required<a class="headerlink" href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" title="Permanent link">&para;</a></h1>
+<p>fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1
+```</p>
+</li>
+<li>
+<p>Open a new Terminal and navigate to the <code>foundation-model-benchmarking-tool</code> directory and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
+<p><code>{.bash}
+tail -f fmbench.log</code></p>
+</li>
+<li>
+<p>All metrics are stored in the <code>/tmp/fmbench-write</code> directory created automatically by the <code>fmbench</code> package. Once the run completes all files are copied locally in a <code>results-*</code> folder as usual.</p>
+</li>
+</ol>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1zM480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2zm-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3zm-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1z"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1c0-25.9 21.16-47.06 47.06-47.06h47.06v47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V315.1zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06H164.9zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06H164.9zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06h-47.06V196.9zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06 25.9 0 47.06 21.16 47.06 47.06V196.9zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06-25.9 0-47.06-21.16-47.06-47.06v-47.06h47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06 0-25.9 21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06 0 25.9-21.16 47.06-47.06 47.06H283.1z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.fe8b6f2b.min.js"></script>
+      
+    
+  </body>
+</html>

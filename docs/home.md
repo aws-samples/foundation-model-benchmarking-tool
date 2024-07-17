@@ -3,7 +3,7 @@
 <h1 align="center">
         <img src="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/img/fmbt-small.png?raw=true"></img>
     </h1>
-<h4 align="center"><a href="" target="_blank">Amazon Bedrock</a> | <a href="" target="_blank">Amazon SageMaker</a> | <a href="" target="_blank">Amazon EKS</a> | <a href="" target="_blank">Amazon EC2</a></h4>
+<h4 align="center"><a href="https://aws.amazon.com/bedrock/" target="_blank">Amazon Bedrock</a> | <a href="https://aws.amazon.com/sagemaker/" target="_blank">Amazon SageMaker</a> | <a href="https://aws.amazon.com/eks/" target="_blank">Amazon EKS</a> | <a href="https://aws.amazon.com/ec2/" target="_blank">Amazon EC2</a></h4>
 <h4 align="center">
     <a href="https://pypi.org/project/fmbench/" target="_blank">
         <img src="https://img.shields.io/pypi/v/fmbench.svg" alt="PyPI Version">

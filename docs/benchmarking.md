@@ -71,10 +71,9 @@ The steps for deploying the model on your EC2 instance are described below.
 
 1. Install `FMBench` on this instance and run benchmarking for a desired model using one of the config files included in the `FMbench` repo or create your own.
 
-    1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`.
+    1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
     
         ```{.bash}
-        # see instructions for downloading anaconda from https://www.anaconda.com/download
         curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
         chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
         ./Anaconda3-2023.09-0-Linux-x86_64.sh
@@ -101,10 +100,9 @@ The steps for deploying the model on your EC2 instance are described below.
         echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
         ```
     
-    1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**.
+    1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required
 
         ```{.bash}
-        # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
         fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
         ```
     
@@ -112,7 +110,6 @@ The steps for deploying the model on your EC2 instance are described below.
     command below. The config file for this example can be viewed [here](src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml).
 
         ```{.bash}
-        # the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
         fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder > fmbench.log 2>&1
         ```
 

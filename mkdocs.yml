@@ -10,7 +10,7 @@ markdown_extensions:
       permalink: true
 theme:
   name: material
-  logo: website/img/DJL.svg
+  logo: img/fmbt-small.png
   favicon: website/img/favicon.png
   features:
     - navigation
@@ -40,7 +40,10 @@ plugins:
   - mknotebooks
 
 nav: 
-  - Home: index.md
+  - Home: home.md
+  - Getting started: gettingstarted.md
+  - Results: results.md
   - Benchmark models: benchmarking.md
-  - Evaluate Models: evaluation.md
+  - Advanced functionality: advanced.md
   - Releases: releases.md
+  - Resources: resources.md
