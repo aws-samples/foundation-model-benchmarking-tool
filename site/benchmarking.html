@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/benchmarking.html">
       
       
-        <link rel="prev" href="index.html">
+        <link rel="prev" href="results.html">
       
       
-        <link rel="next" href="evaluation.html">
+        <link rel="next" href="advanced.html">
       
       
       <link rel="icon" href="website/img/favicon.png">
@@ -96,9 +96,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="Foundation Model Benchmarking Tools" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
+    <a href="." title="Foundation Model Benchmarking Tools" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
       
-  <img src="website/img/DJL.svg" alt="logo">
+  <img src="img/fmbt-small.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -228,9 +228,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="Foundation Model Benchmarking Tools" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
+    <a href="." title="Foundation Model Benchmarking Tools" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tools" data-md-component="logo">
       
-  <img src="website/img/DJL.svg" alt="logo">
+  <img src="img/fmbt-small.png" alt="logo">
 
     </a>
     Foundation Model Benchmarking Tools
@@ -257,11 +257,51 @@
   
   
     <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
+      <a href="home.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gettingstarted.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="results.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Results
   </span>
   
 
@@ -369,33 +409,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" class="md-nav__link">
-    <span class="md-ellipsis">
-      see instructions for downloading anaconda from https://www.anaconda.com/download
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -411,11 +424,11 @@
   
   
     <li class="md-nav__item">
-      <a href="evaluation.html" class="md-nav__link">
+      <a href="advanced.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Evaluate Models
+    Advanced functionality
   </span>
   
 
@@ -436,6 +449,26 @@
   
   <span class="md-ellipsis">
     Releases
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="resources.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resources
   </span>
   
 
@@ -519,33 +552,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" class="md-nav__link">
-    <span class="md-ellipsis">
-      see instructions for downloading anaconda from https://www.anaconda.com/download
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" class="md-nav__link">
-    <span class="md-ellipsis">
-      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -563,6 +569,8 @@
   
   
 
+
+  <h1>Benchmark models</h1>
 
 <h2 id="benchmark-models-deployed-on-different-aws-generative-ai-services">Benchmark models deployed on different AWS Generative AI services<a class="headerlink" href="#benchmark-models-deployed-on-different-aws-generative-ai-services" title="Permanent link">&para;</a></h2>
 <p><code>FMBench</code> comes packaged with configuration files for benchmarking models on different AWS Generative AI services.</p>
@@ -637,14 +645,12 @@ fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-m
 <p>Install <code>FMBench</code> on this instance and run benchmarking for a desired model using one of the config files included in the <code>FMbench</code> repo or create your own.</p>
 <ol>
 <li>
-<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>.</p>
-<p>```{.bash}</p>
-<h1 id="see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload">see instructions for downloading anaconda from https://www.anaconda.com/download<a class="headerlink" href="#see-instructions-for-downloading-anaconda-from-httpswwwanacondacomdownload" title="Permanent link">&para;</a></h1>
-<p>curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
+<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
+<p><code>{.bash}
+curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
 chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
 ./Anaconda3-2023.09-0-Linux-x86_64.sh
-export PATH=/home/ubuntu/anaconda3/bin:$PATH
-```</p>
+export PATH=/home/ubuntu/anaconda3/bin:$PATH</code></p>
 </li>
 <li>
 <p>Setup the <code>fmbench_python311</code> conda environment.</p>
@@ -664,19 +670,15 @@ curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmark
 echo hf_yourtokenstring &gt; /tmp/fmbench-read/scripts/hf_token.txt</code></p>
 </li>
 <li>
-<p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>.</p>
-<p>```{.bash}</p>
-<h1 id="the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required">the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required<a class="headerlink" href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required" title="Permanent link">&para;</a></h1>
-<p>fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1
-```</p>
+<p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required</p>
+<p><code>{.bash}
+fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1</code></p>
 </li>
 <li>
 <p>For example, to run <code>FMBench</code> on a <code>llama3-8b-Instruct</code> model on an <code>inf2.48xlarge</code> instance, run the command 
 command below. The config file for this example can be viewed <a href="src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml">here</a>.</p>
-<p>```{.bash}</p>
-<h1 id="the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1">the --write-bucket parameter value is just a placeholder and an actual S3 bucket is not required<a class="headerlink" href="#the-write-bucket-parameter-value-is-just-a-placeholder-and-an-actual-s3-bucket-is-not-required_1" title="Permanent link">&para;</a></h1>
-<p>fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1
-```</p>
+<p><code>{.bash}
+fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1</code></p>
 </li>
 <li>
 <p>Open a new Terminal and navigate to the <code>foundation-model-benchmarking-tool</code> directory and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>

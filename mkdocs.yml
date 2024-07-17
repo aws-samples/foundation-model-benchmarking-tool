@@ -1,4 +1,4 @@
-site_name: Foundation Model Benchmarking Tools
+site_name: Foundation Model Benchmarking Tool
 repo_name: aws-samples/foundation-model-benchmarking-tool
 repo_url: https://github.com/aws-samples/foundation-model-benchmarking-tool
 edit_uri: https://github.com/aws-samples/foundation-model-benchmarking-tool/edit/master/
@@ -42,8 +42,8 @@ plugins:
 nav: 
   - Home: home.md
   - Getting started: gettingstarted.md
-  - Results: results.md
   - Benchmark models: benchmarking.md
   - Advanced functionality: advanced.md
+  - Results: results.md
   - Releases: releases.md
   - Resources: resources.md
