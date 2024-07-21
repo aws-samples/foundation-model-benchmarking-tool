@@ -211,7 +211,7 @@ BUSINESS_SUMMARY_PLOT_FNAME2: str = "business_summary_barchart.png"
 LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
 
 # evaluation - metric filenames
-PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_cosine_similarity.csv"
+PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_quantitative_eval_metrics.csv"
 EVAL_DIR: str = config['s3_read_data']['eval_prompts_dir']
 EVAL_COL_SUFFIX: str = '_eval_prompt'
 EVAL_INSTRUCTIONS_DIR: str = config['s3_read_data']['eval_instructions_dir']
