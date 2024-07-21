@@ -11,15 +11,11 @@ reason why the answer is correct or incorrect after your evaluation of it agains
 for if the answer matches or answers the question in the same way as the ground truth. If it does, then the verdict is "correct"
 
 4. If the answer does not match or answer the question in any way that the ground truth does, then check for whether it answers the 
-question from the context. If it answers the question from the context correctly, then the verdict is "correct", even if the 
-ground truth is incorrect. In this case, specify that the ground truth is incorrect.
+question from the context. If it answers the question from the context correctly in the similar way the ground truth does, then the verdict is "correct".
 
-5. You need to do a four way check. First, check if the answer matches or relates to the ground truth in terms of answering the question
-from the context correctly, if so then verdict is correct. Second, if the answer is different or not related to the ground truth then
-check for whether it correctly answers the question from the context, if it does then your verdict is correct. Thirdly, do a last check
-for if the ground truth does not answer the question, and if the answer provided does, then the verdict is correct. Fourth and lastly, 
-check if both the ground truth, and the answer do not correctly have the answer to the question from the context, then the verdict is 
-"incorrect.
+5. You need to do a 2 way check. First, check if the answer matches or relates to the ground truth in terms of answering the question
+from the context correctly, if so then verdict is correct. Second, if the answer is worded different from or is not related to the ground truth then
+check for whether it correctly answers the question from the context, if it does then your verdict is correct.
 
 6. Do not have any pre filler words in your response. Your response should only contain the JSON format response with
 your evaluation. 
