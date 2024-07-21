@@ -38,3 +38,5 @@ while evaluating whether the answer correctl answers that question.
 11. If the ground truth contains an answer to the question correctly and if the answer to be evaluated mentions that it does not
 or cannot answer the question, then the verdict is "incorrect", because the ground truth correctly has the answer to the question, however, the
 answer to be evaluated does not.
+
+12. The answer does not have to be an exact match to the ground truth for the verdict to be correct. If the ground truth and the answer to be evaluated mean the same thing and answer the question from the context correctly, then the verdict is correct.
