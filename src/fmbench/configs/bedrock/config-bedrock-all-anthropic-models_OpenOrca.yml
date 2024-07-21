@@ -1,0 +1,300 @@
+general:
+  name: "fmbench-bedrock-anthropic-models"      
+  model_name: "All anthropic models available in Amazon Bedrock"
+  
+# AWS and SageMaker settings
+aws:
+  # AWS region, this parameter is templatized, no need to change
+  region: {region}
+  # SageMaker execution role used to run FMBench, this parameter is templatized, no need to change
+  sagemaker_execution_role: {role_arn}
+  # S3 bucket to which metrics, plots and reports would be written to
+  bucket: {write_bucket} ## add the name of your desired bucket
+
+# directory paths in the write bucket, no need to change these
+dir_paths:
+  data_prefix: data
+  prompts_prefix: prompts
+  all_prompts_file: all_prompts.csv
+  metrics_dir: metrics
+  models_dir: models
+  metadata_dir: metadata
+
+## S3 information for reading datasets, scripts and tokenizer
+s3_read_data:
+  # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
+  read_bucket: {read_bucket}
+
+  # S3 prefix in the read bucket where deployment and inference scripts should be placed
+  scripts_prefix: scripts
+  
+  # deployment and inference script files to be downloaded are placed in this list
+  # only needed if you are creating a new deployment script or inference script
+  # your HuggingFace token does need to be in this list and should be called "hf_token.txt"
+  script_files:
+  - hf_token.txt
+  
+  # This is the directory in S3 and locally where all the rules are stored. Each rule 
+  # file represents a subjective criteria to be evaluated
+  eval_prompts_dir: eval_criteria
+  # the directory contains a folder that contains all the files with rules for evaluations
+  # and another directory that stores the standard prompt template that is used for evlauation
+  # of different answers at runtime
+  eval_prompt_template_dir_list:
+  - claude_eval_prompt_templates
+  - llama3_eval_prompt_templates
+  - cohere_eval_prompt_templates
+  
+  # These are the rules that are prefilled within the 
+  # prompt templates evaluating for max voting or average
+  # pooling
+  eval_instructions_dir: eval_instructions
+  eval_instructions_files:
+  - evaluation_instructions_max_voting.txt
+  - evaluation_instructions_avg_pooling.txt
+
+  # configuration files (like this one) are placed in this prefix
+  configs_prefix: configs
+
+  # list of configuration files to download, for now only pricing.yml needs to be downloaded
+  config_files:
+  - pricing.yml
+
+  # S3 prefix for the dataset files
+  source_data_prefix: source_data
+  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
+  source_data_files:
+  - Open-Orca/OpenOrca.jsonl
+  tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+  prompt_template_dir: prompt_template
+  prompt_template_file: prompt_template_claude_OpenOrca.txt ## add your desired prompt template type
+
+# steps to run, usually all of these would be
+# set to yes so nothing needs to change here
+# you could, however, bypass some steps for example
+# set the 2_deploy_model.ipynb to no if you are re-running
+# the same config file and the model is already deployed
+run_steps:
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: no
+  3_run_inference.ipynb: yes
+  4_get_evaluations.ipynb: yes
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: no
+
+datasets:
+  # dataset related configuration
+  prompt_template_keys:
+  - input
+  - system_prompt  
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_en_305-3997.jsonl
+
+# This is the evaluation parameter configurations. Initialize
+# the embeddings model used to calculate quantitative metrics such as 
+# cosine similarity here. The other part of this evaluation is using subjective
+# evaluation methods: Max voting and Average pooling. In the case of when a ground truth
+# is provided, FMBench can use max voting between a 'panel of judges' to get a verdict [correct, incorrect].
+# In other cases for more subjective evaluations, FMBench uses average pooling, to get the average
+# rating from each judge of the panel on each response and get the average ratings from all on one model
+# and so on. For more information, view this paper: https://arxiv.org/pdf/2404.18796
+model_evaluations:
+  # Enter the column name of your dataset that contains the ground truth if any. 
+  # If there is no ground truth provided, leave this empty.
+  ground_truth_col_key: response
+  
+  # We construct a PoLL from a panel of LLM judges being drawn from disparate model families. We consider two
+  # different voting functions for aggregating scores across the judges. For tasks where ground truth is provided, we use
+  # max voting, as all judgements are binary [correct, incorrect]. For Chatbot Arena we instead use average 
+  # pooling because judgements are scores ranging from 1-5 and a three judge panel often does not produce 
+  # a clear majority decision
+  PoLL_Composition_and_Voting: 
+    # If you are looking to evaluate the model responses 
+    # to corresponding sources of ground truth, then FMBench 
+    # can use the max_voting method to get binary decisions and do a
+    # majority vote from all panel judges on each model used in the inference
+    # process
+    method: max_voting # average_pooling
+  
+  # This represents the information that is used to get the quantitative metrics 
+  # from the evaluation step. This includes calculating the cosine similarity. 
+  # If a ground truth is provided, measure the cosine similarity against the ground truth, 
+  # else measure it against the context provided. We use the `sentence-transformers/all-mpnet-base-v2`
+  # dataset. There is also an option to use the Titan embeddings model (WIP)
+  quantitative_eval_info:
+    embeddings_model_id:
+      model_id: sentence-transformers/all-mpnet-base-v2
+  # This represents the information that is used to get subjective evaluations on the 
+  # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
+  # each content from the inference step on different evaluation criteria. The information about 
+  # the LLM as a judge panel is given below that is used in the max voting and the average pooling 
+  # evaluation 
+  subjective_eval_info:
+    # this is the judge panel list that is used in the evaluation process
+    judge_panel_list:
+      # Information on judge 1 on the evaluation judge panel
+      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: either max voting or average pooling
+        eval_prompt_template_dir: "claude_eval_prompt_templates"
+        eval_prompt_template_name_max_voting: "claude_eval_max_voting"
+      # Information on judge 2 on the evaluation judge panel
+      - model_id: meta.llama3-70b-instruct-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: either max voting or average pooling
+        eval_prompt_template_dir: "llama3_eval_prompt_templates"
+        eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
+      # Information on judge 3 on the evaluation judge panel
+      # We use the most powerful cohere model - cohere command R +
+      - model_id: cohere.command-r-plus-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: either max voting or average pooling
+        eval_prompt_template_dir: "cohere_eval_prompt_templates"
+        eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
+
+    # number of parallel calls made asyncronously to bedrock using Ray
+    run_parallel_inference_count: 15
+    # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
+    # users can spot trends, patterns and observation across multiple candidate models and get suggestions
+    # as to how certain models can improve their evaluation performance through prompt engineering, etc
+    final_evaluation_summarizer: anthropic.claude-3-sonnet-20240229-v1:0
+    final_evaluation_prompt_template: "final_evaluations_summarizer_prompt_template.txt"
+    # Common inference parameters used in the evaluation process
+    # We use LiteLLM for interfacing with Bedrock
+    inference_parameters:
+      temperature: 0.1
+      max_tokens: 300
+      top_p: 0.92
+      caching: False
+ 
+metrics:
+  dataset_of_interest: en_3000-4000
+
+  
+pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+  
+inference_parameters: 
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
+
+# Model configurations for mistral 7b instruct on Amazon Bedrock
+experiments:
+  # # Experiment for claude 3 sonnet
+  - name: anthropic.claude-3-sonnet-20240229-v1:0
+    model_name: anthropic.claude-3-sonnet-20240229-v1:0
+    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_type: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  # Experiment for claude instant
+  - name: anthropic.claude-instant-v1
+    model_name: anthropic.claude-instant-v1
+    ep_name: anthropic.claude-instant-v1
+    instance_type: anthropic.claude-instant-v1
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+#   # Experiment for claude 3 haiku
+  - name: anthropic.claude-3-haiku-20240307-v1:0
+    model_name: anthropic.claude-3-haiku-20240307-v1:0
+    ep_name: anthropic.claude-3-haiku-20240307-v1:0
+    instance_type: anthropic.claude-3-haiku-20240307-v1:0
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+    
+report:
+  latency_budget: 5
+  cost_per_10k_txn_budget: 350
+  error_rate_budget: 0
+  # change this based on your dataset size and your needs
+  accuracy_budget: 0.90
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025
+  # this is the budget for the answer to be correct from a candidate model
+  # if the cosine similarity for the model response is beyond 0.85, we consider 
+  # 'cosine_similarity_threshold' correct
+  cosine_similarity_threshold: 0.85
+  # this is the second criteria. This depends on the token set ratio
+  token_set_ratio_threshold: 1.00
+  # this is the third criteria for the check against the levenshtein distance
+  levenshtein_distance_threshold: 0.85
