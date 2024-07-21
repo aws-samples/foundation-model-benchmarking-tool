@@ -56,6 +56,15 @@ pricing:
     anthropic.claude-3-sonnet-20240229-v1:0:
       input-per-1k-tokens: 0.00300
       output-per-1k-tokens: 0.01500
+    anthropic.claude-v2:1:
+      input-per-1k-tokens: 0.008
+      output-per-1k-tokens: 0.024
+    anthropic.claude-instant-v1:
+      input-per-1k-tokens: 0.0008
+      output-per-1k-tokens: 0.0024
+    anthropic.claude-v2:
+      input-per-1k-tokens: 0.008
+      output-per-1k-tokens: 0.024
     # Titan
     amazon.titan-text-lite-v1: 
       input-per-1k-tokens: 0.0003
