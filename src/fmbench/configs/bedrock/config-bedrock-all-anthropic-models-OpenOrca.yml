@@ -206,7 +206,7 @@ inference_parameters:
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  # # Experiment for claude 3 sonnet
+  # Experiment for claude 3 sonnet
   - name: anthropic.claude-3-sonnet-20240229-v1:0
     model_name: anthropic.claude-3-sonnet-20240229-v1:0
     ep_name: anthropic.claude-3-sonnet-20240229-v1:0
@@ -254,7 +254,7 @@ experiments:
     # - 8
     # - 10
     env:
-#   # Experiment for claude 3 haiku
+  # Experiment for claude 3 haiku
   - name: anthropic.claude-3-haiku-20240307-v1:0
     model_name: anthropic.claude-3-haiku-20240307-v1:0
     ep_name: anthropic.claude-3-haiku-20240307-v1:0
