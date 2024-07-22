@@ -4,4 +4,6 @@ Human: {system_prompt}. Use the following pieces of retrieved context and task i
 Context and task: {input} 
 </context_and_task>
 
+Given the context and task, give the direct answer to the question.
+
 Assistant:
