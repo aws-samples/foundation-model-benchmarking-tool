@@ -10,24 +10,15 @@ the ground truth that is provided. Refer to the information in the context provi
 You have to go over the context above and provide the following information using the instructions in the <instructions></instructions> tags:
 
 <instructions>
-1. Provide overall patterns and trends as to why a particular model endpoint was selected more times than the other models.
+1. Check for whether all of the evaluations are done correctly, and whether the verdict is correct based on the comparison between
+the ground truth and the candidate model response.
 
-2. Do not include any counts in your response.
+2. Check for whether there are any false positives: something is correct when it is actually incorrect.
 
-3. Do not mention any other model endpoints that are not specified in the dataset. 
+3. Check for whether there are any false negatives: something is incorrect when it is actually correct.
 
-4. Include examples as to why you recommend a model endpoints over the other and why for this 
-specific dataset. 
-
-5. Do not include any tags in your answer. 
-
-6. Do not make up and answer and do not mention something that is not there in the context.
-
-7. Give an in depth analysis of all of the endpoint model answers, corresponding ground truth and explanations
-on why that response is correct or incorrect. Make sure to analyze trends, patterns across all of the model
-endpoints that are mentioned and give observation as to why a model endpoint/s were incorrect across the dataset, 
-the type of questions it answered incorrectly. On the other hand, give information about models that performed 
-well in terms of accuracy of their answers compared to the ground truth.
+4. Your role is to check whether all evaluations are done properly and only give the data that is not evaluated properly
+based on the verdict, and the comparison between the candidate model Id and the ground truth.
 </instructions>
 
 Assistant: Sure, here is the in depth analysis of the data:
