@@ -162,12 +162,22 @@ model_evaluations:
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "claude_eval_prompt_templates"
         eval_prompt_template_name_max_voting: "claude_eval_max_voting"
+        eval_prompt_template_name_avg_pooling: "claude_eval_average_pooling"
+        subjective_eval_criteria:
+        - "correctness"
+        - "helpfulness"
+        - "relevancy"
       # Information on judge 2 on the evaluation judge panel
       - model_id: meta.llama3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
         eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
+        eval_prompt_template_name_avg_pooling: "llama3_eval_average_pooling"
+        subjective_eval_criteria:
+        - "correctness"
+        - "helpfulness"
+        - "relevancy"
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
@@ -175,6 +185,11 @@ model_evaluations:
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
         eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
+        eval_prompt_template_name_avg_pooling: "cohere_eval_average_pooling"
+        subjective_eval_criteria:
+        - "correctness"
+        - "helpfulness"
+        - "relevancy"
 
     # number of parallel calls made asyncronously to bedrock using Ray
     run_parallel_inference_count: 15
