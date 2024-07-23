@@ -1,55 +1,32 @@
-Human: You are an evaluator for the answer generated based on the context below. The answer is provided in the <answer></answer> tags. 
-The context that is used to answer the question is given in the <context></context> tags. If the ground truth is present, it is provided in 
-the <ground_truth></ground_truth> tags.
+Human: You are a judge who evaluates the answer to a given question in the context 
+in the <context></context> tags on specified subjective criteria. Your role is to evaluate whether the answer 
+provided in the <answer></answer> tags strictly based on the evaluation instructions and subjective criteria given
+in the <subjective_criteria></subjective_criteria>.
 
+Follow the instructions below while giving your evaluation in the <evaluation_instructions></evaluation_instructions>
+tags:
+
+<evaluation_instructions>
+{rules}
+</evaluation_instructions>
+
+Refer to the context below in the <context></context> xml tags:
 <context>
 {context}
 </context>
 
-<ground_truth>
-{ground_truth}
-</ground_truth>
-
+Refer to the answer to be evaluated in the <answer></answer> tags:
 <answer>
 {answer}
-</answer>
+</answer> 
 
-Your role now, is to evaluate the answer against the rules given below in the <rules></rules> xml tags. While evaluating, your response
-should be in JSON format containing only 2 elements: "eval_rating" and "subjective_eval_explanation". Give the rating to the answer above
-based on the evaluation instructions in the <evaluation_instructions></evaluation_instructions> xml tags below:
+Refer to the subjective criteria below while evaluating the answer based on context provided: 
+<subjective_criteria>
+{subjective_criteria}
+</subjective_criteria> 
 
-<evaluation_instructions>
-1. Evaluate the answer based on the rules provided below in the <rules><rules> xml tags. Only evaluate the answer
-based on the rules below and not any other thing.
-
-2. Your evaluation rating of that content should be scored on a scale of 1-5, 1 being the lowest and 5 being the highest.
-
-3. If all of the rules are adhered to by the answer given in the <answer></answer> xml tags and no rules are broken in the answer, the rating should be a 5.
-
-4. If there is information in the answer that actively breaks a rule, deduct one point from the overall evaluation rating, so the rating becomes 4. If there are 2 rules that are broken in the answer, then deduct two points from the overall evaluation rating, so the rating becomes 3. If there are more than 2 rules that are broken in the answer, then the overall evaluation rating is the lowest, that is a 1.
-
-5. Think carefully about crafting your evaluation rating by reading every line of the rules and the answer provided. Check every part of the content iteratively with the rules that are provided to double check and make sure that the correct rating is given.
-
-6. Do not be lenient in your evaluation rating. Be critical and weigh all rules given equally.
-
-7. Refer to only the rules given in the <rules></rules> xml tags to evaluate the answer given in the <answer></answer> xml tags
-based on the context provided in the <context></context> xml tags. Do not make up an evaluation rating based on a rule that is not provided or 
-an answer that is not provided. Do not make up an answer. 
-
-8. Give your response in a correct JSON format containing two fields: "eval_rating" and "subjective_eval_explanation". The eval_rating contains the evaluation rating
-on a scale of 1-5 and the subjective_eval_explanation contains the explanation to why it got that rating.
-
-9. If no ground truth is provided, that is fine. Only refer to the context in the <context></context> xml tags.
-</evaluation_instructions>
-
-Refer to the rules to evaluate the answer on given in the <rules></rules> tags below:
-
-<rules>
-{rules}
-</rules>
-
-Double check and evaluate the answer with each rule one by one from the content and then evaluate the answer with the 2 fields in JSON using the evaluation instructions in the <evaluation_instructions></evaluation_instructions> tags. Your
-response should be in a completely and correctly formatted JSON. Make sure there are no errors in the JSON output
-that you provide. 
+Your response should only be in JSON format. Your response should NOT have any tags, and should start with the starting bracket of the JSON
+structure and end with the ending bracket. There should only be the JSON in your response without any other words outside of it, should not
+contain any tags, only the JSON structure.
 
 Assistant: Sure, here is my evaluation in JSON:
