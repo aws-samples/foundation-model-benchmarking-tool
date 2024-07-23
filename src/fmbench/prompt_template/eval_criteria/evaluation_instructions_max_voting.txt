@@ -1,42 +1,37 @@
-1. Your role is to evaluate whether the answer is "correct" or "incorrect" compared to the ground truth
-provided and the question in the context.
+1. Your role is to evaluate whether the answer is "correct" or "incorrect" compared to the ground truth provided and the question in the context.
 
-2. Your response should be a JSON containing 2 main elements: "verdict" and "explanation". In the "verdict"
-field of the JSON response, you should mention whether the question is "correct" or "incorrect" based on whether the
-answer answers the question based on the information in the context or if whether the answer answers the question
-in the similar way as the ground truth does. The "explanation" field of the JSON contains the 
-reason why the answer is correct or incorrect after your evaluation of it against the context and the ground truth.
+2. Your response should be a JSON containing 2 main elements: "verdict" and "explanation". In the "verdict" field of the JSON response, you should mention whether the question is "correct" or "incorrect" based on whether the answer answers the question based on the information in the context or if whether the answer answers the question in the similar way as the ground truth does. The "explanation" field of the JSON contains the reason why the answer is correct or incorrect after your evaluation of it against the context and the ground truth.
 
-3. Make sure to be completely accurate and give your response in a proper JSON format containing the two fields. First, check 
-for if the answer matches or answers the question in the same way as the ground truth. If it does, then the verdict is "correct"
+3. Make sure to be completely accurate and give your response in a proper JSON format containing the two fields. First, check if the answer matches or answers the question in the same way as the ground truth. If it does, then the verdict is "correct".
 
-4. If the answer does not match or answer the question in any way that the ground truth does, then check for whether it answers the 
-question from the context. If it answers the question from the context correctly in the similar way the ground truth does, then the verdict is "correct".
+4. If the answer does not match or answer the question in any way that the ground truth does, then check for whether it answers the question from the context. If it answers the question from the context correctly in the similar way the ground truth does, then the verdict is "correct".
 
-5. You need to do a 2 way check. First, check if the answer matches or relates to the ground truth in terms of answering the question
-from the context correctly, if so then verdict is correct. Second, if the answer is worded different from or is not related to the ground truth then
-check for whether it correctly answers the question from the context, if it does then your verdict is correct.
+5. You need to do a 2-way check. First, check if the answer matches or relates to the ground truth in terms of answering the question from the context correctly; if so, then the verdict is correct. Second, if the answer is worded differently from or is not related to the ground truth, then check for whether it correctly answers the question from the context. If it does, then your verdict is correct.
 
-6. Do not have any pre filler words in your response. Your response should only contain the JSON format response with
-your evaluation. 
+6. Do not have any pre-filler words in your response. Your response should only contain the JSON format response with your evaluation.
 
-7. The answer does not have to be an exact word match to the ground truth. If it semantically and correctly answers the question
-in the same way that the ground truth does, then your verdict should be "correct". Just make sure according to the context and
-ground truth, the answer is correct or incorrect while giving your verdict.
+7. The answer does not have to be an exact word match to the ground truth. If it semantically and correctly answers the question in the same way that the ground truth does, then your verdict should be "correct". Just make sure according to the context and ground truth, the answer is correct or incorrect while giving your verdict.
 
-8. Do not be completely strict about string matching while evaluating whether an answer is correct or incorrect. What
-matters the most is whether it is answering the question correctly given in the context and it is not contradicting the response
-given in the ground truth, but instead supporting it.
+8. Do not be completely strict about string matching while evaluating whether an answer is correct or incorrect. What matters the most is whether it is answering the question correctly given in the context and it is not contradicting the response given in the ground truth, but instead supporting it.
 
-9. The ground truth can either be a string or a comma separated string. If it is a comma separated string, containing options for 
-multiple responses, check if the answer given correctly answers the question in the context like any option in the ground truth.
-If there is only one option in the ground truth, use only that as a single source of reference for a ground truth option.
+9. The ground truth can either be a string or a comma-separated string. If it is a comma-separated string containing options for multiple responses, check if the answer given correctly answers the question in the context like any option in the ground truth. If there is only one option in the ground truth, use only that as a single source of reference for a ground truth option.
 
-10. There might be multiple questions within the context. If so, refer to the last question as the one that needs to be considered
-while evaluating whether the answer correctl answers that question.
+10. There might be multiple questions within the context. If so, refer to the last question as the one that needs to be considered while evaluating whether the answer correctly answers that question.
 
-11. If the ground truth contains an answer to the question correctly and if the answer to be evaluated mentions that it does not
-or cannot answer the question, then the verdict is "incorrect", because the ground truth correctly has the answer to the question, however, the
-answer to be evaluated does not.
+11. If the ground truth contains an answer to the question correctly and if the answer to be evaluated mentions that it does not or cannot answer the question, then the verdict is "incorrect", because the ground truth correctly has the answer to the question; however, the answer to be evaluated does not.
 
 12. The answer does not have to be an exact match to the ground truth for the verdict to be correct. If the ground truth and the answer to be evaluated mean the same thing and answer the question from the context correctly, then the verdict is correct.
+
+13. Context-Based Correctness: If the ground truth says "I don't know" or is otherwise incomplete, but the answer provided is correct based on the context, the verdict should be "correct". Explanation should highlight the context-based correctness.
+
+14. Synonym and Paraphrase Matching: The answer does not need to match the ground truth word-for-word. If the answer uses synonyms or paraphrases but still correctly answers the question based on the context, the verdict should be "correct". Explanation should indicate semantic equivalence.
+
+15. Context Over Ground Truth: If the ground truth is incorrect or insufficient (e.g., says "I don't know"), rely on the context to determine the correctness of the answer. The explanation should note the reliance on context over the provided ground truth.
+
+16. Multiple Valid Responses: If the ground truth provides multiple correct responses, any answer that aligns with any of the correct options should be considered "correct". Explanation should mention the specific ground truth option the answer matches.
+
+
+
+
+
+
