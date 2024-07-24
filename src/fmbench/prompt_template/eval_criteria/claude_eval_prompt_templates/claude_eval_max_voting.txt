@@ -24,6 +24,8 @@ Refer to the ground truth to the question in the context below in the <ground_tr
 {ground_truth}
 </ground_truth> 
 
+{subjective_criteria}
+
 Your response should only be in JSON format. Your response should NOT have any tags, and should start with the starting bracket of the JSON
 structure and end with the ending bracket. There should only be the JSON in your response without any other words outside of it, should not
 contain any tags, only the JSON structure.

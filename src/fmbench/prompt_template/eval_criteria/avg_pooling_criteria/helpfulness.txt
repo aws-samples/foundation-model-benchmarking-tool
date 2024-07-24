@@ -1,3 +1,5 @@
+This criteria is for helpfulness
+
 1. Comprehends the user's intentions;
 
 2. Executes the action requested by the user correctly;

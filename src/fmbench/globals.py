@@ -233,8 +233,8 @@ ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # all evaluations done by panel of LLM evaluators on candidate model responses
 FINAL_ANALYSIS_REPORT: str = "final_analysis_report.txt"
 
-# Final LLM that acts as a summarizer of all Panel of LLM evaluators evaluation results
-FINAL_ANALYSIS_MODEL_ID = config['model_evaluations']['subjective_eval_info'].get('final_evaluation_summarizer', None)
+# these are all of the variables for average pooling evaluation use case
+AVERAGE_POOLING_ALL_EVALS: str = "average_pooling_all_evals.csv"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
