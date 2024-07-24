@@ -235,6 +235,7 @@ FINAL_ANALYSIS_REPORT: str = "final_analysis_report.txt"
 
 # these are all of the variables for average pooling evaluation use case
 AVERAGE_POOLING_ALL_EVALS: str = "average_pooling_all_evals.csv"
+NON_PERFECT_RATING_RESPONSES: str = "non_perfect_average_pooling_responses.csv"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
