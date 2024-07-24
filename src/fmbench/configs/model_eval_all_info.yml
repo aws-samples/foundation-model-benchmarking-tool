@@ -1,29 +1,17 @@
-# This is the evaluation parameter configurations. Initialize
+# This file contains the evaluation information for max voting and average pooling. Here, we initialize
 # the embeddings model used to calculate quantitative metrics such as 
-# cosine similarity here. The other part of this evaluation is using subjective
+# cosine similarity. The other part of this evaluation is using subjective
 # evaluation methods: Max voting and Average pooling. In the case of when a ground truth
 # is provided, FMBench can use max voting between a 'panel of judges' to get a verdict [correct, incorrect].
-# In other cases for more subjective evaluations, FMBench uses average pooling, to get the average
-# rating from each judge of the panel on each response and get the average ratings from all on one model
+# In other cases for more subjective evaluations (where ground truth might not be provided), FMBench uses average pooling, 
+# to get the average rating from each judge of the panel on each response and get the average ratings from all on one model
 # and so on. For more information, view this paper: https://arxiv.org/pdf/2404.18796
 model_evaluations:
-  # Enter the column name of your dataset that contains the ground truth if any. 
-  # If there is no ground truth provided, leave this empty.
-  ground_truth_col_key: answers
-  
-  # We construct a PoLL from a panel of LLM judges being drawn from disparate model families. We consider two
-  # different voting functions for aggregating scores across the judges. For tasks where ground truth is provided, we use
-  # max voting, as all judgements are binary [correct, incorrect]. For Chatbot Arena we instead use average 
-  # pooling because judgements are scores ranging from 1-5 and a three judge panel often does not produce 
-  # a clear majority decision
+  ground_truth_col: {ground_truth}
+
   PoLL_Composition_and_Voting: 
-    # If you are looking to evaluate the model responses 
-    # to corresponding sources of ground truth, then FMBench 
-    # can use the max_voting method to get binary decisions and do a
-    # majority vote from all panel judges on each model used in the inference
-    # process
-    method: max_voting # average_pooling
-  
+    method: {method_name}
+
   # This represents the information that is used to get the quantitative metrics 
   # from the evaluation step. This includes calculating the cosine similarity. 
   # If a ground truth is provided, measure the cosine similarity against the ground truth, 
@@ -32,6 +20,20 @@ model_evaluations:
   quantitative_eval_info:
     embeddings_model_id:
       model_id: sentence-transformers/all-mpnet-base-v2
+    # This contains information about quantitative metrics thresholds that need to be set while
+    # evaluating whether a candidate model response is correct or incorrect without parsing it through
+    # the panel of LLM evaluation procedure
+    # this is the budget for the answer to be correct from a candidate model
+    # if the cosine similarity for the model response is beyond 0.85, we consider 
+    # 'cosine_similarity_threshold' correct
+    cosine_similarity_threshold: 0.95
+    # this is the second criteria. This depends on the token set ratio
+    token_set_ratio_threshold: 1.00
+    # this is the third criteria for the check against the levenshtein distance
+    levenshtein_distance_threshold: 0.90
+    # If none of the eval criteria above are met, then check for 
+    # of the average of them all are above this threshold.
+    overall_eval_threshold: 0.90
   # This represents the information that is used to get subjective evaluations on the 
   # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
   # each content from the inference step on different evaluation criteria. The information about 
@@ -41,25 +43,32 @@ model_evaluations:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
       # Information on judge 1 on the evaluation judge panel
-      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+      - model_id: anthropic.claude-3-haiku-20240307-v1:0 # anthropic.claude-3-sonnet-20240229-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "claude_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "claude_eval_max_voting"
+        eval_prompt_template_name: "claude_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
       - model_id: meta.llama3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "llama3_eval_max_voting"
+        eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
-        eval_prompt_template_name_max_voting: "cohere_eval_max_voting"
-
+        eval_prompt_template_name: "cohere_eval_{method_name}"
+    # these are the rules that are used to evaluate all of the candidate models.
+    # these txt files are fit into the prompts for the Panel of LLM evaluators
+    # while evaluating the candidate model responses.
+    subjective_eval_criteria:
+      criteria_dir: avg_pooling_criteria
+      criteria:
+      - "helpfulness.txt"
+      - "accuracy.txt"
     # number of parallel calls made asyncronously to bedrock using Ray
     run_parallel_inference_count: 15
     # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
@@ -74,3 +83,4 @@ model_evaluations:
       max_tokens: 300
       top_p: 0.92
       caching: False
+    

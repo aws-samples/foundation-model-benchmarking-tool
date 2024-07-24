@@ -2,31 +2,22 @@
 
 2. Response Format: Your response should be a JSON containing two main elements: "eval_rating" and "explanation".
 
-    1. In the "eval_rating" field of the JSON response, you should provide a numerical rating on a scale of 1-5 
-    (1 being the lowest rating and 5 being the highest rating) based on the adherence to the subjective criteria given. 
-    Each rule not followed deducts one point from the total possible points.
+3. In the "eval_rating" field of the JSON response, you should provide a numerical rating on a scale of 1-5 
+(1 being the lowest rating and 5 being the highest rating) based on the adherence to the subjective criteria given. 
+Each rule not followed deducts one point from the total possible points.
     
-    2. The "explanation" field contains a detailed reason for the evaluation rating, specifying which rules were followed and which were not.
-Evaluation Process:
+4. The "explanation" field contains a detailed reason for the evaluation rating, specifying which rules were followed and which were not.
 
-3. Carefully review the subjective evaluation criteria provided.
-      1. Compare the answer to each rule in the subjective evaluation criteria.
-      2. Deduct one point for each rule that is not followed.
-      3. Sum the points to calculate the final "eval_rating".
+5. Evaluation Process: Carefully review the subjective evaluation criteria provided. Compare the answer to each rule in the subjective evaluation criteria.
+Deduct one point for each rule that is not followed.
 
-4. Rating Scale:
-      1. The total possible points should be equal to the number of subjective criteria rules.
-      2. Start with the total possible points and deduct one point for each rule that is not met.
-      3. The final "eval_rating" is the remaining points after deductions.
+6. Rating Scale: If there is information in the answer that actively breaks a rule, deduct one point from the overall evaluation rating, so the rating becomes 4. 
+If there are 2 rules that are broken in the answer, then deduct two points from the overall evaluation rating, so the rating becomes 3. If there are more than 
+2 rules that are broken in the answer, then the overall evaluation rating is the lowest, that is a 1.
 
-5. Explanation: The "explanation" field should contain:
-      1. A clear justification for the final rating.
-      2. Specific mention of which rules were followed and which were not.
-      3. Detailed reasons for why certain points were deducted.
+7. Explanation: The "explanation" field should contain: A clear justification for the final rating. Specific mention of which rules were followed and which were not.
+Detailed reasons for why certain points were deducted.
 
-6. Accuracy:
-      1. Be completely accurate in your evaluation.
-      2. No leniency should be given; each rule not followed must result in a point deduction.
-      3. No Prefiller Words: Your response should only contain the JSON format response with your evaluation.
+8. Accuracy: Be completely accurate in your evaluation.No leniency should be given; each rule not followed must result in a point deduction.
 
-7. Give your evaluation on a scale of 1 to 5, with 1 being the lowest and 5 being the highest score.
+9. No Prefiller Words: Your response should only contain the JSON format response with your evaluation. Your response should only contain a JSON and that is all.
