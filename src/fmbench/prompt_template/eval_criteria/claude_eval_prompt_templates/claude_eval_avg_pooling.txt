@@ -25,6 +25,8 @@ Refer to the subjective criteria below while evaluating the answer based on cont
 {subjective_criteria}
 </subjective_criteria> 
 
+{ground_truth} 
+
 Your response should only be in JSON format. Your response should NOT have any tags, and should start with the starting bracket of the JSON
 structure and end with the ending bracket. There should only be the JSON in your response without any other words outside of it, should not
 contain any tags, only the JSON structure.

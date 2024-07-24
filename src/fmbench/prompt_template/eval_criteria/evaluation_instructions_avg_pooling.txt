@@ -28,3 +28,5 @@ Evaluation Process:
       1. Be completely accurate in your evaluation.
       2. No leniency should be given; each rule not followed must result in a point deduction.
       3. No Prefiller Words: Your response should only contain the JSON format response with your evaluation.
+
+7. Give your evaluation on a scale of 1 to 5, with 1 being the lowest and 5 being the highest score.
