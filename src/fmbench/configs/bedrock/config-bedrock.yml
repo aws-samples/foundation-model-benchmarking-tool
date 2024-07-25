@@ -164,9 +164,38 @@ PoLL_Composition_and_Voting:
   # these are the rules that are used to evaluate all of the candidate models.
   # these txt files are fit into the prompts for the Panel of LLM evaluators
   # while evaluating the candidate model responses.
-  subjective_eval_criteria: 
-  - accuracy
-  - helpfulness
+  subjective_eval_criteria:
+    accuracy: | 
+        This criteria is for accuracy:
+        1. Factual Correctness: The response should be factually accurate and free from errors or misinformation. It should align with information
+        from the context fully.
+        2. Relevance: The response should be directly relevant to the question or task at hand. It should address the question and context without 
+        deviating or including irrelevant information.
+        3. Completeness: The response should provide a comprehensive answer or solution to the question or task. It should not omit crucial details or 
+        leave out important aspects of the required information.
+        4. Consistency: The response should be consistent with the context and any provided background information. It should not contradict 
+        previously established facts or make logically inconsistent statements.
+        5. Specificity: The response should be specific and tailored to the particular question or task. It should avoid overly broad or generalized statements that lack the necessary level of detail.
+        6. Objectivity: The response should be objective and impartial, free from biases or subjective opinions unless explicitly requested or appropriate for the task and the question.
+        7. Clarity: The response should be clear, concise, and easy to understand. It should use appropriate language and avoid ambiguity or confusion.
+        8. Timeliness: If applicable, the response should be up-to-date and reflect the most recent information or developments relevant to the question 
+        or task.
+        9. Domain Expertise: The response should demonstrate appropriate domain knowledge and expertise relevant to the subject matter of the question 
+        or task.
+    helpfulness: |
+        This criteria is for helpfulness:
+        1. Practical Value: The response should provide information or solutions that are actionable and useful to the user.
+        2. Problem-Solving: The response should effectively address the user's problem or question, offering clear guidance or solutions.
+        3. Clarity of Explanation: The information should be presented in a clear, easy-to-understand manner, avoiding unnecessary jargon.
+        4. Thoroughness: The response should cover all aspects of the question or task comprehensively.
+        5. Relevance to User Needs: The information provided should be tailored to the specific needs or context of the user's query.
+    coherence: |
+        This criteria is for coherence:
+        1. Logical Flow: The response should have a clear and logical structure, with ideas flowing smoothly from one to the next.
+        2. Consistency: All parts of the response should be consistent with each other, without contradictions or conflicting information.
+        3. Contextual Relevance: The response should maintain relevance to the overall context of the conversation or task.
+        4. Proper Transitions: There should be appropriate transitions between different parts or ideas within the response.
+        5. Unified Theme: The entire response should revolve around a central theme or purpose, maintaining focus throughout.
  
 metrics:
   dataset_of_interest: en_2000-3000
