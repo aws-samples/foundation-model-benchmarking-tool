@@ -49,26 +49,24 @@ model_evaluations:
         eval_prompt_template_dir: "claude_eval_prompt_templates"
         eval_prompt_template_name: "claude_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
-      - model_id: meta.llama3-70b-instruct-v1:0
-        # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
-        eval_prompt_template_dir: "llama3_eval_prompt_templates"
-        eval_prompt_template_name: "llama3_eval_{method_name}"
-      # Information on judge 3 on the evaluation judge panel
-      # We use the most powerful cohere model - cohere command R +
-      - model_id: cohere.command-r-plus-v1:0
-        # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
-        eval_prompt_template_dir: "cohere_eval_prompt_templates"
-        eval_prompt_template_name: "cohere_eval_{method_name}"
+      # - model_id: meta.llama3-70b-instruct-v1:0
+      #   # this is the prompt template that is used in the evaluation process
+      #   # based on the method: either max voting or average pooling
+      #   eval_prompt_template_dir: "llama3_eval_prompt_templates"
+      #   eval_prompt_template_name: "llama3_eval_{method_name}"
+      # # Information on judge 3 on the evaluation judge panel
+      # # We use the most powerful cohere model - cohere command R +
+      # - model_id: cohere.command-r-plus-v1:0
+      #   # this is the prompt template that is used in the evaluation process
+      #   # based on the method: either max voting or average pooling
+      #   eval_prompt_template_dir: "cohere_eval_prompt_templates"
+      #   eval_prompt_template_name: "cohere_eval_{method_name}"
     # these are the rules that are used to evaluate all of the candidate models.
     # these txt files are fit into the prompts for the Panel of LLM evaluators
     # while evaluating the candidate model responses.
     subjective_eval_criteria:
       criteria_dir: avg_pooling_criteria
-      criteria:
-      - "helpfulness.txt"
-      - "accuracy.txt"
+      criteria: {criteria}
     # number of parallel calls made asyncronously to bedrock using Ray
     run_parallel_inference_count: 15
     # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
