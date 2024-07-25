@@ -81,6 +81,10 @@ datasets:
 metrics:
   dataset_of_interest: en_3000-3840
 
+# name of the file that contains the model evaluation information
+# change to model_eval_avg pooling for average pooling use cases
+model_evaluations: model_eval_all_info.yml
+
 # We construct a PoLL from a panel of LLM judges being drawn from disparate model families. We consider two
 # different voting functions for aggregating scores across the judges. For tasks where ground truth is provided, we use
 # max voting, as all judgements are binary [correct, incorrect]. For Chatbot Arena we instead use average 
@@ -97,6 +101,12 @@ PoLL_Composition_and_Voting:
   # Enter the column name of your dataset that contains the ground truth if any. 
   # If there is no ground truth provided, leave this empty.
   ground_truth_col: answers
+  # these are the rules that are used to evaluate all of the candidate models.
+  # these txt files are fit into the prompts for the Panel of LLM evaluators
+  # while evaluating the candidate model responses.
+  subjective_eval_criteria: 
+  - accuracy
+  - helpfulness
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   

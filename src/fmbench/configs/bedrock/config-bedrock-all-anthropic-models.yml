@@ -136,10 +136,16 @@ PoLL_Composition_and_Voting:
   # majority vote from all panel judges on each model used in the inference
   # process. If you want your evaluations to be more tailored to specific criteria
   # and not a binary decision then use "avg_pooling" here
-  method: max_voting # max_voting
+  method: avg_pooling # max_voting
   # Enter the column name of your dataset that contains the ground truth if any. 
   # If there is no ground truth provided, leave this empty.
   ground_truth_col: answers
+  # these are the rules that are used to evaluate all of the candidate models.
+  # these txt files are fit into the prompts for the Panel of LLM evaluators
+  # while evaluating the candidate model responses.
+  subjective_eval_criteria: 
+  - accuracy
+  - helpfulness
  
 metrics:
   dataset_of_interest: en_3000-4000
@@ -179,78 +185,78 @@ experiments:
     # - 8
     # - 10
     env:
-  # # Experiment for claude 2.1
-  # - name: anthropic.claude-v2:1
-  #   model_name: anthropic.claude-v2:1
-  #   ep_name: anthropic.claude-v2:1
-  #   instance_type: anthropic.claude-v2:1
-  #   instance_count:
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #     parameter_set: bedrock
-  #   payload_files:
-  #   - payload_en_1-500.jsonl
-  #   - payload_en_500-1000.jsonl
-  #   - payload_en_1000-2000.jsonl
-  #   - payload_en_2000-3000.jsonl
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   # - 2
-  #   # - 4
-  #   # - 6
-  #   # - 8
-  #   # - 10
-  #   env:
-  # # Experiment for claude instant
-  # - name: anthropic.claude-instant-v1
-  #   model_name: anthropic.claude-instant-v1
-  #   ep_name: anthropic.claude-instant-v1
-  #   instance_type: anthropic.claude-instant-v1
-  #   instance_count:
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #     parameter_set: bedrock
-  #   payload_files:
-  #   - payload_en_1-500.jsonl
-  #   - payload_en_500-1000.jsonl
-  #   - payload_en_1000-2000.jsonl
-  #   - payload_en_2000-3000.jsonl
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   # - 2
-  #   # - 4
-  #   # - 6
-  #   # - 8
-  #   # - 10
-  #   env:
-  # # Experiment for claude v2
-  # - name: anthropic.claude-v2
-  #   model_name: anthropic.claude-v2
-  #   ep_name: anthropic.claude-v2
-  #   instance_type: anthropic.claude-v2
-  #   instance_count:
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #     parameter_set: bedrock
-  #   payload_files:
-  #   - payload_en_1-500.jsonl
-  #   - payload_en_500-1000.jsonl
-  #   - payload_en_1000-2000.jsonl
-  #   - payload_en_2000-3000.jsonl
-  #   - payload_en_3000-4000.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   # - 2
-  #   # - 4
-  #   # - 6
-  #   # - 8
-  #   # - 10
-  #   env:
+  # Experiment for claude 2.1
+  - name: anthropic.claude-v2:1
+    model_name: anthropic.claude-v2:1
+    ep_name: anthropic.claude-v2:1
+    instance_type: anthropic.claude-v2:1
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  # Experiment for claude instant
+  - name: anthropic.claude-instant-v1
+    model_name: anthropic.claude-instant-v1
+    ep_name: anthropic.claude-instant-v1
+    instance_type: anthropic.claude-instant-v1
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  # Experiment for claude v2
+  - name: anthropic.claude-v2
+    model_name: anthropic.claude-v2
+    ep_name: anthropic.claude-v2
+    instance_type: anthropic.claude-v2
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
   # Experiment for claude 3 haiku
   - name: anthropic.claude-3-haiku-20240307-v1:0
     model_name: anthropic.claude-3-haiku-20240307-v1:0
