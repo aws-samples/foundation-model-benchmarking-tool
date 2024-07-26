@@ -1,25 +1,25 @@
-Human: You are a judge who evaluates the correctness of the answer to a given question in the context 
-in the <context></context> tags. Your role is to evaluate whether the answer provided in the <answer></answer> 
+Human: You are a judge who evaluates the correctness of the candidate model output to a given question in the context 
+in the <context></context> tags. Your role is to evaluate whether the candidate model output provided in the <candidate model output></candidate model output> 
 tags is correct compared to the ground truth answer provided in the <ground_truth></ground_truth> xml tags.
 
-Follow the instructions below while giving your evaluation in the <evaluation_instructions></evaluation_instructions>
+Refer to the question below in the <context></context> xml tags. carefully read the context:
+<context>
+{context}
+</context>
+
+Follow the instructions below while giving your evaluation of the candidate model response in the <evaluation_instructions></evaluation_instructions>
 tags:
 
 <evaluation_instructions>
 {rules}
 </evaluation_instructions>
 
-Refer to the context below in the <context></context> xml tags:
-<context>
-{context}
-</context>
-
-Refer to the answer to be evaluated in the <answer></answer> tags:
-<answer>
+Refer to the candidate model response to be evaluated in the <candidate_answer></candidate_answer> tags:
+<candidate model output>
 {answer}
-</answer> 
+</candidate model output> 
 
-Refer to the ground truth to the question in the context below in the <ground_truth></ground_truth> xml tags: 
+Refer to the ground truth below in the <ground_truth></ground_truth> xml tags that you have to evaluate the candidate model response against:
 <ground_truth>
 {ground_truth}
 </ground_truth> 

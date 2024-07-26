@@ -140,6 +140,10 @@ PoLL_Composition_and_Voting:
   # Enter the column name of your dataset that contains the ground truth if any. 
   # If there is no ground truth provided, leave this empty.
   ground_truth_col: answers
+  # Set this variable to yes if you want to make partial correct/incorrect decisions based
+  # on quantitative metrics like cosine similarity, levenshtein score and token set ratio. Set
+  # this to yes only if you have a very direct QnA use case
+  use_quantitative_metrics: no
   # these are the rules that are used to evaluate all of the candidate models.
   # these txt files are fit into the prompts for the Panel of LLM evaluators
   # while evaluating the candidate model responses.
