@@ -1,34 +1,29 @@
-1. Your role is to evaluate whether the answer is "correct" or "incorrect" compared to the ground truth provided.
+1. Evaluation Basis: Evaluate whether the candidate model output answers the question correctly compared to the ground truth provided.
 
-2. Your response should be a JSON containing 2 main elements: "verdict" and "explanation". In the "verdict" field of the JSON response, you should mention whether the question is "correct" or "incorrect" based on whether the answer answers the question correctly compared to the ground truth or if whether the answer answers the question in the similar way as the ground truth does. The "explanation" field of the JSON contains the reason why the answer is correct or incorrect after your evaluation of it against the ground truth.
+2. JSON Response Format: Your response should be a JSON containing two elements: "verdict" and "explanation". The "verdict" field should mention whether the candidate model output is "correct" or "incorrect". The "explanation" field should provide the reason for the verdict based on the evaluation of the candidate model output against the ground truth.
 
-3. If the answer to be evaluated says that "it does not know the answer, or cannot find enough information or if the context does not have information", but the
-ground truth gives an answer, the your verdict should be "incorrect". This is because the ground truth has the answer and the answer to be evaluated does not.
-Always refer to ground truth as the golden output while giving your evaluation.
+3. Content Matching: The candidate model output does not have to use the exact wording of the ground truth but should correctly answer the question in a semantically equivalent manner. If there is more content in the candidate model response but it answers the question correctly and aligns with the ground truth, the verdict is "correct". Otherwise, it is "incorrect".
 
-4. Make sure to be completely accurate and give your response in a proper JSON format containing the two fields. First, check if the answer matches or answers the question in the same way as the ground truth. If it does, then the verdict is "correct".
+4. Absence of Information: If the candidate model output says that the context does not contain the answer and it differs from what the ground truth says, the verdict is "incorrect".
 
-5. If the answer does not match or answer the question in any way that the ground truth does, and rather contradicts the ground truth completely, then the verdict is "incorrect". If it answers correctly in the same or similar way the ground truth does, then the verdict is "correct".
+5. Incomplete Answers: If the candidate model output answers the question incorrectly or is incomplete (lacking important elements present in the ground truth), the verdict is "incorrect".
 
-6. Do not have any pre-filler words in your response. Your response should only contain the JSON format response with your evaluation.
+6. Careful Reading: Before giving your verdict, carefully read the ground truth, then the question, and finally the candidate model response. Ensure the response aligns with the ground truth in providing the correct answer.
 
-7. The answer does not have to be an exact word match to the ground truth. If it semantically and correctly answers the question in the same way that the ground truth does, then your verdict should be "correct". Just make sure according to the ground truth, the answer is correct or incorrect while giving your verdict.
+7. Correct Semantic Matching: If the candidate model output matches the ground truth, not necessarily in wordings, but in providing the correct answer, the verdict is "correct".
 
-8. The ground truth can either be a string or a comma-separated string. If it is a comma-separated string containing options for multiple responses, check if the answer given correctly answers the question like any option in the ground truth. If there is only one option in the ground truth, use only that as a single source of reference for a ground truth option.
+8. Proper JSON Format: Ensure your response is in a proper JSON format containing the "verdict" and "explanation" fields without any pre-filler words.
 
-9. There might be multiple questions within the context. If so, refer to the last question as the one that needs to be considered while evaluating whether the answer correctly answers that question.
+9. Multiple Correct Responses: If the ground truth is a comma-separated list with multiple correct responses, the verdict is correct if the candidate model response aligns with any of the options.
 
-10. If the ground truth contains an answer to the question correctly but the answer to be evaluated mentions that it does not or cannot answer the question, then the verdict is "incorrect", because the ground truth correctly has the answer to the question; however, the answer to be evaluated does not.
+10. Last Question Consideration: If there are multiple questions within the context, refer to the last question for evaluation.
 
-11. The answer does not have to be an exact match to the ground truth for the verdict to be correct. If the ground truth and the answer to be evaluated mean the same thing, then the verdict is correct.
+11. Synonym and Paraphrase Matching: If the candidate model output uses synonyms or paraphrases but still correctly answers the question in the same way as the ground truth, the verdict should be "correct". The explanation should mention the semantic equivalence.
 
-12. Synonym and Paraphrase Matching: The answer does not need to match the ground truth word-for-word. If the answer uses synonyms or paraphrases but still correctly answers the question like the ground truth, the verdict should be "correct". Explanation should indicate semantic equivalence.
+12. Additional Context: If the candidate model output includes unnecessary context or information not given in the ground truth but successfully concludes the correct answer as the ground truth, the verdict is "correct".
 
-13. Multiple Valid Responses: If the ground truth provides multiple correct responses, any answer that aligns with any of the correct options should be considered "correct". Explanation should mention the specific ground truth option the answer matches.
+13. Multiple Valid Responses: If the ground truth provides multiple correct responses, any candidate model output that aligns with any of the correct options should be considered "correct". The explanation should mention the specific ground truth option the candidate model output matches.
 
+14. Redundancy in Context: If the candidate model output includes redundant information but still correctly answers the question according to the ground truth, the verdict should be "correct".
 
-
-
-
-
-
+15. Careful Rechecking: Finally, read the question to yourself. After reading the question, read the candidate model response and ground truth at the same time. If they both answer the question correctly, then the verdict is "correct". If the ground truth answers the question but the candidate model response does not in any way, then the verdict is "incorrect".
