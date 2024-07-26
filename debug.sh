@@ -10,6 +10,7 @@ CONFIG_FILE_PATH=src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
 #config-bedrock-llama3-streaming.yml #config-llama3-8b-g5-stream.yml
 LOGFILE=fmbench.log
 
+#pip uninstall fmbench -y
 # delete existing install
 rm -rf $CONDA_ENV_PATH/fmbench*
 
@@ -19,5 +20,5 @@ pip install -U dist/*.whl
 
 # run the newly installed version
 echo "going to run fmbench now"
-fmbench --config-file $CONFIG_FILE_PATH  > $LOGFILE 2>&1
+fmbench --config-file $CONFIG_FILE_PATH --local-mode yes --write-bucket abstaticwebsitetest1 > $LOGFILE 2>&1
 echo "all done"
