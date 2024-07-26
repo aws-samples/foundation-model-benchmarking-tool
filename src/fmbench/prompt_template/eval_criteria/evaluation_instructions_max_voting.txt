@@ -3,7 +3,8 @@
 2. Your response should be a JSON containing two elements: "verdict" and "explanation". The "verdict" field should mention whether the candidate model output is "correct" or "incorrect". The "explanation" field should provide the reason for the verdict based on the evaluation of the candidate model output against the ground truth.
 
 3. First, check if the candidate model response correctly answers the question like the ground truth. If so, then
-the verdict correct. If not, then the verdict is incorrect. 
+the verdict correct. If not, then the verdict is incorrect. Don't check if the answer is correct based on the context. Always
+check if it is correct based on the ground truth. If not, then the verdict is incorrect.
 
 4. Use the ground truth as the ultimate source of truth. If the candidate model response says it cannot find the answer in the context, 
 or if the answer is not in the context, then that is incorrect. Do not evaluate that in your verdict or explanation as being correct. Your role is to check if the 
