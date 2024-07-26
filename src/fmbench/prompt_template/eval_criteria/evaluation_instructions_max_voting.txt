@@ -1,20 +1,22 @@
-1. Evaluation Basis: Evaluate whether the candidate model output answers the question correctly compared to the ground truth provided.
+1. Evaluate whether the candidate model output answers the question correctly compared to the ground truth provided.
 
-2. JSON Response Format: Your response should be a JSON containing two elements: "verdict" and "explanation". The "verdict" field should mention whether the candidate model output is "correct" or "incorrect". The "explanation" field should provide the reason for the verdict based on the evaluation of the candidate model output against the ground truth.
+2. Your response should be a JSON containing two elements: "verdict" and "explanation". The "verdict" field should mention whether the candidate model output is "correct" or "incorrect". The "explanation" field should provide the reason for the verdict based on the evaluation of the candidate model output against the ground truth.
 
 3. First, check if the candidate model response correctly answers the question like the ground truth. If so, then
 the verdict correct. If not, then the verdict is incorrect. If the verdict is incorrect, do not say in your
 explanation that the "candidate model response correctly states..." and so on. Only say this when the 
 candidate model response either partially or fully is correct.
 
-4. Content Matching: The candidate model output does not have to use the exact wording of the ground truth but should correctly answer the question in a semantically equivalent manner. If there is more content in the candidate model response than required but it answers the question correctly and aligns with the ground truth, the verdict is "correct". Otherwise, it is "incorrect".
+4. If the ground truth is a comma-separated list with multiple options for responses, the verdict is correct if the candidate model output aligns with any of the options in the comma separated list. It
+does not have to match all, but if it aligns with one of the options, then the verdict is correct. If the ground truth contains
+a single option for a response, then only compare the candidate model response with that to check if the candidate model response
+is correct or not.
 
-5. If the ground truth is a comma-separated list with multiple options for responses, the verdict is correct if the candidate model output aligns with any of the options in the comma separated list. It
-does not have to exactly match all, but if it aligns with one of the options, then the verdict is correct.
+5. The candidate model output does not have to use the exact wording of the ground truth but should correctly answer the question in a semantically equivalent manner. If there is more content in the candidate model response than required but it answers the question correctly and aligns with the ground truth, the verdict is "correct". Otherwise, it is "incorrect".
 
 6. Absence of Information: If the candidate model output says that the context does not contain the answer and but the ground truth contains the answer, the verdict is "incorrect".
 
-7. Incomplete Answers: If the candidate model output answers the question incorrectly or is incomplete (lacking important elements present in the ground truth), the verdict is "incorrect".
+7. Incorrect Answers: If the candidate model output answers the question incorrectly or says that it cannot answer or does not know the answer, the verdict is "incorrect".
 
 8. Correct Semantic Matching: If the candidate model output matches the ground truth, not necessarily in wordings, but in providing the correct answer, the verdict is "correct".
 
@@ -22,7 +24,7 @@ does not have to exactly match all, but if it aligns with one of the options, th
 
 10. Last Question Consideration: If there are multiple questions within the context, refer to the last question for evaluation.
 
-11. Synonym and Paraphrase Matching: If the candidate model output uses synonyms or paraphrases but still correctly answers the question in the same way as the ground truth, the verdict should be "correct".
+11. Synonym and Paraphrase Matching: If the candidate model output uses synonyms or paraphrases different from the ground truth but still correctly answers the question in the same way as the ground truth, the verdict should be "correct".
 
 12. Additional Context: If the candidate model output includes unnecessary context or information not given in the ground truth but successfully concludes the correct answer as the ground truth, the verdict is "correct".
 
@@ -37,6 +39,3 @@ or incorrect.
 15. Do not complicate the evaluation. Take a deep breath, and following all instructions, determine if the candidate
 model output is correct based on the ground truth provided. Do not mix up the ground truth and candidate model output.
 The candidate model output needs to be evaluated and not the ground truth.
-
-16. If the candidate model has more context or information than what is given in the ground truth, but 
-still correctly answers the question, then the verdict is correct. 
