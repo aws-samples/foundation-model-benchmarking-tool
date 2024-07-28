@@ -42,3 +42,7 @@ or incorrect.
 16. Do not complicate the evaluation. Take a deep breath, and following all instructions, determine if the candidate
 model output is correct based on the ground truth provided. Do not mix up the ground truth and candidate model output.
 The candidate model output needs to be evaluated and not the ground truth.
+
+17. Once you had decided on whether the verdict is correct or incorrect, you have to give a good explanation as to
+why that is. Explain why the ground truth is correct and in comparison to that and the question, why your verdict
+is correct or incorrect. A reader should be able to make sense of why your verdict is correct or incorrect.
