@@ -56,12 +56,12 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     except KeyError as e:
         logger.error("Missing key in experiment_config: %s", e)
         raise
-    
+    logger.info("Inside the neuron_deploy middle")
     except Exception as e:
         logger.error("Error reading configuration: %s", e)
         raise
-
     # Construct the command
+    logger.info("Inside the neuron_deploy end")
     command = [
         "./src/fmbench/scripts/compile-llm-for-aws-silicon/scripts/download_compile_deploy.sh",
         HF_TOKEN,
