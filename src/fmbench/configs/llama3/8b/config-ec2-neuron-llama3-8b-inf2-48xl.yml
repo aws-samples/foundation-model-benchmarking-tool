@@ -188,7 +188,7 @@ experiments:
     ec2:
       batch_size: "4"
       num_neuron_cores: "8"
-      neuron_version: "2.19"
+      neuron_version: "2.18"
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
