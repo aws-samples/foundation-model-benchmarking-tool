@@ -80,8 +80,17 @@ pricing:
       input-per-1k-tokens: 0.00045
       output-per-1k-tokens: 0.0007
     ## Llama
+    meta.llama3-1-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    meta.llama3-1-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama3-1-405b-instruct-v1:0:
+      input-per-1k-tokens: 0.00532
+      output-per-1k-tokens: 0.016
     meta.llama3-8b-instruct-v1:0:
-      input-per-1k-tokens: 0.0004
+      input-per-1k-tokens: 0.0003
       output-per-1k-tokens: 0.0006
     meta.llama3-70b-instruct-v1:0:
       input-per-1k-tokens: 0.00265
