@@ -50,8 +50,7 @@ s3_read_data:
   # pooling
   eval_instructions_dir: eval_instructions
   eval_instructions_files:
-  - evaluation_instructions_max_voting.txt
-  - evaluation_instructions_avg_pooling.txt
+  - evaluation_instructions_majority_vote.txt
 
   # configuration files (like this one) are placed in this prefix
   configs_prefix: configs
@@ -107,7 +106,7 @@ datasets:
   prompt_template_keys:
   - input
   - context
-  
+  ground_truth_col_key: answers
   # maximum number of iterations per concurrency and payload size combination
   max_iters_per_combination: 105
   # minimum number of iterations per concurrency and payload size combination
