@@ -1,6 +1,6 @@
 general:
   name: "fmbench-bedrock-anthropic-models"      
-  model_name: "All anthropic models available in Amazon Bedrock"
+  model_name: "Sonnet and Haiku on Amazon Bedrock"
   
 # AWS and SageMaker settings
 aws:
@@ -64,10 +64,16 @@ s3_read_data:
   source_data_prefix: source_data
   # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
   source_data_files:
-  - Open-Orca/OpenOrca.jsonl
+  - 2wikimqa_e.jsonl
+  - 2wikimqa.jsonl
+  - hotpotqa_e.jsonl
+  - hotpotqa.jsonl
+  - narrativeqa.jsonl
+  - triviaqa_e.jsonl
+  - triviaqa.jsonl
   tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
   prompt_template_dir: prompt_template
-  prompt_template_file: prompt_template_claude_OpenOrca.txt ## add your desired prompt template type
+  prompt_template_file: prompt_template_claude.txt ## add your desired prompt template type
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -87,8 +93,8 @@ datasets:
   # dataset related configuration
   prompt_template_keys:
   - input
-  - system_prompt 
-  ground_truth_col_key: response
+  - context
+  ground_truth_col_key: answers
   filters:
   - language: en    
     min_length_in_tokens: 1
@@ -119,10 +125,9 @@ datasets:
 # for example, the prompt template names, the ground truth column name (if any), 
 # LLM panelist information, inference parameters, etc.
 model_evaluations: model_eval_all_info.yml
-
  
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_3000-4000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -189,8 +194,6 @@ report:
   latency_budget: 5
   cost_per_10k_txn_budget: 350
   error_rate_budget: 0
-  # change this based on your dataset size and your needs
-  accuracy_budget: 0.90
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
