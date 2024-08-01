@@ -11,10 +11,10 @@
         <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/benchmarking.html">
       
       
-        <link rel="prev" href="gettingstarted.html">
+        <link rel="prev" href="ec2.html">
       
       
-        <link rel="next" href="advanced.html">
+        <link rel="next" href="benchmarking_on_bedrock.html">
       
       
       <link rel="icon" href="website/img/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Benchmarking - Foundation Model Benchmarking Tool</title>
+        <title>Main - Foundation Model Benchmarking Tool (FMBench)</title>
       
     
     
@@ -96,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Foundation Model Benchmarking Tool" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tool" data-md-component="logo">
+    <a href="." title="Foundation Model Benchmarking Tool (FMBench)" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tool (FMBench)" data-md-component="logo">
       
   <img src="img/fmbt-small.png" alt="logo">
 
@@ -109,13 +109,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Foundation Model Benchmarking Tool
+            Foundation Model Benchmarking Tool (FMBench)
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Benchmarking
+              Main
             
           </span>
         </div>
@@ -228,12 +228,12 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="." title="Foundation Model Benchmarking Tool" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tool" data-md-component="logo">
+    <a href="." title="Foundation Model Benchmarking Tool (FMBench)" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tool (FMBench)" data-md-component="logo">
       
   <img src="img/fmbt-small.png" alt="logo">
 
     </a>
-    Foundation Model Benchmarking Tool
+    Foundation Model Benchmarking Tool (FMBench)
   </label>
   
     <div class="md-nav__source">
@@ -296,7 +296,7 @@
         
   
   <span class="md-ellipsis">
-    Overview
+    Benchmark foundation models on AWS
   </span>
   
 
@@ -359,7 +359,49 @@
         
   
   <span class="md-ellipsis">
-    Gettingstarted
+    Main
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quickstart.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SageMaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ec2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EC2
   </span>
   
 
@@ -399,7 +441,7 @@
             
   
   <span class="md-ellipsis">
-    Benchmark models
+    Benchmarking
   </span>
   
 
@@ -409,7 +451,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Benchmark models
+            Benchmarking
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -426,12 +468,14 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
           
   
   <span class="md-ellipsis">
-    Benchmarking
+    Main
   </span>
   
 
@@ -442,7 +486,7 @@
         
   
   <span class="md-ellipsis">
-    Benchmarking
+    Main
   </span>
   
 
@@ -454,6 +498,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -462,53 +508,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#benchmark-models-deployed-on-different-aws-generative-ai-services" class="md-nav__link">
+  <a href="#full-list-of-benchmarked-models" class="md-nav__link">
     <span class="md-ellipsis">
-      Benchmark models deployed on different AWS Generative AI services
+      Full list of benchmarked models
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Benchmark models deployed on different AWS Generative AI services">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-bedrock" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on Bedrock
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-sagemaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on SageMaker
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-eks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on EKS
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-ec2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on EC2
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -516,6 +520,90 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_bedrock.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bedrock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_sagemaker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sagemaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_eks.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_ec2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EC2
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -549,7 +637,7 @@
             
   
   <span class="md-ellipsis">
-    Advanced functionality
+    Configs
   </span>
   
 
@@ -559,7 +647,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
-            Advanced functionality
+            Configs
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -570,11 +658,11 @@
   
   
     <li class="md-nav__item">
-      <a href="advanced.html" class="md-nav__link">
+      <a href="manifest.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Advanced
+    Files
   </span>
   
 
@@ -612,7 +700,7 @@
             
   
   <span class="md-ellipsis">
-    Results
+    Advanced functionality
   </span>
   
 
@@ -622,7 +710,7 @@
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Results
+            Advanced functionality
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -633,11 +721,95 @@
   
   
     <li class="md-nav__item">
-      <a href="results.html" class="md-nav__link">
+      <a href="advanced.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Results
+    Main
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byoe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO endpoint
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byo_rest_predictor.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO REST predictor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byo_dataset.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO dataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build FMBench
   </span>
   
 
@@ -675,7 +847,7 @@
             
   
   <span class="md-ellipsis">
-    Releases
+    Results
   </span>
   
 
@@ -684,6 +856,90 @@
         
         <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Results
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="results.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="internal_website.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Website
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             Releases
           </label>
@@ -731,10 +987,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -745,8 +1001,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             Resources
           </label>
@@ -797,6 +1053,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -805,53 +1063,11 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#benchmark-models-deployed-on-different-aws-generative-ai-services" class="md-nav__link">
+  <a href="#full-list-of-benchmarked-models" class="md-nav__link">
     <span class="md-ellipsis">
-      Benchmark models deployed on different AWS Generative AI services
+      Full list of benchmarked models
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Benchmark models deployed on different AWS Generative AI services">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-bedrock" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on Bedrock
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-sagemaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on SageMaker
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-eks" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on EKS
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#benchmark-models-on-ec2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmark models on EC2
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -873,127 +1089,186 @@
   
 
 
-  <h1>Benchmarking</h1>
-
-<h2 id="benchmark-models-deployed-on-different-aws-generative-ai-services">Benchmark models deployed on different AWS Generative AI services<a class="headerlink" href="#benchmark-models-deployed-on-different-aws-generative-ai-services" title="Permanent link">&para;</a></h2>
+<h1 id="benchmark-models-deployed-on-different-aws-generative-ai-services">Benchmark models deployed on different AWS Generative AI services<a class="headerlink" href="#benchmark-models-deployed-on-different-aws-generative-ai-services" title="Permanent link">&para;</a></h1>
 <p><code>FMBench</code> comes packaged with configuration files for benchmarking models on different AWS Generative AI services.</p>
-<h3 id="benchmark-models-on-bedrock">Benchmark models on Bedrock<a class="headerlink" href="#benchmark-models-on-bedrock" title="Permanent link">&para;</a></h3>
-<p>Choose any config file from the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/bedrock"><code>bedrock</code></a> folder and either run these directly or use them as templates for creating new config files specific to your use-case. Here is an example for benchmarking the <code>Llama3</code> models on Bedrock.</p>
-<div class="codehilite"><pre><span></span><code>fmbench<span class="w"> </span>--config-file<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/bedrock/config-bedrock-llama3.yml<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</code></pre></div>
-
-<h3 id="benchmark-models-on-sagemaker">Benchmark models on SageMaker<a class="headerlink" href="#benchmark-models-on-sagemaker" title="Permanent link">&para;</a></h3>
-<p>Choose any config file from the model specific folders, for example the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/llama3"><code>Llama3</code></a> folder for <code>Llama3</code> family of models. These configuration files also include instructions for <code>FMBench</code> to first deploy the model on SageMaker using your configured instance type and inference parameters of choice and then run the benchmarking. Here is an example for benchmarking <code>Llama3-8b</code> model on an <code>ml.inf2.24xlarge</code> and <code>ml.g5.12xlarge</code> instance. </p>
-<div class="codehilite"><pre><span></span><code>fmbench<span class="w"> </span>--config-file<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5.yml<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</code></pre></div>
-
-<h3 id="benchmark-models-on-eks">Benchmark models on EKS<a class="headerlink" href="#benchmark-models-on-eks" title="Permanent link">&para;</a></h3>
-<p>You can use <code>FMBench</code> to benchmark models on hosted on EKS. This can be done in one of two ways:
- - Deploy the model on your EKS cluster independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.
- - Deploy the model on your EKS cluster through <code>FMBench</code> and then benchmark it.</p>
-<p>The steps for deploying the model on your EKS cluster are described below.</p>
-<p>👉 <strong><em>EKS cluster creation itself is not a part of the <code>FMBench</code> functionality, the cluster needs to exist before you run the following steps</em></strong>. Steps for cluster creation are provided in <a href="misc/eks_cluster-creation_steps.md">this</a> file but it would be best to consult the <a href="https://github.com/awslabs/data-on-eks">DoEKS</a> repo on GitHub for comprehensive instructions.</p>
-<ol>
-<li>
-<p>Add the following IAM policies to your existing <code>FMBench</code> Role:</p>
-<ol>
-<li>
-<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSClusterPolicy.html">AmazonEKSClusterPolicy</a>: This policy provides Kubernetes the permissions it requires to manage resources on your behalf.</p>
-</li>
-<li>
-<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKS_CNI_Policy.html">AmazonEKS_CNI_Policy</a>: This policy provides the Amazon VPC CNI Plugin (amazon-vpc-cni-k8s) the permissions it requires to modify the IP address configuration on your EKS worker nodes. This permission set allows the CNI to list, describe, and modify Elastic Network Interfaces on your behalf.</p>
-</li>
-<li>
-<p><a href="https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonEKSWorkerNodePolicy.html">AmazonEKSWorkerNodePolicy</a>: This policy allows Amazon EKS worker nodes to connect to Amazon EKS Clusters.</p>
-</li>
-</ol>
-</li>
-<li>
-<p>Once the EKS cluster is available you can use either the following two files or create your own config files using these files as examples for running benchmarking for these models. <strong><em>These config files require that the EKS cluster has been created as per the steps in these <a href="https://awslabs.github.io/data-on-eks/docs/gen-ai/inference/llama3-inf2">instructions</a></em></strong>.</p>
-<ol>
-<li>
-<p><a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml">config-llama3-8b-eks-inf2.yml</a>: Deploy Llama3 on Trn1/Inf2 instances.</p>
-</li>
-<li>
-<p><a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/mistral/config-mistral-7b-eks-inf2.yml">config-mistral-7b-eks-inf2.yml</a>: Deploy Mistral 7b on Trn1/Inf2 instances.</p>
-</li>
-</ol>
-<p>For more information about the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs/eks_manifests">blueprints</a> used by FMBench to deploy these models, view: <a href="https://awslabs.github.io/data-on-eks/docs/gen-ai">DoEKS docs gen-ai</a>.</p>
-</li>
-<li>
-<p>Run the <code>Llama3-8b</code> benchmarking using the command below (replace the config file as needed for a different model). This will first deploy the model on your EKS cluster and then run benchmarking on the deployed model.</p>
-<p><code>{.bash}
-fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama3/8b/config-llama3-8b-eks-inf2.yml &gt; fmbench.log 2&gt;&amp;1</code></p>
-</li>
-<li>
-<p>As the model is getting deployed you might want to run the following <code>kubectl</code> commands to monitor the deployment progress. Set the <em>model_namespace</em> to <code>llama3</code> or <code>mistral</code> or a different model as appropriate.</p>
-<ol>
-<li><code>kubectl get pods -n &lt;model_namespace&gt; -w</code>: Watch the pods in the model specific namespace.</li>
-<li><code>kubectl -n karpenter get pods</code>: Get the pods in the karpenter namespace.</li>
-<li><code>kubectl describe pod -n &lt;model_namespace&gt; &lt;pod-name&gt;</code>: Describe a specific pod in the mistral namespace to view the live logs.</li>
-</ol>
-</li>
-</ol>
-<h3 id="benchmark-models-on-ec2">Benchmark models on EC2<a class="headerlink" href="#benchmark-models-on-ec2" title="Permanent link">&para;</a></h3>
-<p>You can use <code>FMBench</code> to benchmark models on hosted on EC2. This can be done in one of two ways:
- - Deploy the model on your EC2 instance independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.
- - Deploy the model on your EC2 instance through <code>FMBench</code> and then benchmark it.</p>
-<p>The steps for deploying the model on your EC2 instance are described below. </p>
-<p>👉 In this configuration both the model being benchmarked and <code>FMBench</code> are deployed on the same EC2 instance.</p>
-<ol>
-<li>
-<p>Create a new EC2 instance suitable for hosting an LMI as per the steps described <a href="misc/ec2_instance_creation_steps.md">here</a>.</p>
-</li>
-<li>
-<p>Install <code>FMBench</code> on this instance and run benchmarking for a desired model using one of the config files included in the <code>FMbench</code> repo or create your own.</p>
-<ol>
-<li>
-<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
-<p><code>{.bash}
-curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
-chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
-./Anaconda3-2023.09-0-Linux-x86_64.sh
-export PATH=/home/ubuntu/anaconda3/bin:$PATH</code></p>
-</li>
-<li>
-<p>Setup the <code>fmbench_python311</code> conda environment.</p>
-<p><code>{.bash}
-conda create --name fmbench_python311 -y python=3.11 ipykernel
-source activate fmbench_python311;
-pip install -U fmbench</code></p>
-</li>
-<li>
-<p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo.</p>
-<p><code>{.bash}
-curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh</code></p>
-</li>
-<li>
-<p>To download the model files from HuggingFace, create a <code>hf_token.txt</code> file in the <code>/tmp/fmbench-read/scripts/</code> directory containing the Hugging Face token you would like to use. In the command below replace the <code>hf_yourtokenstring</code> with your hugging Face token.</p>
-<p><code>{.bash}
-echo hf_yourtokenstring &gt; /tmp/fmbench-read/scripts/hf_token.txt</code></p>
-</li>
-<li>
-<p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required</p>
-<p><code>{.bash}
-fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1</code></p>
-</li>
-<li>
-<p>For example, to run <code>FMBench</code> on a <code>llama3-8b-Instruct</code> model on an <code>inf2.48xlarge</code> instance, run the command 
-command below. The config file for this example can be viewed <a href="src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml">here</a>.</p>
-<p><code>{.bash}
-fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder &gt; fmbench.log 2&gt;&amp;1</code></p>
-</li>
-<li>
-<p>Open a new Terminal and navigate to the <code>foundation-model-benchmarking-tool</code> directory and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
-<p><code>{.bash}
-tail -f fmbench.log</code></p>
-</li>
-<li>
-<p>All metrics are stored in the <code>/tmp/fmbench-write</code> directory created automatically by the <code>fmbench</code> package. Once the run completes all files are copied locally in a <code>results-*</code> folder as usual.</p>
-</li>
-</ol>
-</li>
-</ol>
+<h2 id="full-list-of-benchmarked-models">Full list of benchmarked models<a class="headerlink" href="#full-list-of-benchmarked-models" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Model</th>
+<th style="text-align: left;">SageMaker g4dn/g5/p3</th>
+<th style="text-align: left;">SageMaker Inf2</th>
+<th style="text-align: left;">SageMaker P4</th>
+<th style="text-align: left;">SageMaker P5</th>
+<th style="text-align: left;">Bedrock On-demand throughput</th>
+<th style="text-align: left;">Bedrock provisioned throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Anthropic Claude-3 Sonnet</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Anthropic Claude-3 Haiku</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mistral-7b-instruct</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mistral-7b-AWQ</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Mixtral-8x7b-instruct</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama3-8b instruct</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama3-70b instruct</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama2-13b chat</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama2-70b chat</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Amazon Titan text lite</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Amazon Titan text express</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cohere Command text</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cohere Command light text</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AI21 J2 Mid</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>AI21 J2 Ultra</strong></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Gemma-2b</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Phi-3-mini-4k-instruct</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>distilbert-base-uncased</strong></td>
+<td style="text-align: left;">✅</td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+<td style="text-align: left;"></td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1066,7 +1341,7 @@ tail -f fmbench.log</code></p>
     </div>
     
     
-    <script id="__config" type="application/json">{"base": ".", "features": ["navigation"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation", "content.code.copy"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
       <script src="assets/javascripts/bundle.fe8b6f2b.min.js"></script>
