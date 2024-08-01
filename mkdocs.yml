@@ -1,19 +1,29 @@
-site_name: Foundation Model Benchmarking Tool
+site_name: Foundation Model Benchmarking Tool (FMBench)
 repo_name: aws-samples/foundation-model-benchmarking-tool
 repo_url: https://github.com/aws-samples/foundation-model-benchmarking-tool
 edit_uri: https://github.com/aws-samples/foundation-model-benchmarking-tool/edit/master/
 site_url: https://foundation-model-benchmarking-tool.github.io
 use_directory_urls: false
+ 
+
 markdown_extensions:
-  - codehilite
   - toc:
       permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
 theme:
   name: material
   logo: ./img/fmbt-small.png
   favicon: website/img/favicon.png
   features:
     - navigation
+    - content.code.copy
   palette:
       - scheme: default
         primary: light-blue
@@ -40,10 +50,33 @@ plugins:
   - mknotebooks
 
 nav: 
-  - Home: index.md
-  - Getting started: gettingstarted.md
-  - Benchmark models: benchmarking.md
-  - Advanced functionality: advanced.md
-  - Results: results.md
-  - Releases: releases.md
-  - Resources: resources.md
+  - Home: 
+      - index.md
+  - Getting started:
+      - Main: gettingstarted.md
+      - SageMaker: quickstart.md      
+      - EC2: ec2.md
+  - Benchmarking:
+      - Main: benchmarking.md
+      - Bedrock: benchmarking_on_bedrock.md
+      - Sagemaker: benchmarking_on_sagemaker.md
+      - EKS: benchmarking_on_eks.md
+      - EC2: benchmarking_on_ec2.md
+  
+  - Configs:
+      - Files: manifest.md
+  - Advanced functionality:
+      - Main: advanced.md
+      - BYO endpoint: byoe.md
+      - BYO REST predictor: byo_rest_predictor.md
+      - BYO dataset: byo_dataset.md
+      - Build FMBench: build.md
+
+  - Results:
+      - Report: results.md
+      - Website: internal_website.md
+
+  - Releases:
+      - releases.md
+  - Resources:
+      - resources.md
