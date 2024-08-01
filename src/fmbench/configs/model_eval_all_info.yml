@@ -10,7 +10,11 @@ model_evaluations:
   ground_truth_col: {ground_truth}
 
   PoLL_Composition_and_Voting: 
-    method: {method_name}
+    method: majority_vote
+    # Set this variable to yes if you want to make partial correct/incorrect decisions based
+    # on quantitative metrics like cosine similarity, levenshtein score and token set ratio. Set
+    # this to yes only if you have a very direct QnA use case
+    use_quantitative_metrics: no
 
   # This represents the information that is used to get the quantitative metrics 
   # from the evaluation step. This includes calculating the cosine similarity. 
@@ -48,12 +52,6 @@ model_evaluations:
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
         eval_prompt_template_name: "llama3_eval_{method_name}"
-      # # Information on judge 1 on the evaluation judge panel
-      # - model_id: meta.llama3-1-70b-instruct-v1:0
-      #   # this is the prompt template that is used in the evaluation process
-      #   # based on the method: either max voting or average pooling
-      #   eval_prompt_template_dir: "llama3_eval_prompt_templates"
-      #   eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
       - model_id: anthropic.claude-3-sonnet-20240229-v1:0
         # this is the prompt template that is used in the evaluation process
@@ -67,17 +65,8 @@ model_evaluations:
         # based on the method: either max voting or average pooling
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
         eval_prompt_template_name: "cohere_eval_{method_name}"
-    # these are the rules that are used to subjectively evaluate all of the candidate models.
-    # there are pre defined rules for accuracy, helpfulness, coherence that can be changed based on
-    # user demand. This list gets appended with new criteria that the customer brings.
-    subjective_eval_criteria: {criteria}
     # number of parallel calls made asyncronously to bedrock using Ray
     run_parallel_inference_count: 15
-    # final LLM that acts as a summarizer of all PoLL evaluation results. Using these insights, 
-    # users can spot trends, patterns and observation across multiple candidate models and get suggestions
-    # as to how certain models can improve their evaluation performance through prompt engineering, etc
-    final_evaluation_summarizer: anthropic.claude-3-sonnet-20240229-v1:0
-    final_evaluation_prompt_template: "final_evaluations_summarizer_prompt_template.txt"
     # Common inference parameters used in the evaluation process
     # We use LiteLLM for interfacing with Bedrock
     inference_parameters:

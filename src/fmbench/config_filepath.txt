@@ -1,1 +1,1 @@
-configs/bedrock/config-bedrock-all-anthropic-models-OpenOrca.yml
+configs/bedrock/config-bedrock-latest-models-OpenOrca.yml
