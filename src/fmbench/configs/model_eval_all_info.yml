@@ -1,11 +1,10 @@
-# This file contains the evaluation information for max voting and average pooling. Here, we initialize
+# This file contains the evaluation information for majority voting. Here, we initialize
 # the embeddings model used to calculate quantitative metrics such as 
 # cosine similarity. The other part of this evaluation is using subjective
-# evaluation methods: Max voting and Average pooling. In the case of when a ground truth
-# is provided, FMBench can use max voting between a 'panel of judges' to get a verdict [correct, incorrect].
-# In other cases for more subjective evaluations (where ground truth might not be provided), FMBench uses average pooling, 
-# to get the average rating from each judge of the panel on each response and get the average ratings from all on one model
-# and so on. For more information, view this paper: https://arxiv.org/pdf/2404.18796
+# evaluation methods: majority voting. In the case of when a ground truth
+# is provided, FMBench can use majority voting with the help of a 'panel of judges' to get a verdict [correct, incorrect].
+# For more information, view this paper: https://arxiv.org/pdf/2404.18796. Majority voting using a panel of LLM evaluators
+# helps in getting a 'close to human evaluation', reduces cost of evaluations, and eliminates intra model bias.
 model_evaluations:
   ground_truth_col: {ground_truth}
 
@@ -41,28 +40,27 @@ model_evaluations:
   # This represents the information that is used to get subjective evaluations on the 
   # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
   # each content from the inference step on different evaluation criteria. The information about 
-  # the LLM as a judge panel is given below that is used in the max voting and the average pooling 
-  # evaluation 
+  # the LLM as a judge panel is given below that is used in the majority voting
   subjective_eval_info:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
       # Information on judge 1 on the evaluation judge panel
       - model_id: meta.llama3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
+        # based on the method: majority voting
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
         eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
       - model_id: anthropic.claude-3-sonnet-20240229-v1:0
         # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
+        # based on the method: majority voting
         eval_prompt_template_dir: "claude_eval_prompt_templates"
         eval_prompt_template_name: "claude_eval_{method_name}"
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
         # this is the prompt template that is used in the evaluation process
-        # based on the method: either max voting or average pooling
+        # based on the method: majority voting
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
         eval_prompt_template_name: "cohere_eval_{method_name}"
     # number of parallel calls made asyncronously to bedrock using Ray
