@@ -258,6 +258,7 @@ ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # contains the final analysis done by a final LLM in the loop to summarize
 # all evaluations done by panel of LLM evaluators on candidate model responses
 FINAL_ANALYSIS_REPORT: str = "final_analysis_report.txt"
+NEEDS_FURTHER_EVAL_FILE: str = "responses_need_further_eval.txt"
 
 # these are all of the variables for average pooling evaluation use case
 AVERAGE_POOLING_ALL_EVALS: str = "average_pooling_all_evals.csv"
