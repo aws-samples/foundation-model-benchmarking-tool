@@ -54,7 +54,7 @@ model_evaluations:
     # If the LLM evaluator provides a correct verdict and it exceeds the correctness cosine similarity score of
     # 0.05 for example, then the answer is defined as correctly evaluated as "correct"
     incorrect_verdict_cosine_similarity_threshold: 0.40
-    correct_verdict_cosine_similarity_threshold: 0.05
+    correct_verdict_cosine_similarity_threshold: 0.01
     # This is another quantitative metric that is measured for further downstream analysis
     # this token set ratio metric refers to the `fuzzy match` between the provided ground truth
     # and the candidate model response.
@@ -68,18 +68,18 @@ model_evaluations:
   subjective_eval_info:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
-      # # Information on judge 1 on the evaluation judge panel
-      # - model_id: meta.llama3-70b-instruct-v1:0
-      #   # this is the prompt template that is used in the evaluation process
-      #   # based on the method: majority voting
-      #   eval_prompt_template_dir: "llama3_eval_prompt_templates"
-      #   eval_prompt_template_name: "llama3_eval_{method_name}"
-      # # Information on judge 2 on the evaluation judge panel
-      # - model_id: anthropic.claude-3-sonnet-20240229-v1:0
-      #   # this is the prompt template that is used in the evaluation process
-      #   # based on the method: majority voting
-      #   eval_prompt_template_dir: "claude_eval_prompt_templates"
-      #   eval_prompt_template_name: "claude_eval_{method_name}"
+      # Information on judge 1 on the evaluation judge panel
+      - model_id: meta.llama3-70b-instruct-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "llama3_eval_prompt_templates"
+        eval_prompt_template_name: "llama3_eval_{method_name}"
+      # Information on judge 2 on the evaluation judge panel
+      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "claude_eval_prompt_templates"
+        eval_prompt_template_name: "claude_eval_{method_name}"
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
