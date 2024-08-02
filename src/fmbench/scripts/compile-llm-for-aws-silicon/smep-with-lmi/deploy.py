@@ -94,6 +94,11 @@ if __name__ == "__main__":
         type=str,
         help="S3 URI for Neuronx artifacts",
     )
+    parser.add_argument(
+        "--script-path",
+        type=str,
+        help="path to this script directory",
+    )
 
     args = parser.parse_args()
     logger.info(f"args={args}")
@@ -108,6 +113,7 @@ if __name__ == "__main__":
     prefix = args.prefix
     s3_uri = args.model_s3_uri
     neuronx_artifacts = args.neuronx_artifacts_s3_uri
+    script_path = args.script_path
     if dev == 'gpu':        
         instance_type = args.gpu_instance_type
         image_uri = args.gpu_image_uri
@@ -166,16 +172,22 @@ if __name__ == "__main__":
     )
     logger.info(model)
 
+    # Path to the endpoint.txt file in the higher directory
+    endpoint_file_path = os.path.join(script_path, "endpoint.txt")
+    logger.info(f'endpoint_file_path={endpoint_file_path}')
+
     logger.info(f'\nModel deployment initiated on {dev}\nEndpoint Name: {endpoint_name}\n')
     model.deploy(
         initial_instance_count=1,
         instance_type=instance_type,
         endpoint_name=endpoint_name,
-        #volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
-        model_data_download_timeout=2400, # increase the timeout to download large model
-        container_startup_health_check_timeout=2400, # increase the timeout to load large model,
+        # volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
+        model_data_download_timeout=2400,  # increase the timeout to download large model
+        container_startup_health_check_timeout=2400,  # increase the timeout to load large model,
         wait=True,
     )
     logger.info(f'Model deployment on {dev}\nEndpoint Name: {endpoint_name} finished\n')
-
+    logger.info(f'Now writing the endpoint and end of DEPLOY')
+    # Write the endpoint name to the endpoint.txt file in the higher directory
+    Path(endpoint_file_path).write_text(endpoint_name)
     

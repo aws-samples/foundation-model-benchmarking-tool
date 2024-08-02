@@ -92,6 +92,7 @@ python $script_path/smep-with-lmi/deploy.py --device inf2 \
   --inf2-instance-type $ml_instance_type \
   --model-s3-uri s3://${s3_bucket}/${prefix}/${model_id_wo_repo}/${model_id_wo_repo_split}/code/mymodel-inf2.tar.gz \
   --neuronx-artifacts-s3-uri s3://${s3_bucket}/${prefix}/${model_id_wo_repo}/neuronx_artifacts \
+  --script-path $script_path 
 
 echo all done
 

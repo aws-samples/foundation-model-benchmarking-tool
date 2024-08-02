@@ -4,20 +4,20 @@ Deploys a model on AWS silicon
 1. Configuration is read from the configured serving.properties file.
 2. A hf_token.txt file is required to download the model from Hugging Face.
 """
+
 # Import necessary libraries
 import os
-import sys
 import logging
 import subprocess
 from typing import Dict
 from pathlib import Path
 
-# set a logger
+# Set up a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# globals
-HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
+# Global constant for the Hugging Face token file
+HF_TOKEN_FNAME = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
@@ -26,22 +26,17 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info("Inside neuron deploy function")
     
     try:
-        model_id: str = experiment_config['model_id']
-        region: str = experiment_config['region']
-        ml_instance_type: str = experiment_config['instance_type']
-        batch_size: str = experiment_config['ec2']['batch_size']
-        num_neuron_cores: str = experiment_config['ec2']['num_neuron_cores']
-        neuron_version: str = experiment_config['ec2']['neuron_version']
-        model_loading_timeout: str = experiment_config['ec2']['neuron_version']
-        serving_properties: str = experiment_config['serving.properties']
-        s3_bucket: str = experiment_config['bucket']
-        role: str = experiment_config['sagemaker_execution_role']
-        logger.info(HF_TOKEN_FNAME)
-        HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()
-        model_store: str = "model_store"
-        s3_prefix: str = "lmi"
-        script_path: str = "./src/fmbench/scripts/compile-llm-for-aws-silicon"
-
+        model_id = experiment_config['model_id']
+        region = experiment_config['region']
+        ml_instance_type = experiment_config['instance_type']
+        batch_size = experiment_config['ec2']['batch_size']
+        num_neuron_cores = experiment_config['ec2']['num_neuron_cores']
+        neuron_version = experiment_config['ec2']['neuron_version']
+        model_loading_timeout = experiment_config['ec2']['model_loading_timeout']
+        serving_properties = experiment_config['serving.properties']
+        s3_bucket = experiment_config['bucket']
+        role = experiment_config['sagemaker_execution_role']
+        script_path = "./src/fmbench/scripts/compile-llm-for-aws-silicon"
         logger.info("Model ID: %s", model_id)
         logger.info("Region: %s", region)
         logger.info("Instance Type: %s", ml_instance_type)
@@ -50,26 +45,29 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("Neuron Version: %s", neuron_version)
         logger.info("S3 Bucket: %s", s3_bucket)
         logger.info("Role ARN: %s", role)
-        logger.info("HF Token length: %d", len(HF_TOKEN))
-        logger.info("script path: %s", script_path)
-        
+        logger.info("Script Path: %s", script_path)
+
+        HF_TOKEN = Path(HF_TOKEN_FNAME).read_text().strip()
+        logger.info("HF Token is: %s", HF_TOKEN)
+
     except KeyError as e:
         logger.error("Missing key in experiment_config: %s", e)
         raise
-    logger.info("Inside the neuron_deploy middle")
+    except FileNotFoundError as e:
+        logger.error("File not found: %s", e)
+        raise
     except Exception as e:
         logger.error("Error reading configuration: %s", e)
         raise
-    # Construct the command
-    logger.info("Inside the neuron_deploy end")
+
     command = [
         "./src/fmbench/scripts/compile-llm-for-aws-silicon/scripts/download_compile_deploy.sh",
         HF_TOKEN,
         model_id,
         neuron_version,
-        model_store,
+        "model_store",
         s3_bucket,
-        s3_prefix,
+        "lmi",
         region,
         role,
         batch_size,
@@ -82,22 +80,52 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     
     logger.info("Constructed command: %s", command)
 
-    # Run the command using subprocess.run()
+    deployment_result = {
+        'endpoint_name': None
+        'experiment_name': None,
+        'instance_type': None,
+        'instance_count': None,
+        'deployed': False
+    }
+
     try:
         with open('scripts.log', 'a') as log_file:
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
             
-            # Log the standard output and error to the file
             log_file.write("Standard Output:\n")
             log_file.write(result.stdout)
             log_file.write("\nStandard Error:\n")
             log_file.write(result.stderr)
             
-            # Log the output using logger
             logger.info("Script executed successfully: %s", result.stdout)
-            return {"status": "success", "output": result.stdout}
+            logger.info("going to read endpoint from endpoint.txt")
+
+            logger.info("going to read endpoint from endpoint.txt")
+            
+            try:
+                # Read the endpoint name from the endpoint.txt file
+                endpoint_file_path = os.path.join(script_path, "endpoint.txt")
+                ep_name = Path(endpoint_file_path).read_text().strip()
+                logger.info("Endpoint is: %s", ep_name)
+                if ep_name:
+                    logger.info("Model endpoint running with name: %s", ep_name)
+                    deployment_result.update({
+                        'endpoint_name': ep_name,
+                        'experiment_name': experiment_config['name'],
+                        'instance_type': experiment_config['instance_type'],
+                        'instance_count': experiment_config['instance_count'],
+                        'deployed': True
+                    })
+                    logger.info("Deployment result: %s", deployment_result)
+                else:
+                    logger.error("Model endpoint not running!")
+            except FileNotFoundError:
+                logger.error("File endpoint.txt not found!")
+            except Exception as e:
+                logger.error("Error reading endpoint.txt: %s", str(e))
+                raise
+
     except subprocess.CalledProcessError as e:
-        # Log the error output
         with open('scripts.log', 'a') as log_file:
             log_file.write("Standard Error:\n")
             log_file.write(e.stderr)
@@ -107,3 +135,5 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     except Exception as e:
         logger.error("Unexpected error: %s", str(e))
         raise
+    logger.info("Deployment result: %s", deployment_result)
+    return deployment_result
