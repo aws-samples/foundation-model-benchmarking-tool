@@ -5,8 +5,10 @@ import requests
 import tempfile
 from enum import Enum
 from pathlib import Path
-from datetime import datetime
 from fmbench import defaults
+from datetime import datetime
+from typing import Optional, Dict
+import importlib.resources as pkg_resources
 
 
 FMBENCH_PACKAGE_NAME: str = "fmbench"
@@ -118,6 +120,29 @@ for i in range(len(config['experiments'])):
         config['experiments'][i]['bucket'] = config['aws']['bucket']
 print(f"loaded config: {config}")
 
+
+# get the model evaluation configuration file which contains information on the 
+# ground truth, the method name, and directory structure being used
+eval_config: Optional[Dict] = None
+config_dir = Path(pkg_resources.files('fmbench'), 'configs')
+# load the model evaluation configuration file based on the ground truth, 
+# formatted into it from the main config file if any
+if config['model_evaluations'] is not None:
+    model_evaluation_common_file: str = config['model_evaluations']
+    ground_truth_col_key: Optional[str] = config['datasets'].get('ground_truth_col_key', None)
+    eval_module = Path(model_evaluation_common_file)
+    eval_file_path: str = os.path.join(config_dir, eval_module)
+    if ground_truth_col_key is not None:
+        with open(eval_file_path, 'r') as file:
+            model_eval_info = file.read()
+            # load the preliminary unformatted config file to fetch the method name and plug it into
+            # the prompt template file names
+            eval_config = yaml.safe_load(model_eval_info)
+            print(f"loaded eval configuration file: {eval_config}")
+    else:
+        eval_config=None
+        print(f"Evalaution configuration file not found in the config file. Provide a valid eval configuration file name.")
+
 # data directory and prompts
 PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
@@ -165,7 +190,8 @@ SCRIPTS_DIR: str = "fmbench/scripts"
 
 # Contruct the path to the evaluation prompt and the different rules in 
 # the rules directory for respective subjective eval criteria
-EVAL_PROMPT_TEMPLATES: str = "fmbench/prompt_template/eval_criteria_prompts"
+EVAL_PROMPT_TEMPLATES: str = os.path.join(PROMPT_TEMPLATE_S3_PREFIX,
+                                          eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None))
 
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
@@ -212,9 +238,9 @@ LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
 
 # evaluation - metric filenames
 PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_quantitative_eval_metrics.csv"
-EVAL_DIR: str = config['s3_read_data']['eval_prompts_dir']
+EVAL_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None)
 EVAL_COL_SUFFIX: str = '_eval_prompt'
-EVAL_INSTRUCTIONS_DIR: str = config['s3_read_data']['eval_instructions_dir']
+EVAL_INSTRUCTIONS_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_instructions_dir', None)
 PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
 MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
 MODEL_EVAL_COMPLETIONS_CSV: str = "raw_llm_as_a_judge_evals.csv"

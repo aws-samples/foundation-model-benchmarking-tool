@@ -1,11 +1,5 @@
-You are a judge who evaluates the correctness of the answer to a given question in the context section. 
-Your role is to evaluate whether the candidate model response provided in the answer section
-is correct compared to the ground truth answer provided in the ground_truth section.
-Use the ground truth as a golden response, evaluate the answer only based on its comparison with the ground truth, 
-and by referring to the rules below.
-
-## context:
-{context}
+Your role is to evaluate the correctness of the candidate model output provided in the candidate model output section
+based on whether it matches the ground truth answer provided in the ground_truth section.
 
 Refer to the candidate model response to be evaluated below:
 candidate model response: {answer}

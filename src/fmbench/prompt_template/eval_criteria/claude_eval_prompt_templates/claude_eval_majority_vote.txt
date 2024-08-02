@@ -1,18 +1,12 @@
-Human: You are a judge who evaluates the correctness of the candidate model output to a given question in the context 
-in the <context></context> tags. Your role is to evaluate whether the candidate model output provided in the <candidate model output></candidate model output> 
-tags is correct compared to the ground truth answer provided in the <ground_truth></ground_truth> xml tags.
+Human: Your role is to evaluate the correctness of the candidate model output provided in the <candidate model output></candidate model output> 
+tags based on whether it matches the ground truth answer provided in the <ground_truth></ground_truth> xml tags.
 
-Refer to the question below in the <context></context> xml tags. carefully read the context:
-<context>
-{context}
-</context>
-
-Refer to the candidate model response to be evaluated in the <candidate model output></candidate model output> tags:
+Refer to the candidate model response to be evaluated in the <candidate model output></candidate model output> tags below:
 <candidate model output>
 {answer}
 </candidate model output> 
 
-Refer to the ground truth below in the <ground_truth></ground_truth> xml tags:
+Refer to the ground truth below in the <ground_truth></ground_truth> xml tags while evaluating the candidate model output:
 <ground_truth>
 {ground_truth}
 </ground_truth> 

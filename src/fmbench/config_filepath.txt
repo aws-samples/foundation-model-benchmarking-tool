@@ -1,1 +1,1 @@
-configs/bedrock/config-bedrock-latest-models-OpenOrca.yml
+configs/bedrock/config-bedrock-llama3-streaming.yml
