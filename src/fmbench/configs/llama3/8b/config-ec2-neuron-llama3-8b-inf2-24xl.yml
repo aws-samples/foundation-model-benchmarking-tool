@@ -78,8 +78,8 @@ run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: no
   2_deploy_model.ipynb: yes
-  3_run_inference.ipynb: yes
-  4_model_metric_analysis.ipynb: yes
+  3_run_inference.ipynb: no
+  4_model_metric_analysis.ipynb: no
   5_cleanup.ipynb: no
 
 datasets:
@@ -170,9 +170,12 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
+    prefix: "lmi"
     model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "llama3-8b-instruct"
+    model_id_wo_repo: "Meta-Llama-3-8B-Instruct"
+    model_id_wo_repo_split: "Meta-Llama-3-8B-Instruct-split"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: "ml.inf2.24xlarge"
@@ -197,7 +200,7 @@ experiments:
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
+      option.model_id=s3://{write_bucket}/lmi/Meta-Llama-3-8B-Instruct/Meta-Llama-3-8B-Instruct-split/
       option.load_split_model=True
       option.tensor_parallel_degree=8
       option.n_positions=4096
