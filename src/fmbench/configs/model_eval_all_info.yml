@@ -13,7 +13,7 @@ model_evaluations:
     # Set this variable to yes if you want to make partial correct/incorrect decisions based
     # on quantitative metrics like cosine similarity, levenshtein score and token set ratio. Set
     # this to yes only if you have a very direct QnA use case
-    use_quantitative_metrics: no
+    use_quantitative_metrics: yes
   
   model_eval_dir:
     # This is the directory in S3 and locally where all the evaluation instructions are stored for 
