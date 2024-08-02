@@ -1,7 +1,7 @@
 <|begin_of_text|><|start_header_id|>user<|end_header_id|>
 
 You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. 
-The context may contain multiple question answer pairs as an example, just answer the final question provided after the context.
+The context may contain multiple question answer pairs as an example. Only answer the final question provided in the question section below.
 If you dont know the answer just say that you dont know. Use three sentences maximum and keep the answer concise. 
 
 ```
@@ -9,5 +9,7 @@ If you dont know the answer just say that you dont know. Use three sentences max
 ```
 
 Question: {input} 
+
+Analyze the question carefully, and answer the question accurately with only the required information from the context. There can be multiple question answer pairs in the context. Answer the final question in the question section above after the context.
 
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>

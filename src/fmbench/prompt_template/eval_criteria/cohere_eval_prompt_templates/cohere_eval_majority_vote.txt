@@ -1,5 +1,9 @@
 Your role is to evaluate the correctness of the candidate model output provided in the candidate model output section
-based on whether it matches the ground truth answer provided in the ground_truth section.
+based on whether it aligns with the ground truth answer provided in the ground truth section in answering the 
+question in the question section.
+
+Refer to the question that you have to use while evaluating the correctness of the candidate model response in alignment to the ground truth:
+Question: {question}
 
 Refer to the candidate model response to be evaluated below:
 candidate model response: {answer}

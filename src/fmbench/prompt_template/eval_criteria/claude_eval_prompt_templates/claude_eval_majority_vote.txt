@@ -1,5 +1,11 @@
 Human: Your role is to evaluate the correctness of the candidate model output provided in the <candidate model output></candidate model output> 
-tags based on whether it matches the ground truth answer provided in the <ground_truth></ground_truth> xml tags.
+tags based on whether it aligns with the ground truth answer provided in the <ground_truth></ground_truth> xml tags in answering the 
+question in the <question></question> xml tags.
+
+Refer to the question that you have to use while evaluating the correctness of the candidate model response in alignment to the ground truth:
+<question>
+{question}
+</question> 
 
 Refer to the candidate model response to be evaluated in the <candidate model output></candidate model output> tags below:
 <candidate model output>

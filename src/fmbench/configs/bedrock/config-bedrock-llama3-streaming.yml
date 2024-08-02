@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-bedrock-llama3-stream-responses"      
+  name: "fmbench-bedrock-llama3-stream-eval-responses"      
   model_name: "Llama3 on Bedrock"
   
 # AWS and SageMaker settings
@@ -87,6 +87,7 @@ datasets:
   - input
   - context
   ground_truth_col_key: answers
+  question_col_key: input
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
