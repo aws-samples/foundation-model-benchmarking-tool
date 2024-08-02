@@ -1,0 +1,172 @@
+general:
+  name: "Llama2-7b-g4dn-g5"
+  model_name: "Llama2-7b"
+ 
+aws:
+  region: {region}
+  sagemaker_execution_role: {role_arn}
+  bucket: {write_bucket}
+
+dir_paths:
+    data_prefix: data
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics
+    models_dir: models
+    metadata_dir: metadata
+
+s3_read_data:
+    read_bucket: {read_bucket}
+    scripts_prefix: scripts
+    script_files:
+    - hf_token.txt
+    configs_prefix: configs
+    config_files:
+    - pricing.yml
+    source_data_prefix: source_data
+    source_data_files:
+    - 2wikimqa_e.jsonl
+    - 2wikimqa.jsonl
+    - hotpotqa_e.jsonl
+    - hotpotqa.jsonl
+    - narrativeqa.jsonl
+    - triviaqa_e.jsonl
+    - triviaqa.jsonl
+    tokenizer_prefix: tokenizer
+    prompt_template_dir: prompt_template
+    prompt_template_file: prompt_template_llama2.txt
+
+## section that enables container to run notebooks and python scripts automatically 
+run_steps:
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: yes
+    3_run_inference.ipynb: yes
+    4_model_metric_analysis.ipynb: yes
+    5_cleanup.ipynb: yes
+
+datasets:
+  prompt_template_keys:
+  - input
+  - context
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
+metrics:
+  dataset_of_interest: en_3000-3840
+  
+pricing: pricing.yml
+  
+inference_parameters:
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
+
+experiments:
+  - name: llama2-7b-g5.xlarge-huggingface-pytorch-tgi-inference-2.0.1-tgi1.1.0
+    model_id: meta-textgeneration-llama-2-7b-f
+    model_version: "3.*"
+    model_name: llama2-7b-f
+    ep_name: llama-2-7b-g512xlarge
+    instance_type: "ml.g5.12xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 5
+    - 10
+
+    accept_eula: true
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "3600"
+      MODEL_CACHE_ROOT: "/opt/ml/model"
+      SAGEMAKER_ENV: "1"
+      HF_MODEL_ID: "/opt/ml/model"
+      MAX_INPUT_LENGTH: "4095"
+      MAX_TOTAL_TOKENS: "4096"
+      SM_NUM_GPUS: "4"
+      SAGEMAKER_MODEL_SERVER_WORKERS: "1"
+  - name: Llama2-7b-g4dn-djl-inference-0.26.0-deepspeed0.12.6-cu121
+    model_id: meta-llama/Llama-2-7b-hf
+    model_version: "*"
+    model_name: Llama-2-7b-hf
+    ep_name: Llama-2-7b-hf-g4dn
+    download_from_hf_place_in_s3: yes
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-2-7b-hf
+    instance_type: "ml.g4dn.12xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
+    deploy: yes
+    instance_count: 1
+    deployment_script: deploy_w_djl_serving.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
+    serving.properties: |
+      engine=Python
+      option.tensor_parallel_degree=4
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-2-7b-hf
+      option.max_rolling_batch_size=64
+      option.rolling_batch=vllm
+      option.dtype=fp16
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 5
+    - 10
+
+    accept_eula: true
+    env:
+
+report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025
+  latency_vs_token_len_chart: 
+    y_ticks:
+    title: "Effect of token length on inference latency for \"meta-llama/Llama-2-70b-hf\""

@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="website/img/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.31">
     
     
       
@@ -78,11 +78,6 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
-      
-        
-        <a href="#config-files" class="md-skip">
-          Skip to content
-        </a>
       
     </div>
     <div data-md-component="announce">
@@ -615,8 +610,6 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
-        
-      
       
       <a href="manifest.html" class="md-nav__link md-nav__link--active">
         
@@ -1014,8 +1007,6 @@
   
   
   
-    
-  
   
 </nav>
                   </div>
@@ -1033,93 +1024,91 @@
   
 
 
-<h1 id="config-files">Config files<a class="headerlink" href="#config-files" title="Permanent link">&para;</a></h1>
-<p>The following listing provides names and paths of all the configuration files currently available out of the box with <code>FMBench</code>. You can find these files in the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs">configs</a> directory in the <code>FMBench</code> GitHub repo. Use these files as=is or to create your own custom configuration files.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>configs
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├──<span class="w"> </span>bedrock
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock-claude.yml
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock-llama3-streaming.yml
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock-llama3.yml
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock-titan-text-express.yml
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│<span class="w">   </span>└──<span class="w"> </span>config-bedrock.yml
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├──<span class="w"> </span>bert
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│<span class="w">   </span>└──<span class="w"> </span>config-distilbert-base-uncased.yml
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>├──<span class="w"> </span>byoe
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>│<span class="w">   </span>└──<span class="w"> </span>config-model-byo-sagemaker-endpoint.yml
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├──<span class="w"> </span>eks_manifests
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>│<span class="w">   </span>├──<span class="w"> </span>llama3-ray-service.yaml
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>│<span class="w">   </span>└──<span class="w"> </span>mistral-ray-service.yaml
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>├──<span class="w"> </span>gemma
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>│<span class="w">   </span>└──<span class="w"> </span>config-gemma-2b-g5.yml
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>├──<span class="w"> </span>llama2
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>│<span class="w">   </span>├──<span class="w"> </span>13b
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock-sagemaker-llama2.yml
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-byo-rest-ep-llama2-13b.yml
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-llama2-13b-inf2-g5-p4d.yml
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>config-llama2-13b-inf2-g5.yml
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>│<span class="w">   </span>├──<span class="w"> </span>70b
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-ec2-llama2-70b.yml
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-llama2-70b-g5-p4d-tgi.yml
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-llama2-70b-g5-p4d-trt.yml
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>config-llama2-70b-inf2-g5.yml
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>│<span class="w">   </span>└──<span class="w"> </span>7b
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama2-7b-byo-sagemaker-endpoint.yml
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama2-7b-g4dn-g5-trt.yml
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama2-7b-g5-no-s3-quick.yml
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama2-7b-g5-quick.yml
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a>│<span class="w">       </span>└──<span class="w"> </span>config-llama2-7b-inf2-g5.yml
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a>├──<span class="w"> </span>llama3
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>│<span class="w">   </span>├──<span class="w"> </span>70b
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-bedrock.yml<span class="w"> </span>-&gt;<span class="w"> </span>../../bedrock/config-bedrock.yml
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-ec2-llama3-70b-instruct.yml
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-llama3-70b-instruct-g5-48xl.yml
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>│<span class="w">   </span>│<span class="w">   </span>├──<span class="w"> </span>config-llama3-70b-instruct-g5-p4d.yml
-</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a>│<span class="w">   </span>│<span class="w">   </span>└──<span class="w"> </span>config-llama3-70b-instruct-p4d.yml
-</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>│<span class="w">   </span>└──<span class="w"> </span>8b
-</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a>│<span class="w">       </span>├──<span class="w"> </span>config-bedrock.yml
-</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a>│<span class="w">       </span>├──<span class="w"> </span>config-ec2-llama3-8b-inf2-48xl.yml
-</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a>│<span class="w">       </span>├──<span class="w"> </span>config-ec2-llama3-8b.yml
-</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-eks-inf2.yml
-</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-g5-streaming.yml
-</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-inf2-24xl-tp<span class="o">=</span><span class="m">8</span>-bs<span class="o">=</span><span class="m">4</span>-byoe.yml
-</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-inf2-48xl-tp<span class="o">=</span><span class="m">8</span>-bs<span class="o">=</span><span class="m">4</span>-byoe.yml
-</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-inf2-g5-byoe-w-openorca.yml
-</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-inf2-g5.yml
-</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-all.yml
-</span><span id="__span-0-52"><a id="__codelineno-0-52" name="__codelineno-0-52" href="#__codelineno-0-52"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-12xl-4-instances.yml
-</span><span id="__span-0-53"><a id="__codelineno-0-53" name="__codelineno-0-53" href="#__codelineno-0-53"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-12xl.yml
-</span><span id="__span-0-54"><a id="__codelineno-0-54" name="__codelineno-0-54" href="#__codelineno-0-54"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-24xl.yml
-</span><span id="__span-0-55"><a id="__codelineno-0-55" name="__codelineno-0-55" href="#__codelineno-0-55"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-2xl.yml
-</span><span id="__span-0-56"><a id="__codelineno-0-56" name="__codelineno-0-56" href="#__codelineno-0-56"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-48xl.yml
-</span><span id="__span-0-57"><a id="__codelineno-0-57" name="__codelineno-0-57" href="#__codelineno-0-57"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g5-p4d.yml
-</span><span id="__span-0-58"><a id="__codelineno-0-58" name="__codelineno-0-58" href="#__codelineno-0-58"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g6-12xl.yml
-</span><span id="__span-0-59"><a id="__codelineno-0-59" name="__codelineno-0-59" href="#__codelineno-0-59"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g6-24xl.yml
-</span><span id="__span-0-60"><a id="__codelineno-0-60" name="__codelineno-0-60" href="#__codelineno-0-60"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-g6-48xl.yml
-</span><span id="__span-0-61"><a id="__codelineno-0-61" name="__codelineno-0-61" href="#__codelineno-0-61"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-p4d-djl-lmi-dist.yml
-</span><span id="__span-0-62"><a id="__codelineno-0-62" name="__codelineno-0-62" href="#__codelineno-0-62"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-p4d-djl-vllm.yml
-</span><span id="__span-0-63"><a id="__codelineno-0-63" name="__codelineno-0-63" href="#__codelineno-0-63"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-instruct-p5-djl-lmi-dist.yml
-</span><span id="__span-0-64"><a id="__codelineno-0-64" name="__codelineno-0-64" href="#__codelineno-0-64"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-trn1-32xl-tp<span class="o">=</span><span class="m">16</span>-bs<span class="o">=</span><span class="m">4</span>-byoe.yml
-</span><span id="__span-0-65"><a id="__codelineno-0-65" name="__codelineno-0-65" href="#__codelineno-0-65"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-trn1-32xl-tp<span class="o">=</span><span class="m">8</span>-bs<span class="o">=</span><span class="m">4</span>-byoe.yml
-</span><span id="__span-0-66"><a id="__codelineno-0-66" name="__codelineno-0-66" href="#__codelineno-0-66"></a>│<span class="w">       </span>├──<span class="w"> </span>config-llama3-8b-trn1.yml
-</span><span id="__span-0-67"><a id="__codelineno-0-67" name="__codelineno-0-67" href="#__codelineno-0-67"></a>│<span class="w">       </span>├──<span class="w"> </span>llama3-8b-inf2-24xl-byoe-g5-12xl.yml
-</span><span id="__span-0-68"><a id="__codelineno-0-68" name="__codelineno-0-68" href="#__codelineno-0-68"></a>│<span class="w">       </span>├──<span class="w"> </span>llama3-8b-inf2-48xl-byoe-g5-24xl.yml
-</span><span id="__span-0-69"><a id="__codelineno-0-69" name="__codelineno-0-69" href="#__codelineno-0-69"></a>│<span class="w">       </span>└──<span class="w"> </span>llama3-8b-trn1-32xl-byoe-g5-24xl.yml
-</span><span id="__span-0-70"><a id="__codelineno-0-70" name="__codelineno-0-70" href="#__codelineno-0-70"></a>├──<span class="w"> </span>mistral
-</span><span id="__span-0-71"><a id="__codelineno-0-71" name="__codelineno-0-71" href="#__codelineno-0-71"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-7b-eks-inf2.yml
-</span><span id="__span-0-72"><a id="__codelineno-0-72" name="__codelineno-0-72" href="#__codelineno-0-72"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-7b-tgi-g5.yml
-</span><span id="__span-0-73"><a id="__codelineno-0-73" name="__codelineno-0-73" href="#__codelineno-0-73"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-AWQ-p4d.yml
-</span><span id="__span-0-74"><a id="__codelineno-0-74" name="__codelineno-0-74" href="#__codelineno-0-74"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-AWQ-p5-byo-ep.yml
-</span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75" href="#__codelineno-0-75"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-AWQ-p5.yml
-</span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76" href="#__codelineno-0-76"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-p4d.yml
-</span><span id="__span-0-77"><a id="__codelineno-0-77" name="__codelineno-0-77" href="#__codelineno-0-77"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-v1-p5-trtllm.yml
-</span><span id="__span-0-78"><a id="__codelineno-0-78" name="__codelineno-0-78" href="#__codelineno-0-78"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-v2-p4d-lmi-dist.yml
-</span><span id="__span-0-79"><a id="__codelineno-0-79" name="__codelineno-0-79" href="#__codelineno-0-79"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-v2-p4d-trtllm.yml
-</span><span id="__span-0-80"><a id="__codelineno-0-80" name="__codelineno-0-80" href="#__codelineno-0-80"></a>│<span class="w">   </span>├──<span class="w"> </span>config-mistral-instruct-v2-p5-lmi-dist.yml
-</span><span id="__span-0-81"><a id="__codelineno-0-81" name="__codelineno-0-81" href="#__codelineno-0-81"></a>│<span class="w">   </span>└──<span class="w"> </span>config-mistral-instruct-v2-p5-trtllm.yml
-</span><span id="__span-0-82"><a id="__codelineno-0-82" name="__codelineno-0-82" href="#__codelineno-0-82"></a>├──<span class="w"> </span>phi
-</span><span id="__span-0-83"><a id="__codelineno-0-83" name="__codelineno-0-83" href="#__codelineno-0-83"></a>│<span class="w">   </span>└──<span class="w"> </span>config-phi-3-g5.yml
-</span><span id="__span-0-84"><a id="__codelineno-0-84" name="__codelineno-0-84" href="#__codelineno-0-84"></a>└──<span class="w"> </span>pricing.yml
-</span></code></pre></div>
+  <h1>Files</h1>
+
+<p><a href="configs/bedrock">bedrock</a><br />
+<a href="configs/bedrock/config-bedrock-claude.yml">├── bedrock/config-bedrock-claude.yml</a><br />
+<a href="configs/bedrock/config-bedrock-llama3-streaming.yml">├── bedrock/config-bedrock-llama3-streaming.yml</a><br />
+<a href="configs/bedrock/config-bedrock-llama3.yml">├── bedrock/config-bedrock-llama3.yml</a><br />
+<a href="configs/bedrock/config-bedrock-titan-text-express.yml">├── bedrock/config-bedrock-titan-text-express.yml</a><br />
+<a href="configs/bedrock/config-bedrock.yml">└── bedrock/config-bedrock.yml</a><br />
+<a href="configs/bert">bert</a><br />
+<a href="configs/bert/config-distilbert-base-uncased.yml">└── bert/config-distilbert-base-uncased.yml</a><br />
+<a href="configs/byoe">byoe</a><br />
+<a href="configs/byoe/config-model-byo-sagemaker-endpoint.yml">└── byoe/config-model-byo-sagemaker-endpoint.yml</a><br />
+<a href="configs/eks_manifests">eks_manifests</a><br />
+<a href="configs/eks_manifests/llama3-ray-service.yaml">├── eks_manifests/llama3-ray-service.yaml</a><br />
+<a href="configs/eks_manifests/mistral-ray-service.yaml">└── eks_manifests/mistral-ray-service.yaml</a><br />
+<a href="configs/gemma">gemma</a><br />
+<a href="configs/gemma/config-gemma-2b-g5.yml">└── gemma/config-gemma-2b-g5.yml</a><br />
+<a href="configs/llama2">llama2</a><br />
+<a href="configs/llama2/13b">├── llama2/13b</a><br />
+<a href="configs/llama2/13b/config-bedrock-sagemaker-llama2.yml">│   ├── llama2/13b/config-bedrock-sagemaker-llama2.yml</a><br />
+<a href="configs/llama2/13b/config-byo-rest-ep-llama2-13b.yml">│   ├── llama2/13b/config-byo-rest-ep-llama2-13b.yml</a><br />
+<a href="configs/llama2/13b/config-llama2-13b-inf2-g5-p4d.yml">│   ├── llama2/13b/config-llama2-13b-inf2-g5-p4d.yml</a><br />
+<a href="configs/llama2/13b/config-llama2-13b-inf2-g5.yml">│   └── llama2/13b/config-llama2-13b-inf2-g5.yml</a><br />
+<a href="configs/llama2/70b">├── llama2/70b</a><br />
+<a href="configs/llama2/70b/config-ec2-llama2-70b.yml">│   ├── llama2/70b/config-ec2-llama2-70b.yml</a><br />
+<a href="configs/llama2/70b/config-llama2-70b-g5-p4d-tgi.yml">│   ├── llama2/70b/config-llama2-70b-g5-p4d-tgi.yml</a><br />
+<a href="configs/llama2/70b/config-llama2-70b-g5-p4d-trt.yml">│   ├── llama2/70b/config-llama2-70b-g5-p4d-trt.yml</a><br />
+<a href="configs/llama2/70b/config-llama2-70b-inf2-g5.yml">│   └── llama2/70b/config-llama2-70b-inf2-g5.yml</a><br />
+<a href="configs/llama2/7b">└── llama2/7b</a><br />
+<a href="configs/llama2/7b/config-llama2-7b-byo-sagemaker-endpoint.yml">├── llama2/7b/config-llama2-7b-byo-sagemaker-endpoint.yml</a><br />
+<a href="configs/llama2/7b/config-llama2-7b-g4dn-g5-trt.yml">├── llama2/7b/config-llama2-7b-g4dn-g5-trt.yml</a><br />
+<a href="configs/llama2/7b/config-llama2-7b-g5-no-s3-quick.yml">├── llama2/7b/config-llama2-7b-g5-no-s3-quick.yml</a><br />
+<a href="configs/llama2/7b/config-llama2-7b-g5-quick.yml">├── llama2/7b/config-llama2-7b-g5-quick.yml</a><br />
+<a href="configs/llama2/7b/config-llama2-7b-inf2-g5.yml">└── llama2/7b/config-llama2-7b-inf2-g5.yml</a><br />
+<a href="configs/llama3">llama3</a><br />
+<a href="configs/llama3/70b">├── llama3/70b</a><br />
+<a href="configs/llama3/70b/config-bedrock.yml -&gt; ../../bedrock/config-bedrock.yml">│   ├── llama3/70b/config-bedrock.yml -&gt; ../../bedrock/config-bedrock.yml</a><br />
+<a href="configs/llama3/70b/config-ec2-llama3-70b-instruct.yml">│   ├── llama3/70b/config-ec2-llama3-70b-instruct.yml</a><br />
+<a href="configs/llama3/70b/config-llama3-70b-instruct-g5-48xl.yml">│   ├── llama3/70b/config-llama3-70b-instruct-g5-48xl.yml</a><br />
+<a href="configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml">│   ├── llama3/70b/config-llama3-70b-instruct-g5-p4d.yml</a><br />
+<a href="configs/llama3/70b/config-llama3-70b-instruct-p4d.yml">│   └── llama3/70b/config-llama3-70b-instruct-p4d.yml</a><br />
+<a href="configs/llama3/8b">└── llama3/8b</a><br />
+<a href="configs/llama3/8b/config-bedrock.yml">├── llama3/8b/config-bedrock.yml</a><br />
+<a href="configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml">├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml</a><br />
+<a href="configs/llama3/8b/config-ec2-llama3-8b.yml">├── llama3/8b/config-ec2-llama3-8b.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-eks-inf2.yml">├── llama3/8b/config-llama3-8b-eks-inf2.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-g5-streaming.yml">├── llama3/8b/config-llama3-8b-g5-streaming.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-inf2-24xl-tp%3D8-bs%3D4-byoe.yml">├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-inf2-48xl-tp%3D8-bs%3D4-byoe.yml">├── llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml">├── llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-inf2-g5.yml">├── llama3/8b/config-llama3-8b-inf2-g5.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-all.yml">├── llama3/8b/config-llama3-8b-instruct-all.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-12xl-4-instances.yml">├── llama3/8b/config-llama3-8b-instruct-g5-12xl-4-instances.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-12xl.yml">├── llama3/8b/config-llama3-8b-instruct-g5-12xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-24xl.yml">├── llama3/8b/config-llama3-8b-instruct-g5-24xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-2xl.yml">├── llama3/8b/config-llama3-8b-instruct-g5-2xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-48xl.yml">├── llama3/8b/config-llama3-8b-instruct-g5-48xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g5-p4d.yml">├── llama3/8b/config-llama3-8b-instruct-g5-p4d.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g6-12xl.yml">├── llama3/8b/config-llama3-8b-instruct-g6-12xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g6-24xl.yml">├── llama3/8b/config-llama3-8b-instruct-g6-24xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-g6-48xl.yml">├── llama3/8b/config-llama3-8b-instruct-g6-48xl.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-lmi-dist.yml">├── llama3/8b/config-llama3-8b-instruct-p4d-djl-lmi-dist.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-vllm.yml">├── llama3/8b/config-llama3-8b-instruct-p4d-djl-vllm.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-instruct-p5-djl-lmi-dist.yml">├── llama3/8b/config-llama3-8b-instruct-p5-djl-lmi-dist.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-trn1-32xl-tp%3D16-bs%3D4-byoe.yml">├── llama3/8b/config-llama3-8b-trn1-32xl-tp=16-bs=4-byoe.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-trn1-32xl-tp%3D8-bs%3D4-byoe.yml">├── llama3/8b/config-llama3-8b-trn1-32xl-tp=8-bs=4-byoe.yml</a><br />
+<a href="configs/llama3/8b/config-llama3-8b-trn1.yml">├── llama3/8b/config-llama3-8b-trn1.yml</a><br />
+<a href="configs/llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml">├── llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml</a><br />
+<a href="configs/llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml">├── llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml</a><br />
+<a href="configs/llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml">└── llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml</a><br />
+<a href="configs/mistral">mistral</a><br />
+<a href="configs/mistral/config-mistral-7b-eks-inf2.yml">├── mistral/config-mistral-7b-eks-inf2.yml</a><br />
+<a href="configs/mistral/config-mistral-7b-tgi-g5.yml">├── mistral/config-mistral-7b-tgi-g5.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-AWQ-p4d.yml">├── mistral/config-mistral-instruct-AWQ-p4d.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-AWQ-p5-byo-ep.yml">├── mistral/config-mistral-instruct-AWQ-p5-byo-ep.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-AWQ-p5.yml">├── mistral/config-mistral-instruct-AWQ-p5.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-p4d.yml">├── mistral/config-mistral-instruct-p4d.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-v1-p5-trtllm.yml">├── mistral/config-mistral-instruct-v1-p5-trtllm.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-v2-p4d-lmi-dist.yml">├── mistral/config-mistral-instruct-v2-p4d-lmi-dist.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-v2-p4d-trtllm.yml">├── mistral/config-mistral-instruct-v2-p4d-trtllm.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-v2-p5-lmi-dist.yml">├── mistral/config-mistral-instruct-v2-p5-lmi-dist.yml</a><br />
+<a href="configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml">└── mistral/config-mistral-instruct-v2-p5-trtllm.yml</a><br />
+<a href="configs/phi">phi</a><br />
+<a href="configs/phi/config-phi-3-g5.yml">└── phi/config-phi-3-g5.yml</a><br />
+<a href="configs/pricing.yml">pricing.yml</a>  </p>
 
 
 
