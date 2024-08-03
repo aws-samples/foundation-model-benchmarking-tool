@@ -17,7 +17,10 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Global constant for the Hugging Face token file
-HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
+SCRIPT_DIRECTORY: str = os.path.dirname(os.path.realpath(__file__))
+HF_TOKEN_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "hf_token.txt")
+neuron_script_dir: str = os.path.join(SCRIPT_DIRECTORY, "compile-llm-for-aws-silicon")
+shell_script_path: str = os.path.join(neuron_script_dir, "scripts/download_compile_deploy.sh")
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
@@ -33,10 +36,10 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         num_neuron_cores = experiment_config['ec2']['num_neuron_cores']
         neuron_version = experiment_config['ec2']['neuron_version']
         model_loading_timeout = experiment_config['ec2']['model_loading_timeout']
+        prefix = experiment_config['prefix']
         serving_properties = experiment_config['serving.properties']
         s3_bucket = experiment_config['bucket']
         role = experiment_config['sagemaker_execution_role']
-        script_path = "./src/fmbench/scripts/compile-llm-for-aws-silicon"
         logger.info("Model ID: %s", model_id)
         logger.info("Region: %s", region)
         logger.info("Instance Type: %s", ml_instance_type)
@@ -45,8 +48,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("Neuron Version: %s", neuron_version)
         logger.info("S3 Bucket: %s", s3_bucket)
         logger.info("Role ARN: %s", role)
-        logger.info("Script Path: %s", script_path)
-        logger.info("IN 1")
+        logger.info("Script Path: %s", neuron_script_dir)
         hf_token_file_path = Path(HF_TOKEN_FNAME)
         if hf_token_file_path.is_file() is True:
             logger.info(f"hf_token file path: {hf_token_file_path} is a file")
@@ -56,26 +58,23 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("HF Token is: %s", HF_TOKEN)
 
     except KeyError as e:
-        logger.info("in 2")
         logger.error("Missing key in experiment_config: %s", e)
         raise
     except FileNotFoundError as e:
-        logger.info("in 3")
         logger.error("File not found: %s", e)
         raise
     except Exception as e:
-        logger.info(" in 4\n")
         logger.error("Error reading configuration: %s", e)
         raise
 
     command = [
-        "./src/fmbench/scripts/compile-llm-for-aws-silicon/scripts/download_compile_deploy.sh",
+        shell_script_path,
         HF_TOKEN,
         model_id,
         neuron_version,
         "model_store",
         s3_bucket,
-        "lmi",
+        prefix,
         region,
         role,
         batch_size,
@@ -83,7 +82,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         ml_instance_type,
         model_loading_timeout,
         serving_properties,
-        script_path
+        neuron_script_dir
     ]
     
     logger.info("Constructed command: %s", command)
@@ -99,7 +98,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     try:
         with open('scripts.log', 'a') as log_file:
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            logger.info("5\n")
             log_file.write("Standard Output:\n")
             log_file.write(result.stdout)
             log_file.write("\nStandard Error:\n")
@@ -112,8 +110,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             
             try:
                 # Read the endpoint name from the endpoint.txt file
-                logger.info("6\n")
-                endpoint_file_path = os.path.join(script_path, "endpoint.txt")
+                endpoint_file_path = os.path.join(neuron_script_dir, "endpoint.txt")
                 ep_name = Path(endpoint_file_path).read_text().strip()
                 logger.info("Endpoint is: %s", ep_name)
                 if ep_name:

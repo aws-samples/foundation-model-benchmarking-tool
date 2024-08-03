@@ -76,11 +76,11 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -144,16 +144,13 @@ pricing: pricing.yml
 # section, bedrock parameters in the bedrock section (not shown here).
 # Use the section name (sagemaker in this example) in the inference_spec.parameter_set
 # section under experiments.
-inference_parameters: 
-  ec2_djl:
-    do_sample: yes
-    temperature: 0.1
-    top_p: 0.92
-    top_k: 120  
+inference_parameters:
+  sagemaker:
     max_new_tokens: 100
-    Content-type: application/json
-    return_full_text: False
-
+    top_p: 0.92
+    temperature: 0.1
+    details: True
+    #stop: '<|eot_id|>'
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
@@ -170,12 +167,15 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
+    prefix: "lmi"
     model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "llama3-8b-instruct"
+    model_id_wo_repo: "Meta-Llama-3-8B-Instruct"
+    model_id_wo_repo_split: "Meta-Llama-3-8B-Instruct-split"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "ml.inf2.24xlarge"
+    instance_type: "ml.inf2.48xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -183,21 +183,21 @@ experiments:
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-8b-instruct deployed on ec2
-    inference_script: ec2_djl_predictor.py
+    inference_script: sagemaker_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
       batch_size: "4"
       num_neuron_cores: "8"
       neuron_version: "2.18"
-      model_loading_timeout: 2400
+      model_loading_timeout: "2400"
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
-      parameter_set: ec2_djl
+      parameter_set: sagemaker
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
+      option.model_id=s3://{write_bucket}/lmi/Meta-Llama-3-8B-Instruct/Meta-Llama-3-8B-Instruct-split/
       option.load_split_model=True
       option.tensor_parallel_degree=8
       option.n_positions=4096
@@ -213,17 +213,17 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    #- payload_en_3000-3840.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
     - 2
-    #- 4
-    #- 6
-    #- 8
-    #- 10 
+    - 4
+    - 6
+    - 8
+    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
