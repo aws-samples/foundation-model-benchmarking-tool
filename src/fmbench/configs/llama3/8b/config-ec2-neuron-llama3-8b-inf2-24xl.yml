@@ -144,16 +144,13 @@ pricing: pricing.yml
 # section, bedrock parameters in the bedrock section (not shown here).
 # Use the section name (sagemaker in this example) in the inference_spec.parameter_set
 # section under experiments.
-inference_parameters: 
-  ec2_djl:
-    do_sample: yes
-    temperature: 0.1
-    top_p: 0.92
-    top_k: 120  
+inference_parameters:
+  sagemaker:
     max_new_tokens: 100
-    Content-type: application/json
-    return_full_text: False
-
+    top_p: 0.92
+    temperature: 0.1
+    details: True
+    #stop: '<|eot_id|>'
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
@@ -195,7 +192,7 @@ experiments:
       model_loading_timeout: "2400"
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
-      parameter_set: ec2_djl
+      parameter_set: sagemaker
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
@@ -216,17 +213,17 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    #- payload_en_3000-3840.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
     - 2
-    #- 4
-    #- 6
-    #- 8
-    #- 10 
+    - 4
+    - 6
+    - 8
+    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
