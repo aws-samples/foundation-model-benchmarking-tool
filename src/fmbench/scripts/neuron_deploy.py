@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Global constant for the Hugging Face token file
-HF_TOKEN_FNAME = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
+HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
@@ -46,17 +46,25 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("S3 Bucket: %s", s3_bucket)
         logger.info("Role ARN: %s", role)
         logger.info("Script Path: %s", script_path)
-
-        HF_TOKEN = Path(HF_TOKEN_FNAME).read_text().strip()
+        logger.info("IN 1")
+        hf_token_file_path = Path(HF_TOKEN_FNAME)
+        if hf_token_file_path.is_file() is True:
+            logger.info(f"hf_token file path: {hf_token_file_path} is a file")
+            HF_TOKEN = Path(HF_TOKEN_FNAME).read_text().strip()
+        else:
+            logger.info(f"hf_token file path: {hf_token_file_path} is not a file")
         logger.info("HF Token is: %s", HF_TOKEN)
 
     except KeyError as e:
+        logger.info("in 2")
         logger.error("Missing key in experiment_config: %s", e)
         raise
     except FileNotFoundError as e:
+        logger.info("in 3")
         logger.error("File not found: %s", e)
         raise
     except Exception as e:
+        logger.info(" in 4\n")
         logger.error("Error reading configuration: %s", e)
         raise
 
@@ -81,7 +89,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info("Constructed command: %s", command)
 
     deployment_result = {
-        'endpoint_name': None
+        'endpoint_name': None,
         'experiment_name': None,
         'instance_type': None,
         'instance_count': None,
@@ -91,7 +99,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     try:
         with open('scripts.log', 'a') as log_file:
             result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            
+            logger.info("5\n")
             log_file.write("Standard Output:\n")
             log_file.write(result.stdout)
             log_file.write("\nStandard Error:\n")
@@ -104,6 +112,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             
             try:
                 # Read the endpoint name from the endpoint.txt file
+                logger.info("6\n")
                 endpoint_file_path = os.path.join(script_path, "endpoint.txt")
                 ep_name = Path(endpoint_file_path).read_text().strip()
                 logger.info("Endpoint is: %s", ep_name)

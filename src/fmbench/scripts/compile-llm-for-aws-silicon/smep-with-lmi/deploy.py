@@ -6,6 +6,7 @@ import argparse
 import sagemaker
 from sagemaker import Model
 from sagemaker.utils import name_from_base
+from pathlib import Path
 
 root = logging.getLogger()
 if root.handlers:

@@ -30,6 +30,7 @@ echo model_id=$model_id, local_dir=$local_dir, neuron_version=$neuron_version, m
 echo s3_bucket=$s3_bucket, prefix=$prefix, region=$region, role=$role
 echo batch_size=$batch_size, num_neuron_cores=$num_neuron_cores, ml_instance_type=$ml_instance_type
 echo HF_TOKEN=$token
+echo script_path=$script_path
 
 # download the model
 echo going to download model_id=$model_id, local_dir=$local_dir
