@@ -140,11 +140,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   # Experiment for claude 2.1
   - name: anthropic.claude-v2:1
@@ -164,11 +164,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   # Experiment for claude instant
   - name: anthropic.claude-instant-v1
@@ -188,11 +188,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   # Experiment for claude v2
   - name: anthropic.claude-v2
@@ -236,11 +236,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
     
 report:

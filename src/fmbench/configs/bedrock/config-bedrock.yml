@@ -165,11 +165,11 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: amazon.titan-text-express-v1
     model_id: amazon.titan-text-express-v1
@@ -193,11 +193,11 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env: 
   - name: mistral.mistral-7b-instruct-v0:2
     model_id: mistral.mistral-7b-instruct-v0:2
@@ -222,11 +222,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: mistral.mixtral-8x7b-instruct-v0:1
     model_id: mistral.mixtral-8x7b-instruct-v0:1
@@ -250,11 +250,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
     
 
@@ -280,11 +280,11 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: meta.llama2-70b-chat-v1
     model_id: meta.llama2-70b-chat-v1
@@ -308,11 +308,11 @@ experiments:
     # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: meta.llama3-70b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -352,13 +352,11 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
-    # - 12
-    # - 15
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -400,13 +398,11 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
-    # - 12
-    # - 15
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -432,11 +428,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: anthropic.claude-3-haiku-20240307-v1:0
     model_id: anthropic.claude-3-haiku-20240307-v1:0
@@ -460,11 +456,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: cohere.command-text-v14
     model_id: cohere.command-text-v14
@@ -488,11 +484,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: cohere.command-light-text-v14
     model_id: cohere.command-light-text-v14
@@ -516,11 +512,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: ai21.j2-mid-v1
     model_id: ai21.j2-mid-v1
@@ -544,11 +540,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   - name: ai21.j2-ultra-v1
     model_id: ai21.j2-ultra-v1
@@ -572,11 +568,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
     
 report:

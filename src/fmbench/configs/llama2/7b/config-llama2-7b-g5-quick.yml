@@ -199,8 +199,8 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
+    - 2
+    - 4
 
     accept_eula: true
     # Environment variables to be passed to the container
@@ -254,8 +254,8 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
+    - 2
+    - 4
 
     # Added for models that require accepting a EULA
     accept_eula: true
