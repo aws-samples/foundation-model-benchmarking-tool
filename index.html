@@ -434,6 +434,27 @@
   
   
     <li class="md-nav__item">
+      <a href="workflow.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="quickstart.html" class="md-nav__link">
         
   
@@ -607,6 +628,27 @@
   
   <span class="md-ellipsis">
     EC2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="run_as_container.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
   </span>
   
 
@@ -1106,7 +1148,19 @@
 
 
 <h1 id="benchmark-foundation-models-on-aws">Benchmark foundation models on AWS<a class="headerlink" href="#benchmark-foundation-models-on-aws" title="Permanent link">&para;</a></h1>
-<p>The <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main"><code>FMBench</code></a> tool provides a quick and easy way to benchmark any foundtion model (FM) for price and performance on any AWS service including <a href="https://aws.amazon.com/solutions/guidance/generative-ai-deployments-using-amazon-sagemaker-jumpstart/"><code>Amazon SagMaker</code></a>, <a href="https://aws.amazon.com/bedrock/"><code>Amazon Bedrock</code></a> or <code>Amazon EKS</code> or <code>Amazon EC2</code> as <code>Bring your own endpoint</code>.</p>
+<p><code>FMBench</code> is a Python package for running performance benchmarks for <strong>any Foundation Model (FM)</strong> deployed on <strong>any AWS Generative AI service</strong>, be it <strong>Amazon SageMaker</strong>, <strong>Amazon Bedrock</strong>, <strong>Amazon EKS</strong>, or <strong>Amazon EC2</strong>. The FMs could be deployed on these platforms either directly through <code>FMbench</code>, or, if they are already deployed then also they could be benchmarked through the <strong>Bring your own endpoint</strong> mode supported by <code>FMBench</code>. </p>
+<p>Here are some salient features of <code>FMBench</code>:</p>
+<ol>
+<li>
+<p><strong>Highly flexible</strong>: in that it allows for using any combinations of instance types (<code>g5</code>, <code>p4d</code>, <code>p5</code>, <code>Inf2</code>), inference containers (<code>DeepSpeed</code>, <code>TensorRT</code>, <code>HuggingFace TGI</code> and others) and parameters such as tensor parallelism, rolling batch etc. as long as those are supported by the underlying platform. </p>
+</li>
+<li>
+<p><strong>Benchmark any model</strong>: it can be used to be benchmark <em>open-source models</em>, <em>third party models</em>, and <em>proprietary models</em> trained by enterprises on their own data.</p>
+</li>
+<li>
+<p><strong>Run anywhere</strong>: it can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. <em>It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency</em>.</p>
+</li>
+</ol>
 <h2 id="the-need-for-benchmarking">The need for benchmarking<a class="headerlink" href="#the-need-for-benchmarking" title="Permanent link">&para;</a></h2>
 <!-- markdown-link-check-disable -->
 <p>Customers often wonder what is the best AWS service to run FMs for <em>my specific use-case</em> and <em>my specific price performance requirements</em>. While model evaluation metrics are available on several leaderboards (<a href="https://crfm.stanford.edu/helm/lite/latest/#/leaderboard"><code>HELM</code></a>, <a href="https://chat.lmsys.org/?leaderboard"><code>LMSys</code></a>), but the price performance comparison can be notoriously hard to find and even more harder to trust. In such a scenario, we think it is best to be able to run performance benchmarking yourself on either on your own dataset or on a similar (task wise, prompt size wise) open-source datasets such as (<a href="https://huggingface.co/datasets/THUDM/LongBench"><code>LongBench</code></a>, <a href="https://paperswithcode.com/dataset/qmsum"><code>QMSum</code></a>). This is the problem that <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main"><code>FMBench</code></a> solves.</p>
