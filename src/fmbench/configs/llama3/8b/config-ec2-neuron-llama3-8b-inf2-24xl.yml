@@ -120,10 +120,6 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
-  - language: en
-    min_length_in_tokens: 1
-    max_length_in_tokens: 924
-    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -174,7 +170,7 @@ experiments:
     model_id_wo_repo: "Meta-Llama-3-8B-Instruct"
     model_id_wo_repo_split: "Meta-Llama-3-8B-Instruct-split"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://127.0.0.1:8080/invocations' 
+    ep_name:  
     instance_type: "ml.inf2.24xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2
     deploy: yes #setting to yes to run deployment script for ec2
@@ -190,6 +186,7 @@ experiments:
       num_neuron_cores: "8"
       neuron_version: "2.18"
       model_loading_timeout: "2400"
+      instance_count: "1"
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: sagemaker
