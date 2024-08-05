@@ -170,8 +170,8 @@ experiments:
     model_id_wo_repo: "Meta-Llama-3-8B-Instruct"
     model_id_wo_repo_split: "Meta-Llama-3-8B-Instruct-split"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 
-    instance_type: "ml.inf2.24xlarge"
+    ep_name:  
+    instance_type: "ml.inf2.48xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.28.0-neuronx-sdk2.18.2
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -186,6 +186,7 @@ experiments:
       num_neuron_cores: "8"
       neuron_version: "2.18"
       model_loading_timeout: "2400"
+      instance_count: "1"
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: sagemaker
