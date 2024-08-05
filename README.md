@@ -83,9 +83,12 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## Getting started
 
-`FMBench` is available as a Python package on [PyPi](https://pypi.org/project/fmbench) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.
+`FMBench` is available as a Python package on [PyPi](https://pypi.org/project/fmbench) and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket. 
 
-You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both options are described in the [documentation](https://aws-samples.github.io/foundation-model-benchmarking-tool/gettingstarted.html). You can even run `FMBench` as a [Docker container](https://aws-samples.github.io/foundation-model-benchmarking-tool/run_as_container.html) A Quickstart guide for SageMaker is bring provided below as well.
+> [!IMPORTANT]
+> 💡 [All **documentation** for `FMBench` is available on the `FMBench` website](https://aws-samples.github.io/foundation-model-benchmarking-tool/index.html)  
+
+You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both options are described [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/gettingstarted.html) as part of the documentation. You can even run `FMBench` as a [Docker container](https://aws-samples.github.io/foundation-model-benchmarking-tool/run_as_container.html) A Quickstart guide for SageMaker is bring provided below as well.
 
 👉 The following sections are discussing running `FMBench` the tool, as different from where the FM is actually deployed. For example, we could run `FMBench` on EC2 but the model being deployed is on SageMaker or even Bedrock. 
 
