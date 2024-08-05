@@ -54,6 +54,7 @@ nav:
       - index.md
   - Getting started:
       - Main: gettingstarted.md
+      - Workflow: workflow.md
       - SageMaker: quickstart.md      
       - EC2: ec2.md
   - Benchmarking:
@@ -62,6 +63,7 @@ nav:
       - Sagemaker: benchmarking_on_sagemaker.md
       - EKS: benchmarking_on_eks.md
       - EC2: benchmarking_on_ec2.md
+      - Docker: run_as_container.md
   
   - Configs:
       - Files: manifest.md
