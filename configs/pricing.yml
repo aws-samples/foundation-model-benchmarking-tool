@@ -58,11 +58,11 @@ pricing:
       output-per-1k-tokens: 0.01500
     # Titan
     amazon.titan-text-lite-v1: 
-      input-per-1k-tokens: 0.0003
-      output-per-1k-tokens: 0.0004
+      input-per-1k-tokens: 0.00015
+      output-per-1k-tokens: 0.0002
     amazon.titan-text-express-v1: 
-      input-per-1k-tokens: 0.0008
-      output-per-1k-tokens: 0.0016
+      input-per-1k-tokens: 0.0002
+      output-per-1k-tokens: 0.0006
     # Mistral & Mixtral
     mistral.mistral-7b-instruct-v0:2:
       input-per-1k-tokens: 0.00015
@@ -71,8 +71,17 @@ pricing:
       input-per-1k-tokens: 0.00045
       output-per-1k-tokens: 0.0007
     ## Llama
+    meta.llama3-1-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    meta.llama3-1-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama3-1-405b-instruct-v1:0:
+      input-per-1k-tokens: 0.00532
+      output-per-1k-tokens: 0.016
     meta.llama3-8b-instruct-v1:0:
-      input-per-1k-tokens: 0.0004
+      input-per-1k-tokens: 0.0003
       output-per-1k-tokens: 0.0006
     meta.llama3-70b-instruct-v1:0:
       input-per-1k-tokens: 0.00265
