@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-bedrock"      
+  name: "latest-FMs-fmbench-bedrock"      
   model_name: "FMs available in Amazon Bedrock"
   
 # AWS and SageMaker settings
@@ -143,62 +143,6 @@ inference_parameters:
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
-  - name: amazon.titan-text-lite-v1
-    model_id: amazon.titan-text-lite-v1
-    model_version: "*"
-    model_name: amazon.titan-text-lite-v1
-    ep_name: amazon.titan-text-lite-v1
-    instance_type: 'amazon.titan-text-lite-v1'
-    image_uri: 
-    deploy: no 
-    instance_count: 
-    deployment_script:
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      parameter_set: bedrock
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    env:
-  - name: amazon.titan-text-express-v1
-    model_id: amazon.titan-text-express-v1
-    model_version: "*"
-    model_name: amazon.titan-text-express-v1
-    ep_name: amazon.titan-text-express-v1
-    instance_type: amazon.titan-text-express-v1
-    image_uri:
-    deploy: no
-    instance_count:
-    deployment_script:
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      parameter_set: bedrock
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    env: 
   - name: mistral.mistral-7b-instruct-v0:2
     model_id: mistral.mistral-7b-instruct-v0:2
     model_version: "*"
@@ -213,7 +157,6 @@ experiments:
     inference_spec:
       split_input_and_parameters: no
       parameter_set: bedrock
-      stream: True
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -256,74 +199,16 @@ experiments:
     - 8
     - 10
     env:
-    
-
-  - name: meta.llama2-13b-chat-v1
-    model_id: meta.llama2-13b-chat-v1
-    model_version: "*"
-    model_name: meta.llama2-13b-chat-v1
-    ep_name: meta.llama2-13b-chat-v1
-    instance_type: meta.llama2-13b-chat-v1
-    image_uri:
-    deploy: no
-    instance_count:
-    deployment_script:
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      parameter_set: bedrock
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    env:
-  - name: meta.llama2-70b-chat-v1
-    model_id: meta.llama2-70b-chat-v1
-    model_version: "*"
-    model_name: meta.llama2-70b-chat-v1
-    ep_name: meta.llama2-70b-chat-v1
-    instance_type: meta.llama2-70b-chat-v1
-    image_uri:
-    deploy: no
-    instance_count:
-    deployment_script:
-    inference_script: bedrock_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      parameter_set: bedrock
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
-    concurrency_levels:
-    - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
-    env:
-  - name: meta.llama3-70b-instruct-v1:0
+  - name: meta.llama3-1-8b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-70b-instruct-v1:0
+    model_id: meta.llama3-1-8b-instruct-v1:0
     model_version: 
-    model_name: meta.llama3-70b-instruct-v1:0
-    ep_name: meta.llama3-70b-instruct-v1:0
-    instance_type: meta.llama3-70b-instruct-v1:0
+    model_name: meta.llama3-1-8b-instruct-v1:0
+    ep_name: meta.llama3-1-8b-instruct-v1:0
+    instance_type: meta.llama3-1-8b-instruct-v1:0
     image_uri:
     deploy: no
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -338,7 +223,12 @@ experiments:
       split_input_and_parameters: no
       # this should match one of the sections in the inference_parameters section above
       parameter_set: bedrock
-      stream: True
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
       stop_token: "<|eot_id|>"
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -350,6 +240,8 @@ experiments:
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
     - 2
@@ -360,16 +252,16 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-  - name: meta.llama3-8b-instruct-v1:0
+  - name: meta.llama3-1-70b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-8b-instruct-v1:0
+    model_id: meta.llama3-1-70b-instruct-v1:0
     model_version: 
-    model_name: meta.llama3-8b-instruct-v1:0
-    ep_name: meta.llama3-8b-instruct-v1:0
-    instance_type: meta.llama3-8b-instruct-v1:0
+    model_name: meta.llama3-1-70b-instruct-v1:0
+    ep_name: meta.llama3-1-70b-instruct-v1:0
+    instance_type: meta.llama3-1-70b-instruct-v1:0
     image_uri:
     deploy: no
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -384,7 +276,12 @@ experiments:
       split_input_and_parameters: no
       # this should match one of the sections in the inference_parameters section above
       parameter_set: bedrock
-      stream: True
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
       stop_token: "<|eot_id|>"
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -396,6 +293,8 @@ experiments:
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
     - 2
@@ -574,7 +473,7 @@ experiments:
     - 8
     - 10
     env:
-    
+
 report:
   latency_budget: 2
   cosine_similarity_budget: 0.3
