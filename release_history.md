@@ -1,3 +1,8 @@
+### v1.0.48
+1. Faster result file download at the end of a test run.
+1. `Phi-3-mini-4k-instruct` configuration file.
+1. Tokenizer and misc. bug fixes.
+
 ### v1.0.47
 1. Run `FMBench` as a Docker container.
 1. Bug fixes for GovCloud support.

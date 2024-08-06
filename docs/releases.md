@@ -1,5 +1,9 @@
 # Releases
 
+## v1.0.51
+1. `FMBench` has a [website](https://aws-samples.github.io/foundation-model-benchmarking-tool/index.html) now. Rework the README file to make it lightweight.
+1. `Llama3.1` config files for Bedrock.
+
 ## v1.0.50
 1. `Llama3-8b` on Amazon EC2 `inf2.48xlarge` config file.
 1. Update to new version of DJL LMI (0.28.0).

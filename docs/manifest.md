@@ -2,6 +2,9 @@ Here is a listing of the various configuration files available out-of-the-box wi
 
 **bedrock**  
 [├── bedrock/config-bedrock-claude.yml](configs/bedrock/config-bedrock-claude.yml)  
+[├── bedrock/config-bedrock-llama3-1-70b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-70b-streaming.yml)  
+[├── bedrock/config-bedrock-llama3-1-8b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-8b-streaming.yml)  
+[├── bedrock/config-bedrock-llama3-1.yml](configs/bedrock/config-bedrock-llama3-1.yml)  
 [├── bedrock/config-bedrock-llama3-streaming.yml](configs/bedrock/config-bedrock-llama3-streaming.yml)  
 [├── bedrock/config-bedrock-llama3.yml](configs/bedrock/config-bedrock-llama3.yml)  
 [├── bedrock/config-bedrock-titan-text-express.yml](configs/bedrock/config-bedrock-titan-text-express.yml)  
