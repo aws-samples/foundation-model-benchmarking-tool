@@ -162,14 +162,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: mistral.mixtral-8x7b-instruct-v0:1
     model_id: mistral.mixtral-8x7b-instruct-v0:1
@@ -190,14 +190,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: meta.llama3-1-8b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -236,7 +236,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -244,11 +244,11 @@ experiments:
     # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -289,7 +289,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -297,11 +297,11 @@ experiments:
     # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
@@ -324,14 +324,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: anthropic.claude-3-haiku-20240307-v1:0
     model_id: anthropic.claude-3-haiku-20240307-v1:0
@@ -355,11 +355,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: cohere.command-text-v14
     model_id: cohere.command-text-v14
@@ -380,14 +380,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: cohere.command-light-text-v14
     model_id: cohere.command-light-text-v14
@@ -408,14 +408,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: ai21.j2-mid-v1
     model_id: ai21.j2-mid-v1
@@ -436,14 +436,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
   - name: ai21.j2-ultra-v1
     model_id: ai21.j2-ultra-v1
@@ -467,11 +467,11 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
-    - 4
-    - 6
-    - 8
-    - 10
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
 
 report:
