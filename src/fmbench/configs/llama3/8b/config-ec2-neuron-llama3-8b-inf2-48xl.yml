@@ -202,7 +202,7 @@ experiments:
       option.max_rolling_batch_size=8
       option.dtype=fp16
       option.model_loading_timeout=2400
-      option.neuron_optimize_level=3
+      option.neuron_optimize_level=2
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
