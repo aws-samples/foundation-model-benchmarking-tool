@@ -122,7 +122,7 @@ if __name__ == "__main__":
         sys.exit(-1)
 
     model_name = f"{model_id}-{dev}".replace("/", "-")
-    endpoint_name = sagemaker.utils.name_from_base(model_name)
+    endpoint_name = sagemaker.utils.name_from_base(model_name).replace(".", "-")
     logger.info(f"going to deploy model_id={model_id}, endpoint={endpoint_name},\
                   s3_uri={s3_uri}\
                   aws_region={aws_region}\
@@ -178,7 +178,7 @@ if __name__ == "__main__":
         initial_instance_count=1,
         instance_type=instance_type,
         endpoint_name=endpoint_name,
-        # volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
+        volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
         model_data_download_timeout=2400,  # increase the timeout to download large model
         container_startup_health_check_timeout=2400,  # increase the timeout to load large model,
         wait=True,
@@ -188,3 +188,4 @@ if __name__ == "__main__":
     # Write the endpoint name to the endpoint.txt file in the higher directory
     Path(endpoint_file_path).write_text(endpoint_name)
     
+ 

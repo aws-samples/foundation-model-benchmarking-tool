@@ -7,8 +7,8 @@ from transformers_neuronx.module import save_pretrained_split
 from transformers import AutoConfig, AutoModelForCausalLM, AutoTokenizer
 
 MODEL_REPO: str = "meta-llama"
-MODEL_ID: str = "Meta-Llama-3-8B-Instruct"
-NEURON_VER: str = "2.18.1"
+MODEL_ID: str = "Meta-Llama-3-1-70bB-Instruct"
+NEURON_VER: str = "2.18.2"
 
 root = logging.getLogger()
 if root.handlers:
@@ -41,13 +41,17 @@ if __name__ == "__main__":
     logger.info(f"args={args}")
 
     save_path = os.makedirs(args.save_path, exist_ok=True)
+    logger.info(f"Save path defined for the model: {save_path}")
 
     # Load HuggingFace model
+    logger.info(f"Going to load the hugging face model {args.model_name}")
     hf_model = AutoModelForCausalLM.from_pretrained(args.model_name, 
                                                     low_cpu_mem_usage=True)
+    logger.info(f"Successfully loaded the model {args.model_name}")
 
 
     # Save the model
+    logger.info('Going to split and save the model')
     save_pretrained_split(hf_model, args.save_path)
     logger.info('Model splitted and saved locally')
 
