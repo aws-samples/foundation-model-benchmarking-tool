@@ -1,3 +1,10 @@
+"""
+Deploys a model on AWS silicon
+
+1. Configuration is read from the configured serving.properties file.
+2. A hf_token.txt file is required to download the model from Hugging Face.
+"""
+
 # Import necessary libraries
 import os
 import sys
