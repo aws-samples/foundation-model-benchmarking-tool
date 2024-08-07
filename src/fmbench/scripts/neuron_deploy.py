@@ -8,6 +8,7 @@ Deploys a model on AWS silicon
 # Import necessary libraries
 import os
 import sys
+import stat
 import logging
 import subprocess
 from typing import Dict
@@ -23,11 +24,21 @@ HF_TOKEN_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "hf_token.txt")
 neuron_script_dir: str = os.path.join(SCRIPT_DIRECTORY, "compile-llm-for-aws-silicon")
 shell_script_path: str = os.path.join(neuron_script_dir, "scripts/download_compile_deploy.sh")
 
+
+def make_executable(file_path: str) -> None:
+    """Make the script executable if it is not already."""
+    st = os.stat(file_path)
+    os.chmod(file_path, st.st_mode | stat.S_IEXEC)
+    logger.info("Made script executable: %s", file_path)
+
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
     Function to deploy the model and create the endpoint
     """
     logger.info("Inside neuron deploy function")
+
+    # Ensure the script is executable
+    make_executable(shell_script_path)
     
     requirements_file_path = os.path.join(neuron_script_dir, "requirements.txt")
     command = [sys.executable, '-m', 'pip', 'install', '-r', requirements_file_path]
@@ -42,8 +53,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         model_id = experiment_config['model_id']
         region = experiment_config['region']
         ml_instance_type = experiment_config['instance_type']
-        image_uri = experiment_config['image_uri']
         batch_size = experiment_config['ec2']['batch_size']
+        image_uri = experiment_config['image_uri']
         num_neuron_cores = experiment_config['ec2']['num_neuron_cores']
         neuron_version = experiment_config['ec2']['neuron_version']
         model_loading_timeout = experiment_config['ec2']['model_loading_timeout']
@@ -52,7 +63,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         s3_bucket = experiment_config['bucket']
         role = experiment_config['sagemaker_execution_role']
         instance_count = experiment_config['ec2']['instance_count']
-        
 
         logger.info("Model ID: %s", model_id)
         logger.info("Region: %s", region)
@@ -65,7 +75,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("Script Path: %s", neuron_script_dir)
         logger.info("Model Loading Timeout: %s", model_loading_timeout)
         logger.info("Initial Instance Count: %s", instance_count)
-        logger.info("image_uri: %s", image_uri)
         hf_token_file_path = Path(HF_TOKEN_FNAME)
         if hf_token_file_path.is_file() is True:
             logger.info(f"hf_token file path: {hf_token_file_path} is a file")
@@ -84,13 +93,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.error("Error reading configuration: %s", e)
         raise
 
-    # Ensure the shell script is executable
-    try:
-        os.chmod(shell_script_path, 0o755)
-    except Exception as e:
-        logger.error("Failed to set execute permissions on script: %s", shell_script_path)
-        raise
-
+    logger.info(f"Image uri that is being used: {image_uri}")
     command = [
         shell_script_path,
         HF_TOKEN,
@@ -107,7 +110,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         model_loading_timeout,
         serving_properties,
         neuron_script_dir,
-        instance_count,
+        instance_count, 
         image_uri
     ]
     
@@ -123,13 +126,25 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
 
     try:
         with open('scripts.log', 'a') as log_file:
-            result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-            log_file.write("Standard Output:\n")
-            log_file.write(result.stdout)
+            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, bufsize=1, universal_newlines=True)
+    
+            for line in process.stdout:
+                log_file.write(f"Standard Output: {line}")
+                log_file.flush()
+                logger.info("Script output: %s", line.strip())
 
-            logger.info("Script executed successfully: %s", result.stdout)
-            logger.info("going to read endpoint from endpoint.txt")
-
+            for line in process.stderr:
+                log_file.write(f"Standard Error: {line}")
+                log_file.flush()
+                logger.error("Script error: %s", line.strip())
+            return_code = process.wait()
+            
+            if return_code == 0:
+                logger.info("Script executed successfully")
+            else:
+                logger.error("Script failed with return code: %d", return_code)
+            
+            logger.info("Going to read endpoint from endpoint.txt")
             try:
                 # Read the endpoint name from the endpoint.txt file
                 endpoint_file_path = os.path.join(neuron_script_dir, "endpoint.txt")
