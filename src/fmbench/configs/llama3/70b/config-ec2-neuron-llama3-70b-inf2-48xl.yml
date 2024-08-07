@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-8b-inf2.48xl-ec2"      
-  model_name: "llama3-8b-instruct"
+  name: "llama3-70b-inf2.48xl-ec2"      
+  model_name: "llama3-70b-instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -152,7 +152,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "llama3-8b-instruct"
+  - name: "llama3-70b-instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     sagemaker_execution_role: {role_arn}
@@ -164,11 +164,11 @@ experiments:
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
     prefix: "lmi"
-    model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3-70b-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "llama3-8b-instruct"
-    model_id_wo_repo: "Meta-Llama-3-8B-Instruct"
-    model_id_wo_repo_split: "Meta-Llama-3-8B-Instruct-split"
+    model_name: "llama3-70b-instruct"
+    model_id_wo_repo: "Meta-Llama-3-70b-Instruct"
+    model_id_wo_repo_split: "Meta-Llama-3-70b-Instruct-split"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name:  
     instance_type: "ml.inf2.48xlarge"
@@ -194,7 +194,7 @@ experiments:
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=s3://{write_bucket}/lmi/Meta-Llama-3-8B-Instruct/Meta-Llama-3-8B-Instruct-split/
+      option.model_id=s3://{write_bucket}/lmi/Meta-Llama-3-70b-Instruct/Meta-Llama-3-70b-Instruct-split/
       option.load_split_model=True
       option.tensor_parallel_degree=24
       option.n_positions=4096
