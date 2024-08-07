@@ -191,7 +191,7 @@ experiments:
     ec2:
       batch_size: "1"
       num_neuron_cores: "24"
-      neuron_version: "2.18.2"
+      neuron_version: "2.19.1"
       model_loading_timeout: "2400"
       instance_count: "1"
     inference_spec:
