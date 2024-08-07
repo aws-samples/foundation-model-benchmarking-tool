@@ -21,6 +21,7 @@ model_loading_timeout=${12}
 serving_properties=${13}
 script_path=${14}
 instance_count=${15}
+ml_image_uri=${16}
 model_id_wo_repo=`basename $2`
 model_id_wo_repo_split=$model_id_wo_repo-split
 local_dir=neuron_version/$neuron_version/$model_store/$model_id_wo_repo/$model_id_wo_repo_split
@@ -39,7 +40,7 @@ echo Going into split and save with HF_token=$token
 python $script_path/scripts/split_and_save.py --model-name $model_id --save-path $local_dir 
 echo model download step completed
 
-# LLama3 tokenizer fix
+#LLama3 tokenizer fix
 tokenizer_config_json=`find . -name tokenizer_config.json`
 sed -i 's/end_of_text/eot_id/g' $tokenizer_config_json
 
@@ -92,6 +93,7 @@ python $script_path/smep-with-lmi/deploy.py --device inf2 \
   --model-id $model_id \
   --prefix $prefix \
   --inf2-instance-type $ml_instance_type \
+  --inf2-image-uri $ml_image_uri \
   --model-s3-uri s3://${s3_bucket}/${prefix}/${model_id_wo_repo}/${model_id_wo_repo_split}/code/mymodel-inf2.tar.gz \
   --neuronx-artifacts-s3-uri s3://${s3_bucket}/${prefix}/${model_id_wo_repo}/neuronx_artifacts \
   --script-path $script_path \
