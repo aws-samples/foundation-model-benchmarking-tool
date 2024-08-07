@@ -42,6 +42,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         model_id = experiment_config['model_id']
         region = experiment_config['region']
         ml_instance_type = experiment_config['instance_type']
+        image_uri = experiment_config['image_uri']
         batch_size = experiment_config['ec2']['batch_size']
         num_neuron_cores = experiment_config['ec2']['num_neuron_cores']
         neuron_version = experiment_config['ec2']['neuron_version']
@@ -51,6 +52,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         s3_bucket = experiment_config['bucket']
         role = experiment_config['sagemaker_execution_role']
         instance_count = experiment_config['ec2']['instance_count']
+        
 
         logger.info("Model ID: %s", model_id)
         logger.info("Region: %s", region)
@@ -63,6 +65,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.info("Script Path: %s", neuron_script_dir)
         logger.info("Model Loading Timeout: %s", model_loading_timeout)
         logger.info("Initial Instance Count: %s", instance_count)
+        logger.info("image_uri: %s", image_uri)
         hf_token_file_path = Path(HF_TOKEN_FNAME)
         if hf_token_file_path.is_file() is True:
             logger.info(f"hf_token file path: {hf_token_file_path} is a file")
@@ -81,6 +84,13 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         logger.error("Error reading configuration: %s", e)
         raise
 
+    # Ensure the shell script is executable
+    try:
+        os.chmod(shell_script_path, 0o755)
+    except Exception as e:
+        logger.error("Failed to set execute permissions on script: %s", shell_script_path)
+        raise
+
     command = [
         shell_script_path,
         HF_TOKEN,
@@ -97,7 +107,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         model_loading_timeout,
         serving_properties,
         neuron_script_dir,
-        instance_count
+        instance_count,
+        image_uri
     ]
     
     logger.info("Constructed command: %s", command)
