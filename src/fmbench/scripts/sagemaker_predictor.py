@@ -135,12 +135,20 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = response.decode('utf-8')
             response_json = json.loads(response)
 
-            if isinstance(response_json, list):
-                response_json = response_json[0]
-            # add a key called completion, if not there
-            if response_json.get("generated_text") is None:
-                if response_json.get("predicted_label") is not None:
-                    response_json["generated_text"] = response_json.get("predicted_label")
+            # parse response differently depending on message API use
+            if self._use_messages_api_format is True:
+                if isinstance(response_json["choices"], list):
+                    response_json = response_json["choices"][0]["message"]
+                if response_json.get("generated_text") is None:
+                    if response_json.get("content") is not None:
+                        response_json["generated_text"] = response_json.get("content")
+            else:
+                if isinstance(response_json, list):
+                    response_json = response_json[0]
+                # add a key called completion, if not there
+                if response_json.get("generated_text") is None:
+                    if response_json.get("predicted_label") is not None:
+                        response_json["generated_text"] = response_json.get("predicted_label")
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))
 
