@@ -598,6 +598,27 @@
   
   
     <li class="md-nav__item">
+      <a href="neuron.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neuron
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="run_as_container.html" class="md-nav__link">
         
   
@@ -1076,9 +1097,11 @@
 
 
 <h1 id="benchmark-models-on-eks">Benchmark models on EKS<a class="headerlink" href="#benchmark-models-on-eks" title="Permanent link">&para;</a></h1>
-<p>You can use <code>FMBench</code> to benchmark models on hosted on EKS. This can be done in one of two ways:
- - Deploy the model on your EKS cluster independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.
- - Deploy the model on your EKS cluster through <code>FMBench</code> and then benchmark it.</p>
+<p>You can use <code>FMBench</code> to benchmark models on hosted on EKS. This can be done in one of two ways:</p>
+<ul>
+<li>Deploy the model on your EKS cluster independantly of <code>FMBench</code> and then benchmark it through the <a href="#bring-your-own-endpoint-aka-support-for-external-endpoints">Bring your own endpoint</a> mode.</li>
+<li>Deploy the model on your EKS cluster through <code>FMBench</code> and then benchmark it.</li>
+</ul>
 <p>The steps for deploying the model on your EKS cluster are described below.</p>
 <p>👉 <strong><em>EKS cluster creation itself is not a part of the <code>FMBench</code> functionality, the cluster needs to exist before you run the following steps</em></strong>. Steps for cluster creation are provided in <a href="misc/eks_cluster-creation_steps.html">this</a> file but it would be best to consult the <a href="https://github.com/awslabs/data-on-eks">DoEKS</a> repo on GitHub for comprehensive instructions.</p>
 <ol>

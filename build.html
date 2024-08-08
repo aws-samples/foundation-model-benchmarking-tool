@@ -586,6 +586,27 @@
   
   
     <li class="md-nav__item">
+      <a href="neuron.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neuron
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="run_as_container.html" class="md-nav__link">
         
   
@@ -1087,6 +1108,8 @@
 <li>
 <p>Install <a href="https://pypi.org/project/poetry/"><code>poetry</code></a>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>poetry
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip<span class="w"> </span>install<span class="w"> </span>mkdocs-material
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>pip<span class="w"> </span>install<span class="w"> </span>mknotebooks
 </span></code></pre></div>
 </li>
 <li>
@@ -1101,6 +1124,16 @@
 </li>
 <li>
 <p>Run <code>FMBench</code> as usual through the <code>FMBench</code> CLI command.</p>
+</li>
+<li>
+<p>You may have added new config files as part of your work, to make sure these files are called out in the <code>manifest.txt</code> run the following command. This command will overwrite the existing <code>manifest.txt</code> and <code>manifest.md</code> files. Both these files need to be committed to the repo. Reach out to the maintainers of this repo so that they can add new or modified config files to the blogs bucket (the CloudFormation stack would fail if a new file is added to the manifest but is not available for download through the S3 bucket).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>create_manifest.py
+</span></code></pre></div>
+</li>
+<li>
+<p>To create updated documentation run the following command. You need to be added as a contributor to the <code>FMBench</code> repo to be able to publish to the website, so this command would not work for you if you are not added as a contributor to the repo.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdocs<span class="w"> </span>gh-deploy
+</span></code></pre></div>
 </li>
 </ol>
 
