@@ -42,15 +42,15 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ### Full list of benchmarked models
 
-| Model                           | EC2 g5 | EC2 Inf2/Trn1 | SageMaker g4dn/g5/p3 | SageMaker Inf2 | SageMaker P4 | SageMaker P5 | Bedrock On-demand throughput | Bedrock provisioned throughput |
+| Model                           | EC2 g5 | EC2 Inf2/Trn1 | SageMaker g4dn/g5/p3 | SageMaker Inf2/Trn1 | SageMaker P4 | SageMaker P5 | Bedrock On-demand throughput | Bedrock provisioned throughput |
 |:--------------------------------|:-------|:--------------|:---------------------|:---------------|:-------------|:-------------|:-----------------------------|:--------------------------------|
 | **Anthropic Claude-3 Sonnet**   |        |               |                     |                |              |              | ✅                           | ✅                               |
 | **Anthropic Claude-3 Haiku**    |        |               |                     |                |              |              | ✅                           |                                    |
 | **Mistral-7b-instruct**          |        |               | ✅                   |                | ✅            | ✅           | ✅                           |                                    |
 | **Mistral-7b-AWQ**               |        |               |                     |                |              | ✅           |                             |                                    |
 | **Mixtral-8x7b-instruct**       |        |               |                     |                |              |              | ✅                           |                                    |
-| **Llama3.1-8b instruct**         |        |               |                     |                |              |              | ✅                           |                                    |
-| **Llama3.1-70b instruct**        |        |               |                     |                |              |              | ✅                           |                                    |
+| **Llama3.1-8b instruct**         |        | ✅           |                     | ✅             |              |              | ✅                           |                                    |
+| **Llama3.1-70b instruct**        |        | ✅           |                     | ✅             |              |              | ✅                           |                                    |
 | **Llama3-8b instruct**           |  ✅      | ✅              | ✅                   | ✅             | ✅           | ✅           | ✅                           |                                    |
 | **Llama3-70b instruct**          |  ✅      |               | ✅                   | ✅             | ✅           |              | ✅                           |                                    |
 | **Llama2-13b chat**              |        |               | ✅                   | ✅             | ✅           |              | ✅                           |                                    |
@@ -65,9 +65,13 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Phi-3-mini-4k-instruct**       |        |               | ✅                   |                |              |              |                             |                                    |
 | **distilbert-base-uncased**      |        |               | ✅                   |                |              |              |                             |                                    |
 
-
-
 ## New in this release
+
+## v1.0.52
+
+1. Compile for AWS Chips (Trainium, Inferentia) and deploy to SageMaker directly through `FMBench`.
+1. `Llama3.1-8b` and `Llama3.1-70b` config files for AWS Chips (Trainium, Inferentia).
+1. Misc. bug fixes.
 
 ## v1.0.51
 
@@ -77,12 +81,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## v1.0.50
 1. `Llama3-8b` on Amazon EC2 `inf2.48xlarge` config file.
 1. Update to new version of DJL LMI (0.28.0).
-
-### v1.0.49
-1. Streaming support for Amazon SageMaker and Amazon Bedrock.
-1. Per-token latency metrics such as time to first token (TTFT) and mean time per-output token (TPOT).
-1. Misc. bug fixes.
-
 
 [Release history](./release_history.md)
 

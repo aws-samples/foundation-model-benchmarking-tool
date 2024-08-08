@@ -63,6 +63,7 @@ nav:
       - Sagemaker: benchmarking_on_sagemaker.md
       - EKS: benchmarking_on_eks.md
       - EC2: benchmarking_on_ec2.md
+      - Neuron: neuron.md
       - Docker: run_as_container.md
   
   - Configs:

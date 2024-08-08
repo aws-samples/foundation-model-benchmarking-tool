@@ -1,8 +1,9 @@
 # Benchmark models on EC2
 
 You can use `FMBench` to benchmark models on hosted on EC2. This can be done in one of two ways:
- - Deploy the model on your EC2 instance independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
- - Deploy the model on your EC2 instance through `FMBench` and then benchmark it.
+
+- Deploy the model on your EC2 instance independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
+- Deploy the model on your EC2 instance through `FMBench` and then benchmark it.
  
 The steps for deploying the model on your EC2 instance are described below. 
 

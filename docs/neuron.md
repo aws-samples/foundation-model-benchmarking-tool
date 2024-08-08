@@ -1,0 +1,17 @@
+# Benchmark foundation models for AWS Chips
+
+You can use `FMBench` for benchmarking foundation model on [AWS Chips](https://aws.amazon.com/silicon-innovation/): Trainium 1, Inferentia 2. This can be done on Amazon SageMaker, Amazon EKS or on Amazon EC2. FMs need to be first compiled for [Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/index.html) before they can be deployed on AWS Chips, this is made easier by SageMaker JumpStart which provides most of the FMs as a JumpStart Model that can be deployed on SageMaker directly, you can also compile models for Neuron yourself or do this through `FMBench` itself. All of these options are described below.
+
+
+## Benchmarking for AWS Chips on SageMaker
+
+1. Several FMs are available through SageMaker JumpStart already compiled for Neuron and ready to deploy. See [this link](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jumpstart.html) for more details.
+
+1. You can compile the model outside of `FMBench` using instructions available [here](https://github.com/aarora79/compile-llm-for-aws-silicon) and on the [Neuron](https://awsdocs-neuron.readthedocs-hosted.com/en/latest/index.html) documentation, deploy on SageMaker and use `FMBench` in the `bring your own endpoint` mode, see [this](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/byoe/config-model-byo-sagemaker-endpoint.yml) config file for an example.
+
+1. You can have `FMBench` compile and deploy the model on SageMaker for you. See this [Llama3-8b](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml) config file for example or this [Llama3.1-70b](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml). Search this website for "inf2" or "trn1" to find other examples. In this case `FMBench` will download the model from Hugging Face (you need to provide your HuggingFace token in the `/tmp/fmbench-read/scripts/hf_token.txt` file, the file simply contains the token without any formatting), compile it for neuron, upload the compiled model to S3 (you specify the bucket in the config file) and then deploy the model to a SageMaker endpoint.
+
+
+## Benchmarking for AWS Chips on EC2
+
+You may want to benchmark models hosted directly on EC2. In this case both `FMBench` and the model are running on the same EC2 instance. `FMBench` will deploy the model for you on the EC2 instance. See this [Llama3.1-70b](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml) file for example or this [Llama3-8b](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml) file. In this case `FMBench` will download the model from Hugging Face (you need to provide your HuggingFace token in the `/tmp/fmbench-read/scripts/hf_token.txt` file, the file simply contains the token without any formatting), pull the inference container from the ECR repo and then run the container with the downloaded model, a local endpoint is provided that is then used by `FMBench` to run inference.

@@ -1,8 +1,9 @@
 # Benchmark models on EKS
 
 You can use `FMBench` to benchmark models on hosted on EKS. This can be done in one of two ways:
- - Deploy the model on your EKS cluster independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
- - Deploy the model on your EKS cluster through `FMBench` and then benchmark it.
+
+- Deploy the model on your EKS cluster independantly of `FMBench` and then benchmark it through the [Bring your own endpoint](#bring-your-own-endpoint-aka-support-for-external-endpoints) mode.
+- Deploy the model on your EKS cluster through `FMBench` and then benchmark it.
  
 The steps for deploying the model on your EKS cluster are described below.
 

@@ -39,6 +39,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **├── llama3/70b**  
 [│   ├── llama3/70b/config-bedrock.yml -> ../../bedrock/config-bedrock.yml](configs/llama3/70b/config-bedrock.yml -> ../../bedrock/config-bedrock.yml)  
 [│   ├── llama3/70b/config-ec2-llama3-70b-instruct.yml](configs/llama3/70b/config-ec2-llama3-70b-instruct.yml)  
+[│   ├── llama3/70b/config-ec2-neuron-llama3-70b-inf2-48xl.yml](configs/llama3/70b/config-ec2-neuron-llama3-70b-inf2-48xl.yml)  
 [│   ├── llama3/70b/config-llama3-70b-instruct-g5-48xl.yml](configs/llama3/70b/config-llama3-70b-instruct-g5-48xl.yml)  
 [│   ├── llama3/70b/config-llama3-70b-instruct-g5-p4d.yml](configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml)  
 [│   └── llama3/70b/config-llama3-70b-instruct-p4d.yml]( configs/llama3/70b/config-llama3-70b-instruct-p4d.yml)  
@@ -46,6 +47,8 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml)  
 [├── llama3/8b/config-ec2-llama3-8b.yml](configs/llama3/8b/config-ec2-llama3-8b.yml)  
+[├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml)  
+[├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml)  
 [├── llama3/8b/config-llama3-8b-eks-inf2.yml](configs/llama3/8b/config-llama3-8b-eks-inf2.yml)  
 [├── llama3/8b/config-llama3-8b-g5-streaming.yml](configs/llama3/8b/config-llama3-8b-g5-streaming.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml)  
@@ -71,6 +74,13 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml](configs/llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml)  
 [├── llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml](configs/llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml)  
 [└── llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml]( configs/llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml)  
+[llama3.1](configs/llama3.1)  
+**├── llama3.1/70b**  
+[│   ├── llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml)  
+[│   └── llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml]( configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml)  
+**└── llama3.1/8b**  
+[├── llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
+[└── llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml]( configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  

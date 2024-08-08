@@ -1,3 +1,8 @@
+### v1.0.49
+1. Streaming support for Amazon SageMaker and Amazon Bedrock.
+1. Per-token latency metrics such as time to first token (TTFT) and mean time per-output token (TPOT).
+1. Misc. bug fixes.
+
 ### v1.0.48
 1. Faster result file download at the end of a test run.
 1. `Phi-3-mini-4k-instruct` configuration file.
