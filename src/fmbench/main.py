@@ -76,9 +76,21 @@ def run_notebooks(config_file: str) -> None:
     if not output_directory.exists():
         output_directory.mkdir()
 
+    all_notebooks = list(current_directory.glob('*.ipynb'))
+    logger.info(f"Steps to be executed: {all_notebooks}")
+
     for step, execute in config['run_steps'].items():
         if execute:
             notebook_path = current_directory / step
+
+            if not notebook_path.exists():
+                matching_notebooks = [nb for nb in all_notebooks if nb.name[1:] == step[1:]]
+                if matching_notebooks:
+                    notebook_path = matching_notebooks[0]
+                else:
+                    logging.error(f"No matching notebook found for step: {step}")
+                    continue
+
             logging.info(f"Current step file --> {notebook_path.stem}")
 
             timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")

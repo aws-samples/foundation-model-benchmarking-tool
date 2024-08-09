@@ -127,7 +127,7 @@ eval_config: Optional[Dict] = None
 config_dir = Path(pkg_resources.files('fmbench'), 'configs')
 # load the model evaluation configuration file based on the ground truth, 
 # formatted into it from the main config file if any
-if config['model_evaluations'] is not None:
+if 'model_evaluations' in config and config['model_evaluations'] is not None:
     model_evaluation_common_file: str = config['model_evaluations']
     ground_truth_col_key: Optional[str] = config['datasets'].get('ground_truth_col_key', None)
     eval_module = Path(model_evaluation_common_file)
@@ -190,8 +190,11 @@ SCRIPTS_DIR: str = "fmbench/scripts"
 
 # Contruct the path to the evaluation prompt and the different rules in 
 # the rules directory for respective subjective eval criteria
-EVAL_PROMPT_TEMPLATES: str = os.path.join(PROMPT_TEMPLATE_S3_PREFIX,
-                                          eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None))
+if eval_config is not None:
+    EVAL_PROMPT_TEMPLATES: str = os.path.join(PROMPT_TEMPLATE_S3_PREFIX,
+                                              eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None))
+    EVAL_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None)
+    EVAL_INSTRUCTIONS_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_instructions_dir', None)
 
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
@@ -238,9 +241,7 @@ LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
 
 # evaluation - metric filenames
 PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_quantitative_eval_metrics.csv"
-EVAL_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None)
 EVAL_COL_SUFFIX: str = '_eval_prompt'
-EVAL_INSTRUCTIONS_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_instructions_dir', None)
 PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
 MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
 MODEL_EVAL_COMPLETIONS_CSV: str = "raw_llm_as_a_judge_evals.csv"
