@@ -56,12 +56,6 @@ model_evaluations:
     # 0.05 for example, then the answer is defined as correctly evaluated as "correct"
     incorrect_verdict_cosine_similarity_threshold: 0.40
     correct_verdict_cosine_similarity_threshold: 0.01
-    # This is another quantitative metric that is measured for further downstream analysis
-    # this token set ratio metric refers to the `fuzzy match` between the provided ground truth
-    # and the candidate model response.
-    token_set_ratio_threshold: 1.00
-    # this is the third criteria for the check against the levenshtein distance
-    levenshtein_distance_threshold: 0.90
   # This represents the information that is used to get subjective evaluations on the 
   # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
   # each content from the inference step on different evaluation criteria. The information about 

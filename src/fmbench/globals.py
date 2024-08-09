@@ -249,22 +249,21 @@ LLM_JUDGE_PANEL_RESPONSE_SUMMARIES: str = "llm_as_a_judge_per_eval_summary.csv"
 # this csv contains all of the incorrect verdict responses from the PoLL
 # evaluation of responses using Max Voting. View this csv to get more insight
 # into where the model went wrong, and what to fix
+VERDICT_TYPE_BREAKDOWN_FOR_CORRECT_FILE: str = "verdict_type_breakdown_for_correct.csv"
+VERDICT_TYPE_BREAKDOWN_FOR_INCORRECT_FILE: str = "verdict_type_breakdown_for_incorrect.csv"
+PER_MODEL_ACCURACY_W_VERDICT_TYPE_FILE: str = "per_model_accuracy_w_verdict_type.csv"
+MAJORITY_VOTE_DF_RAW_RESULTS_FILE: str = "majority_vote_results_raw.csv"
+PER_MODEL_ACCURACY_PER_EVAL_JUDGE: str = "per_model_per_eval_judge_accuracy.csv"
+CANDIDATE_MODEL_ACCURACY_FILE: str = "candidate_model_accuracy.csv"
 INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
 CORRECT_VERDICT_RESPONSES_FILE: str = "correct_verdict_responses.csv"
 SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
 PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
-OVERALL_POLL_REPORT: str = "overall_PoLL_report.txt"
 # contains all tt data of the LLM completion from the evaluation process
 ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # contains the final analysis done by a final LLM in the loop to summarize
 # all evaluations done by panel of LLM evaluators on candidate model responses
 NEEDS_FURTHER_EVAL_FILE: str = "responses_need_further_eval.txt"
-# overall accuracy metrics sent to this csv file per candidate model per judge
-PER_MODEL_EVAL_PER_JUDGE: str = "per_panel_judgement.csv"
-
-# these are all of the variables for average pooling evaluation use case
-AVERAGE_POOLING_ALL_EVALS: str = "average_pooling_all_evals.csv"
-NON_PERFECT_RATING_RESPONSES: str = "non_perfect_average_pooling_responses.csv"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
