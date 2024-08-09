@@ -259,6 +259,7 @@ INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
 CORRECT_VERDICT_RESPONSES_FILE: str = "correct_verdict_responses.csv"
 SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
 PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
+PER_PAYLOAD_PER_MODEL_POLL_ACCURACY: str = "majority_vote_accuracy_per_payload_file.csv"
 # contains all tt data of the LLM completion from the evaluation process
 ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # contains the final analysis done by a final LLM in the loop to summarize
