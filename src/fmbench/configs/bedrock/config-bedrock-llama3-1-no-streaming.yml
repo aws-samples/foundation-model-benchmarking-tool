@@ -202,8 +202,8 @@ experiments:
     # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
-    - 2
-    - 4
+    # - 2
+    # - 4
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
