@@ -253,6 +253,7 @@ VERDICT_TYPE_BREAKDOWN_FOR_CORRECT_FILE: str = "verdict_type_breakdown_for_corre
 VERDICT_TYPE_BREAKDOWN_FOR_INCORRECT_FILE: str = "verdict_type_breakdown_for_incorrect.csv"
 PER_MODEL_ACCURACY_W_VERDICT_TYPE_FILE: str = "per_model_accuracy_w_verdict_type.csv"
 MAJORITY_VOTE_DF_RAW_RESULTS_FILE: str = "majority_vote_results_raw.csv"
+PER_PAYLOAD_MODEL_ACCURACY_MAJORITY_VOTING: str = "per_payload_model_accuracy_majority_vote.csv"
 PER_MODEL_ACCURACY_PER_EVAL_JUDGE: str = "per_model_per_eval_judge_accuracy.csv"
 CANDIDATE_MODEL_ACCURACY_FILE: str = "candidate_model_accuracy.csv"
 INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
@@ -265,6 +266,9 @@ ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # contains the final analysis done by a final LLM in the loop to summarize
 # all evaluations done by panel of LLM evaluators on candidate model responses
 NEEDS_FURTHER_EVAL_FILE: str = "responses_need_further_eval.txt"
+# accuracy charts 
+PER_PAYLOAD_FILE_ACCURACY_TRAJECTORY: str = "accuracy_trajectory_per_payload.png"
+OVERALL_CANDIDATE_MODEL_MAJORITY_VOTING_ACCURACY: str = "overall_candidate_model_majority_voting_accuracy.png"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"
