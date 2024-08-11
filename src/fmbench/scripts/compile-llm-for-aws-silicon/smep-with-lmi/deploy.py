@@ -174,18 +174,29 @@ if __name__ == "__main__":
     logger.info(f'endpoint_file_path={endpoint_file_path}')
 
     logger.info(f'\nModel deployment initiated on {dev}\nEndpoint Name: {endpoint_name}\n')
-    model.deploy(
-        initial_instance_count=1,
-        instance_type=instance_type,
-        endpoint_name=endpoint_name,
-        volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
-        model_data_download_timeout=2400,  # increase the timeout to download large model
-        container_startup_health_check_timeout=2400,  # increase the timeout to load large model,
-        wait=True,
-    )
+    # if the model is being deployed on trainium, do not pass in the volume size parameter
+    if "trn" in instance_type.lower():
+        model.deploy(
+            initial_instance_count=1,
+            instance_type=instance_type,
+            endpoint_name=endpoint_name,
+            # volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
+            model_data_download_timeout=2400,  # increase the timeout to download large model
+            container_startup_health_check_timeout=2400,  # increase the timeout to load large model,
+            wait=True,
+        )
+    # if the model is deployed on inferentia, then add the volume size parameter
+    else:
+        model.deploy(
+            initial_instance_count=1,
+            instance_type=instance_type,
+            endpoint_name=endpoint_name,
+            volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
+            model_data_download_timeout=2400,  # increase the timeout to download large model
+            container_startup_health_check_timeout=2400,  # increase the timeout to load large model,
+            wait=True,
+        )
     logger.info(f'Model deployment on {dev}\nEndpoint Name: {endpoint_name} finished\n')
     logger.info(f'Now writing the endpoint and end of DEPLOY')
     # Write the endpoint name to the endpoint.txt file in the higher directory
     Path(endpoint_file_path).write_text(endpoint_name)
-    
- 
