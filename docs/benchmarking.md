@@ -1,6 +1,6 @@
 # Benchmark models deployed on different AWS Generative AI services
 
-`FMBench` comes packaged with configuration files for benchmarking models on different AWS Generative AI services.
+`FMBench` comes packaged with configuration files for benchmarking models on different AWS Generative AI services. 
 
 ## Full list of benchmarked models
 
