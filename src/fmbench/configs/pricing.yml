@@ -116,3 +116,6 @@ pricing:
     cohere.command-light-text-v14: 
       input-per-1k-tokens: 0.0003
       output-per-1k-tokens: 0.0006
+    cohere.command-r-plus-v1:0:
+      input-per-1k-tokens: 0.0030
+      output-per-1k-tokens: 0.0150
