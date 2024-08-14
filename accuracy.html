@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/neuron.html">
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/accuracy.html">
       
       
-        <link rel="prev" href="benchmarking_on_ec2.html">
+        <link rel="prev" href="benchmarking.html">
       
       
-        <link rel="next" href="run_as_container.html">
+        <link rel="next" href="benchmarking_on_bedrock.html">
       
       
       <link rel="icon" href="website/img/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Neuron - Foundation Model Benchmarking Tool (FMBench)</title>
+        <title>Model evaluations - Foundation Model Benchmarking Tool (FMBench)</title>
       
     
     
@@ -80,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#benchmark-foundation-models-for-aws-chips" class="md-skip">
+        <a href="#model-evaluations-using-panel-of-llm-evaluators" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Neuron
+              Model evaluations
             
           </span>
         </div>
@@ -501,10 +501,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="accuracy.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Model evaluations
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="accuracy.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -513,6 +533,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-flow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Evaluation Flow
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -606,30 +655,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  <span class="md-ellipsis">
-    Neuron
-  </span>
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="neuron.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="neuron.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -638,44 +667,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#benchmarking-for-aws-chips-on-sagemaker" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmarking for AWS Chips on SageMaker
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#benchmarking-for-aws-chips-on-ec2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmarking for AWS Chips on EC2
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1156,18 +1147,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#benchmarking-for-aws-chips-on-sagemaker" class="md-nav__link">
+  <a href="#evaluation-flow" class="md-nav__link">
     <span class="md-ellipsis">
-      Benchmarking for AWS Chips on SageMaker
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#benchmarking-for-aws-chips-on-ec2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Benchmarking for AWS Chips on EC2
+      Evaluation Flow
     </span>
   </a>
   
@@ -1191,22 +1173,48 @@
   
 
 
-<h1 id="benchmark-foundation-models-for-aws-chips">Benchmark foundation models for AWS Chips<a class="headerlink" href="#benchmark-foundation-models-for-aws-chips" title="Permanent link">&para;</a></h1>
-<p>You can use <code>FMBench</code> for benchmarking foundation model on <a href="https://aws.amazon.com/silicon-innovation/">AWS Chips</a>: Trainium 1, Inferentia 2. This can be done on Amazon SageMaker, Amazon EKS or on Amazon EC2. FMs need to be first compiled for <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/index.html">Neuron</a> before they can be deployed on AWS Chips, this is made easier by SageMaker JumpStart which provides most of the FMs as a JumpStart Model that can be deployed on SageMaker directly, you can also compile models for Neuron yourself or do this through <code>FMBench</code> itself. All of these options are described below.</p>
-<h2 id="benchmarking-for-aws-chips-on-sagemaker">Benchmarking for AWS Chips on SageMaker<a class="headerlink" href="#benchmarking-for-aws-chips-on-sagemaker" title="Permanent link">&para;</a></h2>
+<h1 id="model-evaluations-using-panel-of-llm-evaluators">Model evaluations using panel of LLM evaluators<a class="headerlink" href="#model-evaluations-using-panel-of-llm-evaluators" title="Permanent link">&para;</a></h1>
+<p><code>FMBench</code> release 2.0.0 adds support for evaluating candidate models using Majority Voting with a Panel of LLM Evaluators (PoLL). It gathers quantitative metrics such as <a href="https://en.wikipedia.org/wiki/Cosine_similarity">Cosine Similarity</a> and overall majority voting accuracy metrics to measure the similarity and accuracy of model responses compared to the ground truth. </p>
+<p>Accuracy is defined as percentage of responses generated by the LLM that <strong><em>match</em></strong> the ground truth included in the dataset (as a separate column). In order to determine if an LLM generated response <em>matches</em> the ground truth we ask other LLMs called the evaluator LLMs to compare the LLM output and the ground truth and provide a verdict if the LLM generated ground truth is correct or not given the ground truth. Here is the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/144-add-evaluation-support-to-fmbench/src/fmbench/prompt_template/eval_criteria/claude_eval_prompt_templates/claude_eval_majority_vote.txt">link</a> to the Anthropic Claude 3 Sonnet model prompt being used as an evaluator (or a judge model). A combination of the cosine similarity and the LLM evaluator verdict decides if the LLM generated response is correct or incorrect. Finally, one LLM evaluator could be biased, could have inaccuracies so instead of relying on the judgement of a single evaluator, we rely on the majority vote of 3 different LLM evaluators. By default we use the Anthropic Claude 3 Sonnet, Meta Llama3-70b and the Cohere Command R plus model as LLM evaluators. See 
+<a href="https://arxiv.org/abs/2404.18796">Pat Verga et al., "Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models",    arXiv:2404.18796, 2024.</a> for more details on using a Panel of LLM Evaluators (PoLL).</p>
+<h2 id="evaluation-flow">Evaluation Flow<a class="headerlink" href="#evaluation-flow" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
-<p>Several FMs are available through SageMaker JumpStart already compiled for Neuron and ready to deploy. See <a href="https://docs.aws.amazon.com/sagemaker/latest/dg/studio-jumpstart.html">this link</a> for more details.</p>
+<p>Provide a dataset that includes ground truth responses for each sample. <code>FMBench</code> uses the <a href="https://huggingface.co/datasets/THUDM/LongBench">LongBench</a> dataset by default. </p>
 </li>
 <li>
-<p>You can compile the model outside of <code>FMBench</code> using instructions available <a href="https://github.com/aarora79/compile-llm-for-aws-silicon">here</a> and on the <a href="https://awsdocs-neuron.readthedocs-hosted.com/en/latest/index.html">Neuron</a> documentation, deploy on SageMaker and use <code>FMBench</code> in the <code>bring your own endpoint</code> mode, see <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/byoe/config-model-byo-sagemaker-endpoint.yml">this</a> config file for an example.</p>
+<p>Configure the candidate models to be evaluated in the <code>FMBench</code> config file. See <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/144-add-evaluation-support-to-fmbench/src/fmbench/configs/bedrock/config-bedrock.yml">this</a> config file for an example that runs evaluations for multiple models available via Amazon Bedrock. Running evaluations only requires the following two changes to the config file:</p>
+<ul>
+<li>Set the <code>4_get_evaluations.ipynb: yes</code>, see <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/144-add-evaluation-support-to-fmbench/src/fmbench/configs/bedrock/config-bedrock.yml#L77">this</a> line.</li>
+<li>Set the <code>ground_truth_col_key: answers</code> and <code>question_col_key: input</code> parameters, see <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/144-add-evaluation-support-to-fmbench/src/fmbench/configs/bedrock/config-bedrock.yml#L90">this</a> line. The value of <code>ground_truth_col_key</code> and the <code>question_col_key</code> is set to the name of the column in the dataset that contains the ground truth and question respectively.</li>
+</ul>
 </li>
 <li>
-<p>You can have <code>FMBench</code> compile and deploy the model on SageMaker for you. See this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml">Llama3-8b</a> config file for example or this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml">Llama3.1-70b</a>. Search this website for "inf2" or "trn1" to find other examples. In this case <code>FMBench</code> will download the model from Hugging Face (you need to provide your HuggingFace token in the <code>/tmp/fmbench-read/scripts/hf_token.txt</code> file, the file simply contains the token without any formatting), compile it for neuron, upload the compiled model to S3 (you specify the bucket in the config file) and then deploy the model to a SageMaker endpoint.</p>
+<p>Run FMBench, which will: </p>
+</li>
+<li>
+<p>Fetch the inference results containing the model responses </p>
+</li>
+<li>
+<p>Calculate quantitative metrics (Cosine Similarity) </p>
+</li>
+<li>
+<p>Use a Panel of LLM Evaluators to compare each model response to the ground truth </p>
+</li>
+<li>
+<p>Each LLM evaluator will provide a binary verdict (correct/incorrect) and an explanation </p>
+</li>
+<li>
+<p>Validate the LLM evaluations using Cosine Similarity thresholds </p>
+</li>
+<li>
+<p>Categorize the final evaluation for each response as correctly correct, correctly incorrect, or needs further evaluation </p>
+</li>
+<li>
+<p>Review the <code>FMBench</code> report to analyze the evaluation results and compare the performance of the candidate models. The report contains tables and charts that provide insights into model accuracy.</p>
 </li>
 </ol>
-<h2 id="benchmarking-for-aws-chips-on-ec2">Benchmarking for AWS Chips on EC2<a class="headerlink" href="#benchmarking-for-aws-chips-on-ec2" title="Permanent link">&para;</a></h2>
-<p>You may want to benchmark models hosted directly on EC2. In this case both <code>FMBench</code> and the model are running on the same EC2 instance. <code>FMBench</code> will deploy the model for you on the EC2 instance. See this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml">Llama3.1-70b</a> file for example or this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/859419e27760fd5ceeadf89361c06560ce4e79d5/src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml">Llama3-8b</a> file. In this case <code>FMBench</code> will download the model from Hugging Face (you need to provide your HuggingFace token in the <code>/tmp/fmbench-read/scripts/hf_token.txt</code> file, the file simply contains the token without any formatting), pull the inference container from the ECR repo and then run the container with the downloaded model, a local endpoint is provided that is then used by <code>FMBench</code> to run inference.</p>
+<p>By leveraging ground truth data and a Panel of LLM Evaluators, FMBench provides a comprehensive and efficient way to assess the quality of generative AI models. The majority voting approach, combined with quantitative metrics, enables a robust evaluation that reduces bias and latency while maintaining consistency across responses.</p>
 
 
 
