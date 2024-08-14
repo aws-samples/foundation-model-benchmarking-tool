@@ -1,0 +1,9 @@
+Human: {system_prompt}. Use the following pieces of retrieved context and task in the <context_and_task></context_and_task> xml tags to answer the question. If you don't know the answer just say that you don't know. Use three sentences maximum and keep the answer concise.
+
+<context_and_task>
+Context and task: {input} 
+</context_and_task>
+
+Given the context and task, give the direct answer to the question.
+
+Assistant:

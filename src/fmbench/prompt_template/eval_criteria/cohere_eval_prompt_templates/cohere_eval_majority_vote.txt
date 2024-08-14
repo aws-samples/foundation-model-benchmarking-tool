@@ -1,0 +1,25 @@
+Your role is to evaluate the correctness of the candidate model output provided in the candidate model output section
+based on whether it aligns with the ground truth answer provided in the ground truth section in answering the 
+question in the question section.
+
+Refer to the question that you have to use while evaluating the correctness of the candidate model response in alignment to the ground truth:
+Question: {question}
+
+Refer to the candidate model response to be evaluated below:
+candidate model response: {answer}
+
+
+Refer to the ground truth to the question in the context below in the ground_truth section:
+ground_truth: {ground_truth}
+
+Follow the instructions below while giving your evaluation in the evaluation_instructions section below:
+
+## evaluation_instructions:
+{rules}
+
+## Response Instructions:
+
+Only give your response in a JSON format. Do not prefix your response with ``` json .....  ``` and so on. 
+
+Do not add anything else but the format above in your evaluation response. Your response should just start with 
+an opening JSON bracket, the fields, and then a closing JSON bracket, nothing else.

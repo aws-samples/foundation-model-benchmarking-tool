@@ -24,11 +24,10 @@ dir_paths:
 s3_read_data:
   # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
   read_bucket: {read_bucket}
-  scripts_prefix: scripts
-  
+
   # S3 prefix in the read bucket where deployment and inference scripts should be placed
   scripts_prefix: scripts
-    
+  
   # deployment and inference script files to be downloaded are placed in this list
   # only needed if you are creating a new deployment script or inference script
   # your HuggingFace token does need to be in this list and should be called "hf_token.txt"
@@ -76,8 +75,9 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
-  4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  4_get_evaluations.ipynb: yes
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: no
 
 datasets:
   # Refer to the 1_generate_data.ipynb notebook
@@ -88,7 +88,8 @@ datasets:
   prompt_template_keys:
   - input
   - context
-  
+  ground_truth_col_key: answers
+  question_col_key: input
   # maximum number of iterations per concurrency and payload size combination
   max_iters_per_combination: 105
   # minimum number of iterations per concurrency and payload size combination
@@ -122,6 +123,11 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
+    
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -164,7 +170,7 @@ experiments:
     model_id: meta-textgeneration-llama-2-7b-f
     model_version: "3.*"
     model_name: llama2-7b-f
-    ep_name: llama-2-7b-g5xlarge
+    ep_name: llama-2-7b-g5-xlarge
     instance_type: "ml.g5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-tgi-inference:2.0.1-tgi1.1.0-gpu-py39-cu118-ubuntu20.04'
     deploy: yes
@@ -187,7 +193,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     # - payload_en_2000-3000.jsonl
-    #- payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -241,7 +247,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     # - payload_en_2000-3000.jsonl
-    #- payload_en_3000-3840.jsonl
+    # - payload_en_3000-3840.jsonl
     
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
@@ -250,6 +256,7 @@ experiments:
     - 1
     - 2
     - 4
+
     # Added for models that require accepting a EULA
     accept_eula: true
     # Environment variables to be passed to the container
@@ -284,3 +291,4 @@ report:
   txn_count_for_showing_cost: 10000
   v_shift_w_single_instance: 0.025
   v_shift_w_gt_one_instance: 0.025
+

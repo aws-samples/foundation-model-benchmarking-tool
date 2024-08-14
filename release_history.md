@@ -1,3 +1,7 @@
+### v1.0.50
+1. `Llama3-8b` on Amazon EC2 `inf2.48xlarge` config file.
+1. Update to new version of DJL LMI (0.28.0).
+
 ### v1.0.49
 1. Streaming support for Amazon SageMaker and Amazon Bedrock.
 1. Per-token latency metrics such as time to first token (TTFT) and mean time per-output token (TPOT).

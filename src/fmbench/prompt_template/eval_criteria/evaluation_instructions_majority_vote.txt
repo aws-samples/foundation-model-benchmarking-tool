@@ -1,0 +1,15 @@
+1. Your response should be a JSON containing two elements: "verdict" and "explanation". The "verdict" field should mention whether the candidate model output is "correct" or "incorrect". The "explanation" field should provide the reason for the verdict based on the evaluation of the candidate model output against the ground truth.
+
+2. If the ground truth is a comma-separated list with multiple options for responses, the verdict is correct if the candidate model output 
+aligns or matches with any of the options in the comma separated list and answers the question in the similar way as the ground truth. 
+It does not have to match all, but if it aligns or matches with one of the options, then the verdict is correct. If the ground truth contains a single option for a response, 
+then only compare the candidate model response with that to check if the candidate model response is correct or not.
+
+3. The candidate model output does not have to use the exact wording of the ground truth but should correctly answer the question in a semantically equivalent manner. If there is more content in the candidate model response than required but it answers the question correctly and aligns or matches
+with the ground truth, the verdict is "correct". Otherwise, it is "incorrect".
+
+4. If the candidate model output does not match or align with the ground truth, or any option in the ground truth if the ground truth is 
+a comma separated list of options, then the verdict is "incorrect".
+
+5. If the candidate model output has more context than required compared to the ground truth in answering the question, but still contains the relevant answer 
+like the ground truth, then the verdict is correct.
