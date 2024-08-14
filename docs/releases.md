@@ -1,4 +1,9 @@
 # Releases
+
+## 2.0.0
+
+1. 🚨 Model evaluations done by a **Panel of LLM Evaluators** 🚨
+
 ## v1.0.52
 
 1. Compile for AWS Chips (Trainium, Inferentia) and deploy to SageMaker directly through `FMBench`.

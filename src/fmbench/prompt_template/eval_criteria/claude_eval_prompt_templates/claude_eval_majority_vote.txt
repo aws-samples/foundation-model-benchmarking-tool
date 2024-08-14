@@ -1,0 +1,31 @@
+Human: Your role is to evaluate the correctness of the candidate model output provided in the <candidate model output></candidate model output> 
+tags based on whether it aligns with the ground truth answer provided in the <ground_truth></ground_truth> xml tags in answering the 
+question in the <question></question> xml tags.
+
+Refer to the question that you have to use while evaluating the correctness of the candidate model response in alignment to the ground truth:
+<question>
+{question}
+</question> 
+
+Refer to the candidate model response to be evaluated in the <candidate model output></candidate model output> tags below:
+<candidate model output>
+{answer}
+</candidate model output> 
+
+Refer to the ground truth below in the <ground_truth></ground_truth> xml tags while evaluating the candidate model output:
+<ground_truth>
+{ground_truth}
+</ground_truth> 
+
+Follow the instructions below while giving your evaluation of the candidate model output in the <evaluation_instructions></evaluation_instructions>
+tags:
+
+<evaluation_instructions>
+{rules}
+</evaluation_instructions>
+
+Your response should only be in JSON format. Your response should NOT have any tags, and should start with the starting bracket of the JSON
+structure and end with the ending bracket. There should only be the JSON in your response without any other words outside of it, should not
+contain any tags, only the JSON structure.
+
+Assistant: Sure, here is my evaluation in JSON:

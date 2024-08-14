@@ -5,8 +5,10 @@ import requests
 import tempfile
 from enum import Enum
 from pathlib import Path
-from datetime import datetime
 from fmbench import defaults
+from datetime import datetime
+from typing import Optional, Dict
+import importlib.resources as pkg_resources
 
 
 FMBENCH_PACKAGE_NAME: str = "fmbench"
@@ -118,6 +120,29 @@ for i in range(len(config['experiments'])):
         config['experiments'][i]['bucket'] = config['aws']['bucket']
 print(f"loaded config: {config}")
 
+
+# get the model evaluation configuration file which contains information on the 
+# ground truth, the method name, and directory structure being used
+eval_config: Optional[Dict] = None
+config_dir = Path(pkg_resources.files('fmbench'), 'configs')
+# load the model evaluation configuration file based on the ground truth, 
+# formatted into it from the main config file if any
+if 'model_evaluations' in config and config['model_evaluations'] is not None:
+    model_evaluation_common_file: str = config['model_evaluations']
+    ground_truth_col_key: Optional[str] = config['datasets'].get('ground_truth_col_key', None)
+    eval_module = Path(model_evaluation_common_file)
+    eval_file_path: str = os.path.join(config_dir, eval_module)
+    if ground_truth_col_key is not None:
+        with open(eval_file_path, 'r') as file:
+            model_eval_info = file.read()
+            # load the preliminary unformatted config file to fetch the method name and plug it into
+            # the prompt template file names
+            eval_config = yaml.safe_load(model_eval_info)
+            print(f"loaded eval configuration file: {eval_config}")
+    else:
+        eval_config=None
+        print(f"Evalaution configuration file not found in the config file. Provide a valid eval configuration file name.")
+
 # data directory and prompts
 PER_ACCOUNT_DIR: str = f"{config['general']['name']}-{ROLE_NAME}"
 DATA_DIR: str = os.path.join(PER_ACCOUNT_DIR, config['dir_paths']['data_prefix'])
@@ -137,6 +162,7 @@ METRICS_DIR = f"{DATA_DIR}/metrics/yyyy={year}/mm={month}/dd={day}/hh={hour}/mm=
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
+METRICS_PER_POLL_EVAL_DIR_NAME: str = "per_poll_eval"
 
 METRICS_PER_INFERENCE_DIR = os.path.join(METRICS_DIR, "per_inference")
 METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
@@ -161,6 +187,14 @@ PROMPT_TEMPLATE_S3_PREFIX = config['s3_read_data']['prompt_template_dir']
 
 # Initialize the scripts directory
 SCRIPTS_DIR: str = "fmbench/scripts"
+
+# Contruct the path to the evaluation prompt and the different rules in 
+# the rules directory for respective subjective eval criteria
+if eval_config is not None:
+    EVAL_PROMPT_TEMPLATES: str = os.path.join(PROMPT_TEMPLATE_S3_PREFIX,
+                                              eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None))
+    EVAL_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_prompts_dir', None)
+    EVAL_INSTRUCTIONS_DIR: str = eval_config['model_evaluations']['model_eval_dir'].get('eval_instructions_dir', None)
 
 # METADATA DIR TO HANDLE DYNAMIC S3 PATHS FOR METRICS/RESULTS
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
@@ -191,7 +225,7 @@ class TRUNCATE_POLICY(str, Enum):
 PLACE_HOLDER: int = -1705338041
 RESULTS_DIR: str = f"results-{config['general']['name']}"
 
-# metric filenames
+# benchmarking - metric filenames
 COUNTS_FNAME: str = "experiment_counts.csv"
 ERROR_RATES_FNAME: str = "error_rates.csv"
 RESULTS_DESC_MD_FNAME: str = "report.md"
@@ -204,6 +238,38 @@ SUMMARY_MODEL_ENDPOINT_COST_PER_INSTANCE: str = "endpoint_per_instance_per_run_c
 BUSINESS_SUMMARY_PLOT_FNAME: str = "business_summary.png"
 BUSINESS_SUMMARY_PLOT_FNAME2: str = "business_summary_barchart.png"
 LATENCY_CHART_PLOT_FNAME: str = "latency_summary_chart.png"
+
+# evaluation - metric filenames
+PER_INFERENCE_FILE_WITH_COSINE_SIMILARITY_SCORES: str = "per_inference_quantitative_eval_metrics.csv"
+EVAL_COL_SUFFIX: str = '_eval_prompt'
+PROCESSED_EVAL_PROMPT_PAYLOADS: str = "processed_eval_prompts_for_inference.csv"
+MODEL_EVALUATION_JUDGE_COMPLETIONS_DIR: str = "judge_model_eval_completions"
+MODEL_EVAL_COMPLETIONS_CSV: str = "raw_llm_as_a_judge_evals.csv"
+LLM_JUDGE_PANEL_RESPONSE_SUMMARIES: str = "llm_as_a_judge_per_eval_summary.csv"
+# this csv contains all of the incorrect verdict responses from the PoLL
+# evaluation of responses using Max Voting. View this csv to get more insight
+# into where the model went wrong, and what to fix
+VERDICT_TYPE_BREAKDOWN_FOR_CORRECT_FILE: str = "verdict_type_breakdown_for_correct.csv"
+VERDICT_TYPE_BREAKDOWN_FOR_INCORRECT_FILE: str = "verdict_type_breakdown_for_incorrect.csv"
+PER_MODEL_ACCURACY_W_VERDICT_TYPE_FILE: str = "per_model_accuracy_w_verdict_type.csv"
+MAJORITY_VOTE_DF_RAW_RESULTS_FILE: str = "majority_vote_results_raw.csv"
+PER_PAYLOAD_MODEL_ACCURACY_MAJORITY_VOTING: str = "per_payload_model_accuracy_majority_vote.csv"
+PER_MODEL_ACCURACY_PER_EVAL_JUDGE: str = "per_model_per_eval_judge_accuracy.csv"
+CANDIDATE_MODEL_ACCURACY_FILE: str = "candidate_model_accuracy.csv"
+INCORRECT_VERDICT_RESPONSES_FILE: str = "incorrect_verdict_responses.csv"
+CORRECT_VERDICT_RESPONSES_FILE: str = "correct_verdict_responses.csv"
+SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
+PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
+PER_PAYLOAD_PER_MODEL_POLL_ACCURACY: str = "majority_vote_accuracy_per_payload_file.csv"
+EVAL_COST_PER_JUDGE_MODEL: str = "eval_cost_per_llm_evaluator.csv"
+# contains all tt data of the LLM completion from the evaluation process
+ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
+# contains the final analysis done by a final LLM in the loop to summarize
+# all evaluations done by panel of LLM evaluators on candidate model responses
+NEEDS_FURTHER_EVAL_FILE: str = "responses_need_further_eval.txt"
+# accuracy charts 
+PER_PAYLOAD_FILE_ACCURACY_TRAJECTORY: str = "accuracy_trajectory_per_payload.png"
+OVERALL_CANDIDATE_MODEL_MAJORITY_VOTING_ACCURACY: str = "overall_candidate_model_majority_voting_accuracy.png"
 
 # plot filenames
 ERROR_RATES_PLOT_TEXT: str = "Error rates for different concurrency levels and instance types"

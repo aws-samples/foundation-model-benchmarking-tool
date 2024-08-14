@@ -26,6 +26,7 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+
     configs_prefix: configs
     config_files:
     - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
@@ -48,13 +49,16 @@ run_steps:
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
-    4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no
+    4_get_evaluations.ipynb: yes
+    5_model_metric_analysis.ipynb: yes
+    6_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
   - input
   - context
+  ground_truth_col_key: answers
+  question_col_key: input
   # - text
   filters:
   - language: en    
@@ -80,7 +84,11 @@ datasets:
  
 metrics:
   dataset_of_interest: en_3000-3840
-  
+
+# name of the file that contains the model evaluation information
+# change to model_eval_avg pooling for average pooling use cases
+model_evaluations: model_eval_all_info.yml
+ 
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
 inference_parameters: 
