@@ -62,11 +62,11 @@ s3_read_data:
 # set the 2_deploy_model.ipynb to no if you are re-running
 # the same config file and the model is already deployed
 run_steps:
-  0_setup.ipynb: no
-  1_generate_data.ipynb: no
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
-  3_run_inference.ipynb: no
-  4_get_evaluations.ipynb: no
+  3_run_inference.ipynb: yes
+  4_get_evaluations.ipynb: yes
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
@@ -141,11 +141,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
   # Experiment for claude 3 haiku
   - name: anthropic.claude-3-haiku-20240307-v1:0
@@ -165,11 +165,11 @@ experiments:
     - payload_en_3000-4000.jsonl
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
     env:
     
 report:
