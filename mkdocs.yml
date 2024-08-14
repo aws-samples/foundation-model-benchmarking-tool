@@ -59,6 +59,7 @@ nav:
       - EC2: ec2.md
   - Benchmarking:
       - Main: benchmarking.md
+      - Model evaluations: accuracy.md
       - Bedrock: benchmarking_on_bedrock.md
       - Sagemaker: benchmarking_on_sagemaker.md
       - EKS: benchmarking_on_eks.md
