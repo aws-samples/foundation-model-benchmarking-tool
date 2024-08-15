@@ -262,6 +262,8 @@ SCORING_RESULT_COUNT_POLL: str = "PoLL_result_count_correct_incorrect.csv"
 PER_MODEL_ACCURACY_POLL: str = "PoLL_per_model_accuracy.csv"
 PER_PAYLOAD_PER_MODEL_POLL_ACCURACY: str = "majority_vote_accuracy_per_payload_file.csv"
 EVAL_COST_PER_JUDGE_MODEL: str = "eval_cost_per_llm_evaluator.csv"
+HALLUCINATION_RESPONSES_FILE: str = "per_response_hallucination_metric.csv"
+PER_PAYLOAD_HALLUCINATION_METRIC_COUNT: str = "per_payload_hallucination_count.csv"
 # contains all tt data of the LLM completion from the evaluation process
 ALL_EVALUATIONS_IN_TXT: str = "all_judges_evals.txt"
 # contains the final analysis done by a final LLM in the loop to summarize
