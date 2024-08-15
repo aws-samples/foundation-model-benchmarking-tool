@@ -91,4 +91,14 @@ model_evaluations:
       max_tokens: 300
       top_p: 0.92
       caching: False
+    # these are negation statements that a candidate model might output in its
+    # responses indicating that "it cannot find the answer"/"it does not know the answer" or anything
+    # in the same lines of being unable to answer the question. This will give a subset of those
+    # responses without any negations, and valid while being incorrect, thus hallucinating
+    model_negation_statements:
+    # meta models output "i don't know" when they do not know the response
+    # to a given question
+    - "i dont know"
+    - "I don't know"
+    - "I do not know"
     
