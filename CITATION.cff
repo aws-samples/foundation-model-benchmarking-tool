@@ -1,0 +1,13 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Arora"
+  given-names: "Amit"
+  orcid: "https://orcid.org/0000-0001-6697-2724"
+- family-names: "Prashant"
+  given-names: "Madhur"
+title: "FMBench: benchmark any foundation model on any AWS GenAI service"
+version: 2.0.1
+doi: 10.5281/zenodo.13324418
+date-released: 2024-08-14
+url: "https://aws-samples.github.io/foundation-model-benchmarking-tool/"
