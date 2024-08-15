@@ -6,6 +6,8 @@ authors:
   orcid: "https://orcid.org/0000-0001-6697-2724"
 - family-names: "Prashant"
   given-names: "Madhur"
+  orcid: "https://orcid.org/0009-0002-4086-2003"
+
 title: "FMBench: benchmark any foundation model on any AWS GenAI service"
 version: 2.0.1
 doi: 10.5281/zenodo.13324418
