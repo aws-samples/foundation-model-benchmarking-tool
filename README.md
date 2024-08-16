@@ -24,6 +24,16 @@ Here are some salient features of `FMBench`:
 
 1. **Run anywhere**: it can be run on any AWS platform where we can run Python, such as Amazon EC2, Amazon SageMaker, or even the AWS CloudShell. _It is important to run this tool on an AWS platform so that internet round trip time does not get included in the end-to-end response time latency_.
 
+**Intro Video**
+
+<div style="text-align: left; max-width: 600px; margin: 0;">
+  <a href="https://www.youtube.com/watch?v=yvRCyS0J90c" target="_blank" style="position: relative; display: inline-block;">
+    <img src="img/fmbench-thumbnail.png" alt="FMBench Intro" style="width: 100%; height: auto;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Icon" style="position: absolute; width: 15%; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%);">
+  </a>
+</div>
+
+
 
 **Determine the optimal price|performance serving stack for your generative AI workload**
 
