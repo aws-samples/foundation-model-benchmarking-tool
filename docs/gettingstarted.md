@@ -4,6 +4,10 @@
 
 While technically you can run `FMBench` on any AWS compute but practically speaking we either run it on a SageMaker Notebook or on EC2. Both these options are described below.
 
+**Intro Video**
+
+[![FMBench Intro](img/fmbench-thumbnail.png)](https://www.youtube.com/watch?v=yvRCyS0J90c)
+
 ![FMBench deployments](img/fmbench-deployment1.png)
 
 ## `FMBench` in a client-server configuration on Amazon EC2
