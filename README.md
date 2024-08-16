@@ -28,7 +28,7 @@ Here are some salient features of `FMBench`:
   <h4>Intro Video</h4>
   <a href="https://www.youtube.com/watch?v=yvRCyS0J90c" target="_blank" style="position: relative; display: inline-block;">
     <img src="img/fmbench-thumbnail.png" alt="FMBench Intro" style="width: 100%; height: auto; display: block;">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Icon" style="position: absolute; width: 15%; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg" alt="YouTube Icon" style="position: absolute; width: 15%; height: auto; top: 50%; left: 50%; transform: translate(-50%, -50%);">
   </a>
 </div>
 
