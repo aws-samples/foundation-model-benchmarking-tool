@@ -1176,6 +1176,8 @@
 <h1 id="getting-started-with-fmbench">Getting started with <code>FMBench</code><a class="headerlink" href="#getting-started-with-fmbench" title="Permanent link">&para;</a></h1>
 <p><code>FMBench</code> is available as a Python package on <a href="https://pypi.org/project/fmbench">PyPi</a> and is run as a command line tool once it is installed. All data that includes metrics, reports and results are stored in an Amazon S3 bucket.</p>
 <p>While technically you can run <code>FMBench</code> on any AWS compute but practically speaking we either run it on a SageMaker Notebook or on EC2. Both these options are described below.</p>
+<p><strong>Intro Video</strong></p>
+<p><a href="https://www.youtube.com/watch?v=yvRCyS0J90c"><img alt="FMBench Intro" src="img/fmbench-thumbnail.png" /></a></p>
 <p><img alt="FMBench deployments" src="img/fmbench-deployment1.png" /></p>
 <h2 id="fmbench-in-a-client-server-configuration-on-amazon-ec2"><code>FMBench</code> in a client-server configuration on Amazon EC2<a class="headerlink" href="#fmbench-in-a-client-server-configuration-on-amazon-ec2" title="Permanent link">&para;</a></h2>
 <p>Often times there might be a need where a platform team would like to have a bunch of LLM endpoints deployed in an account available permanently for data science teams or application teams to benchmark performance and accuracy for their specific use-case. They can take advantage of a special client-server configuration for <code>FMBench</code> where it can be used to deploy models on EC2 instances in one AWS account (called the server account) and run tests against these endpoints from <code>FMBench</code> deployed on EC2 instances in another AWS account (called the client AWS account).</p>
