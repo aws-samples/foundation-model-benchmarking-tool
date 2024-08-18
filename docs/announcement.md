@@ -1,4 +1,4 @@
-# Releasde 2.0 annuncement
+# Release 2.0 announcement
 
 We are excited to share news about a major FMBench release, we now have release 2.0 for FMBench that supports model evaluations through a panel of LLM evaluators🎉. With the recent feature additions to FMBench we are already seeing increased interest from customers and hope to reach even more customers and have an even greater impact. Check out all the latest and greatest features from FMBench on the FMBench website.
 

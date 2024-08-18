@@ -1,12 +1,16 @@
 Here is a listing of the various configuration files available out-of-the-box with `FMBench`. Click on any link to view a file. You can use these files as-is or use them as templates to create a custom configuration file for your use-case of interest.
 
 **bedrock**  
+[├── bedrock/config-bedrock-all-anthropic-models-longbench-data.yml](configs/bedrock/config-bedrock-all-anthropic-models-longbench-data.yml)  
+[├── bedrock/config-bedrock-anthropic-models-OpenOrca.yml](configs/bedrock/config-bedrock-anthropic-models-OpenOrca.yml)  
 [├── bedrock/config-bedrock-claude.yml](configs/bedrock/config-bedrock-claude.yml)  
+[├── bedrock/config-bedrock-evals-only-conc-1.yml](configs/bedrock/config-bedrock-evals-only-conc-1.yml)  
+[├── bedrock/config-bedrock-haiku-sonnet-majority-voting.yml](configs/bedrock/config-bedrock-haiku-sonnet-majority-voting.yml)  
 [├── bedrock/config-bedrock-llama3-1-70b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-70b-streaming.yml)  
 [├── bedrock/config-bedrock-llama3-1-8b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-8b-streaming.yml)  
-[├── bedrock/config-bedrock-llama3-1.yml](configs/bedrock/config-bedrock-llama3-1.yml)  
+[├── bedrock/config-bedrock-llama3-1-no-streaming.yml](configs/bedrock/config-bedrock-llama3-1-no-streaming.yml)  
 [├── bedrock/config-bedrock-llama3-streaming.yml](configs/bedrock/config-bedrock-llama3-streaming.yml)  
-[├── bedrock/config-bedrock-llama3.yml](configs/bedrock/config-bedrock-llama3.yml)  
+[├── bedrock/config-bedrock-models-OpenOrca.yml](configs/bedrock/config-bedrock-models-OpenOrca.yml)  
 [├── bedrock/config-bedrock-titan-text-express.yml](configs/bedrock/config-bedrock-titan-text-express.yml)  
 [└── bedrock/config-bedrock.yml]( configs/bedrock/config-bedrock.yml)  
 **bert**  
@@ -79,8 +83,11 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   ├── llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml)  
 [│   └── llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml]( configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2.yml)  
 **└── llama3.1/8b**  
+[├── llama3.1/8b/client-config-ec2-llama3-1-8b.yml](configs/llama3.1/8b/client-config-ec2-llama3-1-8b.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
-[└── llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml]( configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml)  
+[├── llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml)  
+[├── llama3.1/8b/config-llama3.1-8b-g5.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.yml)  
+[└── llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml]( configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  
@@ -93,6 +100,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── mistral/config-mistral-instruct-v2-p4d-trtllm.yml](configs/mistral/config-mistral-instruct-v2-p4d-trtllm.yml)  
 [├── mistral/config-mistral-instruct-v2-p5-lmi-dist.yml](configs/mistral/config-mistral-instruct-v2-p5-lmi-dist.yml)  
 [└── mistral/config-mistral-instruct-v2-p5-trtllm.yml]( configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml)  
+[model_eval_all_info.yml](configs/model_eval_all_info.yml)  
 **phi**  
 [└── phi/config-phi-3-g5.yml]( configs/phi/config-phi-3-g5.yml)  
 [pricing.yml](configs/pricing.yml)  
