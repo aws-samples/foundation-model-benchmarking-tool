@@ -32,7 +32,7 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: tokenizer
+    tokenizer_prefix: llama3_1_tokenizer
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_llama3.txt
 
