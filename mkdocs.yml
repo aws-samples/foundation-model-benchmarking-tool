@@ -52,8 +52,10 @@ plugins:
 nav: 
   - Home: 
       - index.md
+      - Announcement: announcement.md
   - Getting started:
       - Main: gettingstarted.md
+      - Features: features.md
       - Workflow: workflow.md
       - SageMaker: quickstart.md      
       - EC2: ec2.md
@@ -81,6 +83,7 @@ nav:
       - Website: internal_website.md
 
   - Releases:
+      - Major release: 2.0.x.md
       - releases.md
   - Resources:
       - resources.md

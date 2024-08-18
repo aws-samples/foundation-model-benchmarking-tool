@@ -1,1 +1,1 @@
-configs/bedrock/config-bedrock-llama3-streaming.yml
+configs/llama3.1/8b/config-llama3.1-8b-g5.yml

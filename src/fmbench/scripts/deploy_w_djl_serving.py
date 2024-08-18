@@ -147,9 +147,10 @@ def _deploy_endpoint(experiment_config: Dict,
                      model_name: str) -> Tuple[str, str]:
     """
     Function to create and deploy the endpoint
-    """
-    endpoint_config_name = f"{model_name}-config"
-    endpoint_name = f"{model_name}-endpoint"
+    """    
+    
+    endpoint_config_name = name_from_base(experiment_config['ep_name'])
+    endpoint_name = name_from_base(experiment_config['ep_name'])
 
     _ = sm_client.create_endpoint_config(
         EndpointConfigName=endpoint_config_name,

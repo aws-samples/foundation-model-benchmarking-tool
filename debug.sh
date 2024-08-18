@@ -6,7 +6,8 @@
 CONDA_ENV_NAME=fmbench_python311
 CONDA_ENV_PATH=~/anaconda3/envs/$CONDA_ENV_NAME/lib/python3.11/site-packages
 CONDA_ENV_PATH2=/home/sagemaker-user/.conda/envs/$CONDA_ENV_NAME/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/bedrock/config-bedrock-llama3-1-no-streaming.yml
+CONFIG_FILE_PATH=src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-g5.yml
+#bedrock/config-bedrock-llama3-1-no-streaming.yml
 #src/fmbench/configs/bedrock/config-bedrock.yml
 #src/fmbench/configs/llama3/8b/config-llama3-8b-g5-streaming.yml
 #config-bedrock-llama3-streaming.yml #config-llama3-8b-g5-stream.yml

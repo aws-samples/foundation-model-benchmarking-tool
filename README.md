@@ -63,7 +63,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Mistral-7b-instruct**          |        |               | ✅                   |                | ✅            | ✅           | ✅                           |                                    |
 | **Mistral-7b-AWQ**               |        |               |                     |                |              | ✅           |                             |                                    |
 | **Mixtral-8x7b-instruct**       |        |               |                     |                |              |              | ✅                           |                                    |
-| **Llama3.1-8b instruct**         |        | ✅           |                     | ✅             |              |              | ✅                           |                                    |
+| **Llama3.1-8b instruct**         |        | ✅           |        ✅          | ✅             |              |              | ✅                           |                                    |
 | **Llama3.1-70b instruct**        |        | ✅           |                     | ✅             |              |              | ✅                           |                                    |
 | **Llama3-8b instruct**           |  ✅      | ✅              | ✅                   | ✅             | ✅           | ✅           | ✅                           |                                    |
 | **Llama3-70b instruct**          |  ✅      |               | ✅                   | ✅             | ✅           |              | ✅                           |                                    |
@@ -81,6 +81,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.2
+
+1. Code cleanup, minor bug fixes and report improvements.
+
 ## 2.0.0
 
 1. 🚨 Model evaluations done by a **Panel of LLM Evaluators[[1]](#1)** 🚨
@@ -91,10 +95,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. `Llama3.1-8b` and `Llama3.1-70b` config files for AWS Chips (Trainium, Inferentia).
 1. Misc. bug fixes.
 
-## v1.0.51
-
-1. `FMBench` has a [website](https://aws-samples.github.io/foundation-model-benchmarking-tool/index.html) now. Rework the README file to make it lightweight.
-1. `Llama3.1` config files for Bedrock.
 
 [Release history](./release_history.md)
 

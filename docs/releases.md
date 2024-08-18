@@ -1,5 +1,9 @@
 # Releases
 
+## 2.0.2
+
+1. Code cleanup, minor bug fixes and report improvements.
+
 ## 2.0.0
 
 1. 🚨 Model evaluations done by a **Panel of LLM Evaluators** 🚨
