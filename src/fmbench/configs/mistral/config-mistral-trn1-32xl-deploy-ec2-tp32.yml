@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "mistral-7b-inf2.48xl-ec2"      
+  name: "mistral-7b-trn1.32xl-ec2"      
   model_name: "mistral-7b-instruct"
   
 # AWS and SageMaker settings
@@ -167,7 +167,7 @@ experiments:
     model_name: "Mistral-7B-Instruct-v0.2"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "inf2.48xlarge"
+    instance_type: "trn1.32xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -181,7 +181,7 @@ experiments:
       # The following line specifies the runtime and Inferentia settings for the instance
       # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
       # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: -u djl --device /dev/neuron0  --device /dev/neuron3  --device /dev/neuron2  --device /dev/neuron4  --device /dev/neuron5  --device /dev/neuron1 
+      gpu_or_neuron_setting: -u djl --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 --device /dev/neuron12 --device /dev/neuron13 --device /dev/neuron14 --device /dev/neuron15
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
@@ -192,8 +192,8 @@ experiments:
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
       option.model_id=mistralai/Mistral-7B-Instruct-v0.2
-      option.tensor_parallel_degree=8
-      option.n_positions=8192
+      option.tensor_parallel_degree=32
+      option.n_positions=4096
       option.rolling_batch=auto
       option.max_rolling_batch_size=8
       option.model_loading_timeout=2400
