@@ -17,6 +17,7 @@ import tempfile
 import subprocess
 from typing import Dict
 from pathlib import Path
+from ec2_metadata import ec2_metadata
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -157,6 +158,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)
 
+    # print the ec2 instance details for it to get logged
+    print(f"EC2 instance type: {ec2_metadata.instance_type}, AMI ID: {ec2_metadata.ami_id}")
     # initialize with None values for error case
     deployment_result: Dict = dict(endpoint_name=None, 
                         experiment_name=None,
