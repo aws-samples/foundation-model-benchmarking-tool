@@ -25,4 +25,5 @@ pip install -U dist/*.whl
 # run the newly installed version
 echo "going to run fmbench now"
 fmbench --config-file $CONFIG_FILE_PATH  > $LOGFILE 2>&1
+# fmbench --config-file $CONFIG_FILE_PATH --local-mode yes --write-bucket sagemaker-fmbench-write-us-west-2-988564344122 --tmp-dir <tmp-dir-placeholder> > $LOGFILE 2>&1
 echo "all done"

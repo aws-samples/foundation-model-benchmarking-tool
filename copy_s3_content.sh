@@ -1,11 +1,13 @@
+#!/bin/bash
 # this scripts creates a local directory for running FMBench
 # without any s3 dependency and copies all relevant files
 # for public FMBench content
-FMBENCH_READ_DIR=/tmp/fmbench-read
-FMBENCH_WRITE_DIR=/tmp/fmbench-write
+BASE_DIR=${1:-/tmp}
+FMBENCH_READ_DIR=$BASE_DIR/fmbench-read
+FMBENCH_WRITE_DIR=$BASE_DIR/fmbench-write
 BUCKET=aws-blogs-artifacts-public
 
-mkdir $FMBENCH_READ_DIR
+mkdir -p $FMBENCH_READ_DIR
 mkdir -p $FMBENCH_READ_DIR/tokenizer
 mkdir -p $FMBENCH_READ_DIR/llama2_tokenizer
 mkdir -p $FMBENCH_READ_DIR/llama3_tokenizer
@@ -19,5 +21,3 @@ do
   mkdir -p ${FMBENCH_READ_DIR}/$dir_path
   wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/$i -P ${FMBENCH_READ_DIR}/$dir_path
 done
-
-

@@ -11,8 +11,8 @@ import unicodedata
 from pathlib import Path
 from fmbench import globals
 from fmbench import defaults
-from typing import Dict, List, Tuple
 from transformers import AutoTokenizer
+from typing import Dict, List, Tuple, Optional
 from botocore.exceptions import NoCredentialsError
 import shutil
 import concurrent.futures
@@ -61,10 +61,20 @@ def load_config(config_file) -> Dict:
     # check if the file is still parameterized and if so replace the parameters with actual values
     # if the file is not parameterized then the following statements change nothing
     write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}")
+    # check if the tmp dir is used as an argument if local mode is set to yes. If so, then use that as the temp file directory
+    # else use the default `tempfile` option
+    temp_directory: Optional[str]=None
+    tmp_dir = os.environ.get("TMP_DIR")
+    if tmp_dir:
+        temp_directory=tmp_dir
+        print(f"Using the tmp directory provided as an argument: {temp_directory}")
+    else:
+        temp_directory=tempfile.gettempdir()
+        print(f"tmp directory not provided as an argument. Using the default {temp_directory} directory")
     args = dict(region=session.region_name,
                 role_arn=arn_string,
-                read_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ),
-                write_tmpdir=os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE),
+                read_tmpdir=os.path.join(temp_directory, defaults.DEFAULT_LOCAL_READ),
+                write_tmpdir=os.path.join(temp_directory, defaults.DEFAULT_LOCAL_WRITE),
                 write_bucket=write_bucket,
                 read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 
@@ -119,14 +129,21 @@ def load_main_config(config_file) -> Dict:
         if config['experiments'][i].get('bucket') is None:
             config['experiments'][i]['bucket'] = config['aws']['bucket']
     local_mode = os.environ.get("LOCAL_MODE")
+    tmp_dir = os.environ.get("TMP_DIR")
     if local_mode == "yes":
         print("utils.py, local_mode = yes")
         config['aws']['s3_and_or_local_file_system'] = 'local'
         config['s3_read_data']['s3_or_local_file_system'] = 'local'
         if config['s3_read_data'].get('local_file_system_path') is None:
-            config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
+            if tmp_dir:
+                config['s3_read_data']['local_file_system_path'] = os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ)
+            else:
+                config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
         if config['aws'].get('local_file_system_path') is None:
-            config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
+            if tmp_dir:
+                config['aws']['local_file_system_path'] = os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE)
+            else:
+                config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
     return config
     
 def count_tokens(text: str) -> int:
