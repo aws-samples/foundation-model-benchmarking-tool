@@ -136,6 +136,9 @@ def main():
     # add an option to run FMBench local mode. If local mode is set to yes, then FMBench uses read and write data locally and if no, 
     # then the test will continue to interact with S3
     parser.add_argument('--local-mode', type=str, default=None, choices=['yes', 'no'], help='Specify if running in local mode or not. Options: yes, no. Default is no.')
+    # add an option to run FMBench with a custom tmp file argument. Users if running in local mode can configure a custom tmp file 
+    # instead of using the default /tmp directory
+    parser.add_argument('--tmp-dir', type=str, default=None, required=False, help='An optional tmp directory if fmbench is running in local mode.')
     parser.add_argument('--write-bucket', type=str, help='Write bucket that is used for sagemaker endpoints in local mode and storing metrics in s3 mode.')
 
     args = parser.parse_args()
@@ -161,7 +164,11 @@ def main():
                 # metrics stored in s3 mode with local mode is set to "yes" by the user
                 os.environ["WRITE_BUCKET"] = args.write_bucket
                 logger.info(f"Write bucket specified in local mode: {args.write_bucket}")
-
+            if args.tmp_dir:
+                os.environ["TMP_DIR"] = args.tmp_dir
+                logger.info(f"tmp directory specified in local mode: {args.tmp_dir}")
+            else:
+                logger.info(f"Custom tmp file not provided.")
 
 
     # if a role arn is specified then set it as an env var so that the rest of the code

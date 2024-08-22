@@ -51,7 +51,8 @@ class EC2Predictor(FMBenchPredictor):
                 logger.info(f"split input parameters is: {split_input_and_inference_params}")
             # this is the POST request to the endpoint url for invocations that 
             # is given to you as you deploy a model on EC2 using the DJL serving stack
-            response = requests.post(self._endpoint_name, payload) 
+            payload = payload | dict(parameters=self._inference_spec["parameters"])
+            response = requests.post(self._endpoint_name, json=payload)
             # record the latency for the response generated
             latency = time.perf_counter() - st
             # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
