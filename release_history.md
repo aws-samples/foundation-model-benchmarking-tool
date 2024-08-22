@@ -1,3 +1,9 @@
+## v1.0.52
+
+1. Compile for AWS Chips (Trainium, Inferentia) and deploy to SageMaker directly through `FMBench`.
+1. `Llama3.1-8b` and `Llama3.1-70b` config files for AWS Chips (Trainium, Inferentia).
+1. Misc. bug fixes.
+
 ## v1.0.51
 
 1. `FMBench` has a [website](https://aws-samples.github.io/foundation-model-benchmarking-tool/index.html) now. Rework the README file to make it lightweight.

@@ -60,7 +60,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 |:--------------------------------|:-------|:--------------|:---------------------|:---------------|:-------------|:-------------|:-----------------------------|:--------------------------------|
 | **Anthropic Claude-3 Sonnet**   |        |               |                     |                |              |              | ✅                           | ✅                               |
 | **Anthropic Claude-3 Haiku**    |        |               |                     |                |              |              | ✅                           |                                    |
-| **Mistral-7b-instruct**          |        |               | ✅                   |                | ✅            | ✅           | ✅                           |                                    |
+| **Mistral-7b-instruct**          |        |      ✅          | ✅                   |                | ✅            | ✅           | ✅                           |                                    |
 | **Mistral-7b-AWQ**               |        |               |                     |                |              | ✅           |                             |                                    |
 | **Mixtral-8x7b-instruct**       |        |               |                     |                |              |              | ✅                           |                                    |
 | **Llama3.1-8b instruct**         |        | ✅           |        ✅          | ✅             |              |              | ✅                           |                                    |
@@ -81,6 +81,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.3
+
+1. Support for a EFA directory for benchmarking on EC2.
+
 ## 2.0.2
 
 1. Code cleanup, minor bug fixes and report improvements.
@@ -88,12 +92,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## 2.0.0
 
 1. 🚨 Model evaluations done by a **Panel of LLM Evaluators[[1]](#1)** 🚨
-
-## v1.0.52
-
-1. Compile for AWS Chips (Trainium, Inferentia) and deploy to SageMaker directly through `FMBench`.
-1. `Llama3.1-8b` and `Llama3.1-70b` config files for AWS Chips (Trainium, Inferentia).
-1. Misc. bug fixes.
 
 
 [Release history](./release_history.md)
