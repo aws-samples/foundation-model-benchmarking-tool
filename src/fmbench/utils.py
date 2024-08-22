@@ -11,8 +11,8 @@ import unicodedata
 from pathlib import Path
 from fmbench import globals
 from fmbench import defaults
+from typing import Dict, List, Tuple
 from transformers import AutoTokenizer
-from typing import Dict, List, Tuple, Optional
 from botocore.exceptions import NoCredentialsError
 import shutil
 import concurrent.futures

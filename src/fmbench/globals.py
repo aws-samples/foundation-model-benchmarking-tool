@@ -90,7 +90,6 @@ else:
 write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}")
 # check if the tmp dir is used as an argument if local mode is set to yes. If so, then use that as the temp file directory
 # else use the default `tempfile` option
-temp_directory: Optional[str]=None
 tmp_dir = os.environ.get("TMP_DIR", tempfile.gettempdir())
 args = dict(region=session.region_name,
             role_arn=arn_string,
