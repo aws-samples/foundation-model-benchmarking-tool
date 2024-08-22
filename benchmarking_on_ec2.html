@@ -1211,8 +1211,8 @@
 </span></code></pre></div>
 </li>
 <li>
-<p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh
+<p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo. Replace <code>/tmp</code> in the command below with a different path if you want to store the config files and the <code>FMBench</code> generated data in a different directory.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
 </span></code></pre></div>
 </li>
 <li>
