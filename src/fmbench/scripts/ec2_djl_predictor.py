@@ -57,7 +57,8 @@ class EC2Predictor(FMBenchPredictor):
             latency = time.perf_counter() - st
             # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
             response.raise_for_status()
-            answer_only = response.text
+            full_output = response.text
+            answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
             response_json = dict(generated_text=answer_only)
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))

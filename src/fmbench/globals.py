@@ -91,17 +91,11 @@ write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-
 # check if the tmp dir is used as an argument if local mode is set to yes. If so, then use that as the temp file directory
 # else use the default `tempfile` option
 temp_directory: Optional[str]=None
-tmp_dir = os.environ.get("TMP_DIR")
-if tmp_dir:
-    temp_directory=tmp_dir
-    print(f"Using the tmp directory provided as an argument: {temp_directory}")
-else:
-    temp_directory=tempfile.gettempdir()
-    print(f"tmp directory not provided as an argument. Using the default {temp_directory} directory")
+tmp_dir = os.environ.get("TMP_DIR", tempfile.gettempdir())
 args = dict(region=session.region_name,
             role_arn=arn_string,
-            read_tmpdir=os.path.join(temp_directory, defaults.DEFAULT_LOCAL_READ),
-            write_tmpdir=os.path.join(temp_directory, defaults.DEFAULT_LOCAL_WRITE),
+            read_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ),
+            write_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE),
             write_bucket=write_bucket,
             read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
@@ -114,15 +108,9 @@ if local_mode == "yes":
     config['aws']['s3_and_or_local_file_system'] = 'local'
     config['s3_read_data']['s3_or_local_file_system'] = 'local'
     if config['s3_read_data'].get('local_file_system_path') is None:
-        if temp_directory:
-            config['s3_read_data']['local_file_system_path'] = os.path.join(temp_directory, defaults.DEFAULT_LOCAL_READ)
-        else:
-            config['s3_read_data']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_READ)
+        config['s3_read_data']['local_file_system_path'] = os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ)
     if config['aws'].get('local_file_system_path') is None:
-        if temp_directory:
-            config['aws']['local_file_system_path'] = os.path.join(temp_directory, defaults.DEFAULT_LOCAL_WRITE)
-        else:
-            config['aws']['local_file_system_path'] = os.path.join(tempfile.gettempdir(), defaults.DEFAULT_LOCAL_WRITE)
+        config['aws']['local_file_system_path'] = os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE)
 
 # iterate through each experiment and populate the parameters section in the inference spec
 for i in range(len(config['experiments'])):

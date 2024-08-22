@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "mistral-7b-inf2.48xl-ec2"      
-  model_name: "mistral-7b-instruct"
+  name: "mistral-7b-v3-inf2.48xl-ec2"      
+  model_name: "mistral-7b-instruct-v3"
   
 # AWS and SageMaker settings
 aws:
@@ -154,7 +154,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Mistral-7B-Instruct-v0.2"
+  - name: "Mistral-7B-Instruct-v0.3"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -162,9 +162,9 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: mistralai/Mistral-7B-Instruct-v0.2 #model id, version and image uri not needed for byo endpoint
+    model_id: mistralai/Mistral-7B-Instruct-v0.3 #model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Mistral-7B-Instruct-v0.2"
+    model_name: "Mistral-7B-Instruct-v0.3"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: "inf2.48xlarge"
@@ -181,7 +181,8 @@ experiments:
       # The following line specifies the runtime and Inferentia settings for the instance
       # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
       # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: -u djl --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 
+      gpu_or_neuron_setting: -u djl --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11
+      #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
@@ -190,11 +191,11 @@ experiments:
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=mistralai/Mistral-7B-Instruct-v0.2
-      option.tensor_parallel_degree=12
+      option.model_id=mistralai/Mistral-7B-Instruct-v0.3
+      option.tensor_parallel_degree=24
       option.n_positions=4096
       option.rolling_batch=auto
-      option.max_rolling_batch_size=6
+      option.max_rolling_batch_size=12
       option.model_loading_timeout=2400
 
     # runs are done for each combination of payload file and concurrency level

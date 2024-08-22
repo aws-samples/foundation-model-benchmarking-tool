@@ -159,7 +159,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     ran_container = _run_container(deployment_script_path)
 
     # print the ec2 instance details for it to get logged
-    print(f"EC2 instance type: {ec2_metadata.instance_type}, AMI ID: {ec2_metadata.ami_id}")
+    logger.info(f"EC2 instance type: {ec2_metadata.instance_type}, AMI ID: {ec2_metadata.ami_id}")
     # initialize with None values for error case
     deployment_result: Dict = dict(endpoint_name=None, 
                         experiment_name=None,
