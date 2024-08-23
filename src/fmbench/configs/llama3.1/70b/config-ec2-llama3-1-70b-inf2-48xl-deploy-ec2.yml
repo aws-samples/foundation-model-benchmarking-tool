@@ -176,7 +176,7 @@ experiments:
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-70b-instruct deployed on ec2
-    inference_script: ec2_djl_predictor.py
+    inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
       # The following line specifies the runtime and Inferentia settings for the instance
