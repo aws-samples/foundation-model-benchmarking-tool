@@ -1184,8 +1184,19 @@
    <img alt="" src="../img/ec2connect4.png" /></p>
 </li>
 <li>
-<p>Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. Select the one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. <strong>Your version number might be different</strong>. 
-    <img alt="" src="../img/ec2connect5a.png" /></p>
+<p>Type in a name for your instance (recommended to include your alias in the name), and then scroll down.</p>
+<ul>
+<li>
+<p>If running on an NVIDIA GPU machine search for <code>Deep Learning AMI</code> in the box. Select the one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. <strong>Your version number might be different</strong>. 
+<img alt="" src="../img/ec2connect5a.png" /></p>
+</li>
+<li>
+<p>If running on an AWS Chips i.e. Trainium or Inferentia machine search for <code>Deep Learning AMI Neuron</code>.</p>
+</li>
+<li>
+<p>If running on an AMD machine the default selection of <code>Amazon Linux</code> AMI is good enough.</p>
+</li>
+</ul>
 </li>
 <li>
 <p>Name your instance <em>FMBenchInstance</em>.</p>
