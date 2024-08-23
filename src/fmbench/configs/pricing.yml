@@ -22,6 +22,8 @@ pricing:
     ml.g6.12xlarge: 5.752
     ml.g6.24xlarge: 8.344
     ml.g6.48xlarge: 16.688
+    m7a.4xlarge: 0.9274
+    m7a.16xlarge: 3.709
     anthropic.claude-v3-sonnet-pt-nc: 88
     # corresponding hourly pricing for EC2 instances if your model is hosted on EC2
     # all EC2 pricing is based on public on-demand pricing information that can be 
