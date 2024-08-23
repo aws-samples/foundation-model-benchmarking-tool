@@ -1,0 +1,123 @@
+pricing:
+  instance_based:
+    # Instance Based Pricing: SageMaker, EKS, Bedrock Provisioned Throughput, Bring your own endpoints that are priced hourly
+    # SageMaker Hourly Instance Pricing
+    ml.m5.xlarge: 0.23
+    ml.g5.xlarge: 1.4084
+    ml.g5.2xlarge: 1.515
+    ml.g5.12xlarge: 7.09
+    ml.g5.24xlarge: 10.18
+    ml.g5.48xlarge: 20.36
+    ml.inf2.xlarge: 0.99
+    ml.inf2.8xlarge: 2.36
+    ml.inf2.24xlarge: 7.79
+    ml.inf2.48xlarge: 15.58
+    ml.trn1.32xlarge: 28.497
+    ml.p4d.24xlarge: 37.688
+    ml.p5.48xlarge: 113.068
+    ml.p3.2xlarge: 3.825
+    ml.g4dn.12xlarge: 4.89
+    ml.g6.2xlarge: 1.222
+    ml.g6.16xlarge: 4.246
+    ml.g6.12xlarge: 5.752
+    ml.g6.24xlarge: 8.344
+    ml.g6.48xlarge: 16.688
+    m7a.4xlarge: 0.9274
+    m7a.16xlarge: 3.709
+    anthropic.claude-v3-sonnet-pt-nc: 88
+    # corresponding hourly pricing for EC2 instances if your model is hosted on EC2
+    # all EC2 pricing is based on public on-demand pricing information that can be 
+    # viewed in this link: https://aws.amazon.com/ec2/pricing/on-demand/
+    m5.xlarge: 0.192
+    g5.xlarge: 1.006
+    g5.2xlarge: 1.212
+    g5.12xlarge: 5.672
+    g5.24xlarge: 8.144
+    g5.48xlarge: 16.288
+    inf2.xlarge: 0.7582
+    inf2.8xlarge: 1.96786
+    inf2.24xlarge: 6.49063
+    inf2.48xlarge: 12.98127
+    trn1.32xlarge: 21.50
+    p4d.24xlarge: 32.7726
+    p5.48xlarge: 98.32
+    p3.2xlarge: 3.06
+    g4dn.12xlarge: 3.912
+    g6.2xlarge: 0.9776
+    g6.16xlarge: 3.3968
+    g6.12xlarge: 4.6016
+    g6.24xlarge: 6.6752
+    g6.48xlarge: 13.3504
+
+
+  token_based:
+    # Token Based Pricing: Bedrock
+    anthropic.claude-3-haiku-20240307-v1:0:
+      input-per-1k-tokens: 0.00025
+      output-per-1k-tokens: 0.00125
+    anthropic.claude-3-sonnet-20240229-v1:0:
+      input-per-1k-tokens: 0.00300
+      output-per-1k-tokens: 0.01500
+    anthropic.claude-v2:1:
+      input-per-1k-tokens: 0.008
+      output-per-1k-tokens: 0.024
+    anthropic.claude-instant-v1:
+      input-per-1k-tokens: 0.0008
+      output-per-1k-tokens: 0.0024
+    anthropic.claude-v2:
+      input-per-1k-tokens: 0.008
+      output-per-1k-tokens: 0.024
+    # Titan
+    amazon.titan-text-lite-v1: 
+      input-per-1k-tokens: 0.00015
+      output-per-1k-tokens: 0.0002
+    amazon.titan-text-express-v1: 
+      input-per-1k-tokens: 0.0002
+      output-per-1k-tokens: 0.0006
+    # Mistral & Mixtral
+    mistral.mistral-7b-instruct-v0:2:
+      input-per-1k-tokens: 0.00015
+      output-per-1k-tokens: 0.0002
+    mistral.mixtral-8x7b-instruct-v0:1: 
+      input-per-1k-tokens: 0.00045
+      output-per-1k-tokens: 0.0007
+    ## Llama
+    meta.llama3-1-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    meta.llama3-1-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama3-1-405b-instruct-v1:0:
+      input-per-1k-tokens: 0.00532
+      output-per-1k-tokens: 0.016
+    meta.llama3-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    meta.llama3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama2-13b-chat-v1:
+      input-per-1k-tokens: 0.00075
+      output-per-1k-tokens: 0.00100      
+    meta.llama2-70b-chat-v1: 
+      input-per-1k-tokens: 0.00195
+      output-per-1k-tokens: 0.00256
+      
+    #  ai21
+    ai21.j2-mid-v1:
+      input-per-1k-tokens: 0.0125
+      output-per-1k-tokens: 0.0125
+    ai21.j2-ultra-v1: 
+      input-per-1k-tokens: 0.0188
+      output-per-1k-tokens: 0.0188
+    # Cohere
+    cohere.command-text-v14: 
+      input-per-1k-tokens: 0.0015
+      output-per-1k-tokens: 0.0020
+    cohere.command-light-text-v14: 
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    cohere.command-r-plus-v1:0:
+      input-per-1k-tokens: 0.0030
+      output-per-1k-tokens: 0.0150
