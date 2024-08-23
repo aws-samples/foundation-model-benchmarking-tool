@@ -50,6 +50,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **└── llama3/8b**  
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b.yml](configs/llama3/8b/config-ec2-llama3-8b.yml)  
 [├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml)  
 [├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl.yml)  
@@ -99,7 +100,9 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── mistral/config-mistral-instruct-v2-p4d-lmi-dist.yml](configs/mistral/config-mistral-instruct-v2-p4d-lmi-dist.yml)  
 [├── mistral/config-mistral-instruct-v2-p4d-trtllm.yml](configs/mistral/config-mistral-instruct-v2-p4d-trtllm.yml)  
 [├── mistral/config-mistral-instruct-v2-p5-lmi-dist.yml](configs/mistral/config-mistral-instruct-v2-p5-lmi-dist.yml)  
-[└── mistral/config-mistral-instruct-v2-p5-trtllm.yml]( configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml)  
+[├── mistral/config-mistral-instruct-v2-p5-trtllm.yml](configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml)  
+[├── mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml](configs/mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml)  
+[└── mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml]( configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml)  
 [model_eval_all_info.yml](configs/model_eval_all_info.yml)  
 **phi**  
 [└── phi/config-phi-3-g5.yml]( configs/phi/config-phi-3-g5.yml)  

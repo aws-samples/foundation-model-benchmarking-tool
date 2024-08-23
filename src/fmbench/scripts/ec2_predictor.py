@@ -1,20 +1,26 @@
 import os
 import json
-import math
+import copy
 import time
-import boto3
 import logging
 import requests
 import pandas as pd
 from datetime import datetime
+from typing import Dict, Optional
 from fmbench.utils import count_tokens
-from typing import Dict, Optional, List
+from fmbench.scripts import constants
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
                                             
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+from enum import Enum
+
+class CONTAINER_TYPE(str, Enum):
+    DJL = 'djl'
+    VLLM = 'vllm'
 
 class EC2Predictor(FMBenchPredictor):
     # overriding abstract method
@@ -39,6 +45,7 @@ class EC2Predictor(FMBenchPredictor):
         TTLT: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
+        container_type: Optional[str] = None
         # get the prompt for the EKS endpoint
         prompt: str = payload['inputs']
         # represents the number of tokens in the prompt payload
@@ -48,13 +55,28 @@ class EC2Predictor(FMBenchPredictor):
             split_input_and_inference_params: Optional[bool] = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
-                logger.info(f"split input parameters is: {split_input_and_inference_params}")
+                container_type = self._inference_spec.get("container_type", constants.CONTAINER_TYPE_DJL)
+                logger.info(f"split input parameters is: {split_input_and_inference_params}, "
+                            f"container_type={container_type}")
             # this is the POST request to the endpoint url for invocations that 
             # is given to you as you deploy a model on EC2 using the DJL serving stack
-            payload = payload | dict(parameters=self._inference_spec["parameters"])
-            response = requests.post(self._endpoint_name, json=payload)
+            if container_type == constants.CONTAINER_TYPE_DJL:
+                payload = payload | dict(parameters=self._inference_spec["parameters"])
+                response = requests.post(self._endpoint_name, json=payload)
+            elif container_type == constants.CONTAINER_TYPE_VLLM:
+                # vllm uses prompt rather than input and then
+                # the code in the calling function still expects input
+                # so make a copy
+                payload2 = copy.deepcopy(payload)
+                payload2['prompt'] = payload2.pop('inputs')
+                payload2 = payload2 | self._inference_spec["parameters"]
+                response = requests.post(self._endpoint_name, json=payload2)
+            else:
+                raise ValueError("container_type={container_type}, dont know how to handle this") 
+
             # record the latency for the response generated
             latency = time.perf_counter() - st
+            
             # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
             response.raise_for_status()
             full_output = response.text

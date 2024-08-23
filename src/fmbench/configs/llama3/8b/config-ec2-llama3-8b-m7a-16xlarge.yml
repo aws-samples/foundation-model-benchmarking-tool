@@ -76,7 +76,7 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: yes
+  1_generate_data.ipynb: no
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
@@ -146,6 +146,7 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_vllm:
+    model: meta-llama/Meta-Llama-3-8B-Instruct
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
@@ -179,9 +180,7 @@ experiments:
     # for a llama3-8b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
-    ec2:
-      # if not set assume djl
-      container_type: vllm
+    ec2:      
       # The following line specifies the runtime and GPU settings for the instance
       # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
       # '--gpus all' makes all GPUs available to the container
@@ -193,6 +192,8 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_vllm
+      # if not set assume djl
+      container_type: vllm
     # modify the serving properties to match your model and requirements
     serving.properties:
     # runs are done for each combination of payload file and concurrency level
@@ -209,9 +210,6 @@ experiments:
     - 1
     - 2
     - 4
-    - 6
-    - 8
-    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
