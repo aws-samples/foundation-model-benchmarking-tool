@@ -40,6 +40,9 @@ theme:
   edit_uri: ''
 
 extra:
+  analytics:
+    provider: google
+    property: G-MX1DMWF4GF
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/aws-samples/foundation-model-benchmarking-tool
