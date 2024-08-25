@@ -124,7 +124,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
     echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
     ```
 
-1. Before running FMBench, add the current user to the docker group. Run the following commands to run Docker commands without needing to use `sudo` each time.
+1. Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use `sudo` each time.
 
     ```{.bash}
     sudo usermod -a -G docker $USER
