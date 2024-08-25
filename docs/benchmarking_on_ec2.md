@@ -124,6 +124,13 @@ command below. The config file for this example can be viewed [here](src/fmbench
     echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
     ```
 
+1. Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use `sudo` each time.
+
+    ```{.bash}
+    sudo usermod -a -G docker $USER
+    newgrp docker
+    ```
+
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
