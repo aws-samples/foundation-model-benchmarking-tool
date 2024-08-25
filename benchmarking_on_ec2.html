@@ -18,7 +18,7 @@
       
       
       <link rel="icon" href="website/img/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.32">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.30">
     
     
       
@@ -1371,13 +1371,19 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </span></code></pre></div>
 </li>
 <li>
+<p>Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use <code>sudo</code> each time.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>newgrp<span class="w"> </span>docker
+</span></code></pre></div>
+</li>
+<li>
 <p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Open a new Terminal and and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
 </span></code></pre></div>
 </li>
 <li>
@@ -1459,7 +1465,7 @@ command below. The config file for this example can be viewed <a href="src/fmben
     <script id="__config" type="application/json">{"base": ".", "features": ["navigation", "content.code.copy"], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="assets/javascripts/bundle.471ce7a9.min.js"></script>
+      <script src="assets/javascripts/bundle.fe8b6f2b.min.js"></script>
       
     
   </body>
