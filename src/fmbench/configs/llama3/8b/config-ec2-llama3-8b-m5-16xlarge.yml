@@ -214,8 +214,8 @@ experiments:
     # this is not a fixed list, you can add more parameters as applicable.
     env:
       - VLLM_CPU_KVCACHE_SPACE: 40
-      # This instance has 64 CPUs and we are using 60 of those for this container.
-      # See below URL for more info: 
+      # This instance is equipped with 64 CPUs, and we are allocating 60 of them to run this container.
+      # For additional details, refer to the following URL:
       # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
       - VLLM_CPU_OMP_THREADS_BIND: 0-59
 
