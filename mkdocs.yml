@@ -80,13 +80,14 @@ nav:
       - BYO REST predictor: byo_rest_predictor.md
       - BYO dataset: byo_dataset.md
       - Build FMBench: build.md
+      - Analytics: analytics.md
 
   - Results:
       - Report: results.md
       - Website: internal_website.md
 
   - Releases:
-      - Major release: 2.0.x.md
+      - Major release: announcement.md
       - releases.md
   - Resources:
       - resources.md

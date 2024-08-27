@@ -85,7 +85,9 @@ def create_manifest_file(config_yml_dir):
     # append them to the base list
     all_manifest_files = config_yml_files + BASE_FILE_LIST
 
-    # write to manifest.txt
+    # sort so that diff between versions is easier to understand
+    all_manifest_files = sorted(all_manifest_files)
+    # and write to manifest.txt
     written: int = Path(MANIFEST_FILE).write_text("\n".join([f for f in all_manifest_files]))
     print(f"written {written} bytes to {MANIFEST_FILE}")
 

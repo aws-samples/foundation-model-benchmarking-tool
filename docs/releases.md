@@ -1,5 +1,9 @@
 # Releases
 
+## 2.0.5
+
+1. Support for Intel CPU based instances such as `c5.18xlarge` and `m5.16xlarge`.
+
 ## 2.0.4
 
 1. Support for AMD CPU based instances such as `m7a`.

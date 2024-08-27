@@ -13,7 +13,7 @@ _What is the minimum number of instances N, of most cost optimal instance type T
 
 #### Summary for payload: payload_en_x-y
 
-- The metrics below in the table are examples and do not represent any specific model or instance type. This table can be used to make analysis on the cost and instance maintenance perspective based on the use case. For example, `instance_type_1` costs $10 and requires 1 instance to host `model_1` until it can handle 100 requests per minute. As the requests scale to a 1,000 requests per minute, 5 instances are required and cost $50. As the requests scale to 10,000 requests per minute, the number of instances to maintain scale to 30, and the cost becomes $450 dollars. 
+- The metrics below in the table are examples and do not represent any specific model or instance type. This table can be used to make analysis on the cost and instance maintenance perspective based on the use case. For example, `instance_type_1` costs 10 dollars and requires 1 instance to host `model_1` until it can handle 100 requests per minute. As the requests scale to a 1,000 requests per minute, 5 instances are required and cost 50 dollars. As the requests scale to 10,000 requests per minute, the number of instances to maintain scale to 30, and the cost becomes 450 dollars. 
 
 - On the other hand, `instance_type_2` is more costly, with a price of $499 for 10,000 requests per minute to host the same model, but only requires 22 instances to maintain, which is 8 less than when the model is hosted on `instance_type_1`. 
 

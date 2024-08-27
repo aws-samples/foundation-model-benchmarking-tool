@@ -81,6 +81,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.5
+
+1. Support for Intel CPU based instances such as `c5.18xlarge` and `m5.16xlarge`.
+
 ## 2.0.4
 
 1. Support for AMD CPU based instances such as `m7a`.
@@ -89,9 +93,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 1. Support for a EFA directory for benchmarking on EC2.
 
-## 2.0.2
 
-1. Code cleanup, minor bug fixes and report improvements.
 
 
 

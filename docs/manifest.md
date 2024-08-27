@@ -49,7 +49,9 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   └── llama3/70b/config-llama3-70b-instruct-p4d.yml]( configs/llama3/70b/config-llama3-70b-instruct-p4d.yml)  
 **└── llama3/8b**  
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b.yml](configs/llama3/8b/config-ec2-llama3-8b.yml)  
 [├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl.yml)  
