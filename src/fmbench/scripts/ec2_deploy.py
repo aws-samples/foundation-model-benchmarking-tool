@@ -51,6 +51,7 @@ def _set_up(model_name: str, serving_properties: str, local_model_path: str):
 
 def _create_deployment_script(image_uri,
                               container_type,
+                              privileged_mode,
                               region,
                               model_name,
                               model_id,
@@ -65,24 +66,77 @@ def _create_deployment_script(image_uri,
     #stop container if it already exists check if container exists 
     container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     env_str: str = f"-e MODEL_LOADING_TIMEOUT={model_loading_timeout} "
+    privileged_str: str = "--priviliged" if privileged_mode else ""
     if env is not None:
-        for k in env.keys():
-            env_str += f"-e {k}={env[k]} "
+        logger.info(f"env passed is: {env}")
+    
+        for env_dict in env:
+            for k, v in env_dict.items():
+                env_str += f"-e {k}={v} "
+    
+    stop_and_rm_container = f"""
+    # Attempt to stop and remove the container up to 3 times if container exists
+        if [ -n "$(docker ps -aq --filter "name={container_name}")" ]; then
+            for i in {{1..3}}; do
+                echo "Attempt $i to stop and remove the container: {container_name}"
+                
+                # Stop the container
+                docker ps -q --filter "name={container_name}" | xargs -r docker stop
+                
+                # Wait for 5 seconds
+                sleep 5
+                
+                # Remove the container
+                docker ps -aq --filter "name={container_name}" | xargs -r docker rm
+                
+                # Wait for 5 seconds
+                sleep 5
+                
+                # Check if the container is removed
+                if [ -z "$(docker ps -aq --filter "name={container_name}")" ]; then
+                    echo "Container {container_name} successfully stopped and removed."
+                    break
+                else
+                    echo "Container {container_name} still exists, retrying..."
+                fi
+            done
+        else
+            echo "Container {container_name} does not exist. No action taken."
+        fi
+    """
 
     if container_type == constants.CONTAINER_TYPE_DJL:
         deploy_script_content = f"""#!/bin/sh
-echo "Going to download model now"
-echo "Content in docker command: {region}, {image_uri}, {model_name}"
-aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
-docker pull {image_uri}
-docker stop {container_name} || true && docker rm {container_name} || true
-docker run -d --name={container_name} {gpu_or_neuron_setting} -v {directory}:/opt/ml/model:ro -v {directory}/model_server_logs:/opt/djl/logs {env_str} -e HF_TOKEN={HF_TOKEN} -p 8080:8080 {image_uri}
-echo "Done pulling model"
-"""
+        echo "Going to download model now"
+        echo "Content in docker command: {region}, {image_uri}, {model_name}"
+
+        # Login to AWS ECR and pull the Docker image
+        aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
+        docker pull {image_uri}
+
+        {stop_and_rm_container}
+
+        # Run the new Docker container with specified settings
+        docker run -d --name={container_name} {gpu_or_neuron_setting} \
+            -v {directory}:/opt/ml/model:ro \
+            -v {directory}/model_server_logs:/opt/djl/logs \
+            {env_str} \
+            -e HF_TOKEN={HF_TOKEN} \
+            -p 8080:8080 {image_uri}
+
+        echo "Done pulling model"
+
+        """
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         deploy_script_content = f"""#!/bin/sh
-docker run -d --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
-echo "Done running {image_uri} image"
+
+        {stop_and_rm_container}
+        
+        # Run the new Docker container with specified settings
+        docker run -d {privileged_str} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
+
+        echo "Done running {image_uri} image"
+
 """
     script_file_path = os.path.join(directory, "deploy_model.sh")
     Path(script_file_path).write_text(deploy_script_content)
@@ -106,9 +160,9 @@ def _run_container(script_file_path):
         if container.status == "running":
             logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is already running.")
         else:
-            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is not running. Running the script directly.")
-            subprocess.run(["bash", script_file_path], check=True)
-            logger.info(f"done running bash script")
+            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is not running.")
+        subprocess.run(["bash", script_file_path], check=True)
+        logger.info(f"done running bash script")
         return True
     except docker.errors.NotFound:
         logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} not found. Running the script directly.")
@@ -164,7 +218,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     ep_name: str = experiment_config['ep_name']
     model_id: str = experiment_config['model_id']
     region: str = experiment_config['region']
-    
+    privileged_mode: str = experiment_config['ec2'].get('privileged_mode', False)
     container_type: str = experiment_config['inference_spec'].get('container_type', constants.CONTAINER_TYPE_DJL)
     env = experiment_config.get('env')
     serving_properties: str = experiment_config['serving.properties']
@@ -180,6 +234,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     logger.info("Creating the deployment script in model directory")
     deployment_script_path = _create_deployment_script(image_uri,
                                                        container_type,
+                                                       privileged_mode,
                                                        region,
                                                        model_name,
                                                        model_id,

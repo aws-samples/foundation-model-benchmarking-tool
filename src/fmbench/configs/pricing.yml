@@ -3,6 +3,8 @@ pricing:
     # Instance Based Pricing: SageMaker, EKS, Bedrock Provisioned Throughput, Bring your own endpoints that are priced hourly
     # SageMaker Hourly Instance Pricing
     ml.m5.xlarge: 0.23
+    m5.16xlarge: 3.072
+    c5.18xlarge: 3.06
     ml.g5.xlarge: 1.4084
     ml.g5.2xlarge: 1.515
     ml.g5.12xlarge: 7.09
