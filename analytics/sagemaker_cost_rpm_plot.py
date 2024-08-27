@@ -144,6 +144,10 @@ def plot_best_cost_instance_heatmap(summary_payload_df: pd.DataFrame,
         hovertemplate='%{hovertext}<extra></extra>'
     ))
 
+    num_rows, num_cols = heatmap_data.shape
+    dynamic_font_size = _calculate_dynamic_font_size(num_rows, num_cols)
+    fig.update_traces(textfont=dict(size=dynamic_font_size))
+
     logger.info("======================================")
     logger.info("Updating layout for better visualization")
     logger.info("======================================")
@@ -155,10 +159,11 @@ def plot_best_cost_instance_heatmap(summary_payload_df: pd.DataFrame,
         yaxis_title="Requests/minute",
         autosize=True,
         width=1500,
-        height=700,
+        height=700, 
+        font=dict(size=dynamic_font_size)
     )
 
-    fig.update_traces(textfont_size=10)
+    fig.update_traces(textfont_size=dynamic_font_size)
     
     fig.add_annotation(
        showarrow=False,
@@ -167,8 +172,8 @@ def plot_best_cost_instance_heatmap(summary_payload_df: pd.DataFrame,
        x=0, 
        yref='paper',
        y=-0.15,
-       text=f"Note: <b><i>best choice</i></b> based on {100*cost_weight}% weightage to cost and {100*instance_count_weight}% to number of instances needed. <b><i>least cost</i></b> and <b><i>fewest instances</i></b> called out only when different from <b><i>best choice</i></b>.")
-
+       text=f"Note: <b><i>best choice</i></b> based on {100*cost_weight}% weightage to cost and {100*instance_count_weight}% to number of instances needed. <b><i>least cost</i></b> and <b><i>fewest instances</i></b> called out only when different from <b><i>best choice</i></b>.",
+       font=dict(size=max(dynamic_font_size - 2, 8)))
 
     # Save the figure as an HTML file
     fig.write_html(output_filename)
@@ -178,3 +183,13 @@ def plot_best_cost_instance_heatmap(summary_payload_df: pd.DataFrame,
     logger.info("======================================")
 
     return fig
+
+def _calculate_dynamic_font_size(num_rows: int, num_cols: int):
+    """
+    Adjust the dynamic font size of the text in the heatmap based on the number of rows
+    and columns
+    """
+    base_size: int = 14
+    scale_factor = min(1000 / max(num_rows, num_cols), 1)
+    # Ensure minimum font size of 10
+    return max(int(base_size * scale_factor), 10)

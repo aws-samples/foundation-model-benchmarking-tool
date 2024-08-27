@@ -11,18 +11,21 @@ import logging
 import argparse
 import pandas as pd
 from pathlib import Path
+from tomark import Tomark
 from sagemaker_cost_rpm_plot import plot_best_cost_instance_heatmap
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 RPM_LIST = [1, 10, 100, 1000, 10000]
+# default values for latency and concurrency thresholds. To configure the summary table
+# based on custom thresholds, add them as command line arguments
 LATENCY_THRESHOLD: int = 2
+CONCURRENCY_THRESHOLD: int = 1
 RESULTS_DIR: str = "./"
 ANALYTICS_RESULTS_DIR: str = os.path.join("analytics", "results")
 os.makedirs(ANALYTICS_RESULTS_DIR, exist_ok=True)
-PAYLOAD_FILE_OF_INTEREST: str = "payload_en_3000-3840.jsonl"
-MODEL: str = "llama3-8b-instruct"
+PAYLOAD_FILE_OF_INTEREST: str = "payload_en_1000-2000.jsonl"
 PRICING_FILE_PATH: str = os.path.join("src", "fmbench", "configs",
                                       "pricing.yml")
 DEFAULT_COST_WEIGHT: float = 0.6
@@ -63,16 +66,21 @@ def main():
                         default=LATENCY_THRESHOLD,
                         help=f'Latency threshold, runs with p95 above this are not useful, default={LATENCY_THRESHOLD}',
                         required=False)
+    parser.add_argument('--concurrency-threshold', 
+                        type=int, 
+                        default=CONCURRENCY_THRESHOLD, 
+                        help=f'Concurrency threshold, runs with the number of concurrent requests handled under this are not useful, default={CONCURRENCY_THRESHOLD}')
     parser.add_argument('--payload-file',
                         type=str,
                         default=PAYLOAD_FILE_OF_INTEREST,
                         help=f'Payload file representing payload of interest, default={PAYLOAD_FILE_OF_INTEREST}',
                         required=False)
+    # the model id is a required field. This model_id must match the model_id in your results folders so it is 
+    # used during creating the summary table
     parser.add_argument('--model-id',
                         type=str,
-                        default=MODEL,
-                        help=f'Model for which data is being analyzed, default={MODEL}',
-                        required=False)
+                        help=f'Model for which data is being analyzed, this is a required field',
+                        required=True)
     parser.add_argument('--cost-weight',
                         type=float,
                         default=DEFAULT_COST_WEIGHT,
@@ -107,12 +115,19 @@ def main():
                 f"of shape {df.shape}")
 
     # filter to keep only relevant data
-    df_selected = df[df.latency_p95 <= args.latency_threshold]
-    logger.info(f"after filtering to keep rows with latency_p95 <= "
-                f"{args.latency_threshold}s, df shape {df_selected.shape}")
+    logger.info(f"df columns: {df.columns}")
+    # filter for the p95 latency threshold and the concurrency threshold
+    df_selected = df[(df.latency_p95 <= args.latency_threshold) & (df.concurrency >= args.concurrency_threshold)]
+    logger.info(f"after filtering to keep rows with latency_p95 <= ",
+                f"{args.latency_threshold}s, concurrency <=",
+                f"{args.concurrency_threshold}",
+                f"df shape {df_selected.shape}")
 
     # select row with highest concurrency level
     grouping_cols = ["experiment_name", "payload_file", "instance_type", "instance_count"]
+    # adding selected metrics for when the concurrency is the highest and the completion tokens are given out, indicating valid responses
+    df_selected = df_selected[df_selected.completion_token_count_mean.notna()]
+    logger.info(f"df_selected: {df_selected.completion_token_count_mean}")
     df_summary_all = df_selected.loc[df_selected.groupby(grouping_cols)['concurrency'].transform(max) == df_selected['concurrency']]
 
     # find price per txn and price per token
@@ -133,12 +148,27 @@ def main():
     
     summary_file_payload_of_interest: str = os.path.join(ANALYTICS_RESULTS_DIR,
                                                          f"{args.model_id}-summary-{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.csv")
+    summary_file_payload_of_interest_raw_metrics: str = os.path.join(ANALYTICS_RESULTS_DIR,
+                                                         f"{args.model_id}-summary-{Path(args.payload_file).stem}-p95-latency-concurrency={args.latency_threshold}s-raw.csv")                                       
     df_summary_payload_of_interest = df_summary_all[df_summary_all.payload_file == args.payload_file]
     df_summary_payload_of_interest = df_summary_payload_of_interest.sort_values(by="cost_per_1k_tokens")
-
-    df_summary_payload_of_interest.to_csv(summary_file_payload_of_interest, index=False)
+    # create a csv file with all the raw metrics
+    df_summary_payload_of_interest.to_csv(summary_file_payload_of_interest_raw_metrics, index=False)
+    cols_to_remove = ['payload_file', 'instance_count', 'error_rate', 'prompt_token_count_mean', 'prompt_token_throughput', 'completion_token_count_mean', 'latency_p50',
+                      'latency_p99', 'cost_per_txn', 'completion_token_throughput']
+    # filter out the columns as needed and only give the relevant columns in the analysis markdown table
+    df_summary_payload_of_interest_trimmed = df_summary_payload_of_interest.drop(columns=cols_to_remove)
+    df_summary_payload_of_interest_trimmed.to_csv(summary_file_payload_of_interest, index=False)
     logger.info(f"saved df_summary_payload_of_interest dataframe of "\
-                f"shape={df_summary_payload_of_interest.shape} in {summary_file_payload_of_interest}")
+                f"shape={df_summary_payload_of_interest_trimmed.shape} in {summary_file_payload_of_interest}")
+    final_table_mkdn: str = 'final_analysis_table'
+    final_table_mkdn = Tomark.table(df_summary_payload_of_interest_trimmed.to_dict(orient='records'))
+    markdown_file = os.path.join(ANALYTICS_RESULTS_DIR, f"{args.model_id}-analysis-{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.md")
+    with open(markdown_file, 'w') as f:
+        f.write(f"# Analysis for {args.model_id}\n\n")
+        f.write(f"## Summary for payload: {Path(args.payload_file).stem}\n\n")
+        f.write(final_table_mkdn)
+    logger.info(f"Saved analysis Markdown to {markdown_file}")
     logger.info("all done")
 
     # cost RPM plot, the function saves the html to a file
@@ -156,11 +186,11 @@ def main():
     prompt_spec: str = args.payload_file.split(".")[0]
     subtitle: str = f"Prompt: {prompt_spec} tokens, latency p95 threshold: {args.latency_threshold}s"
     _ = plot_best_cost_instance_heatmap(df1,
-                                        heatmap_fname,
-                                        args.model_id,
-                                        subtitle,
-                                        args.cost_weight,
-                                        1 - args.cost_weight)
+                                    heatmap_fname,
+                                    args.model_id,
+                                    subtitle,
+                                    args.cost_weight,
+                                    1 - args.cost_weight)
 
 
 if __name__ == "__main__":
