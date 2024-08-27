@@ -2,147 +2,152 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/index.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/accuracy.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/advanced.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://foundation-model-benchmarking-tool.github.io/analytics.html</loc>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/announcement.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/benchmarking.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/benchmarking_on_bedrock.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/benchmarking_on_ec2.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/benchmarking_on_eks.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/benchmarking_on_sagemaker.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/build.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/byo_dataset.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/byo_rest_predictor.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/byoe.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/ec2.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/evaluation.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/features.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/gettingstarted.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/internal_website.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/manifest.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/neuron.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/quickstart.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/releases.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/resources.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/results.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/run_as_container.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/workflow.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/misc/ec2_instance_creation_steps.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/misc/eks_cluster-creation_steps.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/misc/the-diy-version-w-gory-details.html</loc>
-         <lastmod>2024-08-25</lastmod>
+         <lastmod>2024-08-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

@@ -1,0 +1,491 @@
+general:
+  name: "latest-FMs-fmbench-bedrock"      
+  model_name: "FMs available in Amazon Bedrock"
+  
+# AWS and SageMaker settings
+aws:
+  region: {region}
+  # uncomment and set the Role ARN if not running on sagemaker
+  sagemaker_execution_role: {role_arn}
+  ## these are the buckets/resources you will create in your account below:
+  bucket: {write_bucket}
+
+## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
+dir_paths:
+    data_prefix: data ## add the prefix for all your data management/storage
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics
+    models_dir: models
+    metadata_dir: metadata ## add a file here to dynamically track the metrics dir
+
+## S3 information for reading datasets, scripts and tokenizer
+s3_read_data:
+  # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
+  read_bucket: {read_bucket}
+
+  # S3 prefix in the read bucket where deployment and inference scripts should be placed
+  scripts_prefix: scripts
+  
+  # deployment and inference script files to be downloaded are placed in this list
+  # only needed if you are creating a new deployment script or inference script
+  # your HuggingFace token does need to be in this list and should be called "hf_token.txt"
+  script_files:
+  - hf_token.txt
+  
+  # configuration files (like this one) are placed in this prefix
+  configs_prefix: configs
+
+  # list of configuration files to download, for now only pricing.yml needs to be downloaded
+  config_files:
+  - pricing.yml
+
+  # S3 prefix for the dataset files
+  source_data_prefix: source_data
+  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
+  source_data_files:
+  - 2wikimqa_e.jsonl
+  - 2wikimqa.jsonl
+  - hotpotqa_e.jsonl
+  - hotpotqa.jsonl
+  - narrativeqa.jsonl
+  - triviaqa_e.jsonl
+  - triviaqa.jsonl
+  # S3 prefix for the tokenizer to be used with the models
+  # NOTE 1: the same tokenizer is used with all the models being tested through a config file
+  # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
+  #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in llama2_tokenizer and so on and so forth.
+  tokenizer_prefix: llama2_tokenizer
+  
+  # S3 prefix for prompt templates
+  prompt_template_dir: prompt_template
+
+  # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
+  # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
+  prompt_template_file: prompt_template_llama2.txt
+
+# steps to run, usually all of these would be
+# set to yes so nothing needs to change here
+# you could, however, bypass some steps for example
+# set the 2_deploy_model.ipynb to no if you are re-running
+# the same config file and the model is already deployed
+run_steps:
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: no
+  3_run_inference.ipynb: yes
+  4_get_evaluations.ipynb: yes
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: no
+
+datasets: 
+  # Refer to the 1_generate_data.ipynb notebook
+  # the dataset you use is expected to have the 
+  # columns you put in prompt_template_keys list
+  # and your prompt template also needs to have
+  # the same placeholders (refer to the prompt template folder)
+  prompt_template_keys:
+  - input
+  - context
+  ground_truth_col_key: answers
+  question_col_key: input
+  # maximum number of iterations per concurrency and payload size combination
+  max_iters_per_combination: 105
+  # minimum number of iterations per concurrency and payload size combination
+  min_iters_per_combination: 5
+  
+  # if your dataset has multiple languages and it has a language
+  # field then you could filter it for a language. Similarly,
+  # you can filter your dataset to only keep prompts between
+  # a certain token length limit (the token length is determined
+  # using the tokenizer you provide in the tokenizer_prefix prefix in the
+  # read S3 bucket). Each of the array entries below create a payload file
+  # containing prompts matching the language and token length criteria.
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 4000
+    max_length_in_tokens: 5000
+    payload_file: payload_en_4000-5000.jsonl
+  - language: en
+    min_length_in_tokens: 5000
+    max_length_in_tokens: 6000
+    payload_file: payload_en_5000-6000.jsonl
+    
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
+
+
+metrics:
+  dataset_of_interest: en_2000-3000
+  
+pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+  
+inference_parameters: 
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
+
+# Model configurations for mistral 7b instruct on Amazon Bedrock
+experiments:
+  - name: meta.llama3-1-70b-instruct-v1:0
+    # model_id is interpreted in conjunction with the deployment_script, so if you
+    # use a JumpStart model id then set the deployment_script to jumpstart.py.
+    # if deploying directly from HuggingFace this would be a HuggingFace model id
+    # see the DJL serving deployment script in the code repo for reference.    
+    model_id: meta.llama3-1-70b-instruct-v1:0
+    model_version: 
+    model_name: meta.llama3-1-70b-instruct-v1:0
+    ep_name: meta.llama3-1-70b-instruct-v1:0
+    instance_type: meta.llama3-1-70b-instruct-v1:0
+    image_uri:
+    deploy: no
+    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
+    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
+    # See repo for details
+    instance_count:
+    deployment_script:
+    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+    # and Bedrock. You can also add your own. See repo for details
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      # this should match one of the sections in the inference_parameters section above
+      parameter_set: bedrock
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
+      stop_token: "<|eot_id|>"
+    # runs are done for each combination of payload file and concurrency level
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    # concurrency level refers to number of requests sent in parallel to an endpoint
+    # the next set of requests is sent once responses for all concurrent requests have
+    # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    # Environment variables to be passed to the container
+    # this is not a fixed list, you can add more parameters as applicable.
+    env:
+  - name: meta.llama3-1-8b-instruct-v1:0
+    # model_id is interpreted in conjunction with the deployment_script, so if you
+    # use a JumpStart model id then set the deployment_script to jumpstart.py.
+    # if deploying directly from HuggingFace this would be a HuggingFace model id
+    # see the DJL serving deployment script in the code repo for reference.    
+    model_id: meta.llama3-1-8b-instruct-v1:0
+    model_version: 
+    model_name: meta.llama3-1-8b-instruct-v1:0
+    ep_name: meta.llama3-1-8b-instruct-v1:0
+    instance_type: meta.llama3-1-8b-instruct-v1:0
+    image_uri:
+    deploy: no
+    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
+    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
+    # See repo for details
+    instance_count:
+    deployment_script:
+    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+    # and Bedrock. You can also add your own. See repo for details
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      # this should match one of the sections in the inference_parameters section above
+      parameter_set: bedrock
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
+      stop_token: "<|eot_id|>"
+    # runs are done for each combination of payload file and concurrency level
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    # concurrency level refers to number of requests sent in parallel to an endpoint
+    # the next set of requests is sent once responses for all concurrent requests have
+    # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    # Environment variables to be passed to the container
+    # this is not a fixed list, you can add more parameters as applicable.
+    env:
+  - name: amazon.titan-text-express-v1
+    model_id: amazon.titan-text-express-v1
+    model_version: "*"
+    model_name: amazon.titan-text-express-v1
+    ep_name: amazon.titan-text-express-v1
+    instance_type: amazon.titan-text-express-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env: 
+  - name: mistral.mistral-7b-instruct-v0:2
+    model_id: mistral.mistral-7b-instruct-v0:2
+    model_version: "*"
+    model_name: mistral.mistral-7b-instruct-v0:2
+    ep_name: mistral.mistral-7b-instruct-v0:2
+    instance_type: mistral.mistral-7b-instruct-v0:2
+    image_uri:
+    deploy: no
+    instance_count: 1
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  - name: mistral.mixtral-8x7b-instruct-v0:1
+    model_id: mistral.mixtral-8x7b-instruct-v0:1
+    model_version: "*"
+    model_name: mistral.mixtral-8x7b-instruct-v0:1
+    ep_name: mistral.mixtral-8x7b-instruct-v0:1
+    instance_type: mistral.mixtral-8x7b-instruct-v0:1
+    image_uri:
+    deploy: no
+    instance_count: 1
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  - name: anthropic.claude-3-sonnet-20240229-v1:0
+    model_id: anthropic.claude-3-sonnet-20240229-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-sonnet-20240229-v1:0
+    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_type: anthropic.claude-3-sonnet-20240229-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  - name: anthropic.claude-3-haiku-20240307-v1:0
+    model_id: anthropic.claude-3-haiku-20240307-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-haiku-20240307-v1:0
+    ep_name: anthropic.claude-3-haiku-20240307-v1:0
+    instance_type: anthropic.claude-3-haiku-20240307-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  - name: cohere.command-text-v14
+    model_id: cohere.command-text-v14
+    model_version: "*"
+    model_name: cohere.command-text-v14
+    ep_name: cohere.command-text-v14
+    instance_type: cohere.command-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+  - name: cohere.command-light-text-v14
+    model_id: cohere.command-light-text-v14
+    model_version: "*"
+    model_name: cohere.command-light-text-v14
+    ep_name: cohere.command-light-text-v14
+    instance_type: cohere.command-light-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env:
+
+report:
+  latency_budget: 2
+  cosine_similarity_budget: 0.3
+  accuracy_budget: 1
+  accuracy_error_rate_budget: 0
+  cost_per_10k_txn_budget: 50
+  error_rate_budget: 0
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025
+  
