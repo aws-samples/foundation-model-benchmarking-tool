@@ -55,7 +55,7 @@ run_steps:
 datasets:
   prompt_template_keys:
   - input
-  - system_prompt
+  - context
   ground_truth_col_key: answers
   question_col_key: input
   filters:
