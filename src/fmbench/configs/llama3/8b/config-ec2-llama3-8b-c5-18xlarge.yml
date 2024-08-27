@@ -214,7 +214,10 @@ experiments:
     # this is not a fixed list, you can add more parameters as applicable.
     env:
       - VLLM_CPU_KVCACHE_SPACE: 40
-      - VLLM_CPU_OMP_THREADS_BIND: 0-70
+      # This instance has 72 CPUs and we are using 70 of those for this container.
+      # See below URL for more info: 
+      # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
+      - VLLM_CPU_OMP_THREADS_BIND: 0-69
 
 report:
   latency_budget: 25
