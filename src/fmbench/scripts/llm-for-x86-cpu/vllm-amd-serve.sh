@@ -5,11 +5,12 @@ sudo yum install docker git -y
 sudo systemctl start docker
 
 # Download the Miniconda installer for Linux
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \  # Run the Miniconda installer in batch mode (no manual intervention)
-    && rm -f Miniconda3-latest-Linux-x86_64.sh \    # Remove the installer script after installation
-    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)"\ # Initialize conda for bash shell
-    && conda init  # Initialize conda, adding it to the shell
+wget \
+    https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
+    && bash Miniconda3-latest-Linux-x86_64.sh -b \
+    && rm -f Miniconda3-latest-Linux-x86_64.sh \
+    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash  hook)"\
+    && conda init
 
 # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
 conda create --name fmbench_python311 -y python=3.11 ipykernel
@@ -27,17 +28,11 @@ git clone https://github.com/vllm-project/vllm.git
 cd vllm
 
 # Build a Docker image using the provided Dockerfile for CPU, with a shared memory size of 4GB
-sudo docker build -f Dockerfile.cpu -t vllm-cpu-env --shm-size=4g .
-
+h
 # Set the model ID for Meta Llama 3.1 and run the Docker container
 # Replace 'your-hf-token-here' with your Hugging Face token to access the model
 MODEL_ID=meta-llama/Meta-Llama-3.1-8B-Instruct
-sudo docker run --rm --env "HF_TOKEN=your-hf-token-here" \  # Run Docker container with the specified Hugging Face token
-  --ipc=host \  # Use the host's IPC namespace
-  -p 8000:8000 \  # Map port 8000 of the container to port 8000 of the host
-  -e VLLM_CPU_KVCACHE_SPACE=40 \  # Set the environment variable for CPU KV cache space
-  vllm-cpu-env \  # Specify the Docker image to run
-  --model $MODEL_ID  # Pass the model ID as an argument to the container
+ docker run --rm --env "HF_TOKEN=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" --ipc=host -p 8000:8000 -e VLLM_CPU_KVCACHE_SPACE=40 -e VLLM_CPU_OMP_THREADS_BIND=0-59 vllm-cpu-env --model meta-llama/Meta-Llama-3.1-8B-Instruct
 
 # Send a POST request to the running model server to generate a completion for a given prompt
 curl --location 'http://localhost:8000/v1/completions' \  # Make a request to the local server
@@ -50,3 +45,6 @@ curl --location 'http://localhost:8000/v1/completions' \  # Make a request to th
   "top_p": 0.92,  # Set top-p sampling, the cumulative probability threshold for token selection
   "top_k": 120  # Set top-k sampling, the number of highest probability tokens to consider for each step
 }'
+
+
+echo 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 > /tmp/fmbench-read/scripts/hf_token.txt
