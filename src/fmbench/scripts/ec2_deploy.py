@@ -66,10 +66,7 @@ def _create_deployment_script(image_uri,
     #stop container if it already exists check if container exists 
     container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     env_str: str = f"-e MODEL_LOADING_TIMEOUT={model_loading_timeout} "
-    if privileged_mode:
-        privileged_flag = "--privileged"
-    else:
-        privileged_flag = ""
+    privileged_str: str = "--priviliged" if privileged_mode else ""
     if env is not None:
         logger.info(f"env passed is: {env}")
     
@@ -158,7 +155,7 @@ def _create_deployment_script(image_uri,
         fi
 
         # Run the new Docker container with specified settings
-        docker run -d {privileged_flag} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
+        docker run -d {privileged_str} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
 
         echo "Done running {image_uri} image"
 
@@ -243,7 +240,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     ep_name: str = experiment_config['ep_name']
     model_id: str = experiment_config['model_id']
     region: str = experiment_config['region']
-    privileged_mode: str = experiment_config['ec2'].get('privileged_mode', "")
+    privileged_mode: str = experiment_config['ec2'].get('privileged_mode', False)
     container_type: str = experiment_config['inference_spec'].get('container_type', constants.CONTAINER_TYPE_DJL)
     env = experiment_config.get('env')
     serving_properties: str = experiment_config['serving.properties']
