@@ -73,17 +73,9 @@ def _create_deployment_script(image_uri,
         for env_dict in env:
             for k, v in env_dict.items():
                 env_str += f"-e {k}={v} "
-
-    if container_type == constants.CONTAINER_TYPE_DJL:
-        deploy_script_content = f"""#!/bin/sh
-        echo "Going to download model now"
-        echo "Content in docker command: {region}, {image_uri}, {model_name}"
-
-        # Login to AWS ECR and pull the Docker image
-        aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
-        docker pull {image_uri}
-
-        # Attempt to stop and remove the container up to 3 times if container exists
+    
+    stop_and_rm_container = f"""
+    # Attempt to stop and remove the container up to 3 times if container exists
         if [ -n "$(docker ps -aq --filter "name={container_name}")" ]; then
             for i in {{1..3}}; do
                 echo "Attempt $i to stop and remove the container: {container_name}"
@@ -111,6 +103,18 @@ def _create_deployment_script(image_uri,
         else
             echo "Container {container_name} does not exist. No action taken."
         fi
+    """
+
+    if container_type == constants.CONTAINER_TYPE_DJL:
+        deploy_script_content = f"""#!/bin/sh
+        echo "Going to download model now"
+        echo "Content in docker command: {region}, {image_uri}, {model_name}"
+
+        # Login to AWS ECR and pull the Docker image
+        aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
+        docker pull {image_uri}
+
+        {stop_and_rm_container}
 
         # Run the new Docker container with specified settings
         docker run -d --name={container_name} {gpu_or_neuron_setting} \
@@ -125,35 +129,9 @@ def _create_deployment_script(image_uri,
         """
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         deploy_script_content = f"""#!/bin/sh
-        Attempt to stop and remove the container up to 3 times if container exists
-        if [ -n "$(docker ps -aq --filter "name={container_name}")" ]; then
-            for i in {{1..3}}; do
-                echo "Attempt $i to stop and remove the container: {container_name}"
-                
-                # Stop the container
-                docker ps -q --filter "name={container_name}" | xargs -r docker stop
-                
-                # Wait for 5 seconds
-                sleep 5
-                
-                # Remove the container
-                docker ps -aq --filter "name={container_name}" | xargs -r docker rm
-                
-                # Wait for 5 seconds
-                sleep 5
-                
-                # Check if the container is removed
-                if [ -z "$(docker ps -aq --filter "name={container_name}")" ]; then
-                    echo "Container {container_name} successfully stopped and removed."
-                    break
-                else
-                    echo "Container {container_name} still exists, retrying..."
-                fi
-            done
-        else
-            echo "Container {container_name} does not exist. No action taken."
-        fi
 
+        {stop_and_rm_container}
+        
         # Run the new Docker container with specified settings
         docker run -d {privileged_str} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
 
