@@ -66,7 +66,7 @@ def _create_deployment_script(image_uri,
     #stop container if it already exists check if container exists 
     container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     env_str: str = f"-e MODEL_LOADING_TIMEOUT={model_loading_timeout} "
-    privileged_str: str = "--priviliged" if privileged_mode else ""
+    privileged_str: str = "--privileged" if privileged_mode else ""
     if env is not None:
         logger.info(f"env passed is: {env}")
     
@@ -131,7 +131,7 @@ def _create_deployment_script(image_uri,
         deploy_script_content = f"""#!/bin/sh
 
         {stop_and_rm_container}
-        
+
         # Run the new Docker container with specified settings
         docker run -d {privileged_str} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
 
