@@ -66,7 +66,7 @@ def _create_deployment_script(image_uri,
     #stop container if it already exists check if container exists 
     container_name: str = FMBENCH_MODEL_CONTAINER_NAME
     env_str: str = f"-e MODEL_LOADING_TIMEOUT={model_loading_timeout} "
-    privileged_str: str = "--priviliged" if privileged_mode else ""
+    privileged_str: str = "--privileged" if privileged_mode else ""
     if env is not None:
         logger.info(f"env passed is: {env}")
     

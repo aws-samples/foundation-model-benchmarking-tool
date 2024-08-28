@@ -185,7 +185,8 @@ class SageMakerPredictor(FMBenchPredictor):
                     start_time: datetime,
                     end_time: datetime,
                     period: int = 60) -> pd.DataFrame:
-        return get_endpoint_metrics(self._endpoint_name, self._variant_name, start_time, end_time)
+        namespace = "/aws/sagemaker/Endpoints"
+        return get_endpoint_metrics(self._endpoint_name, namespace, self._variant_name, start_time, end_time)
         
     @property
     def inference_parameters(self) -> Dict:

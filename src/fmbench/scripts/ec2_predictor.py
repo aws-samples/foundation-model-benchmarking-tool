@@ -9,6 +9,8 @@ from datetime import datetime
 from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from fmbench.scripts import constants
+from fmbench.scripts.stream_responses import get_response_stream
+from fmbench.scripts.sagemaker_metrics import get_endpoint_metrics
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
                                             
@@ -127,8 +129,9 @@ class EC2Predictor(FMBenchPredictor):
                     start_time: datetime,
                     end_time: datetime,
                     period: int = 60) -> pd.DataFrame:
-        # not implemented
-        return None
+        namespace = "AWS/EC2"
+        return get_endpoint_metrics("", namespace, "", start_time, end_time)
+        
 
     @property
     def inference_parameters(self) -> Dict:

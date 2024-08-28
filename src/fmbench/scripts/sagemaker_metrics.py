@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 def _get_endpoint_utilization_metrics(endpoint_name: str,
                                       variant_name: str,
+                                      namespace: str,
                                       start_time: datetime,
                                       end_time: datetime,
                                       period : int = 60) -> pd.DataFrame:
@@ -23,9 +24,11 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
 
     Parameters:
     - endpoint_name (str): The name of the SageMaker endpoint.
+    - namespace(str): Namespace of the Cloudwatch metrics to retrieve
     - start_time (datetime): The start time for the metrics data.
     - end_time (datetime): The end time for the metrics data.
     - period (int): The granularity, in seconds, of the returned data points. Default is 60 seconds.
+    
 
     Returns:
     - Dataframe: A Dataframe containing metric values for utilization metrics like CPU and GPU Usage.
@@ -40,15 +43,9 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
     
     client = boto3.client('cloudwatch')
     data = []
-    namespace = "/aws/sagemaker/Endpoints"
-    
-    for metric_name in metrics:
-        logger.debug(f"_get_endpoint_utilization_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
-                     f"metric_name={metric_name}, start_time={start_time}, end_time={end_time}")
-        response = client.get_metric_statistics(
-            Namespace=namespace,
-            MetricName=metric_name,
-            Dimensions=[
+    namespace = namespace
+    if 'sagemaker' in namespace:
+        dimensions=[
                 {
                     'Name': 'EndpointName',
                     'Value': endpoint_name
@@ -57,7 +54,21 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                     'Name': 'VariantName',
                     'Value': variant_name
                 }
-            ],
+            ]
+    elif 'EC2' in namespace:
+        dimensions=[
+                {
+                'Name': 'InstanceId',
+                'Value': endpoint_name
+            }
+            ]
+    for metric_name in metrics:
+        logger.debug(f"_get_endpoint_utilization_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
+                     f"metric_name={metric_name}, start_time={start_time}, end_time={end_time}")
+        response = client.get_metric_statistics(
+            Namespace=namespace,
+            MetricName=metric_name,
+            Dimensions=dimensions,
             StartTime=start_time,
             EndTime=end_time,
             Period=period,
@@ -175,6 +186,7 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
 
 
 def get_endpoint_metrics(endpoint_name: str,
+                         namespace: str,
                          variant_name: str,
                          start_time: datetime,
                          end_time: datetime,
@@ -199,6 +211,7 @@ def get_endpoint_metrics(endpoint_name: str,
                     f"end_time={end_time}, period={period}")
         utilization_metrics_df = _get_endpoint_utilization_metrics(endpoint_name=endpoint_name,
                                                                    variant_name=variant_name,
+                                                                   namespace=namespace,
                                                                    start_time=start_time,
                                                                    end_time=end_time,
                                                                    period=period)
