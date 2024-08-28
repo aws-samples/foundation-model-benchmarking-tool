@@ -3,11 +3,14 @@ import logging
 import sagemaker
 from typing import Dict
 from sagemaker import Model
+from fmbench.scripts import constants
 from sagemaker.utils import name_from_base
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     role = role_arn

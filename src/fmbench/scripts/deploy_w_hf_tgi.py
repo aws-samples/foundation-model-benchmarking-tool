@@ -7,11 +7,15 @@ import logging
 import sagemaker
 from typing import Dict
 from pathlib import Path
+from fmbench.scripts import constants
 from sagemaker.huggingface import HuggingFaceModel
 from sagemaker.huggingface import get_huggingface_llm_image_uri
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 # set a logger
 logging.basicConfig(level=logging.INFO)

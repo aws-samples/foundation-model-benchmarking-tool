@@ -16,14 +16,17 @@ import tempfile
 import sagemaker
 from pathlib import Path
 from urllib.parse import urlparse
+from fmbench.scripts import constants
 from sagemaker.utils import name_from_base
 from huggingface_hub import snapshot_download
 from typing import Dict, List, Tuple, Optional
 
-
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)),
