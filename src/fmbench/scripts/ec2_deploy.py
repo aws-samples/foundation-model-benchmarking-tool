@@ -131,7 +131,7 @@ def _create_deployment_script(image_uri,
         deploy_script_content = f"""#!/bin/sh
 
         {stop_and_rm_container}
-        
+
         # Run the new Docker container with specified settings
         docker run -d {privileged_str} --rm --name={container_name} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
 
