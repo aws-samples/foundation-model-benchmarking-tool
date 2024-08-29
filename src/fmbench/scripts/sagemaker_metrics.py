@@ -41,10 +41,11 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                "GPUUtilization",
                "GPUMemoryUtilization"]
     
-    client = boto3.client('cloudwatch')
+    client = boto3.client('cloudwatch', region_name='us-east-1')
     data = []
     namespace = namespace
     if 'sagemaker' in namespace:
+        logger.info(f"_get_endpoint_utilization_metrics, Running in Sage maker")
         dimensions=[
                 {
                     'Name': 'EndpointName',
@@ -56,6 +57,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                 }
             ]
     elif 'EC2' in namespace:
+        logger.info(f"_get_endpoint_utilization_metrics, Running in EC2")
         dimensions=[
                 {
                 'Name': 'InstanceId',
@@ -63,7 +65,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
             }
             ]
     for metric_name in metrics:
-        logger.debug(f"_get_endpoint_utilization_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
+        logger.info(f"_get_endpoint_utilization_metrics, endpoint_name={endpoint_name}, variant_name={variant_name}, "
                      f"metric_name={metric_name}, start_time={start_time}, end_time={end_time}")
         response = client.get_metric_statistics(
             Namespace=namespace,
@@ -74,7 +76,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
             Period=period,
             Statistics=['Average']  # You can also use 'Sum', 'Minimum', 'Maximum', 'SampleCount'
         )
-        logger.debug(response)
+        logger.info(response)
         for datapoint in response['Datapoints']:
             data.append({
                 'EndpointName': endpoint_name, 
@@ -218,16 +220,19 @@ def get_endpoint_metrics(endpoint_name: str,
         logger.info(f"get_endpoint_metrics, going to retrieve endpoint invocation metrics for "
                     f"endpoint={endpoint_name}, variant_name={variant_name}, start_time={start_time}, "
                     f"end_time={end_time}, period={period}")
-        invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name,
-                                                                 variant_name=variant_name,
-                                                                 start_time=start_time,
-                                                                 end_time=end_time,
-                                                                 period=period)
+        if 'sagemaker' in namespace:
+            invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name,
+                                                                    variant_name=variant_name,
+                                                                    start_time=start_time,
+                                                                    end_time=end_time,
+                                                                    period=period)
 
-        endpoint_metrics_df = pd.merge(utilization_metrics_df,
-                                       invocation_metrics_df,
-                                       on=['Timestamp', 'EndpointName'],
-                                       how='outer')
+            endpoint_metrics_df = pd.merge(utilization_metrics_df,
+                                        invocation_metrics_df,
+                                        on=['Timestamp', 'EndpointName'],
+                                        how='outer')
+        else:
+            endpoint_metrics_df = utilization_metrics_df
         logger.info(f"get_endpoint_metrics, shape of invocation and utilization metrics for "
                     f"endpoint={endpoint_name} is {endpoint_metrics_df.shape}")
         logger.info(f"get_endpoint_metrics, endpoint_metrics_df={endpoint_metrics_df.head()}")
