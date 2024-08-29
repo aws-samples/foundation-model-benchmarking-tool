@@ -7,6 +7,7 @@ import json
 import boto3
 import logging
 import pandas as pd
+from ec2_metadata import ec2_metadata
 from datetime import datetime, timedelta
 
 # Setup logging
@@ -41,7 +42,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                "GPUUtilization",
                "GPUMemoryUtilization"]
     
-    client = boto3.client('cloudwatch', region_name='us-east-1')
+    client = boto3.client('cloudwatch')
     data = []
     namespace = namespace
     if 'sagemaker' in namespace:
@@ -57,11 +58,12 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
                 }
             ]
     elif 'EC2' in namespace:
+        instance_id = ec2_metadata.instance_id
         logger.info(f"_get_endpoint_utilization_metrics, Running in EC2")
         dimensions=[
                 {
                 'Name': 'InstanceId',
-                'Value': endpoint_name
+                'Value': instance_id
             }
             ]
     for metric_name in metrics:
@@ -99,6 +101,7 @@ def _get_endpoint_utilization_metrics(endpoint_name: str,
 
 def _get_endpoint_invocation_metrics(endpoint_name: str,
                                      variant_name: str,
+                                     namespace:str,
                                      start_time: datetime,
                                      end_time: datetime,
                                      period : int = 60):
@@ -123,7 +126,7 @@ def _get_endpoint_invocation_metrics(endpoint_name: str,
     # Initialize a session using Amazon CloudWatch
     client = boto3.client('cloudwatch')
 
-    namespace = "AWS/SageMaker"
+    namespace = namespace
     data = []
     
     for metric_name in metric_names:
@@ -220,19 +223,20 @@ def get_endpoint_metrics(endpoint_name: str,
         logger.info(f"get_endpoint_metrics, going to retrieve endpoint invocation metrics for "
                     f"endpoint={endpoint_name}, variant_name={variant_name}, start_time={start_time}, "
                     f"end_time={end_time}, period={period}")
-        if 'sagemaker' in namespace:
-            invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name,
-                                                                    variant_name=variant_name,
-                                                                    start_time=start_time,
-                                                                    end_time=end_time,
-                                                                    period=period)
+        
+        invocation_metrics_df = _get_endpoint_invocation_metrics(endpoint_name=endpoint_name,
+                                                                variant_name=variant_name,
+                                                                namespace=namespace,
+                                                                start_time=start_time,
+                                                                end_time=end_time,
+                                                                period=period)
 
-            endpoint_metrics_df = pd.merge(utilization_metrics_df,
-                                        invocation_metrics_df,
-                                        on=['Timestamp', 'EndpointName'],
-                                        how='outer')
-        else:
-            endpoint_metrics_df = utilization_metrics_df
+        endpoint_metrics_df = pd.merge(utilization_metrics_df,
+                                    invocation_metrics_df,
+                                    on=['Timestamp', 'EndpointName'],
+                                    how='outer')
+    
+        
         logger.info(f"get_endpoint_metrics, shape of invocation and utilization metrics for "
                     f"endpoint={endpoint_name} is {endpoint_metrics_df.shape}")
         logger.info(f"get_endpoint_metrics, endpoint_metrics_df={endpoint_metrics_df.head()}")
