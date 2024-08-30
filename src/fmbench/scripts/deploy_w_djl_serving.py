@@ -10,6 +10,7 @@ import os
 import glob
 import time
 import boto3
+import fmbench
 import logging
 import tarfile
 import tempfile
@@ -46,6 +47,12 @@ account_id: str = sess.account_id()
 # Initialize the sagemaker and sagemaker runtime clients
 sm_client = boto3.client("sagemaker")
 
+tag = [
+    {
+        'Key': 'fmbench-version',
+        'Value': fmbench.__version__
+    }
+]
 def _download_model(model_id: str,
                     local_model_path: str,
                     allow_patterns: Optional[List] = ["*"]) -> str:
@@ -105,6 +112,7 @@ def _create_model(experiment_config: Dict,
     # Function to create the SageMaker model
     """
     model_name = name_from_base(experiment_config['model_name'])
+    fm = name_from_base(experiment_config['model_name'])
     env = experiment_config.get('env')
 
     # HF token required for gated model downloads form HF
@@ -134,11 +142,13 @@ def _create_model(experiment_config: Dict,
     else:
         pc = dict(Image=inference_image_uri,
                   ModelDataUrl=s3_model_artifact)
-
+    
+    logger.info(f"Fmbench Version Tag is {tag}")
     create_model_response = sm_client.create_model(
         ModelName=model_name,
         ExecutionRoleArn=role_arn,
         PrimaryContainer=pc,
+        Tags=tag
     )
     return model_name, create_model_response["ModelArn"]
 
@@ -166,8 +176,11 @@ def _deploy_endpoint(experiment_config: Dict,
         ],
     )
 
+    logger.info(f"Fmbench Version Tag is {tag}")
     create_endpoint_response = sm_client.create_endpoint(
-        EndpointName=endpoint_name, EndpointConfigName=endpoint_config_name
+        EndpointName=endpoint_name, 
+        EndpointConfigName=endpoint_config_name, 
+        Tags=tag
     )
     return endpoint_name, create_endpoint_response['EndpointArn']
 
