@@ -112,7 +112,6 @@ def _create_model(experiment_config: Dict,
     # Function to create the SageMaker model
     """
     model_name = name_from_base(experiment_config['model_name'])
-    fm = name_from_base(experiment_config['model_name'])
     env = experiment_config.get('env')
 
     # HF token required for gated model downloads form HF
