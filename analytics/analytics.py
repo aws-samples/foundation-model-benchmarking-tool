@@ -117,7 +117,7 @@ def main():
     # filter to keep only relevant data
     logger.info(f"df columns: {df.columns}")
     # filter for the p95 latency threshold and the concurrency threshold
-    df_selected = df[(df.latency_p95 <= args.latency_threshold) & (df.concurrency >= args.concurrency_threshold)]
+    df_selected = df[(df.latency_p95 <= args.latency_threshold) & (df.concurrency >= args.concurrency_threshold) & (df.error_rate == 0)]
     logger.info(f"after filtering to keep rows with latency_p95 <= ",
                 f"{args.latency_threshold}s, concurrency <=",
                 f"{args.concurrency_threshold}",
