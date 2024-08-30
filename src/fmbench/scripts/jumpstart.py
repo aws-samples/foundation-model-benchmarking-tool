@@ -1,7 +1,15 @@
 import time
+import fmbench
 from typing import Dict
 from sagemaker.predictor import Predictor
 from sagemaker.jumpstart.model import JumpStartModel
+
+tag = [
+    {
+        'Key': 'fmbench-version',
+        'Value': fmbench.__version__
+    }
+]
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model = JumpStartModel(
@@ -19,10 +27,12 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     if accept_eula is not None:
         predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],
                                  accept_eula=accept_eula,
-                                 endpoint_name=ep_name)
+                                 endpoint_name=ep_name,
+                                 tags=tag)
     else:
         predictor = model.deploy(initial_instance_count=experiment_config['instance_count'],
-                                 endpoint_name=ep_name)
+                                 endpoint_name=ep_name,
+                                 tags=tag)
 
     return dict(endpoint_name=predictor.endpoint_name, 
                 experiment_name=experiment_config['name'], 
