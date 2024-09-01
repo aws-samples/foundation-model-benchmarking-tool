@@ -213,7 +213,8 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      - VLLM_CPU_KVCACHE_SPACE: 40
+      MODEL_LOADING_TIMEOUT: 2400
+      VLLM_CPU_KVCACHE_SPACE: 40
 
 report:
   latency_budget: 2

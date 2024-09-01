@@ -213,11 +213,12 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      - VLLM_CPU_KVCACHE_SPACE: 40
+      MODEL_LOADING_TIMEOUT: 2400
+      VLLM_CPU_KVCACHE_SPACE: 40
       # This instance has 72 CPUs, and we are allocating 70 of them to run this container.
       # For more information, visit the following URL:
       # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
-      - VLLM_CPU_OMP_THREADS_BIND: 0-69
+      VLLM_CPU_OMP_THREADS_BIND: 0-69
 
 report:
   latency_budget: 25

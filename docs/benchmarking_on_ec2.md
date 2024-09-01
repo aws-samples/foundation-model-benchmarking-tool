@@ -22,6 +22,12 @@ Create a new EC2 instance suitable for hosting an LMI as per the steps described
     export PATH=/home/ubuntu/anaconda3/bin:$PATH
     ```
 
+1. Install `docker-compose`.
+
+    ```{.bash}
+    sudo apt-get install -y docker-compose
+    ```
+
 1. Setup the `fmbench_python311` conda environment.
 
     ```{.bash}
