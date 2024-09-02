@@ -11,6 +11,7 @@ import time
 import json
 import stat
 import docker
+import inspect
 import logging
 import requests
 import tempfile
@@ -19,6 +20,7 @@ from pathlib import Path
 from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
+from fmbench.scripts.constants import IS_NEURON_INSTANCE
 from fmbench.scripts.prepare_for_multi_model_djl import prepare_for_neuron
 
 # set a logger
@@ -142,26 +144,30 @@ def _create_deployment_script(image_uri,
                               gpu_or_neuron_setting,
                               model_loading_timeout,
                               env,
-                              model_copies):
+                              model_copies,
+                              is_neuron_instance):
     """
     Write a deployment script for model container
     """
-    
+    logger.info(inspect.getargvalues(inspect.currentframe()))
     privileged_str: str = "--privileged" if privileged_mode else ""
     env_str: str = ""
     if env is not None:
         for k, v in env.items():
             env_str += f"-e {k}={v} "
 
-    if container_type == constants.CONTAINER_TYPE_DJL:
-        if model_copies == "1":
-            deploy_script_content = _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting)
-        else:            
-            logger.info(f"going to create docker compose run script as model_copies={model_copies}")
+    if container_type == constants.CONTAINER_TYPE_DJL:       
+        if is_neuron_instance is True:
+            logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")            
             deploy_script_content = _create_script_djl_w_docker_compose(region, image_uri, model_name, directory)
-
+        else:
+            logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
+            deploy_script_content = _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting)
     elif container_type == constants.CONTAINER_TYPE_VLLM:
+        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
         deploy_script_content = _create_script_vllm(image_uri, model_id, env_str, privileged_str)
+    else:
+        raise ValueError(f"dont know how to handle container_type={container_type}")
 
     script_file_path = os.path.join(directory, "deploy_model.sh")
     Path(script_file_path).write_text(deploy_script_content)
@@ -202,13 +208,11 @@ def _run_container(script_file_path):
 
     return False
 
-def _check_model_deployment(endpoint, model_id, container_type, model_loading_timeout):
+def _check_model_deployment(endpoint, model_id, container_type, model_loading_timeout, model_copies):
     """
     Check the model deployment status and wait for the model to be ready.
     """
     start_time = time.time()
-    #global variable 
-    timeout = model_loading_timeout
     logger.info(f"Checking deployment status at {endpoint}")
     if container_type == constants.CONTAINER_TYPE_DJL:
         data = {"inputs": ["tell me a story of the little red riding hood"]}
@@ -216,23 +220,34 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
     headers = {"content-type": "application/json"}
-    logger.info(f"waiting for containers to come up...")
-    time.sleep(820)
-    logger.info(f"after waiting for containers to come up...")
-    while time.time() - start_time < timeout:
-        time.sleep(60)
+    container_check_timeout = 60
+    logger.info(f"going to check every {container_check_timeout}s for the inference endpoint to be up...")
+    logger.info(f"this will take at least 10 minutes or so, please be patient...")
+    while time.time() - start_time < model_loading_timeout:        
         try:
             response = requests.post(endpoint, headers=headers, json=data)
             logger.info(f"response is: {response.text}")
             if response.status_code == 200:
-                logger.info("Model deployment successful!")
+                logger.info("model deployment successful!")
+
+                # if model_copies != 1 then wait for some more time to give
+                # all the containers a chance to be up
+                if model_copies > 1:
+                    additional_sleep_time = model_copies * container_check_timeout
+                    logger.info(f"since model_copies={model_copies}, waiting for an addition {additional_sleep_time}s "
+                                f"to allow all model endpoints to come up")
+                    time.sleep(additional_sleep_time)
+                total_wait_time = time.time() - start_time
+                logger.info("marking endpoint in service, total_wait_time={total_wait_time}s")
                 return "InService"
             else:
-                print(f"Model deployment is not ready yet. Return code: {response.status_code}")
-                time.sleep(60)  # Wait for 1 minute before checking again
+                logger.info(f"model deployment is not ready yet. Return code: {response.status_code}")
+                logger.info(f"waiting for {container_check_timeout}s before retrying")
+                time.sleep(container_check_timeout)
         except Exception as e:
-            logger.error(f"Error occurred while deploying the endpoint: {e}")
-            time.sleep(60)  # Wait for 1 minute before checking again
+            logger.error(f"error occurred while deploying the endpoint: {e}")
+            logger.info(f"waiting for {container_check_timeout}s before retrying")
+            time.sleep(container_check_timeout)
     return "Failed"
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
@@ -260,44 +275,34 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     # print the ec2 instance details for it to get logged
     logger.info(f"EC2 instance type: {ec2_metadata.instance_type}, AMI ID: {ec2_metadata.ami_id}")
     
-    model_directory = _set_up(model_name, dir_path) 
-    
-    # if we have to load multiple copies of the model then we use the docker compose approach
-    # otherwise we create a single directory with serving.properties and deployment script
-    model_copies = experiment_config['inference_spec'].get('model_copies', '1')
-    # multiple model copies only for neuron for now and only for DJL
-    neuron_instance = experiment_config['instance_type'].startswith('inf2.') or experiment_config['instance_type'].startswith('trn1.')
-    if neuron_instance is False or container_type != constants.CONTAINER_TYPE_DJL:
-        model_copies = "1"
-        logger.info(f"neuron_instance={neuron_instance}, container_type={container_type}, model_copies > 1 not supported, "
-                    f"going to use model_copies={model_copies}")
-    else:
-        logger.info(f"neuron_instance={neuron_instance}, container_type={container_type}, model_copies={model_copies}")
-
-    # if model_copies ==  "1":
-    #     if serving_properties:
-    #         file_path = os.path.join(model_directory, "serving.properties")
-    #         Path(file_path).write_text(serving_properties)
-    #         logger.info(f"The serving.properties file has been created in {file_path}")
-    #     else:
-    #         logger.info(f"no serving.properties content specified, not creating the file")
-    # else:
-    logger.info(f"model_copies={model_copies}, going to use the docker compose approach")
+    # HF token is mandatory even if no env vars were specific in the config file    
     if env is None:
         env = {"HF_TOKEN": HF_TOKEN}
     else:
         env["HF_TOKEN"] = HF_TOKEN
-    logger.info(f"env={env}")
-    prepare_for_neuron(model_id=Path(model_id).name,
-                        num_model_copies=model_copies,
-                        tp_degree=experiment_config['inference_spec']['tp_degree'],
-                        image=image_uri,
-                        user="djl",
-                        shm_size=experiment_config['inference_spec']['shm_size'],
-                        env=env,
-                        serving_properties=serving_properties,
-                        dir_path=dir_path)
+    logger.info(f"env={env}")    
 
+    model_directory = _set_up(model_name, dir_path)
+    is_neuron_instance = IS_NEURON_INSTANCE(experiment_config['instance_type'])
+    model_copies = experiment_config['inference_spec'].get('model_copies', '1')
+    # if this is a neuron instance and we are using the djl serving inference container
+    # then use the docker compose approach so we first create the docker compose file
+    # and then create the deployment script, otherwise we create the deployment script
+    # directly (see call to _create_deployment_script below)
+    model_copies_actual = 1
+    if container_type == constants.CONTAINER_TYPE_DJL and is_neuron_instance is True:        
+        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")
+        model_copies_actual = prepare_for_neuron(model_id=Path(model_id).name,
+                                                 num_model_copies=model_copies,
+                                                 tp_degree=experiment_config['inference_spec']['tp_degree'],
+                                                 image=image_uri,
+                                                 user=container_type,
+                                                 shm_size=experiment_config['inference_spec']['shm_size'],
+                                                 env=env,
+                                                 serving_properties=serving_properties,
+                                                 dir_path=dir_path)    
+
+    
     logger.info("Creating the deployment script in model directory")
     deployment_script_path = _create_deployment_script(image_uri,
                                                        container_type,
@@ -310,20 +315,21 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
                                                        gpu_or_neuron_setting,
                                                        model_loading_timeout,
                                                        env,
-                                                       model_copies)
+                                                       model_copies,
+                                                       is_neuron_instance)
 
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)
 
     # initialize with None values for error case
     deployment_result: Dict = dict(endpoint_name=None, 
-                        experiment_name=None,
-                        instance_type=None,
-                        instance_count=None, 
-                        deployed=False)
+                                   experiment_name=None,
+                                   instance_type=None,
+                                   instance_count=None, 
+                                   deployed=False)
     if ran_container:
         logger.info("Container ran successfully")
-        ep_status = _check_model_deployment(ep_name, model_id, container_type, model_loading_timeout)
+        ep_status = _check_model_deployment(ep_name, model_id, container_type, model_loading_timeout, model_copies_actual)
         logger.info(f"Endpoint status: {ep_status}")
         if ep_status == "InService":
             logger.info("Model endpoint running!")

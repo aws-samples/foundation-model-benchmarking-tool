@@ -200,7 +200,7 @@ def prepare_for_neuron(model_id: str,
                        shm_size: str,
                        env: Dict,
                        serving_properties: Optional[str],
-                       dir_path: str) -> None:
+                       dir_path: str) -> int:
 
     # convert the env dict to a list of k=v pairs
     env_as_list = []
@@ -302,28 +302,4 @@ def prepare_for_neuron(model_id: str,
         logger.info(f"writing {pc['config_properties']} to {cp_fpath}")
         Path(cp_fpath).write_text(pc['config_properties'])
 
-if False:
-    env = ["MODEL_LOADING_TIMEOUT=2400",
-        "HF_TOKEN=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"]
-    serving_properties = """
-    engine=Python
-    option.entryPoint=djl_python.transformers_neuronx
-    option.model_id=mistralai/Mistral-7B-Instruct-v0.2
-    option.tensor_parallel_degree=12
-    option.n_positions=4096
-    option.rolling_batch=auto
-    option.max_rolling_batch_size=6
-    option.model_loading_timeout=2400
-    """
-    dir_path = "/home/ubuntu"
-
-    prepare_for_neuron(model_id="Mistral-7B-Instruct-v0.2",
-                    num_model_copies=2,
-                    tp_degree=12,
-                    image="763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1",
-                    user="djl",
-                    shm_size="12g",
-                    env=env,
-                    serving_properties=serving_properties,
-                    dir_path=dir_path)
-
+    return num_model_copies
