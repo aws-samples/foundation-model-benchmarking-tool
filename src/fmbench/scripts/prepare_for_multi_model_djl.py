@@ -99,28 +99,38 @@ def _create_config_files(model_id: str,
             constraints: [node.role == manager]
     """
 
-    # load balancer 
-    lb = dict(image="nginx:alpine",
-              container_name="fmbench_model_container_load_balancer",
-              ports=["8080:80"],
-              volumes=["./nginx.conf:/etc/nginx/nginx.conf:ro"],
-              depends_on=[],
-              deploy=dict(placement=dict(constraints=['node.role == manager'])))
+    # load balancer section
+    # an lb is needed only if model copies > 1 because if it is 1 then
+    # we can just have the model container list on 8080
+    if num_model_copies > 1:
+        lb = dict(image="nginx:alpine",
+                 container_name="fmbench_model_container_load_balancer",
+                 ports=["8080:80"],
+                 volumes=["./nginx.conf:/etc/nginx/nginx.conf:ro"],
+                 depends_on=[],
+                 deploy=dict(placement=dict(constraints=['node.role == manager'])))
+    else:
+        logger.info(f"num_model_copies={num_model_copies}, not going to add a load balancer")
+        lb = None
 
     # per model service info to be put in docker compose
     num_devices_per_model = int(tp_degree / 2)
-    services = dict(loadbalancer=lb)
+    if lb is not None:
+        services = dict(loadbalancer=lb)
+    else:
+        services = dict()
+
     cnames = []
     nginx_server_lines = []
     per_container_info_list = []
-
-    for i in range(num_model_copies):
-        
+    base_port = 8080 if lb is not None else 8079
+    for i in range(num_model_copies):        
         cname = f"fmbench_model_container_{i+1}"
         cnames.append(cname)
-        port = 8080 + i + 1
+        port = base_port + i + 1
         logger.info(f"container {i+1} will run on port {port}")
-        nginx_server_lines.append(f"        server {cname}:{port};")
+        if lb is not None:
+            nginx_server_lines.append(f"        server {cname}:{port};")
         
         device_offset = num_devices_per_model * i
         devices = [f"/dev/neuron{j + device_offset}:/dev/neuron{j}" for j in range(num_devices_per_model)]
@@ -154,7 +164,8 @@ load_models=ALL
         per_container_info_list.append(dict(dir_path_on_host=dir_path_on_host, 
                                             config_properties=config_properties))
 
-    lb["depends_on"] = cnames
+    if lb is not None:
+        lb["depends_on"] = cnames
     docker_compose = dict(services=services)
     
     # nginx.conf file
@@ -174,7 +185,11 @@ __nginx_server_lines__
     }
 }
 """
-    nginx_config = nginx_config.replace("__nginx_server_lines__", nginx_server_lines)
+    if lb is not None:
+        nginx_config = nginx_config.replace("__nginx_server_lines__", nginx_server_lines)
+    else:
+        nginx_config = None
+
     return docker_compose, nginx_config, per_container_info_list
 
 def prepare_for_neuron(model_id: str,
@@ -262,9 +277,13 @@ def prepare_for_neuron(model_id: str,
     Path(dc_path).write_text(docker_compose_yaml)
 
     # create nginx.conf file
-    ngc_path = os.path.join(dir_path, "nginx.conf")
-    logger.info(f"writing nginx conf to {ngc_path}, contents --->\n{nginx_config}")    
-    Path(ngc_path).write_text(nginx_config)
+    if nginx_config is not None:
+        ngc_path = os.path.join(dir_path, "nginx.conf")
+        logger.info(f"writing nginx conf to {ngc_path}, contents --->\n{nginx_config}")    
+        Path(ngc_path).write_text(nginx_config)
+    else:
+        logger.info(f"num_model_copies={num_model_copies}, nginx_config={nginx_config}, "
+                    f"not creating nginx.conf")
 
     # create sub directories for each model instance
     for idx, pc in enumerate(per_container_info_list):

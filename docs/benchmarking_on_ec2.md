@@ -139,6 +139,16 @@ command below. The config file for this example can be viewed [here](src/fmbench
     newgrp docker
     ```
 
+1. Install `docker-compose`.
+
+    ```{.bash}
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    sudo chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    docker compose version
+    ```
+
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
@@ -222,6 +232,16 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```{.bash}
     sudo usermod -a -G docker $USER
     newgrp docker
+    ```
+
+1. Install `docker-compose`.
+
+    ```{.bash}
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    sudo chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    docker compose version
     ```
 
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
