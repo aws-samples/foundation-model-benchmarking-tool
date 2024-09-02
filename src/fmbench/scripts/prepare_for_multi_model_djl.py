@@ -155,7 +155,7 @@ load_models=ALL
                                             config_properties=config_properties))
 
     lb["depends_on"] = cnames
-    docker_compose = dict(version="3.8", services=services)
+    docker_compose = dict(services=services)
     
     # nginx.conf file
     nginx_server_lines = "\n".join(nginx_server_lines)

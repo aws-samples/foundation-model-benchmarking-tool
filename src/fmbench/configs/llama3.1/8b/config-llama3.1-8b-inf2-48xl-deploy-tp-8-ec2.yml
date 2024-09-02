@@ -76,7 +76,7 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
@@ -194,7 +194,7 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 4
+      tp_degree: 8
       shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
@@ -202,7 +202,7 @@ experiments:
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
       option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
-      option.tensor_parallel_degree=4
+      option.tensor_parallel_degree=8
       option.n_positions=4096
       option.rolling_batch=auto
       option.max_rolling_batch_size=4
@@ -228,16 +228,7 @@ experiments:
     - 4
     - 5
     - 6
-    # - 7
-    # - 8
-    # - 9
-    # - 10
-    # - 11
-    # - 12
-    # - 15
-    # - 20
-    # - 25
-    # - 30
+
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
