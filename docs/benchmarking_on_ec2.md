@@ -25,6 +25,8 @@ Create a new EC2 instance suitable for hosting an LMI as per the steps described
 1. Install `docker-compose`.
 
     ```{.bash}
+    sudo apt-get update
+    sudo apt-get install --reinstall docker.io
     sudo apt-get install -y docker-compose
     ```
 
@@ -83,11 +85,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
     sudo systemctl start docker
 
     # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \  # Run the Miniconda installer in batch mode (no manual intervention)
-    && rm -f Miniconda3-latest-Linux-x86_64.sh \    # Remove the installer script after installation
-    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)"\ # Initialize conda for bash shell
-    && conda init  # Initialize conda, adding it to the shell
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell
     ```
 
 1. Setup the `fmbench_python311` conda environment.
@@ -178,11 +180,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
     sudo systemctl start docker
 
     # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \  # Run the Miniconda installer in batch mode (no manual intervention)
-    && rm -f Miniconda3-latest-Linux-x86_64.sh \    # Remove the installer script after installation
-    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)"\ # Initialize conda for bash shell
-    && conda init  # Initialize conda, adding it to the shell
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell
     ```
 
 1. Setup the `fmbench_python311` conda environment.

@@ -21,7 +21,7 @@ from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
 from fmbench.scripts.constants import IS_NEURON_INSTANCE
-from fmbench.scripts.prepare_for_multi_model_djl import prepare_for_neuron
+from fmbench.scripts.prepare_for_multi_model_djl import prepare_docker_compose_yml
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -156,13 +156,11 @@ def _create_deployment_script(image_uri,
         for k, v in env.items():
             env_str += f"-e {k}={v} "
 
-    if container_type == constants.CONTAINER_TYPE_DJL:       
-        if is_neuron_instance is True:
-            logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")            
-            deploy_script_content = _create_script_djl_w_docker_compose(region, image_uri, model_name, directory)
-        else:
-            logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
-            deploy_script_content = _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting)
+    if container_type == constants.CONTAINER_TYPE_DJL:        
+        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, "
+                    f"going to create deployment script for docker compose")
+        deploy_script_content = _create_script_djl_w_docker_compose(region, image_uri, model_name, directory)        
+        #deploy_script_content = _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting)
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
         deploy_script_content = _create_script_vllm(image_uri, model_id, env_str, privileged_str)
@@ -290,19 +288,17 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     # and then create the deployment script, otherwise we create the deployment script
     # directly (see call to _create_deployment_script below)
     model_copies_actual = 1
-    if container_type == constants.CONTAINER_TYPE_DJL and is_neuron_instance is True:        
+    if container_type == constants.CONTAINER_TYPE_DJL:        
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")
-        model_copies_actual = prepare_for_neuron(model_id=Path(model_id).name,
-                                                 num_model_copies=model_copies,
-                                                 tp_degree=experiment_config['inference_spec']['tp_degree'],
-                                                 image=image_uri,
-                                                 user=container_type,
-                                                 shm_size=experiment_config['inference_spec']['shm_size'],
-                                                 env=env,
-                                                 serving_properties=serving_properties,
-                                                 dir_path=dir_path)    
-
-    
+        model_copies_actual = prepare_docker_compose_yml(model_id=Path(model_id).name,
+                                                         num_model_copies=model_copies,
+                                                         tp_degree=experiment_config['inference_spec']['tp_degree'],
+                                                         image=image_uri,
+                                                         user=container_type,
+                                                         shm_size=experiment_config['inference_spec']['shm_size'],
+                                                         env=env,
+                                                         serving_properties=serving_properties,
+                                                         dir_path=dir_path)    
     logger.info("Creating the deployment script in model directory")
     deployment_script_path = _create_deployment_script(image_uri,
                                                        container_type,

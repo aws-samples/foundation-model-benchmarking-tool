@@ -11,6 +11,7 @@ import docker
 import logging
 import subprocess
 from pathlib import Path
+import fmbench.scripts.constants as constants
 from typing import Dict, List, Optional, Tuple, Union
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
@@ -22,7 +23,8 @@ def _create_config_files(model_id: str,
                          image: str,
                          user: str,
                          shm_size: str,
-                         env: List) -> Tuple:
+                         env: List,
+                         accelerator: constants.ACCELERATOR_TYPE) -> Tuple:
 
     """
     Creates the docker compose yml file, nginx config file, these are common to all containers
@@ -114,7 +116,11 @@ def _create_config_files(model_id: str,
         lb = None
 
     # per model service info to be put in docker compose
-    num_devices_per_model = int(tp_degree / 2)
+    if accelerator == constants.ACCELERATOR_TYPE.NEURON:
+        num_devices_per_model = int(tp_degree / 2)
+    else:
+        num_devices_per_model = tp_degree
+
     if lb is not None:
         services = dict(loadbalancer=lb)
     else:
@@ -133,7 +139,22 @@ def _create_config_files(model_id: str,
             nginx_server_lines.append(f"        server {cname}:{port};")
         
         device_offset = num_devices_per_model * i
-        devices = [f"/dev/neuron{j + device_offset}:/dev/neuron{j}" for j in range(num_devices_per_model)]
+        if accelerator == constants.ACCELERATOR_TYPE.NEURON:
+            device_name = constants.ACCELERATOR_TYPE.NEURON.value
+            devices = [f"/dev/{device_name}{j + device_offset}:/dev/{device_name}{j}" for j in range(num_devices_per_model)]
+            # nothing extra, only nvidia has an extra env var for GPUs
+            extra_env = []
+        else:
+            # device_name = constants.ACCELERATOR_TYPE.NVIDIA.value
+            # capabilities = '[gpu]'
+            # device_ids = [str(j + device_offset) for j in range(num_devices_per_model)]
+            # devices = [dict(driver=device_name, device_ids=device_ids, capabilities=capabilities)]
+            devices = None
+            # add visible devices via env var
+            gpus=",".join([str(j+device_offset) for j in range(num_devices_per_model)])
+            extra_env = [f"NVIDIA_VISIBLE_DEVICES={gpus}"]
+            
+        
         dir_path_on_host = f"/home/ubuntu/{model_id}/i{i+1}"
         volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
                    f"{dir_path_on_host}/conf:/opt/djl/conf:ro",
@@ -144,10 +165,13 @@ def _create_config_files(model_id: str,
                             "user": user, 
                             "shm_size": shm_size,
                             "devices": devices,
-                            "environment": env,
+                            "environment": env + extra_env,
                             "volumes": volumes,
                             "ports": [f"{port}:{port}"],
                             "deploy": {"restart_policy": {"condition": "on-failure"}} }}
+        if accelerator == constants.ACCELERATOR_TYPE.NVIDIA:
+            service[cname]['runtime'] = constants.ACCELERATOR_TYPE.NVIDIA.value
+            _ = service[cname].pop("devices")
         services = services | service
 
         # config.properties
@@ -192,22 +216,8 @@ __nginx_server_lines__
 
     return docker_compose, nginx_config, per_container_info_list
 
-def prepare_for_neuron(model_id: str,
-                       num_model_copies: Union[int, str],
-                       tp_degree: int,
-                       image: str,
-                       user: str,
-                       shm_size: str,
-                       env: Dict,
-                       serving_properties: Optional[str],
-                       dir_path: str) -> int:
-
-    # convert the env dict to a list of k=v pairs
-    env_as_list = []
-    if env is not None:
-        for k,v in env.items():
-            env_as_list.append(f"{k}={v}")
-
+def _get_model_copies_to_start_neuron(tp_degree: int, num_model_copies: Union[str, int]) -> Optional[int]:
+    logger.info(f"_get_model_copies_to_start_neuron, tp_degree={tp_degree}, num_model_copies={num_model_copies}")
     # get the number of neuron cores
     cmd = ["neuron-ls -j"]
     process = subprocess.Popen(cmd,
@@ -221,7 +231,7 @@ def prepare_for_neuron(model_id: str,
 
     if std_err != '':
         logger.error("error determining neuron info, exiting")
-        return
+        return None
 
     # convert output to a dict for easy parsing
     neuron_info = json.loads(std_out)
@@ -239,12 +249,13 @@ def prepare_for_neuron(model_id: str,
             logger.info(f"num_model_copies was set to \"max\", "
                         f"this instance can support a max of {num_model_copies} model copies, "
                         f"going to load {num_model_copies} copies")
-        else:
-            logger.info(f"num_model_copies was set to \"{num_model_copies}\", "
-                        f"dont know how to handle this, setting num_model_copies=1")
-            num_model_copies = 1
+        else:            
+            logger.info(f"num_model_copies set to a str value={num_model_copies}, "
+                        f"will see if we can load these many models")
+            num_model_copies = int(num_model_copies)
     else:
-        logger.info(f"num_model_copies set to a numerical value, will see if we can load these many models")
+        logger.info(f"num_model_copies set to a numerical value={num_model_copies}, "
+                    f"will see if we can load these many models")
 
     num_devices_needed = num_model_copies * neuron_devices_needed_per_model_copy
     
@@ -254,16 +265,116 @@ def prepare_for_neuron(model_id: str,
                 f"model_copies_possible={model_copies_possible}")
 
     if model_copies_possible < num_model_copies:
-        logger.error(f"num_model_copies={num_model_copies} but model_copies_possible={model_copies_possible}, cannot continue")
-        return
+        logger.error(f"num_model_copies={num_model_copies} but model_copies_possible={model_copies_possible}, "
+                     f"setting num_model_copies to max possible for this instance which is {model_copies_possible}")
+        num_model_copies = model_copies_possible
+    else:
+        logger.error(f"num_model_copies={num_model_copies} and model_copies_possible={model_copies_possible}, "
+                     f"it is possible to run {num_model_copies} models, going with that")
 
+    return num_model_copies
+
+def _get_model_copies_to_start_nvidia(tp_degree: int, num_model_copies: Union[str, int]) -> Optional[int]:
+    logger.info(f"_get_model_copies_to_start_nvidia, tp_degree={tp_degree}, num_model_copies={num_model_copies}")
+    # get the number of neuron cores
+    cmd = ["nvidia-smi --query-gpu=name --format=csv,noheader | wc -l"]
+    process = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE, 
+                               stderr=subprocess.PIPE,
+                               text=True,
+                               shell=True)
+    std_out, std_err = process.communicate()
+    logger.info(std_out.strip())
+    logger.info(std_err)
+
+    if std_err != '':
+        logger.error("error determining neuron info, exiting")
+        return None
+
+    num_gpus = int(std_out.strip())
+    
+    # tensor parallelism requires as many gpus as tp degree
+    gpus_needed_per_model_copy = tp_degree
+    model_copies_possible = int(num_gpus/gpus_needed_per_model_copy)
+    # if num_model_copies is max then load as many copies as possible
+    if isinstance(num_model_copies, str):
+        if num_model_copies == "max":
+            num_model_copies = model_copies_possible
+            logger.info(f"num_model_copies was set to \"max\", "
+                        f"this instance can support a max of {num_model_copies} model copies, "
+                        f"going to load {num_model_copies} copies")
+        else:            
+            logger.info(f"num_model_copies set to a str value={num_model_copies}, "
+                        f"will see if we can load these many models")
+            num_model_copies = int(num_model_copies)
+    else:
+        logger.info(f"num_model_copies set to a numerical value={num_model_copies}, "
+                    f"will see if we can load these many models")
+
+    num_gpus_needed = num_model_copies * gpus_needed_per_model_copy
+    
+    logger.info(f"num_model_copies={num_model_copies}, tp_degree={tp_degree},\n"
+                f"num_gpus={num_gpus},\n"
+                f"gpus_needed_per_model_copy={gpus_needed_per_model_copy}, num_gpus_needed={num_gpus_needed},\n"
+                f"model_copies_possible={model_copies_possible}")
+
+    if model_copies_possible < num_model_copies:
+        logger.error(f"num_model_copies={num_model_copies} but model_copies_possible={model_copies_possible}, "
+                     f"setting num_model_copies to max possible for this instance which is {model_copies_possible}")
+        num_model_copies = model_copies_possible
+    else:
+        logger.error(f"num_model_copies={num_model_copies} and model_copies_possible={model_copies_possible}, "
+                     f"it is possible to run {num_model_copies} models, going with that")
+
+    return num_model_copies
+
+
+def prepare_docker_compose_yml(model_id: str,
+                               num_model_copies: Union[int, str],
+                               tp_degree: int,
+                               image: str,
+                               user: str,
+                               shm_size: str,
+                               env: Dict,
+                               serving_properties: Optional[str],
+                               dir_path: str) -> int:
+
+    # convert the env dict to a list of k=v pairs
+    env_as_list = []
+    if env is not None:
+        for k,v in env.items():
+            env_as_list.append(f"{k}={v}")
+
+    # first check if this is an NVIDIA instance or a AWS Chips instance
+    # we do this by checking for nvidia-smi and neuron-ls, they should be
+    # present on NVIDIA and AWS Chips instances respectively
+    NVIDIA_SMI: str = "nvidia-smi"
+    NEURON_LS: str = "neuron-ls"
+    # if the utility is not present the return from the whereis command is like
+    # 'neuron-ls:\n' or 'nvidia-smi:\n' otherwise it is like 
+    # 'nvidia-smi: /usr/bin/nvidia-smi /usr/share/man/man1/nvidia-smi.1.gz\n'
+    utility_present = lambda x: subprocess.check_output(["whereis", x]).decode() != f"{x}:\n"
+    is_nvidia = utility_present(NVIDIA_SMI)
+    is_neuron = utility_present(NEURON_LS)
+    logger.info(f"is_nvidia={is_nvidia}, is_neuron={is_neuron}")
+    if is_nvidia is True:
+        accelerator = constants.ACCELERATOR_TYPE.NVIDIA
+    else:
+        accelerator = constants.ACCELERATOR_TYPE.NEURON
+
+    if is_nvidia is True:
+        num_model_copies = _get_model_copies_to_start_nvidia(tp_degree, num_model_copies)
+    else:
+        num_model_copies = _get_model_copies_to_start_neuron(tp_degree, num_model_copies)
+    
     docker_compose, nginx_config, per_container_info_list = _create_config_files(model_id,
                                                                                  num_model_copies,
                                                                                  tp_degree,
                                                                                  image,
                                                                                  user,
                                                                                  shm_size,
-                                                                                 env_as_list)
+                                                                                 env_as_list,
+                                                                                 accelerator)
 
     yaml.Dumper.ignore_aliases = lambda self, data: True
     docker_compose_yaml = yaml.dump(docker_compose)
