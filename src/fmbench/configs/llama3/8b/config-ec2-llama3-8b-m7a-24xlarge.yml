@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-8b-c5.18xl-ec2"      
+  name: "llama3-8b-m7a.24xl-ec2"      
   model_name: "llama3-8b-instruct"
   
 # AWS and SageMaker settings
@@ -162,7 +162,7 @@ experiments:
     model_name: "llama3-8b-instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://localhost:8000/v1/completions' 
-    instance_type: "c5.18xlarge"
+    instance_type: "m7a.24xlarge"
     image_uri: vllm-cpu-env
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -210,15 +210,15 @@ experiments:
     # this is not a fixed list, you can add more parameters as applicable.
     env:
       MODEL_LOADING_TIMEOUT: 2400
-      VLLM_CPU_KVCACHE_SPACE: 40
-      # This instance has 72 CPUs, and we are allocating 70 of them to run this container.
-      # For more information, visit the following URL:
+      VLLM_CPU_KVCACHE_SPACE: 192
+      # This instance is equipped with 96 CPUs, and we are allocating 93 of them to run this container.
+      # For additional details, refer to the following URL:
       # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
-      VLLM_CPU_OMP_THREADS_BIND: 0-69
+      VLLM_CPU_OMP_THREADS_BIND: 0-92
 
 report:
-  latency_budget: 25
-  cost_per_10k_txn_budget: 20
+  latency_budget: 35
+  cost_per_10k_txn_budget: 60
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

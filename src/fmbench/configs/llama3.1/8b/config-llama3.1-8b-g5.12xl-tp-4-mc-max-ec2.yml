@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-8b-c5.18xl-ec2"      
-  model_name: "llama3-8b-instruct"
+  name: "llama3.1-8b-g5.12xl-ec2"      
+  model_name: "Meta-Llama-3.1-8B-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -60,7 +60,7 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: llama3_tokenizer
+  tokenizer_prefix: llama3_1_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
@@ -114,8 +114,16 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
+  - language: en
+    min_length_in_tokens: 1
+    max_length_in_tokens: 924
+    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -137,19 +145,20 @@ pricing: pricing.yml
 # Use the section name (sagemaker in this example) in the inference_spec.parameter_set
 # section under experiments.
 inference_parameters: 
-  ec2_vllm:
-    model: meta-llama/Meta-Llama-3-8B-Instruct
+  ec2_djl:
+    do_sample: yes
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    max_tokens: 100
+    max_new_tokens: 100
+
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "llama3-8b-instruct"
+  - name: "Meta-Llama-3.1-8B-Instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -157,41 +166,50 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "llama3-8b-instruct"
+    model_name: "Meta-Llama-3.1-8B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://localhost:8000/v1/completions' 
-    instance_type: "c5.18xlarge"
-    image_uri: vllm-cpu-env
+    ep_name: 'http://127.0.0.1:8080/invocations' 
+    instance_type: "g5.12xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
-    # for a llama3-8b-instruct deployed on ec2
+    # for a llama3.1-8b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # Privileged Mode makes the docker container run with root. 
-      # This basically means that if you are root in a container you have the privileges of root on the host system
-      # Only need this if you need to set VLLM_CPU_OMP_THREADS_BIND env variable.
-      privileged_mode: yes      
       # The following line specifies the runtime and GPU settings for the instance
       # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
       # '--gpus all' makes all GPUs available to the container
       # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
-      gpu_or_neuron_setting:
-      # This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
+      gpu_or_neuron_setting: --gpus all --shm-size 12g
+      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
       # If the model takes longer than 40 minutes to load, the process will time out and fail.
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
-      parameter_set: ec2_vllm
-      # if not set assume djl
-      container_type: vllm
+      parameter_set: ec2_djl
+      # how many copies of the model, 1, 2,..max
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
+      model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 4
+      shm_size: 12g
+      model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
-    serving.properties:
+    serving.properties: |
+      engine=MPI
+      option.tensor_parallel_degree=4
+      option.max_rolling_batch_size=4
+      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -204,21 +222,18 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
+    - 2
+    - 4
+    - 6
+    - 8
+    
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      MODEL_LOADING_TIMEOUT: 2400
-      VLLM_CPU_KVCACHE_SPACE: 40
-      # This instance has 72 CPUs, and we are allocating 70 of them to run this container.
-      # For more information, visit the following URL:
-      # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
-      VLLM_CPU_OMP_THREADS_BIND: 0-69
 
 report:
-  latency_budget: 25
-  cost_per_10k_txn_budget: 20
+  latency_budget: 2
+  cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

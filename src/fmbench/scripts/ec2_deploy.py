@@ -89,7 +89,7 @@ def _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or
         {STOP_AND_RM_CONTAINER}
 
         # Run the new Docker container with specified settings
-        docker run -d --name={CONTAINER_NAME} {gpu_or_neuron_setting} \
+        docker run -d --name={FMBENCH_MODEL_CONTAINER_NAME} {gpu_or_neuron_setting} \
             -v {directory}:/opt/ml/model:ro \
             -v {directory}/model_server_logs:/opt/djl/logs \
             {env_str} \
@@ -127,7 +127,7 @@ def _create_script_vllm(image_uri, model_id, env_str, privileged_str):
         {STOP_AND_RM_CONTAINER}
 
         # Run the new Docker container with specified settings
-        docker run -d {privileged_str} --rm --name={CONTAINER_NAME} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
+        docker run -d {privileged_str} --rm --name={FMBENCH_MODEL_CONTAINER_NAME} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
 
         echo "started docker run in daemon mode"
     """
