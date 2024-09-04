@@ -10,3 +10,7 @@ IS_NEURON_INSTANCE = lambda instance_type: any([instance_type.startswith(p) for 
 class ACCELERATOR_TYPE(str, Enum):
     NEURON = 'neuron'
     NVIDIA = "nvidia"
+
+class MODEL_COPIES(str, Enum):
+    AUTO = 'auto'
+    MAX = "max"

@@ -253,11 +253,13 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     Function to deploy the model and create the endpoint
     """
     image_uri: str = experiment_config['image_uri']
-    model_name: str = experiment_config['name']
-    logger.info(f"Going to deploy model: {model_name}")
 
     ep_name: str = experiment_config['ep_name']
     model_id: str = experiment_config['model_id']
+    model_name: str = Path(model_id).name
+    logger.info(f"Going to deploy model: {model_name}")
+
+    ep_name: str = experiment_config['ep_name']
     region: str = experiment_config['region']
     privileged_mode: str = experiment_config['ec2'].get('privileged_mode', False)
     container_type: str = experiment_config['inference_spec'].get('container_type', constants.CONTAINER_TYPE_DJL)
@@ -291,7 +293,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     if container_type == constants.CONTAINER_TYPE_DJL:        
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")
         model_copies_actual = prepare_docker_compose_yml(model_id=Path(model_id).name,
-                                                         num_model_copies=model_copies,
+                                                         model_copies=model_copies,
                                                          tp_degree=experiment_config['inference_spec']['tp_degree'],
                                                          image=image_uri,
                                                          user=container_type,

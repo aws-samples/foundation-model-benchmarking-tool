@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 def _create_config_files(model_id: str,
                          num_model_copies: int,
+                         devices_per_model: int,
                          tp_degree: int,
                          image: str,
                          user: str,
@@ -115,12 +116,6 @@ def _create_config_files(model_id: str,
         logger.info(f"num_model_copies={num_model_copies}, not going to add a load balancer")
         lb = None
 
-    # per model service info to be put in docker compose
-    if accelerator == constants.ACCELERATOR_TYPE.NEURON:
-        num_devices_per_model = int(tp_degree / 2)
-    else:
-        num_devices_per_model = tp_degree
-
     if lb is not None:
         services = dict(loadbalancer=lb)
     else:
@@ -138,20 +133,16 @@ def _create_config_files(model_id: str,
         if lb is not None:
             nginx_server_lines.append(f"        server {cname}:{port};")
         
-        device_offset = num_devices_per_model * i
+        device_offset = devices_per_model * i
         if accelerator == constants.ACCELERATOR_TYPE.NEURON:
             device_name = constants.ACCELERATOR_TYPE.NEURON.value
-            devices = [f"/dev/{device_name}{j + device_offset}:/dev/{device_name}{j}" for j in range(num_devices_per_model)]
+            devices = [f"/dev/{device_name}{j + device_offset}:/dev/{device_name}{j}" for j in range(devices_per_model)]
             # nothing extra, only nvidia has an extra env var for GPUs
             extra_env = []
         else:
-            # device_name = constants.ACCELERATOR_TYPE.NVIDIA.value
-            # capabilities = '[gpu]'
-            # device_ids = [str(j + device_offset) for j in range(num_devices_per_model)]
-            # devices = [dict(driver=device_name, device_ids=device_ids, capabilities=capabilities)]
             devices = None
             # add visible devices via env var
-            gpus=",".join([str(j+device_offset) for j in range(num_devices_per_model)])
+            gpus=",".join([str(j+device_offset) for j in range(devices_per_model)])
             extra_env = [f"NVIDIA_VISIBLE_DEVICES={gpus}"]
             
         
@@ -216,8 +207,8 @@ __nginx_server_lines__
 
     return docker_compose, nginx_config, per_container_info_list
 
-def _get_model_copies_to_start_neuron(tp_degree: int, num_model_copies: Union[str, int]) -> Optional[int]:
-    logger.info(f"_get_model_copies_to_start_neuron, tp_degree={tp_degree}, num_model_copies={num_model_copies}")
+def _get_model_copies_to_start_neuron(tp_degree: int, model_copies: str) -> Tuple[int, int]:
+    logger.info(f"_get_model_copies_to_start_neuron, tp_degree={tp_degree}, model_copies={model_copies}")
     # get the number of neuron cores
     cmd = ["neuron-ls -j"]
     process = subprocess.Popen(cmd,
@@ -238,44 +229,51 @@ def _get_model_copies_to_start_neuron(tp_degree: int, num_model_copies: Union[st
     num_neuron_devices = len(neuron_info)
     num_neuron_cores = 2 * num_neuron_devices
 
+    if model_copies == constants.MODEL_COPIES.AUTO:
+        model_copies_as_int = 1
+        devices_per_model = num_neuron_devices
+        logger.info(f"model copies is set to {model_copies}, model_copies_as_int={model_copies_as_int}, "
+                    f"devices_per_model={devices_per_model}")
+        return model_copies_as_int, devices_per_model
+              
     # tensor parallelism requires as many neuron cores as tp degree
     # and the number of devices required is half of number of cores
     neuron_devices_needed_per_model_copy = int(tp_degree / 2)
     model_copies_possible = int(num_neuron_devices/neuron_devices_needed_per_model_copy)
-    # if num_model_copies is max then load as many copies as possible
-    if isinstance(num_model_copies, str):
-        if num_model_copies == "max":
-            num_model_copies = model_copies_possible
-            logger.info(f"num_model_copies was set to \"max\", "
-                        f"this instance can support a max of {num_model_copies} model copies, "
-                        f"going to load {num_model_copies} copies")
+    # if model_copies is max then load as many copies as possible
+    if isinstance(model_copies, str):
+        if model_copies == constants.MODEL_COPIES.MAX:
+            model_copies = model_copies_possible
+            logger.info(f"model_copies was set to \"{constants.MODEL_COPIES.MAX}\", "
+                        f"this instance can support a max of {model_copies} model copies, "
+                        f"going to load {model_copies} copies")
         else:            
-            logger.info(f"num_model_copies set to a str value={num_model_copies}, "
+            logger.info(f"model_copies set to a str value={model_copies}, "
                         f"will see if we can load these many models")
-            num_model_copies = int(num_model_copies)
+            model_copies = int(model_copies)
     else:
-        logger.info(f"num_model_copies set to a numerical value={num_model_copies}, "
+        logger.info(f"model_copies set to a numerical value={model_copies}, "
                     f"will see if we can load these many models")
 
-    num_devices_needed = num_model_copies * neuron_devices_needed_per_model_copy
+    num_devices_needed = model_copies * neuron_devices_needed_per_model_copy
     
-    logger.info(f"num_model_copies={num_model_copies}, tp_degree={tp_degree},\n"
+    logger.info(f"model_copies={model_copies}, tp_degree={tp_degree},\n"
                 f"num_neuron_devices={num_neuron_devices}, num_neuron_cores={num_neuron_cores},\n"
                 f"neuron_devices_needed_per_model_copy={neuron_devices_needed_per_model_copy}, num_devices_needed={num_devices_needed},\n"
                 f"model_copies_possible={model_copies_possible}")
 
-    if model_copies_possible < num_model_copies:
-        logger.error(f"num_model_copies={num_model_copies} but model_copies_possible={model_copies_possible}, "
-                     f"setting num_model_copies to max possible for this instance which is {model_copies_possible}")
-        num_model_copies = model_copies_possible
+    if model_copies_possible < model_copies:
+        logger.error(f"model_copies={model_copies} but model_copies_possible={model_copies_possible}, "
+                     f"setting model_copies to max possible for this instance which is {model_copies_possible}")
+        model_copies = model_copies_possible
     else:
-        logger.error(f"num_model_copies={num_model_copies} and model_copies_possible={model_copies_possible}, "
-                     f"it is possible to run {num_model_copies} models, going with that")
+        logger.error(f"model_copies={model_copies} and model_copies_possible={model_copies_possible}, "
+                     f"it is possible to run {model_copies} models, going with that")
 
-    return num_model_copies
+    return model_copies, neuron_devices_needed_per_model_copy
 
-def _get_model_copies_to_start_nvidia(tp_degree: int, num_model_copies: Union[str, int]) -> Optional[int]:
-    logger.info(f"_get_model_copies_to_start_nvidia, tp_degree={tp_degree}, num_model_copies={num_model_copies}")
+def _get_model_copies_to_start_nvidia(tp_degree: int, model_copies: str) -> Tuple[int, int]:
+    logger.info(f"_get_model_copies_to_start_nvidia, tp_degree={tp_degree}, model_copies={model_copies}")
     # get the number of neuron cores
     cmd = ["nvidia-smi --query-gpu=name --format=csv,noheader | wc -l"]
     process = subprocess.Popen(cmd,
@@ -292,45 +290,52 @@ def _get_model_copies_to_start_nvidia(tp_degree: int, num_model_copies: Union[st
         return None
 
     num_gpus = int(std_out.strip())
+
+    if model_copies == constants.MODEL_COPIES.AUTO:
+        model_copies_as_int = 1
+        devices_per_model = num_gpus
+        logger.info(f"model copies is set to {model_copies}, model_copies_as_int={model_copies_as_int}, "
+                    f"devices_per_model={devices_per_model}")
+        return model_copies_as_int, devices_per_model
     
     # tensor parallelism requires as many gpus as tp degree
     gpus_needed_per_model_copy = tp_degree
     model_copies_possible = int(num_gpus/gpus_needed_per_model_copy)
-    # if num_model_copies is max then load as many copies as possible
-    if isinstance(num_model_copies, str):
-        if num_model_copies == "max":
-            num_model_copies = model_copies_possible
-            logger.info(f"num_model_copies was set to \"max\", "
-                        f"this instance can support a max of {num_model_copies} model copies, "
-                        f"going to load {num_model_copies} copies")
+    # if model_copies is max then load as many copies as possible
+    if isinstance(model_copies, str):
+        if model_copies == constants.MODEL_COPIES.MAX:
+            model_copies = model_copies_possible
+            logger.info(f"model_copies was set to \"{constants.MODEL_COPIES.MAX}\", "
+                        f"this instance can support a max of {model_copies} model copies, "
+                        f"going to load {model_copies} copies")
         else:            
-            logger.info(f"num_model_copies set to a str value={num_model_copies}, "
+            logger.info(f"model_copies set to a str value={model_copies}, "
                         f"will see if we can load these many models")
-            num_model_copies = int(num_model_copies)
+            model_copies = int(model_copies)
     else:
-        logger.info(f"num_model_copies set to a numerical value={num_model_copies}, "
+        logger.info(f"model_copies set to a numerical value={model_copies}, "
                     f"will see if we can load these many models")
 
-    num_gpus_needed = num_model_copies * gpus_needed_per_model_copy
+    num_gpus_needed = model_copies * gpus_needed_per_model_copy
     
-    logger.info(f"num_model_copies={num_model_copies}, tp_degree={tp_degree},\n"
+    logger.info(f"model_copies={model_copies}, tp_degree={tp_degree},\n"
                 f"num_gpus={num_gpus},\n"
                 f"gpus_needed_per_model_copy={gpus_needed_per_model_copy}, num_gpus_needed={num_gpus_needed},\n"
                 f"model_copies_possible={model_copies_possible}")
 
-    if model_copies_possible < num_model_copies:
-        logger.error(f"num_model_copies={num_model_copies} but model_copies_possible={model_copies_possible}, "
-                     f"setting num_model_copies to max possible for this instance which is {model_copies_possible}")
-        num_model_copies = model_copies_possible
+    if model_copies_possible < model_copies:
+        logger.error(f"model_copies={model_copies} but model_copies_possible={model_copies_possible}, "
+                     f"setting model_copies to max possible for this instance which is {model_copies_possible}")
+        model_copies = model_copies_possible
     else:
-        logger.error(f"num_model_copies={num_model_copies} and model_copies_possible={model_copies_possible}, "
-                     f"it is possible to run {num_model_copies} models, going with that")
+        logger.error(f"model_copies={model_copies} and model_copies_possible={model_copies_possible}, "
+                     f"it is possible to run {model_copies} models, going with that")
 
-    return num_model_copies
+    return model_copies, gpus_needed_per_model_copy
 
 
 def prepare_docker_compose_yml(model_id: str,
-                               num_model_copies: Union[int, str],
+                               model_copies: str,
                                tp_degree: int,
                                image: str,
                                user: str,
@@ -363,12 +368,13 @@ def prepare_docker_compose_yml(model_id: str,
         accelerator = constants.ACCELERATOR_TYPE.NEURON
 
     if is_nvidia is True:
-        num_model_copies = _get_model_copies_to_start_nvidia(tp_degree, num_model_copies)
+        model_copies_as_int, devices_per_model = _get_model_copies_to_start_nvidia(tp_degree, model_copies)
     else:
-        num_model_copies = _get_model_copies_to_start_neuron(tp_degree, num_model_copies)
+        model_copies_as_int, devices_per_model = _get_model_copies_to_start_neuron(tp_degree, model_copies)
     
     docker_compose, nginx_config, per_container_info_list = _create_config_files(model_id,
-                                                                                 num_model_copies,
+                                                                                 model_copies_as_int,
+                                                                                 devices_per_model,
                                                                                  tp_degree,
                                                                                  image,
                                                                                  user,
@@ -393,7 +399,7 @@ def prepare_docker_compose_yml(model_id: str,
         logger.info(f"writing nginx conf to {ngc_path}, contents --->\n{nginx_config}")    
         Path(ngc_path).write_text(nginx_config)
     else:
-        logger.info(f"num_model_copies={num_model_copies}, nginx_config={nginx_config}, "
+        logger.info(f"model_copies={model_copies}, nginx_config={nginx_config}, "
                     f"not creating nginx.conf")
 
     # create sub directories for each model instance
@@ -413,4 +419,4 @@ def prepare_docker_compose_yml(model_id: str,
         logger.info(f"writing {pc['config_properties']} to {cp_fpath}")
         Path(cp_fpath).write_text(pc['config_properties'])
 
-    return num_model_copies
+    return model_copies_as_int

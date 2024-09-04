@@ -18,7 +18,11 @@ Create a new EC2 instance suitable for hosting an LMI as per the steps described
     ```{.bash}
     curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
     chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
-    ./Anaconda3-2023.09-0-Linux-x86_64.sh
+    ./Anaconda3-2023.09-0-Linux-x86_64.sh    
+    ```
+1. Export `anaconda3` to `PATH`.
+
+    ```{.bash}
     export PATH=/home/ubuntu/anaconda3/bin:$PATH
     ```
 
@@ -28,6 +32,7 @@ Create a new EC2 instance suitable for hosting an LMI as per the steps described
     sudo apt-get update
     sudo apt-get install --reinstall docker.io
     sudo apt-get install -y docker-compose
+    docker compose version 
     ```
 
 1. Setup the `fmbench_python311` conda environment.
