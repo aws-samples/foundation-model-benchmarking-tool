@@ -4,7 +4,8 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
+CONFIG_FILE_PATH=src/fmbench/configs/llama3.1/8b/config-ec2-llama3-1-8b-p5-tp-2-mc-max.yml
+#config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
 #src/fmbench/configs/llama3.1/8b/config-ec2-llama3-1-8b-p5.yml
 #src/fmbench/configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml
 #src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-g5.yml
