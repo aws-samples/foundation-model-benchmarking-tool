@@ -135,20 +135,34 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = response.decode('utf-8')
             response_json = json.loads(response)
 
-            # parse response differently depending on message API use
-            if self._use_messages_api_format is True:
-                if isinstance(response_json["choices"], list):
-                    response_json = response_json["choices"][0]["message"]
-                if response_json.get("generated_text") is None:
-                    if response_json.get("content") is not None:
-                        response_json["generated_text"] = response_json.get("content")
-            else:
-                if isinstance(response_json, list):
-                    response_json = response_json[0]
+            # we want to set the "generated_text" key in the response
+            if isinstance(response_json, list):
+                response_json = response_json[0]
                 # add a key called completion, if not there
                 if response_json.get("generated_text") is None:
+                    # look for predicted label and set that as generated text
                     if response_json.get("predicted_label") is not None:
                         response_json["generated_text"] = response_json.get("predicted_label")
+                    else:
+                        logger.error("response_json is list but did not contain generated_text or predicted_label, dont know how to handle this")
+            elif isinstance(response_json, dict):
+                choices = response_json.get("choices")
+                if choices is not None:
+                    if isinstance(choices, list):
+                        response_json = response_json["choices"][0]["message"]
+                        if response_json.get("generated_text") is None:
+                            if response_json.get("content") is not None:
+                                response_json["generated_text"] = response_json.get("content")
+                            else:
+                                logger.error(f"response_json is a dict, choices is a list, but response_json does not contain generated_text, dont know how to handle this")
+                        else:
+                            logger.error(f"response_json is a dict, choices is a list, but generated_text ia None, dont know how to handle this")
+                    else:
+                        logger.error(f"response_json is a dict, but choices is not a list but rather it is {type(choices)}, dont know how to handle this")
+                else:
+                    logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
+            else:
+                logger.error(f"response_json data type is {type(response_json)}, dont know how to handle this")
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))
 
