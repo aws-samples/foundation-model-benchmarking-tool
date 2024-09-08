@@ -42,6 +42,7 @@ pricing:
     inf2.48xlarge: 12.98127
     trn1.32xlarge: 21.50
     p4d.24xlarge: 32.7726
+    p4de.24xlarge: 40.965
     p5.48xlarge: 98.32
     p3.2xlarge: 3.06
     g4dn.12xlarge: 3.912
