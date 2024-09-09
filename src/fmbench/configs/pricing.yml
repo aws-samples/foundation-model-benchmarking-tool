@@ -42,6 +42,7 @@ pricing:
     inf2.48xlarge: 12.98127
     trn1.32xlarge: 21.50
     p4d.24xlarge: 32.7726
+    p4de.24xlarge: 40.965
     p5.48xlarge: 98.32
     p3.2xlarge: 3.06
     g4dn.12xlarge: 3.912
@@ -85,8 +86,8 @@ pricing:
       output-per-1k-tokens: 0.0007
     ## Llama
     meta.llama3-1-8b-instruct-v1:0:
-      input-per-1k-tokens: 0.0003
-      output-per-1k-tokens: 0.0006
+      input-per-1k-tokens: 0.00022
+      output-per-1k-tokens: 0.00022
     meta.llama3-1-70b-instruct-v1:0:
       input-per-1k-tokens: 0.00265
       output-per-1k-tokens: 0.0035

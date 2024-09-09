@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "mistral-7b-v3-inf2.48xl-ec2"      
-  model_name: "mistral-7b-instruct-v3"
+  name: "llama3-1-8b-inf2.48xl-ec2"      
+  model_name: "Meta-Llama-3-8B-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -60,14 +60,14 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: mistral_tokenizer
+  tokenizer_prefix: llama3_1_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_mistral.txt
+  prompt_template_file: prompt_template_llama3.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -76,8 +76,8 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
-  2_deploy_model.ipynb: no
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
   5_cleanup.ipynb: yes
@@ -154,7 +154,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Mistral-7B-Instruct-v0.3"
+  - name: "Meta-Llama-3.1-8B-Instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -162,9 +162,9 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: mistralai/Mistral-7B-Instruct-v0.3 #model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct #model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Mistral-7B-Instruct-v0.3"
+    model_name: "Meta-Llama-3-8B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: "inf2.48xlarge"
@@ -194,19 +194,22 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 6
+      tp_degree: 24
       shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=mistralai/Mistral-7B-Instruct-v0.3
-      option.tensor_parallel_degree=6
+      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.tensor_parallel_degree=24
       option.n_positions=4096
       option.rolling_batch=auto
       option.max_rolling_batch_size=4
       option.model_loading_timeout=2400
+      option.group_query_attention=replicated-heads
+      option.attention_layout=BSH
+      option.fuse_qkv=True
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -225,20 +228,23 @@ experiments:
     - 4
     - 5
     - 6
-    - 7
-    - 8
-    - 9
-    - 10
-    - 15
-    - 20
+    # - 7
+    # - 8
+    # - 9
+    # - 10
+    # - 11
+    # - 12
+    # - 15
+    # - 20
     # - 25
     # - 30
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
+      NEURON_CC_FLAGS: -O3
 
 report:
-  latency_budget: 3
+  latency_budget: 2
   cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv

@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
-# this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
+# this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "mistral-7b-v3-inf2.48xl-ec2"      
-  model_name: "mistral-7b-instruct-v3"
+  name: "llama3.1-8b-g5.24xl-ec2"      
+  model_name: "Meta-Llama-3.1-8B-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -60,14 +60,14 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: mistral_tokenizer
+  tokenizer_prefix: llama3_1_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_mistral.txt
+  prompt_template_file: prompt_template_llama3.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -76,8 +76,8 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
-  2_deploy_model.ipynb: no
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
   5_cleanup.ipynb: yes
@@ -114,10 +114,6 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
 
@@ -147,14 +143,14 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
-    return_full_text: no
+
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Mistral-7B-Instruct-v0.3"
+  - name: "Meta-Llama-3.1-8B-Instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -162,27 +158,29 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: mistralai/Mistral-7B-Instruct-v0.3 #model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Mistral-7B-Instruct-v0.3"
+    model_name: "Meta-Llama-3.1-8B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "inf2.48xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1
+    instance_type: "g5.24xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
-    # for a llama3-8b-instruct deployed on ec2
+    # for a llama3.1-8b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and Inferentia settings for the instance
-      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
-      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: -u djl --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11
-      #This setting specifies the timeout (in seconds) for loading the model. 
+      # The following line specifies the runtime and GPU settings for the instance
+      # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
+      # '--gpus all' makes all GPUs available to the container
+      # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
+      gpu_or_neuron_setting: --gpus all --shm-size 12g
+      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
+      # If the model takes longer than 40 minutes to load, the process will time out and fail.
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
@@ -194,26 +192,21 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 6
+      tp_degree: 4
       shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
-      engine=Python
-      option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=mistralai/Mistral-7B-Instruct-v0.3
-      option.tensor_parallel_degree=6
-      option.n_positions=4096
-      option.rolling_batch=auto
+      engine=MPI
+      option.tensor_parallel_degree=4
       option.max_rolling_batch_size=4
-      option.model_loading_timeout=2400
-
+      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
@@ -221,24 +214,16 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    - 3
     - 4
-    - 5
     - 6
-    - 7
     - 8
-    - 9
-    - 10
-    - 15
-    - 20
-    # - 25
-    # - 30
+    
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
 
 report:
-  latency_budget: 3
+  latency_budget: 2
   cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
