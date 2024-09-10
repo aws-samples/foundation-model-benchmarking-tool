@@ -3,9 +3,10 @@
 [ ! -d /triton ] && echo "/triton dir must exist" && exit 1
 [ ! -d /snapshots ] && echo "/snapshots dir must exist" && exit 1
 
-[ $# -ne 1 ] && echo "usage: $0 hf-model-id" && exit 1 
+[ $# -ne 2 ] && echo "usage: $0 hf-model-id model-name" && exit 1
 
 HF_MODEL_ID=$1
+MODEL_NAME=$2
 MODEL_PATH=/snapshots/$HF_MODEL_ID
 [ ! -d $MODEL_PATH ] && echo "$MODEL_PATH not found" && exit 1
 
@@ -18,7 +19,6 @@ OUTPUT_LOG="$LOG_ROOT/triton-server.log"
 rm -rf $MODEL_REPO
 mkdir -p $MODEL_REPO
 VERSION=1
-MODEL_NAME=llama3-8b-instruct
 mkdir -p $MODEL_REPO/$MODEL_NAME/$VERSION
 cp /triton/model.py $MODEL_REPO/$MODEL_NAME/$VERSION/model.py
 cp /triton/model.json $MODEL_REPO/$MODEL_NAME/$VERSION/model.json

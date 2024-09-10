@@ -71,7 +71,11 @@ def _run_hf_snapshot(hf_model_id: str, hf_token: str):
         raise Exception(f"Error occurred while downloading the model files: {e}")
 
 
-def _handle_triton_serving_properties_and_inf_params(triton_dir: str, tp_degree: int, batch_size: int, inference_parameters: Dict):
+def _handle_triton_serving_properties_and_inf_params(triton_dir: str, 
+                                                     tp_degree: int, 
+                                                     batch_size: int, 
+                                                     inference_parameters: Dict, 
+                                                     hf_model_id: str):
     """
     Takes the triton files: config.pbtxt, model.json, model.py and substitutes the batch size, tensor parallel degree
     from the configuration file into those files before the model repository is prepared within the container
@@ -89,6 +93,8 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str, tp_degree:
                     # Replace placeholders in model.json
                     content["tp_degree"] = tp_degree
                     content["batch_size"] = batch_size
+                    content['model'] = hf_model_id
+                    content['tokenizer'] = hf_model_id
                     if "on_device_embedding" in content.get("neuron_config", {}):
                         logger.info(f"Replacing on_device_embedding in {file_path} with inference_parameters.")
                         content["neuron_config"]["on_device_embedding"] = inference_parameters
@@ -251,12 +257,13 @@ def _create_config_files(model_id: str,
             current_dir: str = os.path.dirname(os.path.realpath(__file__))
             triton_content: str = os.path.join(current_dir, "triton")
             logger.info(f"All triton model content is in: {triton_content}")
-            dir_path_on_host = f"/home/ubuntu/{model_id}"
+            dir_path_on_host = f"/home/ubuntu/{Path(model_id).name}"
             os.chmod(f"{triton_content}/triton-transformers-neuronx.sh", 0o755)
             volumes = [f"{triton_content}:/scripts/triton:rw",
                        f"{dir_path_on_host}/i{i+1}:/triton:rw",
                        f"{dir_path_on_host}/snapshots:/snapshots:rw"]
             ports = [f"{port}:{internal_http_port}"]
+            model_container_download_script: str = '/scripts/triton/triton-transformers-neuronx.sh'
             service = {cname: { "image": image, 
                                 "container_name": cname,
                                 "user": '', 
@@ -266,9 +273,8 @@ def _create_config_files(model_id: str,
                                 "volumes": volumes,
                                 "ports": ports,
                                 "deploy": {"restart_policy": {"condition": "on-failure"}} }}
-
         else:
-            dir_path_on_host = f"/home/ubuntu/{model_id}/i{i+1}"
+            dir_path_on_host = f"/home/ubuntu/{Path(model_id).name}/i{i+1}"
             volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
                    f"{dir_path_on_host}/conf:/opt/djl/conf:ro",
                    f"{dir_path_on_host}/model_server_logs:/opt/djl/logs"]
@@ -290,7 +296,7 @@ def _create_config_files(model_id: str,
         elif user == constants.CONTAINER_TYPE_TRITON:
             logger.info(f"This is a triton image uri, using an entry point command which contains",
                         f"the model repository contents")
-            service[cname]['command'] = "/scripts/triton/triton-transformers-neuronx.sh meta-llama/Meta-Llama-3-8B-Instruct"
+            service[cname]['command'] = f"{model_container_download_script} {model_id} {Path(model_id).name}"
         services = services | service
 
         # config.properties
@@ -462,7 +468,8 @@ def _get_model_copies_to_start_nvidia(tp_degree: int, model_copies: str) -> Tupl
     return model_copies, gpus_needed_per_model_copy
 
 
-def prepare_docker_compose_yml(model_id: str,
+def prepare_docker_compose_yml(model_name: str,
+                               model_id: str,
                                model_copies: str,
                                tp_degree: int,
                                batch_size: int,
@@ -484,11 +491,12 @@ def prepare_docker_compose_yml(model_id: str,
         # if it is a triton image, then download the hf snapshots before running 
         # docker compose
         logger.info(f"Running the hf snapshot")
-        _run_hf_snapshot("meta-llama/Meta-Llama-3-8B-Instruct", hf_token)
+        _run_hf_snapshot(model_id, hf_token)
         # prepare the files in the triton directory
         current_dir: str = os.path.dirname(os.path.realpath(__file__))
         triton_content: str = os.path.join(current_dir, "triton")
-        _handle_triton_serving_properties_and_inf_params(triton_content, tp_degree, batch_size, inference_parameters)
+        # handles custom tensor pd, batch size into the model repository files
+        _handle_triton_serving_properties_and_inf_params(triton_content, tp_degree, batch_size, inference_parameters, model_id)
 
     # first check if this is an NVIDIA instance or a AWS Chips instance
     # we do this by checking for nvidia-smi and neuron-ls, they should be
@@ -527,7 +535,7 @@ def prepare_docker_compose_yml(model_id: str,
 
     # create the docker compose and nginx.conf file in the top level
     # directory path for this model
-    dir_path = os.path.join(dir_path, model_id)
+    dir_path = os.path.join(dir_path, Path(model_id).name)
     os.makedirs(dir_path, exist_ok=True)
     dc_path = os.path.join(dir_path, "docker-compose.yml")
     logger.info(f"writing docker compose to {dc_path}, contents --->\n{docker_compose_yaml}")    
