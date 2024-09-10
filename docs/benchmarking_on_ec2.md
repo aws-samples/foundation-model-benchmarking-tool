@@ -112,8 +112,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```{.bash}
         git clone \
         https://github.com/aws-samples/amazon-eks-machine-learning-with-terraform-and-kubeflow.git
-        cd amazon-eks-machine-learning-with-terraform-and-kubeflow
-        ./containers/tritonserver-neuronx/build_tools/
+        cd amazon-eks-machine-learning-with-terraform-and-kubeflow/containers/tritonserver-neuronx/build_tools/
     ```
 
 1. Create a script by copy pasting the commands and script below. This script will build and push the triton image locally
