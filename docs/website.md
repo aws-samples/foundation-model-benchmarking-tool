@@ -43,7 +43,8 @@ Here are the steps to setup a website using `mkdocs` and `nginx`. The steps belo
     sudo apt-get install unzip -y
     unzip awscliv2.zip
     sudo ./aws/install
-    aws s3 sync s3://fmbench_data $HOME/fmbench_data --exclude "*.json"
+    FMBENCH_S3_BUCKET=your-fmbench-s3-bucket-name-here
+    aws s3 sync s3://FMBENCH_S3_BUCKET $HOME/fmbench_data --exclude "*.json"
     ```
 
 1. Create a directory for the `FMBench` website contents.
