@@ -81,6 +81,7 @@ nav:
       - BYO dataset: byo_dataset.md
       - Build FMBench: build.md
       - Analytics: analytics.md
+      - Running multiple model copies: mm_copies.md
 
   - Results:
       - Report: results.md

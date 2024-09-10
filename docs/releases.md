@@ -1,5 +1,11 @@
 # Releases
 
+## 2.0.6
+
+1. Run multiple model copies with the DJL serving container and an Nginx load balancer on Amazon EC2.
+1. Config files for `Llama3.1-8b` on `g5`, `p4de` and `p5` Amazon EC2 instance types.
+1. Better analytics for creating internal leaderboards.
+
 ## 2.0.5
 
 1. Support for Intel CPU based instances such as `c5.18xlarge` and `m5.16xlarge`.
