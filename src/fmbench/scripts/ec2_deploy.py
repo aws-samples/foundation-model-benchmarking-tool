@@ -27,6 +27,9 @@ from fmbench.scripts.prepare_for_multi_model_djl import prepare_docker_compose_y
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_EC2
+
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 # SHM_SIZE: str = "12g"

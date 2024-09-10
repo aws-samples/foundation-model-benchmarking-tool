@@ -7,9 +7,14 @@ import sagemaker
 import subprocess
 from pathlib import Path
 from typing import Dict, Optional
+from fmbench.scripts import constants
 
 # session/account specific variables
 sess = sagemaker.session.Session()
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_EKS
+
 # Define the location of your s3 prefix for model artifacts
 region: str =sess._region_name
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")

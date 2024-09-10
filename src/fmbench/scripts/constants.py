@@ -14,3 +14,10 @@ class ACCELERATOR_TYPE(str, Enum):
 class MODEL_COPIES(str, Enum):
     AUTO = 'auto'
     MAX = "max"
+    
+    
+# These variables represent the platform where a specific
+# endpoint is deployed.
+PLATFORM_SAGEMAKER: str = "sagemaker"
+PLATFORM_EKS: str = "eks"
+PLATFORM_EC2: str = "ec2"

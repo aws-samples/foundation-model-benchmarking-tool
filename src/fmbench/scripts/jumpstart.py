@@ -1,8 +1,13 @@
 import time
 import fmbench
 from typing import Dict
+from fmbench.scripts import constants
 from sagemaker.predictor import Predictor
 from sagemaker.jumpstart.model import JumpStartModel
+
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 tag = [
     {
@@ -10,6 +15,7 @@ tag = [
         'Value': fmbench.__version__
     }
 ]
+
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model = JumpStartModel(

@@ -13,10 +13,14 @@ import logging
 import subprocess
 from typing import Dict
 from pathlib import Path
+from fmbench.scripts import constants
 
 # Set up a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 # Global constant for the Hugging Face token file
 SCRIPT_DIRECTORY: str = os.path.dirname(os.path.realpath(__file__))
