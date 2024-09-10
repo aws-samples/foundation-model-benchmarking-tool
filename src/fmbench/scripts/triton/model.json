@@ -1,6 +1,6 @@
 {
-    "model": "/meta-llama/Meta-Llama-3-8B-Instruct",
-    "tokenizer": "/meta-llama/Meta-Llama-3-8B-Instruct",
+    "model": "meta-llama/Meta-Llama-3-8B-Instruct",
+    "tokenizer": "meta-llama/Meta-Llama-3-8B-Instruct",
     "tp_degree": "$TP_DEGREE",
     "amp": "f16",
     "n_positions": 8096,
