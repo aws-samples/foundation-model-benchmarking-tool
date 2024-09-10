@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 def _handle_triton_serving_properties_and_inf_params(triton_dir: str, 
                                                      tp_degree: int, 
                                                      batch_size: int, 
+                                                     n_positions: int,
                                                      inference_parameters: Dict, 
                                                      hf_model_id: str):
     """
@@ -49,6 +50,7 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     content["batch_size"] = batch_size
                     content['model'] = hf_model_id
                     content['tokenizer'] = hf_model_id
+                    content['n_positions'] = n_positions
                     # Replace the inference parameters with the inference parameters from
                     # the configuration file
                     if "on_device_embedding" in content.get("neuron_config", {}):
@@ -234,21 +236,19 @@ def _create_config_files(model_id: str,
                     elif os.path.isdir(s):
                         shutil.copytree(s, d, dirs_exist_ok=True)
                 # give permissions to run the script that creates the model repository in the triton model container
-                os.chmod(os.path.join(triton_instance_dir, "triton-transformers-neuronx.sh"), 0o755)
+                os.chmod(os.path.join(triton_instance_dir, os.path.basename(constants.TRITON_INFERENCE_SCRIPT)), 0o755)
             triton_files: List[str] = [f for f in os.listdir(triton_content) if os.path.isfile(os.path.join(triton_content, f))]
             logger.info(f"Files in triton content that have been copied to each instance directory: {triton_files}")
             volumes = [f"{dir_path_on_host}/i{i+1}/triton:/scripts/triton:rw",
                         f"{dir_path_on_host}/i{i+1}/triton:/triton:rw",
                         f"{dir_path_on_host}/snapshots:/snapshots:rw"]
-            ports = [f"{port}:{internal_http_port}"]
-            model_container_download_script: str = '/scripts/triton/triton-transformers-neuronx.sh'
         else:
             dir_path_on_host = f"/home/ubuntu/{Path(model_id).name}/i{i+1}"
             volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
                    f"{dir_path_on_host}/conf:/opt/djl/conf:ro",
                    f"{dir_path_on_host}/model_server_logs:/opt/djl/logs"]
-            ports = [f"{port}:{port}"]
-
+        # port mapping for DJL and Triton are the same
+        ports = [f"{port}:{port}"]
         service = {cname: { "image": image, 
                             "container_name": cname,
                             "user": user if (user == constants.CONTAINER_TYPE_DJL or user == constants.CONTAINER_TYPE_VLLM) else '', 
@@ -264,7 +264,7 @@ def _create_config_files(model_id: str,
             _ = service[cname].pop("devices")
         elif user == constants.CONTAINER_TYPE_TRITON:
             logger.info(f"This is a triton image uri, using an entry point command which contains the model repository contents")
-            service[cname]['command'] = f"{model_container_download_script} {model_id} {Path(model_id).name}"
+            service[cname]['command'] = f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {port}"
         services = services | service
 
         # config.properties
@@ -452,14 +452,24 @@ def prepare_docker_compose_yml(model_name: str,
     if env is not None:
         for k,v in env.items():
             env_as_list.append(f"{k}={v}")
+
+    # Get the tp degree, batch size, n_positions and inference parameters that are used
+    # during model deployment. This is representative of serving.properties for models served 
+    # on the triton container
     tp_degree: int = inference_params.get('tp_degree', None)
-    batch_size: int = inference_params.get('batch_size', None)
+    batch_size: int = inference_params.get('batch_size', 4)
+    n_positions: int = inference_params.get('n_positions', 8192)
     inference_parameters: Dict = inference_params.get('parameters', None)
+
     if user == constants.CONTAINER_TYPE_TRITON:
         current_dir: str = os.path.dirname(os.path.realpath(__file__))
         triton_content: str = os.path.join(current_dir, "triton")
         # handles custom tensor pd, batch size into the model repository files
-        _handle_triton_serving_properties_and_inf_params(triton_content, tp_degree, batch_size, inference_parameters, model_id)
+        _handle_triton_serving_properties_and_inf_params(triton_content, 
+                                                        tp_degree, batch_size, 
+                                                        n_positions, 
+                                                        inference_parameters, 
+                                                        model_id)
 
     # first check if this is an NVIDIA instance or a AWS Chips instance
     # we do this by checking for nvidia-smi and neuron-ls, they should be
