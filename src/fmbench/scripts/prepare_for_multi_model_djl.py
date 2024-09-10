@@ -11,7 +11,9 @@ import shutil
 import docker
 import logging
 import subprocess
+from os import listdir
 from pathlib import Path
+from os.path import isfile, join
 from tempfile import TemporaryDirectory
 import fmbench.scripts.constants as constants
 from huggingface_hub import snapshot_download
@@ -22,53 +24,6 @@ logger = logging.getLogger(__name__)
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
-
-def _run_hf_snapshot(hf_model_id: str, hf_token: str):
-    """
-    Runs the hf-snapshot.sh script to prepare snapshots for the HF model and stores it in the 
-    triton model directory that is used during deployment. Utilizes caching if the snapshot 
-    already exists.
-    """
-    try:
-        hf_tensors = os.environ.get("HF_TENSORS", "true").lower() in ("true", "1")
-        logger.info(f"Download Hugging Face Snapshot Tensors: {hf_tensors}")
-        logger.info(f"Checking for existing HuggingFace snapshot: {hf_model_id}")
-        
-        model_name = Path(hf_model_id).name
-        snapshot_base = "/home/ubuntu"
-        snapshot_path = os.path.join(snapshot_base, model_name, "snapshots", hf_model_id)
-        if os.path.exists(snapshot_path) and os.listdir(snapshot_path):
-            logger.info(f"Snapshot already exists at {snapshot_path}. Using cached version.")
-            return snapshot_path
-        
-        logger.info(f"Snapshot not found. Downloading HuggingFace snapshot: {hf_model_id}")
-        
-        with TemporaryDirectory(suffix="model", prefix="hf", dir="/tmp") as cache_dir:
-            ignore_patterns = ["*.msgpack", "*.h5"] if hf_tensors else [ "*.msgpack", "*.h5", "*.bin", "*.safetensors"]
-            snapshot_download(repo_id=hf_model_id, 
-                cache_dir=cache_dir,
-                ignore_patterns=ignore_patterns,
-                token=hf_token)
-
-            cache_path = Path(cache_dir)
-            local_snapshot_path = str(list(cache_path.glob(f"**/snapshots/*"))[0])
-            logger.info(f"Local snapshot path: {local_snapshot_path}")
-            os.makedirs(snapshot_path, exist_ok=True)
-
-            logger.info(f"Copying snapshot to {snapshot_path}")
-            for root, dirs, files in os.walk(local_snapshot_path):
-                for file in files:
-                    full_path = os.path.join(root, file)
-                    if os.path.isdir(full_path):
-                        shutil.copytree(full_path, os.path.join(snapshot_path, os.path.basename(full_path)))
-                    else:
-                        shutil.copy2(full_path, snapshot_path)
-        
-        logger.info("Model snapshot files downloaded successfully. Moving to model compilation now.")
-        return snapshot_path
-        
-    except Exception as e:
-        raise Exception(f"Error occurred while downloading the model files: {e}")
 
 
 def _handle_triton_serving_properties_and_inf_params(triton_dir: str, 
@@ -257,11 +212,30 @@ def _create_config_files(model_id: str,
             current_dir: str = os.path.dirname(os.path.realpath(__file__))
             triton_content: str = os.path.join(current_dir, "triton")
             logger.info(f"All triton model content is in: {triton_content}")
-            dir_path_on_host = f"/home/ubuntu/{Path(model_id).name}"
-            os.chmod(f"{triton_content}/triton-transformers-neuronx.sh", 0o755)
-            volumes = [f"{triton_content}:/scripts/triton:rw",
-                       f"{dir_path_on_host}/i{i+1}:/triton:rw",
-                       f"{dir_path_on_host}/snapshots:/snapshots:rw"]
+            dir_path_on_host: str = f"/home/ubuntu/{Path(model_id).name}"
+            
+            # Copy Triton content to each i{i+1} directory
+            for i in range(num_model_copies):  
+                instance_dir = os.path.join(dir_path_on_host, f"i{i+1}")
+                triton_instance_dir = os.path.join(instance_dir, "triton")
+                
+                # Create the triton directory in the instance directory if it doesn't exist
+                os.makedirs(triton_instance_dir, exist_ok=True)
+                
+                # Copy all files from triton_content to the instance's triton directory
+                for item in os.listdir(triton_content):
+                    s = os.path.join(triton_content, item)
+                    d = os.path.join(triton_instance_dir, item)
+                    if os.path.isfile(s):
+                        shutil.copy2(s, d)
+                    elif os.path.isdir(s):
+                        shutil.copytree(s, d, dirs_exist_ok=True)
+                os.chmod(os.path.join(triton_instance_dir, "triton-transformers-neuronx.sh"), 0o755)
+            triton_files: List[str] = [f for f in os.listdir(triton_content) if os.path.isfile(os.path.join(triton_content, f))]
+            logger.info(f"Files in triton content that have been copied to each instance directory: {triton_files}")
+            volumes = [f"{dir_path_on_host}/i{i+1}/triton:/scripts/triton:rw",
+                        f"{dir_path_on_host}/i{i+1}/triton:/triton:rw",
+                        f"{dir_path_on_host}/snapshots:/snapshots:rw"]
             ports = [f"{port}:{internal_http_port}"]
             model_container_download_script: str = '/scripts/triton/triton-transformers-neuronx.sh'
             service = {cname: { "image": image, 
@@ -294,8 +268,7 @@ def _create_config_files(model_id: str,
             service[cname]['runtime'] = constants.ACCELERATOR_TYPE.NVIDIA.value
             _ = service[cname].pop("devices")
         elif user == constants.CONTAINER_TYPE_TRITON:
-            logger.info(f"This is a triton image uri, using an entry point command which contains",
-                        f"the model repository contents")
+            logger.info(f"This is a triton image uri, using an entry point command which contains the model repository contents")
             service[cname]['command'] = f"{model_container_download_script} {model_id} {Path(model_id).name}"
         services = services | service
 
@@ -488,11 +461,6 @@ def prepare_docker_compose_yml(model_name: str,
             env_as_list.append(f"{k}={v}")
     hf_token: str = Path(HF_TOKEN_FNAME).read_text().strip()
     if user == constants.CONTAINER_TYPE_TRITON:
-        # if it is a triton image, then download the hf snapshots before running 
-        # docker compose
-        logger.info(f"Running the hf snapshot")
-        _run_hf_snapshot(model_id, hf_token)
-        # prepare the files in the triton directory
         current_dir: str = os.path.dirname(os.path.realpath(__file__))
         triton_content: str = os.path.join(current_dir, "triton")
         # handles custom tensor pd, batch size into the model repository files
