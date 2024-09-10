@@ -188,7 +188,14 @@ class TritonPythonModel:
           input_ids = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt")['input_ids']
           generated_token_seqs = self.model.sample(input_ids, **params)
           generated_token_seqs = generated_token_seqs[:batch_prompts_size]
-          generated_text_seqs = self.tokenizer.batch_decode(generated_token_seqs, skip_special_tokens=True)
+
+          # Remove the input prompt tokens from the generated sequences
+          new_generated_token_seqs = []
+          for i, seq in enumerate(generated_token_seqs):
+              prompt_length = input_ids[i].shape[0]
+              new_generated_token_seqs.append(seq[prompt_length:])
+
+          generated_text_seqs = self.tokenizer.batch_decode(new_generated_token_seqs, skip_special_tokens=True)
           assert isinstance(generated_text_seqs, list)
           assert len(generated_text_seqs) == batch_prompts_size
           generated_text_seqs_list.extend(generated_text_seqs)
