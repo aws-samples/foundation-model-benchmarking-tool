@@ -188,16 +188,8 @@ def _create_config_files(model_id: str,
         cnames.append(cname)
         port = base_port + i + 1
         logger.info(f"container {i+1} will run on port {port}")
-        if user == constants.CONTAINER_TYPE_TRITON:
-            internal_http_port = 8000
-            cname = f"fmbench_model_container_{i+1}"
-            # if it is a triton container, then point the cname to the internal http port for 
-            # triton 
-            nginx_server_lines.append(f"        server {cname}:{internal_http_port};")
-        elif ((user == constants.CONTAINER_TYPE_DJL) or (user == constants.CONTAINER_TYPE_VLLM)):
+        if lb is not None:
             nginx_server_lines.append(f"        server {cname}:{port};")
-        else:
-            logger.error(f"No load balancer option to be provided")
         
         device_offset = devices_per_model * i
         if accelerator == constants.ACCELERATOR_TYPE.NEURON:
