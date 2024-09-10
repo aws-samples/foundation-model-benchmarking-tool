@@ -73,10 +73,6 @@
          <lastmod>2024-09-10</lastmod>
     </url>
     <url>
-         <loc>https://foundation-model-benchmarking-tool.github.io/internal_website.html</loc>
-         <lastmod>2024-09-10</lastmod>
-    </url>
-    <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/manifest.html</loc>
          <lastmod>2024-09-10</lastmod>
     </url>
@@ -106,6 +102,10 @@
     </url>
     <url>
          <loc>https://foundation-model-benchmarking-tool.github.io/run_as_container.html</loc>
+         <lastmod>2024-09-10</lastmod>
+    </url>
+    <url>
+         <loc>https://foundation-model-benchmarking-tool.github.io/website.html</loc>
          <lastmod>2024-09-10</lastmod>
     </url>
     <url>

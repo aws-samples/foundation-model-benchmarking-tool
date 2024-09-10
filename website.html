@@ -8,7 +8,7 @@
       
       
       
-        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/internal_website.html">
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/website.html">
       
       
         <link rel="prev" href="results.html">
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#an-internal-fmbench-website" class="md-skip">
+        <a href="#create-a-website-for-fmbench-reports" class="md-skip">
           Skip to content
         </a>
       
@@ -1027,7 +1027,7 @@
         
       
       
-      <a href="internal_website.html" class="md-nav__link md-nav__link--active">
+      <a href="website.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -1232,36 +1232,91 @@
   
 
 
-<h1 id="an-internal-fmbench-website">An internal <code>FMBench</code> website<a class="headerlink" href="#an-internal-fmbench-website" title="Permanent link">&para;</a></h1>
-<p>You can create an internal <code>FMBench</code> website to view results from multiple runs in a single place. All <code>FMBench</code> reports are generated as a Markdown file, these files can be rendered together in a website that is viewable in a web browser on your machine. We use <a href="https://quarto.org/"><code>Quarto</code></a> to do this. The steps below describe the process you can follow.</p>
-<blockquote>
-<p>[Prerequisites] <strong><em>If you have followed the <a href="#quickstart"><code>Quickstart</code></a> then these are already taken care of for you.</em></strong><br />
-1. You will need to clone the <code>FMBench</code> code repo from GitHub.<br />
-1. The <code>results-*</code> folders that contain the reports and metrics from a run are present in the root folder of the <code>FMBench</code> code repo. </p>
-</blockquote>
+<h1 id="create-a-website-for-fmbench-reports">Create a website for <code>FMBench</code> reports<a class="headerlink" href="#create-a-website-for-fmbench-reports" title="Permanent link">&para;</a></h1>
+<p>When you use <code>FMBench</code> as a tool for benchmarking your foundation models you would soon want to have an easy way to view all the reports in one place and search through the results, for example, "<code>Llama3.1-8b</code> results on <code>trn1.32xlarge</code>". An <code>FMBench</code> website provides a simple way of viewing these results.</p>
+<p>Here are the steps to setup a website using <code>mkdocs</code> and <code>nginx</code>. The steps below generate a self-signed certificate for SSL and use username and password for authentication. <strong>It is strongly recommended that you use a valid SSL cert and a better authentication mechanism than username and password for your <code>FMBench</code> website</strong>.</p>
 <ol>
 <li>
-<p>Run the <a href="./render_fmbench_website.py"><code>render_fmbench_website.py</code></a> Python script using the following command. This will generate a <code>_quarto.yml</code> file and render the website in the <code>fmbench-website</code> folder in the root directory of your <code>FMBench</code> repo. The website is rendered using the <code>Quarto</code> container downloaded from <code>registry.gitlab.com/quarto-forge/docker/quarto</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/render_fmbench_website.py
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>python<span class="w"> </span>render_fmbench_website.py
+<p>Start an Amazon EC2 machine which will host the <code>FMBench</code> website. A <code>t3.xlarge</code> machine with an Ubuntu AMI say <code>ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-20240801</code> and 50GB storage is good enough. <strong>Allow SSH and TCP port 443 traffic from anywhere into that machine</strong>.</p>
+</li>
+<li>
+<p>SSH into that machine and install <code>conda</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell  </span>
 </span></code></pre></div>
 </li>
 <li>
-<p>The website is created in the local directory <code>fmbench-website</code>. You can copy this folder into a webserver that you have OR the easiest option is to zip up this folder and download to your local machine and use the Python3  <code>http.server</code> to host the website.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span>fmbench-website<span class="p">;</span><span class="w"> </span>zip<span class="w"> </span>-r9<span class="w"> </span>../fmbench-website.zip<span class="w"> </span>*<span class="p">;</span><span class="nb">cd</span><span class="w"> </span>-
+<p>Install <code>docker-compose</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>update
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>--reinstall<span class="w"> </span>docker.io<span class="w"> </span>-y
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>docker-compose
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>newgrp<span class="w"> </span>docker
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>docker<span class="w"> </span>compose<span class="w"> </span>version<span class="w"> </span>
 </span></code></pre></div>
 </li>
 <li>
-<p>Download <code>fmbench-website.zip</code> to your local machine. Extract the contents from the <code>fmbench-website.zip</code> file. Navigate to <code>fmbench-website</code> directory and run the Python3 webserver. This will start a local webserver. You should see traces being printed out on the console indicating that the webserver has started.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>python<span class="w"> </span>http.server<span class="w"> </span><span class="m">8080</span>
+<p>Setup the <code>fmbench_python311</code> conda environment and clone <code>FMBench</code> repo.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench<span class="w"> </span>mkdocs<span class="w"> </span>mkdocs-material<span class="w"> </span>mknotebooks
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/aws-samples/foundation-model-benchmarking-tool.git
 </span></code></pre></div>
 </li>
 <li>
-<p>Open <a href="http://localhost:8080/"><code>http://localhost:8080/</code></a> in your browser and you should be able to see the <code>FMBench</code> website with all the reports that were present in the <code>results-*</code> folder in your <code>FMBench</code> installation. The following screenshot shows a picture of the <code>FMBench</code> website with links to multiple reports.</p>
+<p>Get the <code>FMBench</code> results data from Amazon S3 or whichever storage system you used to store all the results.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span><span class="s2">&quot;https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip&quot;</span><span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;awscliv2.zip&quot;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>unzip<span class="w"> </span>-y
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>unzip<span class="w"> </span>awscliv2.zip
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>sudo<span class="w"> </span>./aws/install
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>aws<span class="w"> </span>s3<span class="w"> </span>sync<span class="w"> </span>s3://fmbench_data<span class="w"> </span><span class="nv">$HOME</span>/fmbench_data<span class="w"> </span>--exclude<span class="w"> </span><span class="s2">&quot;*.json&quot;</span>
+</span></code></pre></div>
+</li>
+<li>
+<p>Create a directory for the <code>FMBench</code> website contents.</p>
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdir<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>mkdir<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/ssl
+</span></code></pre></div>
+1. Setup SSL certs (we strongly encourage you to not use self-signed certs, this step here is just for demo purposes, get SSL certs the same way you get them for your current production workloads).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>sudo<span class="w"> </span>openssl<span class="w"> </span>req<span class="w"> </span>-x509<span class="w"> </span>-nodes<span class="w"> </span>-days<span class="w"> </span><span class="m">365</span><span class="w"> </span>-newkey<span class="w"> </span>rsa:2048<span class="w"> </span>-keyout<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/ssl/nginx-selfsigned.key<span class="w"> </span>-out<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/ssl/nginx-selfsigned.crt
+</span></code></pre></div>
+</li>
+<li>
+<p>Create an <code>.httpasswd</code> file. The <code>FMBench</code> website will use the <code>fmbench_admin</code> as a username and a password that you enter as part of the command below to allow login to the website.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>apache2-utils<span class="w"> </span>-y
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>htpasswd<span class="w"> </span>-c<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/.htpasswd<span class="w"> </span>fmbench_admin
+</span></code></pre></div>
+</li>
+<li>
+<p>Create the <code>mkdocs.yml</code> file for the website.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nb">cd</span><span class="w"> </span>foundation-model-benchmarking-tool
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>cp<span class="w"> </span>website/index.md<span class="w"> </span><span class="nv">$HOME</span>/fmbench_data/
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>cp<span class="w"> </span>-r<span class="w"> </span>img<span class="w"> </span><span class="nv">$HOME</span>/fmbench_data/
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>python<span class="w"> </span>website/create_fmbench_website.py
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>mkdocs<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>website/mkdocs.yml<span class="w"> </span>--site-dir<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/site
+</span></code></pre></div>
+</li>
+<li>
+<p>Update <code>nginx.conf</code> file. <strong>Note the hostname that is printed out below, the <code>FMBench</code> website would be served at this address</strong>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nv">TOKEN</span><span class="o">=</span><span class="sb">`</span>curl<span class="w"> </span>-X<span class="w"> </span>PUT<span class="w"> </span><span class="s2">&quot;http://169.254.169.254/latest/api/token&quot;</span><span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;X-aws-ec2-metadata-token-ttl-seconds: 21600&quot;</span><span class="sb">`</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">HOSTNAME</span><span class="o">=</span><span class="sb">`</span>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;X-aws-ec2-metadata-token: </span><span class="nv">$TOKEN</span><span class="s2">&quot;</span><span class="w"> </span>http://169.254.169.254/latest/meta-data/public-hostname<span class="sb">`</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;hostname is: </span><span class="nv">$HOSTNAME</span><span class="s2">&quot;</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>sed<span class="w"> </span><span class="s2">&quot;s/__HOSTNAME__/</span><span class="nv">$HOSTNAME</span><span class="s2">/g&quot;</span><span class="w"> </span>website/nginx.conf.template<span class="w"> </span>&gt;<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/nginx.conf
+</span></code></pre></div>
+</li>
+<li>
+<p>Serve the website.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>docker<span class="w"> </span>run<span class="w"> </span>--name<span class="w"> </span>fmbench-nginx<span class="w"> </span>-d<span class="w"> </span>-p<span class="w"> </span><span class="m">80</span>:80<span class="w"> </span>-p<span class="w"> </span><span class="m">443</span>:443<span class="w">   </span>-v<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/site:/usr/share/nginx/html<span class="w">   </span>-v<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/nginx.conf:/etc/nginx/nginx.conf<span class="w">   </span>-v<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/ssl:/etc/nginx/ssl<span class="w">   </span>-v<span class="w"> </span><span class="nv">$HOME</span>/fmbench_site/.htpasswd:/etc/nginx/.htpasswd<span class="w">   </span>nginx
+</span></code></pre></div>
+</li>
+<li>
+<p>Open a web browser and navigate to the hostname you noted in the step above, for example <code>https://&lt;your-ec2-hostname&gt;.us-west-2.compute.amazonaws.com</code>, ignore the security warnings if you used a self-signed SSL cert (replace this with a cert that you would normally use in your production websites) and then enter the username and password (the username would be <code>fmbench_admin</code> and password would be what you had set when running the <code>htpasswd</code> command). You should see a website as shown in the screenshot below.</p>
 </li>
 </ol>
-<p><img alt="FMBench website" src="img/fmbench-website.png" /></p>
+<p><img alt="website" src="img/website.png" /></p>
 
 
 
