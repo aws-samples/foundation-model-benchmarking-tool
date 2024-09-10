@@ -18,7 +18,10 @@ Follow the steps below to create an EC2 instance for hosting a model in an LMI.
     ![](../img/ec2connect5a.png)
 
 1. Name your instance _FMBenchInstance_.
-
+   
+1. Add a _fmbench-version_ tag to your instance.
+   ![](../img/ec2tag.png)
+   
 1. Scroll down to _Instance Type_. For large model inference, the g5.12xlarge is recommended.
 
    ![](../img/ec2connect6.png)

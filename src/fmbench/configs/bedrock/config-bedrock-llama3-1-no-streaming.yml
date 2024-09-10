@@ -1,6 +1,6 @@
 general:
   name: "fmbench-bedrock-llama3-1"      
-  model_name: "Llama3-1-8b Model on Amazon Bedrock"
+  model_name: "Llama3-1-70b Model on Amazon Bedrock"
   
 # AWS and SageMaker settings
 aws:
