@@ -73,6 +73,100 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
+## Benchmarking using a Triton Inference Server with custom Python Backend
+
+**_As of 2024-09-10 this has been tested on a `trn1.32xlarge` instance_**
+
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+
+    ```{.bash}
+    # Install Docker and Git using the YUM package manager
+    sudo yum install docker git -y
+
+    # Start the Docker service
+    sudo systemctl start docker
+
+    # Download the Miniconda installer for Linux
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell
+    ```
+
+1. Setup the `fmbench_python311` conda environment.
+
+    ```{.bash}
+    # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
+    conda create --name fmbench_python311 -y python=3.11 ipykernel
+
+    # Activate the newly created conda environment
+    source activate fmbench_python311
+
+    # Upgrade pip and install the fmbench package
+    pip install -U fmbench
+    ```
+
+1. First we need to build the required docker image for `triton`, and push it locally:
+
+    ```{.bash}
+        git clone \
+        https://github.com/aws-samples/amazon-eks-machine-learning-with-terraform-and-kubeflow.git
+        cd amazon-eks-machine-learning-with-terraform-and-kubeflow
+        ./containers/tritonserver-neuronx/build_tools/
+    ```
+
+1. Create a script by copy pasting the commands and script below. This script will build and push the triton image locally
+
+    ```{.bash}
+        nano build_and_push_triton_fmbench.sh
+    ```
+
+    1. 👉 Copy paste the script below and execute the script:
+
+        ```{.bash}
+            #!/usr/bin/env bash
+
+            # This script builds a Docker image and saves it locally in the home directory.
+
+            # Set the image name and tag
+            export IMAGE_NAME=tritonserver-neuronx
+            export IMAGE_TAG=24.06-2.x
+
+            # Get the directory of the current script
+            DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+            # Build the Docker image locally with the image name
+            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${DIR}/..
+
+            if [ $? -ne 0 ]; then
+                echo "Error: Docker image build failed"
+                exit 1
+            fi
+
+            # Save the Docker image locally in the home directory
+            HOME_DIR=$(eval echo ~$USER)
+            docker save ${IMAGE_NAME}:${IMAGE_TAG} | gzip > ${HOME_DIR}/${IMAGE_NAME}_${IMAGE_TAG}.tar.gz
+
+            if [ $? -ne 0 ]; then
+                echo "Error: Failed to save Docker image"
+                exit 1
+            else
+                echo "Triton docker image saved as ${IMAGE_NAME}_${IMAGE_TAG}.tar.gz in the home directory (${HOME_DIR})."
+            fi
+        ```
+    
+    1. Make the script executable and run it:
+
+        ```{.bash}
+            chmod +x build_and_push_triton_fmbench.sh
+            ./build_and_push_triton_fmbench.sh
+        ```
+
+        - Now wait until the docker image is saved locally and then run the following command to run a test on FMBench using the triton inference container
+
+
+
 ## Benchmarking on an CPU instance type with AMD processors
 
 **_As of 2024-08-27 this has been tested on a `m7a.16xlarge` instance_**
