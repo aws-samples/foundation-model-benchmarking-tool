@@ -187,7 +187,7 @@ experiments:
       # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
       # '--gpus all' makes all GPUs available to the container
       # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
-      gpu_or_neuron_setting: --runtime=nvidia --gpus all --shm-size 12g
+      gpu_or_neuron_setting: --gpus all --shm-size 12g
       #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
       # If the model takes longer than 40 minutes to load, the process will time out and fail.
       model_loading_timeout: 2400

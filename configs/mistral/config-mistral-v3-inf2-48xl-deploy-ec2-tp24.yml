@@ -126,7 +126,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_3000-3840
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -187,15 +187,25 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+      # how many copies of the model, 1, 2,..max
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
+      model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 6
+      shm_size: 12g
+      model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
       option.model_id=mistralai/Mistral-7B-Instruct-v0.3
-      option.tensor_parallel_degree=24
+      option.tensor_parallel_degree=6
       option.n_positions=4096
       option.rolling_batch=auto
-      option.max_rolling_batch_size=12
+      option.max_rolling_batch_size=4
       option.model_loading_timeout=2400
 
     # runs are done for each combination of payload file and concurrency level
@@ -210,13 +220,19 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
+    - 2
+    - 3
+    - 4
     - 5
+    - 6
+    - 7
     - 8
+    - 9
     - 10
     - 15
     - 20
-    - 25
-    - 30
+    # - 25
+    # - 30
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
