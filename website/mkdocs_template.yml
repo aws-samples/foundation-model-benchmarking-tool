@@ -4,7 +4,7 @@ repo_url: https://github.com/aws-samples/foundation-model-benchmarking-tool
 edit_uri: https://github.com/aws-samples/foundation-model-benchmarking-tool/edit/master/
 site_url: https://foundation-model-benchmarking-tool.github.io
 use_directory_urls: false
- 
+docs_dir: /home/ubuntu/fmbench_data
 
 markdown_extensions:
   - toc:
@@ -40,9 +40,7 @@ theme:
   edit_uri: ''
 
 extra:
-  analytics:
-    provider: google
-    property: G-MX1DMWF4GF
+
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/aws-samples/foundation-model-benchmarking-tool
@@ -53,42 +51,7 @@ plugins:
   - mknotebooks
 
 nav: 
-  - Home: 
-      - index.md
-      - Announcement: announcement.md
-  - Getting started:
-      - Main: gettingstarted.md
-      - Features: features.md
-      - Workflow: workflow.md
-      - SageMaker: quickstart.md      
-      - EC2: ec2.md
-  - Benchmarking:
-      - Main: benchmarking.md
-      - Model evaluations: accuracy.md
-      - Bedrock: benchmarking_on_bedrock.md
-      - Sagemaker: benchmarking_on_sagemaker.md
-      - EKS: benchmarking_on_eks.md
-      - EC2: benchmarking_on_ec2.md
-      - Neuron: neuron.md
-      - Docker: run_as_container.md
+  - Home: index.md
+
+
   
-  - Configs:
-      - Files: manifest.md
-  - Advanced functionality:
-      - Main: advanced.md
-      - BYO endpoint: byoe.md
-      - BYO REST predictor: byo_rest_predictor.md
-      - BYO dataset: byo_dataset.md
-      - Build FMBench: build.md
-      - Analytics: analytics.md
-      - Running multiple model copies: mm_copies.md
-
-  - Results:
-      - Report: results.md
-      - Website: website.md
-
-  - Releases:
-      - Major release: announcement.md
-      - releases.md
-  - Resources:
-      - resources.md
