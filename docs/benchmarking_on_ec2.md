@@ -162,7 +162,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
             ./build_and_push_triton_fmbench.sh
         ```
 
-        - Now wait until the docker image is saved locally and then run the following command to run a test on FMBench using the triton inference container
+        - Now wait until the docker image is saved locally and then follow the instructions below to start a benchmarking test.
 
 1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory.
 
