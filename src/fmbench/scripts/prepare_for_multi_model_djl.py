@@ -7,15 +7,111 @@
 import os
 import json
 import yaml
+import shutil
 import docker
 import logging
 import subprocess
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import fmbench.scripts.constants as constants
+from huggingface_hub import snapshot_download
 from typing import Dict, List, Optional, Tuple, Union
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# globals
+HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
+
+def _run_hf_snapshot(hf_model_id: str, hf_token: str):
+    """
+    Runs the hf-snapshot.sh script to prepare snapshots for the HF model and stores it in the 
+    triton model directory that is used during deployment. Utilizes caching if the snapshot 
+    already exists.
+    """
+    try:
+        hf_tensors = os.environ.get("HF_TENSORS", "true").lower() in ("true", "1")
+        logger.info(f"Download Hugging Face Snapshot Tensors: {hf_tensors}")
+        logger.info(f"Checking for existing HuggingFace snapshot: {hf_model_id}")
+        
+        model_name = Path(hf_model_id).name
+        snapshot_base = "/home/ubuntu"
+        snapshot_path = os.path.join(snapshot_base, model_name, "snapshots", hf_model_id)
+        if os.path.exists(snapshot_path) and os.listdir(snapshot_path):
+            logger.info(f"Snapshot already exists at {snapshot_path}. Using cached version.")
+            return snapshot_path
+        
+        logger.info(f"Snapshot not found. Downloading HuggingFace snapshot: {hf_model_id}")
+        
+        with TemporaryDirectory(suffix="model", prefix="hf", dir="/tmp") as cache_dir:
+            ignore_patterns = ["*.msgpack", "*.h5"] if hf_tensors else [ "*.msgpack", "*.h5", "*.bin", "*.safetensors"]
+            snapshot_download(repo_id=hf_model_id, 
+                cache_dir=cache_dir,
+                ignore_patterns=ignore_patterns,
+                token=hf_token)
+
+            cache_path = Path(cache_dir)
+            local_snapshot_path = str(list(cache_path.glob(f"**/snapshots/*"))[0])
+            logger.info(f"Local snapshot path: {local_snapshot_path}")
+            os.makedirs(snapshot_path, exist_ok=True)
+
+            logger.info(f"Copying snapshot to {snapshot_path}")
+            for root, dirs, files in os.walk(local_snapshot_path):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    if os.path.isdir(full_path):
+                        shutil.copytree(full_path, os.path.join(snapshot_path, os.path.basename(full_path)))
+                    else:
+                        shutil.copy2(full_path, snapshot_path)
+        
+        logger.info("Model snapshot files downloaded successfully. Moving to model compilation now.")
+        return snapshot_path
+        
+    except Exception as e:
+        raise Exception(f"Error occurred while downloading the model files: {e}")
+
+
+def _handle_triton_serving_properties_and_inf_params(triton_dir: str, tp_degree: int, batch_size: int, inference_parameters: Dict):
+    """
+    Takes the triton files: config.pbtxt, model.json, model.py and substitutes the batch size, tensor parallel degree
+    from the configuration file into those files before the model repository is prepared within the container
+    """
+    try:
+        for root, dirs, files in os.walk(triton_dir):
+            for file in files:
+                file_path = os.path.join(root, file)
+
+                if file == "model.json":
+                    # Handle model.json separately
+                    with open(file_path, "r") as f:
+                        content = json.load(f)
+
+                    # Replace placeholders in model.json
+                    content["tp_degree"] = tp_degree
+                    content["batch_size"] = batch_size
+                    if "on_device_embedding" in content.get("neuron_config", {}):
+                        logger.info(f"Replacing on_device_embedding in {file_path} with inference_parameters.")
+                        content["neuron_config"]["on_device_embedding"] = inference_parameters
+                    else:
+                        logger.warning(f"on_device_embedding not found in {file_path}.")
+                    with open(file_path, "w") as f:
+                        json.dump(content, f, indent=2)
+
+                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, batch_size={batch_size}, and inference_parameters.")
+
+                elif file == "config.pbtxt":
+                    with open(file_path, "r") as f:
+                        content = f.read()
+                    content = content.replace("{BATCH_SIZE}", str(batch_size))
+                    with open(file_path, "w") as f:
+                        f.write(content)
+                    logger.info(f"Updated {file_path} with batch_size={batch_size}.")
+
+                else:
+                    logger.info(f"No substitutions needed for {file_path}")
+
+    except Exception as e:
+        raise Exception(f"Error occurred while preparing files for the triton model container: {e}")
 
 def _create_config_files(model_id: str,
                          num_model_copies: int,
@@ -130,8 +226,14 @@ def _create_config_files(model_id: str,
         cnames.append(cname)
         port = base_port + i + 1
         logger.info(f"container {i+1} will run on port {port}")
-        if lb is not None:
+        if user == constants.CONTAINER_TYPE_TRITON:
+            internal_http_port = 8000
+            cname = f"fmbench_model_container_{i+1}"
+            nginx_server_lines.append(f"        server {cname}:{internal_http_port};")
+        elif ((user == constants.CONTAINER_TYPE_DJL) or (user == constants.CONTAINER_TYPE_VLLM)):
             nginx_server_lines.append(f"        server {cname}:{port};")
+        else:
+            logger.error(f"No load balancer option to be provided")
         
         device_offset = devices_per_model * i
         if accelerator == constants.ACCELERATOR_TYPE.NEURON:
@@ -144,25 +246,51 @@ def _create_config_files(model_id: str,
             # add visible devices via env var
             gpus=",".join([str(j+device_offset) for j in range(devices_per_model)])
             extra_env = [f"NVIDIA_VISIBLE_DEVICES={gpus}"]
-            
-        
-        dir_path_on_host = f"/home/ubuntu/{model_id}/i{i+1}"
-        volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
+
+        if user == constants.CONTAINER_TYPE_TRITON:
+            current_dir: str = os.path.dirname(os.path.realpath(__file__))
+            triton_content: str = os.path.join(current_dir, "triton")
+            logger.info(f"All triton model content is in: {triton_content}")
+            dir_path_on_host = f"/home/ubuntu/{model_id}"
+            os.chmod(f"{triton_content}/triton-transformers-neuronx.sh", 0o755)
+            volumes = [f"{triton_content}:/scripts/triton:rw",
+                       f"{dir_path_on_host}/i{i+1}:/triton:rw",
+                       f"{dir_path_on_host}/snapshots:/snapshots:rw"]
+            ports = [f"{port}:{internal_http_port}"]
+            service = {cname: { "image": image, 
+                                "container_name": cname,
+                                "user": '', 
+                                "shm_size": shm_size,
+                                "devices": devices,
+                                "environment": env + extra_env,
+                                "volumes": volumes,
+                                "ports": ports,
+                                "deploy": {"restart_policy": {"condition": "on-failure"}} }}
+
+        else:
+            dir_path_on_host = f"/home/ubuntu/{model_id}/i{i+1}"
+            volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
                    f"{dir_path_on_host}/conf:/opt/djl/conf:ro",
                    f"{dir_path_on_host}/model_server_logs:/opt/djl/logs"]
+            ports = [f"{port}:{port}"]
         
-        service = {cname: { "image": image, 
-                            "container_name": cname,
-                            "user": user, 
-                            "shm_size": shm_size,
-                            "devices": devices,
-                            "environment": env + extra_env,
-                            "volumes": volumes,
-                            "ports": [f"{port}:{port}"],
-                            "deploy": {"restart_policy": {"condition": "on-failure"}} }}
+            service = {cname: { "image": image, 
+                                "container_name": cname,
+                                "user": user, 
+                                "shm_size": shm_size,
+                                "devices": devices,
+                                "environment": env + extra_env,
+                                "volumes": volumes,
+                                "ports": ports,
+                                "deploy": {"restart_policy": {"condition": "on-failure"}} }}
+
         if accelerator == constants.ACCELERATOR_TYPE.NVIDIA:
             service[cname]['runtime'] = constants.ACCELERATOR_TYPE.NVIDIA.value
             _ = service[cname].pop("devices")
+        elif user == constants.CONTAINER_TYPE_TRITON:
+            logger.info(f"This is a triton image uri, using an entry point command which contains",
+                        f"the model repository contents")
+            service[cname]['command'] = "/scripts/triton/triton-transformers-neuronx.sh meta-llama/Meta-Llama-3-8B-Instruct"
         services = services | service
 
         # config.properties
@@ -337,6 +465,8 @@ def _get_model_copies_to_start_nvidia(tp_degree: int, model_copies: str) -> Tupl
 def prepare_docker_compose_yml(model_id: str,
                                model_copies: str,
                                tp_degree: int,
+                               batch_size: int,
+                               inference_parameters: Dict,
                                image: str,
                                user: str,
                                shm_size: str,
@@ -349,6 +479,16 @@ def prepare_docker_compose_yml(model_id: str,
     if env is not None:
         for k,v in env.items():
             env_as_list.append(f"{k}={v}")
+    hf_token: str = Path(HF_TOKEN_FNAME).read_text().strip()
+    if user == constants.CONTAINER_TYPE_TRITON:
+        # if it is a triton image, then download the hf snapshots before running 
+        # docker compose
+        logger.info(f"Running the hf snapshot")
+        _run_hf_snapshot("meta-llama/Meta-Llama-3-8B-Instruct", hf_token)
+        # prepare the files in the triton directory
+        current_dir: str = os.path.dirname(os.path.realpath(__file__))
+        triton_content: str = os.path.join(current_dir, "triton")
+        _handle_triton_serving_properties_and_inf_params(triton_content, tp_degree, batch_size, inference_parameters)
 
     # first check if this is an NVIDIA instance or a AWS Chips instance
     # we do this by checking for nvidia-smi and neuron-ls, they should be

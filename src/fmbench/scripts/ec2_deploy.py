@@ -124,6 +124,24 @@ def _create_script_djl_w_docker_compose(region, image_uri, model_name, directory
     """
     return script
 
+def _create_script_triton_w_docker_compose(region, image_uri, model_name, directory):
+    script = f"""#!/bin/sh
+        echo "Going to download model container"
+        echo "Content in docker command: {region}, {image_uri}, {model_name}"
+        
+        # using the locally built triton image
+
+        # Run the new Docker container with specified settings
+        cd {directory}
+        # shutdown existing docker compose
+        docker compose down
+        {STOP_AND_RM_CONTAINER}
+        docker compose up -d
+        cd -
+        echo "started docker compose in daemon mode"
+    """
+    return script
+
 def _create_script_vllm(image_uri, model_id, env_str, privileged_str):
     script = f"""#!/bin/sh
 
@@ -167,6 +185,12 @@ def _create_deployment_script(image_uri,
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
         deploy_script_content = _create_script_vllm(image_uri, model_id, env_str, privileged_str)
+    elif container_type == constants.CONTAINER_TYPE_TRITON:   
+        logger.info(f"Going to create a triton docker compose file using the locally build triton"
+                    f"image uri")     
+        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, "
+                    f"going to create deployment script for docker compose")
+        deploy_script_content = _create_script_triton_w_docker_compose(region, image_uri, model_name, directory)
     else:
         raise ValueError(f"dont know how to handle container_type={container_type}")
 
@@ -220,6 +244,9 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
+    elif container_type == constants.CONTAINER_TYPE_TRITON:
+        data = {"text_input": "tell me a story of the little red riding hood",
+                "sampling_parameters": "{ \"top_k\": 50, \"sequence_length\": 2048 }",}
     headers = {"content-type": "application/json"}
     container_check_timeout = 60
     logger.info(f"going to check every {container_check_timeout}s for the inference endpoint to be up...")
@@ -256,7 +283,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     Function to deploy the model and create the endpoint
     """
     image_uri: str = experiment_config['image_uri']
-
+    user: Optional[str] = None
     ep_name: str = experiment_config['ep_name']
     model_id: str = experiment_config['model_id']
     model_name: str = Path(model_id).name
@@ -293,17 +320,19 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     # and then create the deployment script, otherwise we create the deployment script
     # directly (see call to _create_deployment_script below)
     model_copies_actual = 1
-    if container_type == constants.CONTAINER_TYPE_DJL:        
+    if (container_type == constants.CONTAINER_TYPE_DJL) or (container_type == constants.CONTAINER_TYPE_TRITON):  
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")
         model_copies_actual = prepare_docker_compose_yml(model_id=Path(model_id).name,
                                                          model_copies=model_copies,
                                                          tp_degree=experiment_config['inference_spec']['tp_degree'],
+                                                         batch_size=experiment_config['inference_spec']['batch_size'],
+                                                         inference_parameters=experiment_config['inference_spec']['parameters'],
                                                          image=image_uri,
                                                          user=container_type,
                                                          shm_size=experiment_config['inference_spec']['shm_size'],
                                                          env=env,
                                                          serving_properties=serving_properties,
-                                                         dir_path=dir_path)    
+                                                         dir_path=dir_path)   
     logger.info("Creating the deployment script in model directory")
     deployment_script_path = _create_deployment_script(image_uri,
                                                        container_type,

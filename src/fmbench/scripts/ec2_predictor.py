@@ -63,6 +63,13 @@ class EC2Predictor(FMBenchPredictor):
             if container_type == constants.CONTAINER_TYPE_DJL:
                 payload = payload | dict(parameters=self._inference_spec["parameters"])
                 response = requests.post(self._endpoint_name, json=payload)
+            elif container_type == constants.CONTAINER_TYPE_TRITON:
+                triton_payload = {
+                    "text_input": payload["inputs"],
+                    "sampling_parameters": json.dumps(self._inference_spec["parameters"])
+                }
+                logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {self._endpoint_name}")
+                response = requests.post(self._endpoint_name, json=triton_payload)
             elif container_type == constants.CONTAINER_TYPE_VLLM:
                 # vllm uses prompt rather than input and then
                 # the code in the calling function still expects input

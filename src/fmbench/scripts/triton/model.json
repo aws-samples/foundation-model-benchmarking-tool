@@ -1,0 +1,15 @@
+{
+    "model": "/meta-llama/Meta-Llama-3-8B-Instruct",
+    "tokenizer": "/meta-llama/Meta-Llama-3-8B-Instruct",
+    "tp_degree": "$TP_DEGREE",
+    "amp": "f16",
+    "n_positions": 8096,
+    "batch_size": "$BATCH_SIZE",
+    "neuron_config": {
+      "on_device_embedding": {
+        "max_length": 8192, 
+        "top_k": 50, 
+        "do_sample": true
+      }
+    }
+}

@@ -1,0 +1,37 @@
+backend: "python"
+max_batch_size: {BATCH_SIZE}
+model_transaction_policy {
+    decoupled: false
+}
+
+dynamic_batching {
+    max_queue_delay_microseconds: 10000
+}
+
+input [ 
+    {
+        name: "text_input"
+        data_type: TYPE_STRING
+        dims: [1]
+    },
+    {
+        name: "sampling_parameters"
+        data_type: TYPE_STRING
+        dims: [1]
+        optional: true
+    }
+] 
+output [
+    {
+    name: "text_output"
+    data_type: TYPE_STRING
+    dims: [-1]
+    }
+]
+
+instance_group [
+    {
+    count: 1
+    kind: KIND_MODEL
+    }
+]
