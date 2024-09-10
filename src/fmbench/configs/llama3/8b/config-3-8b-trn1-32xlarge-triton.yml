@@ -164,7 +164,7 @@ experiments:
     model_version:
     model_name: "Meta-Llama-3-8B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://localhost:8080/v2/models/llama3-8b-instruct/generate' 
+    ep_name: 'http://localhost:8080/v2/models/Meta-Llama-3-8B-Instruct/generate' 
     instance_type: "trn1.32xlarge"
     image_uri: tritonserver-neuronx:24.06-2.x
     deploy: yes #setting to yes to run deployment script for ec2
@@ -179,7 +179,7 @@ experiments:
       # The following line specifies the runtime and Inferentia settings for the instance
       # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
       # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 --device /dev/neuron12 --device /dev/neuron13 --device /dev/neuron14 --device /dev/neuron15
+      gpu_or_neuron_setting: -u triton --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 --device /dev/neuron12 --device /dev/neuron13 --device /dev/neuron14 --device /dev/neuron15
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 8000
     inference_spec:
@@ -200,7 +200,7 @@ experiments:
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 8
       batch_size: 4
-      shm_size: 16g
+      shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties:
@@ -217,13 +217,13 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 3
-    # - 4
-    # - 5
-    # - 6
-    # - 8
-    # - 10
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 8
+    - 10
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.

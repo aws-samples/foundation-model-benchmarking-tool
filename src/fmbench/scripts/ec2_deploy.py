@@ -283,7 +283,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     Function to deploy the model and create the endpoint
     """
     image_uri: str = experiment_config['image_uri']
-    user: Optional[str] = None
     ep_name: str = experiment_config['ep_name']
     model_id: str = experiment_config['model_id']
     model_name: str = Path(model_id).name
@@ -325,9 +324,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
         model_copies_actual = prepare_docker_compose_yml(model_name=Path(model_id).name,
                                                          model_id=model_id,
                                                          model_copies=model_copies,
-                                                         tp_degree=experiment_config['inference_spec']['tp_degree'],
-                                                         batch_size=experiment_config['inference_spec']['batch_size'],
-                                                         inference_parameters=experiment_config['inference_spec']['parameters'],
+                                                         inference_params=experiment_config['inference_spec'],
                                                          image=image_uri,
                                                          user=container_type,
                                                          shm_size=experiment_config['inference_spec']['shm_size'],

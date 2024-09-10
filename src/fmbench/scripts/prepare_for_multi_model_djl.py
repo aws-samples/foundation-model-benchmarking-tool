@@ -14,16 +14,11 @@ import subprocess
 from os import listdir
 from pathlib import Path
 from os.path import isfile, join
-from tempfile import TemporaryDirectory
 import fmbench.scripts.constants as constants
-from huggingface_hub import snapshot_download
 from typing import Dict, List, Optional, Tuple, Union
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-# globals
-HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
 
 
 def _handle_triton_serving_properties_and_inf_params(triton_dir: str, 
@@ -36,20 +31,26 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
     from the configuration file into those files before the model repository is prepared within the container
     """
     try:
+        # iterate through each of the file in the triton directory
+        # and substitute the HF model id, TP degree and batch size in 
+        # model.json and config.pbtxt. model.py remains the same for 
+        # all HF models
         for root, dirs, files in os.walk(triton_dir):
             for file in files:
                 file_path = os.path.join(root, file)
 
                 if file == "model.json":
-                    # Handle model.json separately
                     with open(file_path, "r") as f:
                         content = json.load(f)
-
                     # Replace placeholders in model.json
+                    # this includes TP degree, batch size, 
+                    # and HF model id
                     content["tp_degree"] = tp_degree
                     content["batch_size"] = batch_size
                     content['model'] = hf_model_id
                     content['tokenizer'] = hf_model_id
+                    # Replace the inference parameters with the inference parameters from
+                    # the configuration file
                     if "on_device_embedding" in content.get("neuron_config", {}):
                         logger.info(f"Replacing on_device_embedding in {file_path} with inference_parameters.")
                         content["neuron_config"]["on_device_embedding"] = inference_parameters
@@ -57,9 +58,9 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                         logger.warning(f"on_device_embedding not found in {file_path}.")
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
-
                     logger.info(f"Updated {file_path} with tp_degree={tp_degree}, batch_size={batch_size}, and inference_parameters.")
 
+                # upate the config.pbtxt with the batch size parameter fetched from the configuration file
                 elif file == "config.pbtxt":
                     with open(file_path, "r") as f:
                         content = f.read()
@@ -67,10 +68,8 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     with open(file_path, "w") as f:
                         f.write(content)
                     logger.info(f"Updated {file_path} with batch_size={batch_size}.")
-
                 else:
                     logger.info(f"No substitutions needed for {file_path}")
-
     except Exception as e:
         raise Exception(f"Error occurred while preparing files for the triton model container: {e}")
 
@@ -108,7 +107,7 @@ def _create_config_files(model_id: str,
         - "/dev/neuron5:/dev/neuron5"
         environment:
         - MODEL_LOADING_TIMEOUT=2400
-        - HF_TOKEN=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
+        - HF_TOKEN=<hf_token>
         volumes:
         - /home/ubuntu/Mistral-7B-Instruct-v0.2-i1:/opt/ml/model:ro
         - /home/ubuntu/Mistral-7B-Instruct-v0.2-i1/conf:/opt/djl/conf:ro
@@ -133,7 +132,7 @@ def _create_config_files(model_id: str,
         - "/dev/neuron11:/dev/neuron5"
         environment:
         - MODEL_LOADING_TIMEOUT=2400
-        - HF_TOKEN=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
+        - HF_TOKEN=<hf_token>
         volumes:
         - /home/ubuntu/Mistral-7B-Instruct-v0.2-i2:/opt/ml/model:ro
         - /home/ubuntu/Mistral-7B-Instruct-v0.2-i2/conf:/opt/djl/conf:ro
@@ -190,6 +189,8 @@ def _create_config_files(model_id: str,
         if user == constants.CONTAINER_TYPE_TRITON:
             internal_http_port = 8000
             cname = f"fmbench_model_container_{i+1}"
+            # if it is a triton container, then point the cname to the internal http port for 
+            # triton 
             nginx_server_lines.append(f"        server {cname}:{internal_http_port};")
         elif ((user == constants.CONTAINER_TYPE_DJL) or (user == constants.CONTAINER_TYPE_VLLM)):
             nginx_server_lines.append(f"        server {cname}:{port};")
@@ -215,11 +216,13 @@ def _create_config_files(model_id: str,
             dir_path_on_host: str = f"/home/ubuntu/{Path(model_id).name}"
             
             # Copy Triton content to each i{i+1} directory
+            # The triton content directory contains: model.py, model.json, config.pbtxt
+            # and a script that creates these files in the container model repository. 
+            # The TP degree, batch size, and inference parameters are configured from the configuration
+            # file into the triton container
             for i in range(num_model_copies):  
                 instance_dir = os.path.join(dir_path_on_host, f"i{i+1}")
                 triton_instance_dir = os.path.join(instance_dir, "triton")
-                
-                # Create the triton directory in the instance directory if it doesn't exist
                 os.makedirs(triton_instance_dir, exist_ok=True)
                 
                 # Copy all files from triton_content to the instance's triton directory
@@ -230,6 +233,7 @@ def _create_config_files(model_id: str,
                         shutil.copy2(s, d)
                     elif os.path.isdir(s):
                         shutil.copytree(s, d, dirs_exist_ok=True)
+                # give permissions to run the script that creates the model repository in the triton model container
                 os.chmod(os.path.join(triton_instance_dir, "triton-transformers-neuronx.sh"), 0o755)
             triton_files: List[str] = [f for f in os.listdir(triton_content) if os.path.isfile(os.path.join(triton_content, f))]
             logger.info(f"Files in triton content that have been copied to each instance directory: {triton_files}")
@@ -238,31 +242,22 @@ def _create_config_files(model_id: str,
                         f"{dir_path_on_host}/snapshots:/snapshots:rw"]
             ports = [f"{port}:{internal_http_port}"]
             model_container_download_script: str = '/scripts/triton/triton-transformers-neuronx.sh'
-            service = {cname: { "image": image, 
-                                "container_name": cname,
-                                "user": '', 
-                                "shm_size": shm_size,
-                                "devices": devices,
-                                "environment": env + extra_env,
-                                "volumes": volumes,
-                                "ports": ports,
-                                "deploy": {"restart_policy": {"condition": "on-failure"}} }}
         else:
             dir_path_on_host = f"/home/ubuntu/{Path(model_id).name}/i{i+1}"
             volumes = [f"{dir_path_on_host}:/opt/ml/model:ro",
                    f"{dir_path_on_host}/conf:/opt/djl/conf:ro",
                    f"{dir_path_on_host}/model_server_logs:/opt/djl/logs"]
             ports = [f"{port}:{port}"]
-        
-            service = {cname: { "image": image, 
-                                "container_name": cname,
-                                "user": user, 
-                                "shm_size": shm_size,
-                                "devices": devices,
-                                "environment": env + extra_env,
-                                "volumes": volumes,
-                                "ports": ports,
-                                "deploy": {"restart_policy": {"condition": "on-failure"}} }}
+
+        service = {cname: { "image": image, 
+                            "container_name": cname,
+                            "user": user if (user == constants.CONTAINER_TYPE_DJL or user == constants.CONTAINER_TYPE_VLLM) else '', 
+                            "shm_size": shm_size,
+                            "devices": devices,
+                            "environment": env + extra_env,
+                            "volumes": volumes,
+                            "ports": ports,
+                            "deploy": {"restart_policy": {"condition": "on-failure"}} }}
 
         if accelerator == constants.ACCELERATOR_TYPE.NVIDIA:
             service[cname]['runtime'] = constants.ACCELERATOR_TYPE.NVIDIA.value
@@ -444,9 +439,7 @@ def _get_model_copies_to_start_nvidia(tp_degree: int, model_copies: str) -> Tupl
 def prepare_docker_compose_yml(model_name: str,
                                model_id: str,
                                model_copies: str,
-                               tp_degree: int,
-                               batch_size: int,
-                               inference_parameters: Dict,
+                               inference_params: Dict,
                                image: str,
                                user: str,
                                shm_size: str,
@@ -459,7 +452,9 @@ def prepare_docker_compose_yml(model_name: str,
     if env is not None:
         for k,v in env.items():
             env_as_list.append(f"{k}={v}")
-    hf_token: str = Path(HF_TOKEN_FNAME).read_text().strip()
+    tp_degree: int = inference_params.get('tp_degree', None)
+    batch_size: int = inference_params.get('batch_size', None)
+    inference_parameters: Dict = inference_params.get('parameters', None)
     if user == constants.CONTAINER_TYPE_TRITON:
         current_dir: str = os.path.dirname(os.path.realpath(__file__))
         triton_content: str = os.path.join(current_dir, "triton")
