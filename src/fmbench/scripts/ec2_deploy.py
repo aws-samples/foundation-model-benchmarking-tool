@@ -21,7 +21,7 @@ from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
 from fmbench.scripts.constants import IS_NEURON_INSTANCE
-from fmbench.scripts.prepare_for_multi_model_djl import prepare_docker_compose_yml
+from fmbench.scripts.prepare_for_multi_model_containers import prepare_docker_compose_yml
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
