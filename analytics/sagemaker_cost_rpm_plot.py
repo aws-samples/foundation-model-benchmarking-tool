@@ -45,7 +45,8 @@ def _pre_process_df(summary_payload_df: pd.DataFrame) -> tuple[pd.DataFrame, Lis
                          'instance_count': int(count),
                          'RPM': value,
                          'cost': float(cost),
-                         'TPM': row['transactions_per_minute']})
+                         'TPM': row['transactions_per_minute'],
+                         'TP_Degree': row['tensor_parallel_degree']})
 
     plot_df = pd.DataFrame(rows)
 

@@ -1,0 +1,57 @@
+site_name: Foundation Model Benchmarking Tool (FMBench)
+repo_name: aws-samples/foundation-model-benchmarking-tool
+repo_url: https://github.com/aws-samples/foundation-model-benchmarking-tool
+edit_uri: https://github.com/aws-samples/foundation-model-benchmarking-tool/edit/master/
+site_url: https://foundation-model-benchmarking-tool.github.io
+use_directory_urls: false
+docs_dir: /home/ubuntu/fmbench_data
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+theme:
+  name: material
+  logo: ./img/fmbt-small.png
+  favicon: website/img/favicon.png
+  features:
+    - navigation
+    - content.code.copy
+  palette:
+      - scheme: default
+        primary: light-blue
+        accent: light-blue
+        toggle:
+            icon: material/weather-sunny
+            name: Switch to dark mode
+      - scheme: slate
+        primary: black
+        accent: deep-orange
+        toggle:
+            icon: material/weather-night
+            name: Switch to light mode
+  edit_uri: ''
+
+extra:
+
+  social:
+    - icon: fontawesome/brands/github-alt
+      link: https://github.com/aws-samples/foundation-model-benchmarking-tool
+    - icon: fontawesome/brands/slack
+      link: https://github.com/aws-samples/foundation-model-benchmarking-tool
+plugins:
+  - search
+  - mknotebooks
+
+nav: 
+  - Home: index.md
+
+
+  

@@ -1,4 +1,5 @@
 import boto3
+import fmbench
 import logging
 import sagemaker
 from typing import Dict
@@ -9,8 +10,17 @@ from sagemaker.utils import name_from_base
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 # Initialize the platform where this script deploys the model
 PLATFORM: str = constants.PLATFORM_SAGEMAKER
+
+tag = [
+    {
+        'Key': 'fmbench-version',
+        'Value': fmbench.__version__
+    }
+]
+
 
 def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     role = role_arn
@@ -49,6 +59,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             model_data_download_timeout=1200, # increase the timeout to download large model
             container_startup_health_check_timeout=1200, # increase the timeout to load large model,
             wait=True,
+            tags=tag, 
             accept_eula=experiment_config.get('accept_eula')
         )
     else:
@@ -59,7 +70,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
             #volume_size=512, # not allowed for the selected Instance type ml.g5.12xlarge
             model_data_download_timeout=1200, # increase the timeout to download large model
             container_startup_health_check_timeout=1200, # increase the timeout to load large model,
-            wait=True
+            wait=True,
+            tags=tag 
         )
     logger.info(f'Model deployment on Endpoint Name: {endpoint_name} finished\n')
     return dict(endpoint_name=endpoint_name,

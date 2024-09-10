@@ -56,8 +56,8 @@ class EC2Predictor(FMBenchPredictor):
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
                 container_type = self._inference_spec.get("container_type", constants.CONTAINER_TYPE_DJL)
-                logger.info(f"split input parameters is: {split_input_and_inference_params}, "
-                            f"container_type={container_type}")
+                logger.debug(f"split input parameters is: {split_input_and_inference_params}, "
+                             f"container_type={container_type}")
             # this is the POST request to the endpoint url for invocations that 
             # is given to you as you deploy a model on EC2 using the DJL serving stack
             if container_type == constants.CONTAINER_TYPE_DJL:

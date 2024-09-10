@@ -1,0 +1,57 @@
+# /etc/nginx/nginx.conf
+
+user  nginx;
+worker_processes  auto;
+pid /var/run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    # Logging settings
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # Include additional config files from conf.d directory
+    include /etc/nginx/conf.d/*.conf;
+
+    # Gzip settings
+    gzip on;
+    gzip_disable "msie6";
+
+    server_names_hash_bucket_size 128;
+
+    # Your server block should be inside the http block
+    server {
+        listen 80;
+        server_name __HOSTNAME__;        
+        return 301 https://$host$request_uri;  # Redirect HTTP to HTTPS
+    }
+
+    server {
+        listen 443 ssl;
+        server_name __HOSTNAME__;
+
+        ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
+        ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
+
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_prefer_server_ciphers on;
+
+        root /usr/share/nginx/html;
+        index index.html;
+
+        # Enable basic authentication
+        auth_basic "Restricted Content";
+        auth_basic_user_file /etc/nginx/.htpasswd;
+
+        location / {
+            try_files $uri $uri/ =404;
+        }
+    }
+}

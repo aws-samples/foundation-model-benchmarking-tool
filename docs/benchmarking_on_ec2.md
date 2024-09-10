@@ -16,10 +16,20 @@ Create a new EC2 instance suitable for hosting an LMI as per the steps described
 1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
 
     ```{.bash}
-    curl -O https://repo.anaconda.com/archive/Anaconda3-2023.09-0-Linux-x86_64.sh
-    chmod +x Anaconda3-2023.09-0-Linux-x86_64.sh
-    ./Anaconda3-2023.09-0-Linux-x86_64.sh
-    export PATH=/home/ubuntu/anaconda3/bin:$PATH
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell  
+    ```
+
+1. Install `docker-compose`.
+
+    ```{.bash}
+    sudo apt-get update
+    sudo apt-get install --reinstall docker.io -y
+    sudo apt-get install -y docker-compose
+    docker compose version 
     ```
 
 1. Setup the `fmbench_python311` conda environment.
@@ -77,11 +87,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
     sudo systemctl start docker
 
     # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \  # Run the Miniconda installer in batch mode (no manual intervention)
-    && rm -f Miniconda3-latest-Linux-x86_64.sh \    # Remove the installer script after installation
-    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)"\ # Initialize conda for bash shell
-    && conda init  # Initialize conda, adding it to the shell
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell
     ```
 
 1. Setup the `fmbench_python311` conda environment.
@@ -133,6 +143,16 @@ command below. The config file for this example can be viewed [here](src/fmbench
     newgrp docker
     ```
 
+1. Install `docker-compose`.
+
+    ```{.bash}
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    sudo chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    docker compose version
+    ```
+
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
@@ -162,11 +182,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
     sudo systemctl start docker
 
     # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh \
-    && bash Miniconda3-latest-Linux-x86_64.sh -b \  # Run the Miniconda installer in batch mode (no manual intervention)
-    && rm -f Miniconda3-latest-Linux-x86_64.sh \    # Remove the installer script after installation
-    && eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)"\ # Initialize conda for bash shell
-    && conda init  # Initialize conda, adding it to the shell
+    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+    bash Miniconda3-latest-Linux-x86_64.sh -b # Run the Miniconda installer in batch mode (no manual intervention)
+    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
+    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
+    conda init  # Initialize conda, adding it to the shell
     ```
 
 1. Setup the `fmbench_python311` conda environment.
@@ -216,6 +236,16 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```{.bash}
     sudo usermod -a -G docker $USER
     newgrp docker
+    ```
+
+1. Install `docker-compose`.
+
+    ```{.bash}
+    DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
+    mkdir -p $DOCKER_CONFIG/cli-plugins
+    sudo curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o $DOCKER_CONFIG/cli-plugins/docker-compose
+    sudo chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
+    docker compose version
     ```
 
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.

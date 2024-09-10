@@ -3,6 +3,7 @@ import os
 import json
 import time
 import boto3
+import fmbench
 import logging
 import sagemaker
 from typing import Dict
@@ -27,6 +28,13 @@ s3_client = boto3.client('s3')
 # Initialize the sagemaker and sagemaker runtime clients 
 sm_client = boto3.client("sagemaker")
 smr_client = boto3.client("sagemaker-runtime")
+
+tag = [
+    {
+        'Key': 'fmbench-version',
+        'Value': fmbench.__version__
+    }
+]
 
 # Function to create the llm hugging face model
 def create_hugging_face_model(experiment_config: Dict, role_arn: str) -> HuggingFaceModel:
@@ -63,7 +71,8 @@ def deploy_hugging_face_model(experiment_config: Dict, llm_model: HuggingFaceMod
     tmout: int = experiment_config['env']['HEALTH_CHECK_TIMEOUT']
     llm = llm_model.deploy(initial_instance_count=experiment_config['env']['INSTANCE_COUNT'],
                            instance_type=experiment_config['instance_type'],
-                           container_startup_health_check_timeout=tmout,)
+                           container_startup_health_check_timeout=tmout,
+                           tags=tag)
     return llm.endpoint_name
 
 # Function to deploy the model and create the endpoint

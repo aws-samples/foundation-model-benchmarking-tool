@@ -1,3 +1,7 @@
+## 2.0.3
+
+1. Support for a EFA directory for benchmarking on EC2.
+
 ## 2.0.2
 
 1. Code cleanup, minor bug fixes and report improvements.

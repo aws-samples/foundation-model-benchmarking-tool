@@ -6,6 +6,10 @@ site
 e.json
 .DS_Store
 .locks/*
+website/nginx.conf
+website/mkdocs.yml
+website/.htpasswd
+website/ssl
 ./scripts/model.tar.gz
 /data/models/*/endpoints.json
 **/metrics/*/per_chunk/*
