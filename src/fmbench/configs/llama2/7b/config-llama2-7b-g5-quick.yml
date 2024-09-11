@@ -75,9 +75,8 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
-  5_model_metric_analysis.ipynb: yes
-  6_cleanup.ipynb: no
+  4_model_metric_analysis.ipynb: yes
+  5_cleanup.ipynb: yes
 
 datasets:
   # Refer to the 1_generate_data.ipynb notebook
