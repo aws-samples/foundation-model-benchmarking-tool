@@ -10,7 +10,7 @@
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
     # Build the Docker image locally with the image name
-    docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${DIR}/..
+    docker build -f ${DIR}/Dockerfile_triton -t ${IMAGE_NAME}:${IMAGE_TAG} ${DIR}/..
 
     if [ $? -ne 0 ]; then
         echo "Error: Docker image build failed"
