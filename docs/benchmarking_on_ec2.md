@@ -107,61 +107,19 @@ command below. The config file for this example can be viewed [here](src/fmbench
     pip install -U fmbench
     ```
 
-1. First we need to build the required docker image for `triton`, and push it locally:
+1. First we need to build the required docker image for `triton`, and push it locally. To do this, curl the `Triton Dockerfile` and the script to build and push the triton image locally:
 
     ```{.bash}
-        git clone \
-        https://github.com/aws-samples/amazon-eks-machine-learning-with-terraform-and-kubeflow.git
-        cd amazon-eks-machine-learning-with-terraform-and-kubeflow/containers/tritonserver-neuronx/build_tools/
+        # curl the docker file for triton
+        curl -o ./Dockerfile_triton https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/192-triton-itegration/src/fmbench/scripts/triton/Dockerfile_triton
+
+        # curl the script that builds and pushes the triton image locally
+        curl -o build_and_push_triton.sh https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/192-triton-itegration/src/fmbench/scripts/triton/build_and_push_triton.sh
+
+        # Make the triton build and push script executable, and run it
+        chmod +x build_and_push_triton.sh
+        ./build_and_push_triton.sh
     ```
-
-1. Create a script by copy pasting the commands and script below. This script will build and push the triton image locally
-
-    ```{.bash}
-        nano build_and_push_triton_fmbench.sh
-    ```
-
-    1. 👉 Copy paste the script below and execute the script:
-
-        ```{.bash}
-            #!/usr/bin/env bash
-
-            # This script builds a Docker image and saves it locally in the home directory.
-
-            # Set the image name and tag
-            export IMAGE_NAME=tritonserver-neuronx
-            export IMAGE_TAG=24.06-2.x
-
-            # Get the directory of the current script
-            DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-
-            # Build the Docker image locally with the image name
-            docker build -t ${IMAGE_NAME}:${IMAGE_TAG} ${DIR}/..
-
-            if [ $? -ne 0 ]; then
-                echo "Error: Docker image build failed"
-                exit 1
-            fi
-
-            # Save the Docker image locally in the home directory
-            HOME_DIR=$(eval echo ~$USER)
-            docker save ${IMAGE_NAME}:${IMAGE_TAG} | gzip > ${HOME_DIR}/${IMAGE_NAME}_${IMAGE_TAG}.tar.gz
-
-            if [ $? -ne 0 ]; then
-                echo "Error: Failed to save Docker image"
-                exit 1
-            else
-                echo "Triton docker image saved as ${IMAGE_NAME}_${IMAGE_TAG}.tar.gz in the home directory (${HOME_DIR})."
-            fi
-        ```
-    
-    1. Make the script executable and run it:
-
-        ```{.bash}
-            chmod +x build_and_push_triton_fmbench.sh
-            ./build_and_push_triton_fmbench.sh
-        ```
-
         - Now wait until the docker image is saved locally and then follow the instructions below to start a benchmarking test.
 
 1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory.
