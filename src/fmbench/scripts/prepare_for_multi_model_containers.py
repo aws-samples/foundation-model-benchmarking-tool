@@ -256,7 +256,10 @@ def _create_config_files(model_id: str,
             _ = service[cname].pop("devices")
         elif user == constants.CONTAINER_TYPE_TRITON:
             logger.info(f"This is a triton image uri, using an entry point command which contains the model repository contents")
-            service[cname]['command'] = f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {port}"
+            # pass in the model id, model name (which is used as the model repo name within the triton container), port and the 
+            # total number of neuron cores that are passed within the script. For example, for trn1.32xlarge, 32 will be passed in as an argument
+            total_neuron_cores = num_model_copies * devices_per_model * 2 
+            service[cname]['command'] = f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {port} {total_neuron_cores}"
         services = services | service
 
         # config.properties
