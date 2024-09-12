@@ -103,7 +103,8 @@ class TritonPythonModel:
 
     tokenizer_location = model_args.pop("tokenizer", model_location)
     self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_location)
-
+    self.tokenizer.pad_token = self.tokenizer.eos_token
+    
     self.logger.log_info(f"normalized model_args: {model_args}")
     self.model = NeuronAutoModelForCausalLM.from_pretrained(model_location, **model_args)
 
@@ -185,15 +186,22 @@ class TritonPythonModel:
           batch_prompts.extend(batch_prompts[-1] for _ in range(self.batch_size - batch_prompts_size))
 
           start_time = time.time()
-          input_ids = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt")['input_ids']
+          # get the input id, attention mask for the batch prompts to generate outputs for prompts of different
+          # token lengths concurrently. The attention mask is used to track the non padded prompt tokens that are
+          # removed from the generated text so that the input prompt is not provided with the generated text
+          encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", pad_to_max_length=True)
+          input_ids = encoded_inputs['input_ids']
+          attention_mask = encoded_inputs['attention_mask']
           generated_token_seqs = self.model.sample(input_ids, **params)
           generated_token_seqs = generated_token_seqs[:batch_prompts_size]
 
-          # Remove the input prompt tokens from the generated sequences
+          # Use attention_mask to determine the actual length of the prompt (excluding padding)
           new_generated_token_seqs = []
           for i, seq in enumerate(generated_token_seqs):
-              prompt_length = input_ids[i].shape[0]
-              new_generated_token_seqs.append(seq[prompt_length:])
+            # Calculate non-padded tokens length
+            prompt_length = attention_mask[i].sum().item()
+            # Truncate prompt tokens from generated sequence
+            new_generated_token_seqs.append(seq[int(prompt_length):])
 
           generated_text_seqs = self.tokenizer.batch_decode(new_generated_token_seqs, skip_special_tokens=True)
           assert isinstance(generated_text_seqs, list)
@@ -225,4 +233,3 @@ class TritonPythonModel:
 
   def finalize(self):
     self.logger.log_info("Cleaning up...")
-    
