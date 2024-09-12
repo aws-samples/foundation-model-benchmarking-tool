@@ -133,7 +133,7 @@ class TritonPythonModel:
         params_dict["sequence_length"] = _MAX_MODEL_LEN
         params_dict["top_k"] = 50
     elif "sequence_length" not in params_dict:
-        params_dict["sequence_length"] = _MAX_MODEL_LEN
+        params_dict["sequence_length"] = 4096
 
     return params_dict
 
@@ -189,7 +189,7 @@ class TritonPythonModel:
           # get the input id, attention mask for the batch prompts to generate outputs for prompts of different
           # token lengths concurrently. The attention mask is used to track the non padded prompt tokens that are
           # removed from the generated text so that the input prompt is not provided with the generated text
-          encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", pad_to_max_length=True)
+          encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", padding='longest')
           input_ids = encoded_inputs['input_ids']
           attention_mask = encoded_inputs['attention_mask']
           generated_token_seqs = self.model.sample(input_ids, **params)

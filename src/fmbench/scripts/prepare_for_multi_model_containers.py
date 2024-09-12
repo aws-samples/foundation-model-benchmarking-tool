@@ -59,13 +59,7 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     content['model'] = hf_model_id
                     content['tokenizer'] = hf_model_id
                     content['n_positions'] = n_positions
-                    # Replace the inference parameters with the inference parameters from
-                    # the configuration file
-                    if "on_device_embedding" in content.get("neuron_config", {}):
-                        logger.info(f"Replacing on_device_embedding in {file_path} with inference_parameters.")
-                        content["neuron_config"]["on_device_embedding"] = inference_parameters
-                    else:
-                        logger.warning(f"on_device_embedding not found in {file_path}.")
+                    # TO DO: Add code here to replace the neuron config for sampling on the accelerator
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
                     logger.info(f"Updated {file_path} with tp_degree={tp_degree}, batch_size={batch_size}, and inference_parameters.")
