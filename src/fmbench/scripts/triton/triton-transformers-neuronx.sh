@@ -1,6 +1,6 @@
 #!/bin/bash
 [ ! -d /triton ] && echo "/triton dir must exist" && exit 1
-[ $# -ne 3 ] && echo "usage: $0 hf-model-id model-name http-port" && exit 1
+[ $# -ne 4 ] && echo "usage: $0 hf-model-id model-name http-port opm-num-threads" && exit 1
 
 # The HF model id, model name and http port
 # are parsed from the triton multi model preparation
@@ -8,6 +8,7 @@
 HF_MODEL_ID=$1
 MODEL_NAME=$2
 HTTP_PORT=$3
+OPM_NUM_THREADS=$4
 
 LOG_ROOT=/triton/logs
 MODEL_REPO=/triton/model_repository
@@ -27,6 +28,7 @@ cp /triton/config.pbtxt $MODEL_REPO/$MODEL_NAME/config.pbtxt
 
 export NEURON_CC_FLAGS="--model-type transformer"
 export NEURON_COMPILE_CACHE_URL="$CACHE_DIR"
+export OMP_NUM_THREADS=$OPM_NUM_THREADS
 tritonserver \
 --model-repository=${MODEL_REPO} \
 --http-port=$HTTP_PORT \
