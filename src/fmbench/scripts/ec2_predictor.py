@@ -84,7 +84,7 @@ class EC2Predictor(FMBenchPredictor):
             response_json = dict(generated_text=answer_only)
             # counts the completion tokens for the model using the default/user provided tokenizer
             completion_tokens = count_tokens(response_json.get("generated_text"))
-        except requests.exceptions.RequestException as e:
+        except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
         return FMBenchPredictionResponse(response_json=response_json,
