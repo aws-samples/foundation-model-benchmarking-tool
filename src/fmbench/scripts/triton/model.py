@@ -11,7 +11,8 @@ import time
 import triton_python_backend_utils as pb_utils
 
 _MODEL_ARGS_FILENAME = "model.json"
-_MAX_MODEL_LEN = 8192
+_MAX_MODEL_LEN = {MODEL_MAX_LEN}
+_MAX_NEW_TOKENS = {MAX_NEW_TOKENS}
 
 class TritonPythonModel:
 
@@ -133,7 +134,7 @@ class TritonPythonModel:
         params_dict["sequence_length"] = _MAX_MODEL_LEN
         params_dict["top_k"] = 50
     elif "sequence_length" not in params_dict:
-        params_dict["sequence_length"] = 4096
+        params_dict["sequence_length"] = _MAX_MODEL_LEN
 
     return params_dict
 
@@ -192,7 +193,22 @@ class TritonPythonModel:
           encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", padding='longest')
           input_ids = encoded_inputs['input_ids']
           attention_mask = encoded_inputs['attention_mask']
-          generated_token_seqs = self.model.sample(input_ids, **params)
+
+          # Adjust sequence_length parameter
+          prompt_lengths_batch = attention_mask.sum(dim=1).tolist()
+          max_prompt_length_in_batch = max(prompt_lengths_batch)
+          max_new_tokens = params.get('max_new_tokens', _MAX_NEW_TOKENS)
+          total_sequence_length = max_prompt_length_in_batch + max_new_tokens
+          if total_sequence_length > _MAX_MODEL_LEN:
+              max_new_tokens = _MAX_MODEL_LEN - max_prompt_length_in_batch
+              if max_new_tokens <= 0:
+                  max_new_tokens = _MAX_NEW_TOKENS
+          params['max_new_tokens'] = max_new_tokens
+          params['pad_token_id'] = self.tokenizer.pad_token_id
+          params['eos_token_id'] = self.tokenizer.eos_token_id
+          # pass in the attention mask. Without the attention mask, the model treats all tokens—including padding—as valid input. 
+          # This can lead to increased computational load, especially when the padded length is much longer than the prompts inputted.
+          generated_token_seqs = self.model.sample(input_ids, attention_mask=attention_mask, **params)
           generated_token_seqs = generated_token_seqs[:batch_prompts_size]
 
           # Use attention_mask to determine the actual length of the prompt (excluding padding)

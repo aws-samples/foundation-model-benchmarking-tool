@@ -32,6 +32,9 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                                                      tp_degree: int, 
                                                      batch_size: int, 
                                                      n_positions: int,
+                                                     on_device_embedding_parameters: dict,
+                                                     max_new_tokens: int,
+                                                     context_len: int,
                                                      inference_parameters: Dict, 
                                                      hf_model_id: str):
     """
@@ -59,7 +62,14 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     content['model'] = hf_model_id
                     content['tokenizer'] = hf_model_id
                     content['n_positions'] = n_positions
-                    # TO DO: Add code here to replace the neuron config for sampling on the accelerator
+                    # If neuron config is in the model.json, then replace with what is given
+                    # in the config file, else go with default. Default values are: 
+                    # "on_device_embedding": {"max_length": 8192, "top_k": 50, "do_sample": true}
+                    if 'neuron_config' in content:
+                        content['neuron_config']['on_device_embedding'] = on_device_embedding_parameters
+                        logger.info(f"Updated neuron_config['on_device_embedding'] with values from inference_parameters: {on_device_embedding_parameters}")
+                    else:
+                        logger.info("neuron_config not found in inference_spec; leaving on_device_embedding as is")
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
                     logger.info(f"Updated {file_path} with tp_degree={tp_degree}, batch_size={batch_size}, and inference_parameters.")
@@ -72,6 +82,17 @@ def _handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     with open(file_path, "w") as f:
                         f.write(content)
                     logger.info(f"Updated {file_path} with batch_size={batch_size}.")
+                
+                # update the model.py file with the model context length and the max new tokens
+                # that is passed within the model container
+                elif file == "model.py":
+                    with open(file_path, "r") as f:
+                        content = f.read()
+                    content = content.replace("{MODEL_MAX_LEN}", str(context_len))
+                    content = content.replace("{MAX_NEW_TOKENS}", str(max_new_tokens))
+                    with open(file_path, "w") as f:
+                        f.write(content)
+                        logger.info(f"Updated {file_path} with context_len={context_len} and max_new_tokens={max_new_tokens}.")
                 else:
                     # If there are files within the triton folder that do not need
                     # to have values subsituted within it, then call it out.
@@ -138,7 +159,6 @@ def _create_triton_service(model_id: str,
                        f"{triton_instance_dir}:/triton:rw"]
             # Create the Triton service
             total_neuron_cores = num_model_copies * devices_per_model * 2
-            logger.info(f"Total neuron cores being sent as OMP thread parameter to the triton container: {total_neuron_cores}")
             service = {
                 cname: {
                     "image": image,
@@ -517,6 +537,12 @@ def prepare_docker_compose_yml(model_name: str,
     tp_degree: int = inference_params.get('tp_degree', None)
     batch_size: int = inference_params.get('batch_size', 4)
     n_positions: int = inference_params.get('n_positions', 8192)
+    # this is specific to the triton container
+    max_new_tokens: int = inference_params.get('max_new_tokens', 100)
+    context_len: int = inference_params.get('context_len', 8192)
+    on_device_embedding_parameters: dict = inference_params.get('neuron_config', dict(max_length=8192, 
+                                                                                   top_k=50, 
+                                                                                   do_sample=True))
     inference_parameters: Dict = inference_params.get('parameters', None)
 
     if user == constants.CONTAINER_TYPE_TRITON:
@@ -524,8 +550,12 @@ def prepare_docker_compose_yml(model_name: str,
         triton_content: str = os.path.join(current_dir, "triton")
         # handles custom tensor pd, batch size into the model repository files
         _handle_triton_serving_properties_and_inf_params(triton_content, 
-                                                        tp_degree, batch_size, 
+                                                        tp_degree, 
+                                                        batch_size, 
                                                         n_positions, 
+                                                        on_device_embedding_parameters,
+                                                        max_new_tokens,
+                                                        context_len,
                                                         inference_parameters, 
                                                         model_id)
 

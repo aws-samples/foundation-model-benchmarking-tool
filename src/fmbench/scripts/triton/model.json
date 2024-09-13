@@ -6,10 +6,6 @@
   "n_positions": "$N_POSITIONS",
   "batch_size": "$BATCH_SIZE",
   "neuron_config": {
-    "on_device_embedding": {
-      "max_length": 8192, 
-      "top_k": 50, 
-      "do_sample": true
-    }
+    "on_device_embedding": "$NEURON_CONFIG"
   }
 }
