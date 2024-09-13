@@ -188,7 +188,6 @@ def _create_djl_service(model_id: str,
                         user: str, 
                         shm_size: str, 
                         env: List, 
-                        port: int,
                         base_port: int, 
                         accelerator: constants.ACCELERATOR_TYPE) -> Tuple:
     """
@@ -218,6 +217,7 @@ def _create_djl_service(model_id: str,
             volumes = [f"{dir_path_on_host}/i{i+1}:/opt/ml/model:ro",
                        f"{dir_path_on_host}/i{i+1}/conf:/opt/djl/conf:ro",
                        f"{dir_path_on_host}/i{i+1}/model_server_logs:/opt/djl/logs"]
+            # compute the port
             port = base_port + i + 1
 
             service = {
