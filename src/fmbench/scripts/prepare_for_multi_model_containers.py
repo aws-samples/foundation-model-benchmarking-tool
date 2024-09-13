@@ -119,7 +119,8 @@ def _create_triton_service(model_id: str,
         services: Dict = {}
         per_container_info_list: List = []
         dir_path_on_host: str = f"/home/ubuntu/{Path(model_id).name}"
-
+        
+        # Iterate through the number of model copies and prepare the docker service for triton
         for i in range(num_model_copies):
             cname: str = f"fmbench_model_container_{i+1}"
             cnames.append(cname)
@@ -153,7 +154,8 @@ def _create_triton_service(model_id: str,
                     shutil.copy2(s, d)
                 elif os.path.isdir(s):
                     shutil.copytree(s, d, dirs_exist_ok=True)
-            # Set execute permissions for the script
+            # Set execute permissions for the script. The triton volumes contain the model repostory that
+            # are mapped into the container and used during deployment
             os.chmod(os.path.join(triton_instance_dir, os.path.basename(constants.TRITON_INFERENCE_SCRIPT)), 0o755)
             volumes = [f"{triton_instance_dir}:/scripts/triton:rw",
                        f"{triton_instance_dir}:/triton:rw"]
@@ -198,7 +200,8 @@ def _create_djl_service(model_id: str,
         services: Dict = {}
         per_container_info_list: List = []
         dir_path_on_host: str = f"/home/ubuntu/{Path(model_id).name}"
-
+        
+        # Iterate through the number of model copies and prepare the docker service for djl
         for i in range(num_model_copies):
             cname = f"fmbench_model_container_{i+1}"
             cnames.append(cname)
