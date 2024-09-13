@@ -4,7 +4,7 @@
 
     # Set the image name and tag
     export IMAGE_NAME=tritonserver-neuronx
-    export IMAGE_TAG=24.06-2.x
+    export IMAGE_TAG=fmbench
 
     # Get the directory of the current script
     DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
