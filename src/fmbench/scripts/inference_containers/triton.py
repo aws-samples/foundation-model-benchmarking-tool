@@ -206,7 +206,8 @@ def _create_triton_service_neuron(model_id: str,
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    num_ports_per_instance = 3 # 3 ports, one for hhtp, one for grps, one for metrics
+    num_ports_per_instance = 0 # there is 1 port per instance for triton on neuron so the nginx points to those 4 that
+                               # are port numbers for each container.
     return services, per_container_info_list, num_ports_per_instance
 
 
