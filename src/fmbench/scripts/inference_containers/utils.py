@@ -1,6 +1,7 @@
 """
 Utility functions common across inference containers
 """
+import json
 import logging
 import subprocess
 import fmbench.scripts.constants as constants
