@@ -11,6 +11,15 @@ The steps for deploying the model on your EC2 instance are described below.
 
 Create a new EC2 instance suitable for hosting an LMI as per the steps described [here](misc/ec2_instance_creation_steps.md). _Note that you will need to select the correct AMI based on your instance type, this is called out in the instructions_.
 
+The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) and different inference containers differ slightly. These are all described below.
+
+## Benchmarking options on EC2
+- [Benchmarking on an instance type with NVIDIA GPUs or AWS Chips](#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips)
+- [Benchmarking on an CPU instance type with AMD processors](#benchmarking-on-an-cpu-instance-type-with-amd-processors)
+- [Benchmarking on an CPU instance type with Intel processors](#benchmarking-on-an-cpu-instance-type-with-intel-processors)
+
+- [Benchmarking the Triton inference server on GPU instances](#benchmarking-the-triton-inference-server-on-gpu-instances)
+
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
 1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
@@ -261,3 +270,25 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
+
+## Benchmarking the Triton inference server on GPU instances
+
+Here are the steps for using the [Triton inference server](https://github.com/triton-inference-server/server) and benchmarking model performance. The steps presented here are based on several publicly available resources such as [Deploying Hugging Face Llama2-7b Model in Triton](https://github.com/triton-inference-server/tutorials/blob/main/Popular_Models_Guide/Llama2/trtllm_guide.md), [TensorRT-LLM README](https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/llama/README.md), [End to end flow to run Llama-7b](https://github.com/triton-inference-server/tensorrtllm_backend/blob/main/docs/llama.md) and others.
+
+1. Install the TensorRT backend.
+
+```{.bash}
+git clone https://github.com/triton-inference-server/tensorrtllm_backend.git  --branch v0.12.0
+# Update the submodules
+cd tensorrtllm_backend
+# Install git-lfs if needed
+apt-get update && apt-get install git-lfs -y --no-install-recommends
+git lfs install
+git submodule update --init --recursive
+```
+
+1. That's it, everything else is encapsulated within the `FMBench` code. `FMBench` would copy the relevant scripts in the `${HOME}/deploy_on_triton` directory and run `docker compose up -d` to deploy the model. Here is an example command for benchmarking `Llama3-8b-instruct` model served using Triton.
+
+```{.bash}
+fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-triton-g5.12xlarge.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+```

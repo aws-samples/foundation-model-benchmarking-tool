@@ -9,9 +9,7 @@ If you would like to build a dev version of `FMBench` for your own development a
 1. Install [`poetry`](https://pypi.org/project/poetry/).
    
     ```{.bash}
-    pip install poetry
-    pip install mkdocs-material
-    pip install mknotebooks
+    pip install poetry mkdocs-material mknotebooks
     ```
 
 1. Change directory to the `FMBench` repo directory and run poetry build.

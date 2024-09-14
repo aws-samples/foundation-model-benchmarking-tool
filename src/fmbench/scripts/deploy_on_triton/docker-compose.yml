@@ -1,0 +1,48 @@
+services:
+  fmbench_model_container:
+    image: nvcr.io/nvidia/tritonserver:24.08-trtllm-python-py3
+    container_name: fmbench_model_container  # Name of the container
+    runtime: nvidia  # Enables GPU support for the container
+    shm_size: 12g  # Shared memory size
+    ulimits:
+      memlock: -1  # Remove memory locking limits
+      stack: 67108864  # Set stack size
+    ports:
+    # sufficient for upto 4 instances of the model
+    # add more if needed
+    - 8000:8000
+    - 8003:8003
+    - 8006:8006
+    - 8009:8009
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all  # Use all available GPUs
+              capabilities: [gpu]
+    volumes:
+      - ${HOME}/tensorrtllm_backend:/tensorrtllm_backend
+      - ${HOME}/${MODEL_ID}:/${MODEL_ID}
+      - ${HOME}/engines:/engines
+      - ${HOME}/deploy_on_triton/scripts:/scripts
+    #network_mode: host  # Use the host's network stack
+    tty: true  # Allocate a pseudo-TTY (interactive terminal)
+    command: bash -c "/scripts/serve_model.sh ${MODEL_ID} ${TP_DEGREE} ${BATCH_SIZE} ${MODEL_COPIES} && bash"  # Run script and keep the container alive with bash
+    restart: on-failure  # Ensure container restarts if it stops unexpectedly
+
+  loadbalancer:
+    container_name: fmbench_model_container_load_balancer
+    depends_on:
+    - fmbench_model_container
+    deploy:
+      placement:
+        constraints:
+        - node.role == manager
+    image: nginx:alpine
+    ports:
+    - 8080:80
+    volumes:
+    - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    command: sh -c "sleep 240 && nginx -g 'daemon off;'" 
+    restart: on-failure
