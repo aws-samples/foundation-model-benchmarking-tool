@@ -4,23 +4,19 @@ import copy
 import time
 import logging
 import requests
+import subprocess
 import pandas as pd
 from datetime import datetime
 from typing import Dict, Optional
 from fmbench.utils import count_tokens
 from fmbench.scripts import constants
+from fmbench.scripts.inference_containers.utils import get_accelerator_type
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
                                             
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-
-from enum import Enum
-
-class CONTAINER_TYPE(str, Enum):
-    DJL = 'djl'
-    VLLM = 'vllm'
 
 class EC2Predictor(FMBenchPredictor):
     # overriding abstract method
@@ -31,6 +27,7 @@ class EC2Predictor(FMBenchPredictor):
         try:
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec
+            self._accelerator = get_accelerator_type()
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
@@ -64,11 +61,13 @@ class EC2Predictor(FMBenchPredictor):
                 payload = payload | dict(parameters=self._inference_spec["parameters"])
                 response = requests.post(self._endpoint_name, json=payload)
             elif container_type == constants.CONTAINER_TYPE_TRITON:
-                triton_payload = {
-                    "text_input": payload["inputs"],
-                    "sampling_parameters": json.dumps(self._inference_spec["parameters"])
-                }
-                logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {self._endpoint_name}")
+                if self._accelerator == constants.ACCELERATOR_TYPE.NEURON:
+                    triton_payload = dict(text_input=payload["inputs"],
+                                          sampling_parameters=json.dumps(self._inference_spec["parameters"]))
+                else:
+                    triton_payload = dict(text_input=payload["inputs"]) | self._inference_spec["parameters"]
+
+                logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {triton_payload}")
                 response = requests.post(self._endpoint_name, json=triton_payload)
             elif container_type == constants.CONTAINER_TYPE_VLLM:
                 # vllm uses prompt rather than input and then

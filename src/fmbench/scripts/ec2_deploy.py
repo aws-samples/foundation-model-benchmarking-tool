@@ -21,6 +21,7 @@ from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
 from fmbench.scripts.constants import IS_NEURON_INSTANCE
+from fmbench.scripts.inference_containers import (djl, vllm, triton)
 from fmbench.scripts.prepare_for_multi_model_containers import prepare_docker_compose_yml
 
 # set a logger
@@ -32,40 +33,7 @@ PLATFORM: str = constants.PLATFORM_EC2
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
-# SHM_SIZE: str = "12g"
-# MODEL_DEPLOYMENT_TIMEOUT: int = 2400
-FMBENCH_MODEL_CONTAINER_NAME: str = "fmbench_model_container"
 
-STOP_AND_RM_CONTAINER = f"""
-    # Attempt to stop and remove the container up to 3 times if container exists
-        if [ -n "$(docker ps -aq --filter "name={FMBENCH_MODEL_CONTAINER_NAME}")" ]; then
-            for i in {{1..3}}; do
-                echo "Attempt $i to stop and remove the container: {FMBENCH_MODEL_CONTAINER_NAME}"
-                
-                # Stop the container
-                docker ps -q --filter "name={FMBENCH_MODEL_CONTAINER_NAME}" | xargs -r docker stop
-                
-                # Wait for 5 seconds
-                sleep 5
-                
-                # Remove the container
-                docker ps -aq --filter "name={FMBENCH_MODEL_CONTAINER_NAME}" | xargs -r docker rm
-                
-                # Wait for 5 seconds
-                sleep 5
-                
-                # Check if the container is removed
-                if [ -z "$(docker ps -aq --filter "name={FMBENCH_MODEL_CONTAINER_NAME}")" ]; then
-                    echo "Container {FMBENCH_MODEL_CONTAINER_NAME} successfully stopped and removed."
-                    break
-                else
-                    echo "Container {FMBENCH_MODEL_CONTAINER_NAME} still exists, retrying..."
-                fi
-            done
-        else
-            echo "Container {FMBENCH_MODEL_CONTAINER_NAME} does not exist. No action taken."
-        fi
-    """
 
 def _set_up(model_name: str, local_model_path: str):
     """
@@ -76,83 +44,8 @@ def _set_up(model_name: str, local_model_path: str):
     os.makedirs(directory, exist_ok=True)
     logger.info(f"Creating the local directory: {directory}")
     
-
-    #return the directory we created
+    # return the directory we created
     return directory
-
-def _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting):
-    script = f"""#!/bin/sh
-        echo "Going to download container now"
-        echo "Content in docker command: {region}, {image_uri}, {model_name}"
-
-        # Login to AWS ECR and pull the Docker image
-        aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
-        docker pull {image_uri}
-
-        {STOP_AND_RM_CONTAINER}
-
-        # Run the new Docker container with specified settings
-        docker run -d --name={FMBENCH_MODEL_CONTAINER_NAME} {gpu_or_neuron_setting} \
-            -v {directory}:/opt/ml/model:ro \
-            -v {directory}/model_server_logs:/opt/djl/logs \
-            {env_str} \
-            -e HF_TOKEN={HF_TOKEN} \
-            -p 8080:8080 {image_uri}
-
-        echo "started docker run in daemon mode"
-
-    """
-    return script
-
-def _create_script_djl_w_docker_compose(region, image_uri, model_name, directory):
-    script = f"""#!/bin/sh
-        echo "Going to download model container"
-        echo "Content in docker command: {region}, {image_uri}, {model_name}"
-
-        # Login to AWS ECR and pull the Docker image
-        aws ecr get-login-password --region {region} | docker login --username AWS --password-stdin {image_uri}
-        docker pull {image_uri}       
-
-        # Run the new Docker container with specified settings
-        cd {directory}
-        # shutdown existing docker compose
-        docker compose down
-        {STOP_AND_RM_CONTAINER}
-        docker compose up -d
-        cd -
-        echo "started docker compose in daemon mode"
-    """
-    return script
-
-def _create_script_triton_w_docker_compose(region, image_uri, model_name, directory):
-    script = f"""#!/bin/sh
-        echo "Going to download model container"
-        echo "Content in docker command: {region}, {image_uri}, {model_name}"
-        
-        # using the locally built triton image
-
-        # Run the new Docker container with specified settings
-        cd {directory}
-        # shutdown existing docker compose
-        docker compose down
-        {STOP_AND_RM_CONTAINER}
-        docker compose up -d
-        cd -
-        echo "started docker compose in daemon mode"
-    """
-    return script
-
-def _create_script_vllm(image_uri, model_id, env_str, privileged_str):
-    script = f"""#!/bin/sh
-
-        {STOP_AND_RM_CONTAINER}
-
-        # Run the new Docker container with specified settings
-        docker run -d {privileged_str} --rm --name={FMBENCH_MODEL_CONTAINER_NAME} --env "HF_TOKEN={HF_TOKEN}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id}
-
-        echo "started docker run in daemon mode"
-    """
-    return script
 
 def _create_deployment_script(image_uri,
                               container_type,
@@ -162,7 +55,6 @@ def _create_deployment_script(image_uri,
                               model_id,
                               HF_TOKEN,
                               directory,
-                              gpu_or_neuron_setting,
                               model_loading_timeout,
                               env,
                               model_copies,
@@ -177,23 +69,15 @@ def _create_deployment_script(image_uri,
         for k, v in env.items():
             env_str += f"-e {k}={v} "
 
-    if container_type == constants.CONTAINER_TYPE_DJL:        
-        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, "
-                    f"going to create deployment script for docker compose")
-        deploy_script_content = _create_script_djl_w_docker_compose(region, image_uri, model_name, directory)        
-        #deploy_script_content = _create_script_djl(region, image_uri, model_name, directory, env_str, gpu_or_neuron_setting)
-    elif container_type == constants.CONTAINER_TYPE_VLLM:
-        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to use docker run directly")
-        deploy_script_content = _create_script_vllm(image_uri, model_id, env_str, privileged_str)
-    elif container_type == constants.CONTAINER_TYPE_TRITON:   
-        logger.info(f"Going to create a triton docker compose file using the locally build triton"
-                    f"image uri")     
-        logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, "
-                    f"going to create deployment script for docker compose")
-        deploy_script_content = _create_script_triton_w_docker_compose(region, image_uri, model_name, directory)
-    else:
-        raise ValueError(f"dont know how to handle container_type={container_type}")
-
+    match container_type:
+        case constants.CONTAINER_TYPE_DJL:
+            deploy_script_content = djl.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case constants.CONTAINER_TYPE_VLLM:
+            deploy_script_content = vllm.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case constants.CONTAINER_TYPE_TRITON:
+            deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case _:
+            raise ValueError(f"dont know how to handle container_type={container_type}")
     script_file_path = os.path.join(directory, "deploy_model.sh")
     Path(script_file_path).write_text(deploy_script_content)
     logger.info(f"deploy_model.sh content: {deploy_script_content}")
@@ -296,7 +180,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     serving_properties: str = experiment_config['serving.properties']
     model_loading_timeout: int = experiment_config['ec2']['model_loading_timeout']
     
-    gpu_or_neuron_setting: str = experiment_config['ec2']['gpu_or_neuron_setting']
     HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()
     dir_path = home_dir = os.getenv("HOME", str(Path.home()))
     logger.info(f"Home directory: {dir_path}")
@@ -340,7 +223,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
                                                        model_id,
                                                        HF_TOKEN,
                                                        model_directory,
-                                                       gpu_or_neuron_setting,
                                                        model_loading_timeout,
                                                        env,
                                                        model_copies,
