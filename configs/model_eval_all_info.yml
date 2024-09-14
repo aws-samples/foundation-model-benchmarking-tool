@@ -83,7 +83,7 @@ model_evaluations:
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
         eval_prompt_template_name: "cohere_eval_{method_name}"
     # number of parallel calls made asyncronously to bedrock using Ray
-    run_parallel_inference_count: 15
+    run_parallel_inference_count: 10
     # Common inference parameters used in the evaluation process
     # We use LiteLLM for interfacing with Bedrock
     inference_parameters:

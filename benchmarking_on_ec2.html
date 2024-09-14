@@ -686,6 +686,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#benchmarking-options-on-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking options on EC2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips" class="md-nav__link">
     <span class="md-ellipsis">
       Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
@@ -707,6 +716,15 @@
   <a href="#benchmarking-on-an-cpu-instance-type-with-intel-processors" class="md-nav__link">
     <span class="md-ellipsis">
       Benchmarking on an CPU instance type with Intel processors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking-the-triton-inference-server-on-gpu-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking the Triton inference server on GPU instances
     </span>
   </a>
   
@@ -1280,6 +1298,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#benchmarking-options-on-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking options on EC2
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips" class="md-nav__link">
     <span class="md-ellipsis">
       Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
@@ -1301,6 +1328,15 @@
   <a href="#benchmarking-on-an-cpu-instance-type-with-intel-processors" class="md-nav__link">
     <span class="md-ellipsis">
       Benchmarking on an CPU instance type with Intel processors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking-the-triton-inference-server-on-gpu-instances" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking the Triton inference server on GPU instances
     </span>
   </a>
   
@@ -1333,6 +1369,18 @@
 <p>The steps for deploying the model on your EC2 instance are described below. </p>
 <p>👉 In this configuration both the model being benchmarked and <code>FMBench</code> are deployed on the same EC2 instance.</p>
 <p>Create a new EC2 instance suitable for hosting an LMI as per the steps described <a href="misc/ec2_instance_creation_steps.html">here</a>. <em>Note that you will need to select the correct AMI based on your instance type, this is called out in the instructions</em>.</p>
+<p>The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) and different inference containers differ slightly. These are all described below.</p>
+<h2 id="benchmarking-options-on-ec2">Benchmarking options on EC2<a class="headerlink" href="#benchmarking-options-on-ec2" title="Permanent link">&para;</a></h2>
+<ul>
+<li><a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips</a></li>
+<li><a href="#benchmarking-on-an-cpu-instance-type-with-amd-processors">Benchmarking on an CPU instance type with AMD processors</a></li>
+<li>
+<p><a href="#benchmarking-on-an-cpu-instance-type-with-intel-processors">Benchmarking on an CPU instance type with Intel processors</a></p>
+</li>
+<li>
+<p><a href="#benchmarking-the-triton-inference-server-on-gpu-instances">Benchmarking the Triton inference server on GPU instances</a></p>
+</li>
+</ul>
 <h2 id="benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips<a class="headerlink" href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
@@ -1569,6 +1617,24 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <p>All metrics are stored in the <code>/tmp/fmbench-write</code> directory created automatically by the <code>fmbench</code> package. Once the run completes all files are copied locally in a <code>results-*</code> folder as usual.</p>
 </li>
 </ol>
+<h2 id="benchmarking-the-triton-inference-server-on-gpu-instances">Benchmarking the Triton inference server on GPU instances<a class="headerlink" href="#benchmarking-the-triton-inference-server-on-gpu-instances" title="Permanent link">&para;</a></h2>
+<p>Here are the steps for using the <a href="https://github.com/triton-inference-server/server">Triton inference server</a> and benchmarking model performance. The steps presented here are based on several publicly available resources such as <a href="https://github.com/triton-inference-server/tutorials/blob/main/Popular_Models_Guide/Llama2/trtllm_guide.md">Deploying Hugging Face Llama2-7b Model in Triton</a>, <a href="https://github.com/NVIDIA/TensorRT-LLM/blob/main/examples/llama/README.md">TensorRT-LLM README</a>, <a href="https://github.com/triton-inference-server/tensorrtllm_backend/blob/main/docs/llama.md">End to end flow to run Llama-7b</a> and others.</p>
+<ol>
+<li>Install the TensorRT backend.</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/triton-inference-server/tensorrtllm_backend.git<span class="w">  </span>--branch<span class="w"> </span>v0.12.0
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="c1"># Update the submodules</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="nb">cd</span><span class="w"> </span>tensorrtllm_backend
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Install git-lfs if needed</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>git-lfs<span class="w"> </span>-y<span class="w"> </span>--no-install-recommends
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>git<span class="w"> </span>lfs<span class="w"> </span>install
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
+</span></code></pre></div>
+<ol>
+<li>That's it, everything else is encapsulated within the <code>FMBench</code> code. <code>FMBench</code> would copy the relevant scripts in the <code>${HOME}/deploy_on_triton</code> directory and run <code>docker compose up -d</code> to deploy the model. Here is an example command for benchmarking <code>Llama3-8b-instruct</code> model served using Triton.</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-triton-g5.12xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
 
 
 

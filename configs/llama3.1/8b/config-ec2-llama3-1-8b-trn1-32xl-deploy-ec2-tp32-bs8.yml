@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
-# this file uses a llama-3-8b-chat-hf deployed on ec2
+# this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-8b-g5.2xl-ec2"      
-  model_name: "llama3-8b-instruct"
+  name: "llama3-1-8b-trn1-32xl-deploy-ec2-tp32-bs8"      
+  model_name: "llama3-1-8b-instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -60,7 +60,7 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: llama3_tokenizer
+  tokenizer_prefix: llama3_1_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
@@ -80,7 +80,7 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  5_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
@@ -120,17 +120,13 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
-  - language: en
-    min_length_in_tokens: 1
-    max_length_in_tokens: 924
-    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1000-2000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -159,7 +155,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "llama3-8b-instruct"
+  - name: "llama3-1-8b-trn1-32xl-deploy-ec2-tp32-bs8"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -167,13 +163,13 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3.1-8b-Instruct #model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "llama3-8b-instruct"
+    model_name: "Llama-3.1-8b-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "g5.2xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
+    instance_type: "trn1.32xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
@@ -183,24 +179,26 @@ experiments:
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and GPU settings for the instance
-      # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
-      # '--gpus all' makes all GPUs available to the container
-      # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
-      gpu_or_neuron_setting: --gpus all --shm-size 12g
-      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
-      # If the model takes longer than 40 minutes to load, the process will time out and fail.
+      # The following line specifies the runtime and Inferentia settings for the instance
+      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
+      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
+      gpu_or_neuron_setting: -u djl --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 --device /dev/neuron12 --device /dev/neuron13 --device /dev/neuron14 --device /dev/neuron15
+      #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
     # modify the serving properties to match your model and requirements
     serving.properties: |
-      engine=MPI
-      option.tensor_parallel_degree=1
-      option.max_rolling_batch_size=256
-      option.model_id=meta-llama/Meta-Llama-3-8B-Instruct
-      option.rolling_batch=lmi-dist
+      engine=Python
+      option.entryPoint=djl_python.transformers_neuronx
+      option.model_id=meta-llama/Meta-Llama-3.1-8b-Instruct
+      option.tensor_parallel_degree=32
+      option.n_positions=4096
+      option.rolling_batch=auto
+      option.max_rolling_batch_size=8
+      option.model_loading_timeout=2400
+
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -224,7 +222,7 @@ experiments:
 
 report:
   latency_budget: 2
-  cost_per_10k_txn_budget: 20
+  cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
