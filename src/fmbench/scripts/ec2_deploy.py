@@ -53,7 +53,7 @@ def _create_deployment_script(image_uri,
                               region,
                               model_name,
                               model_id,
-                              HF_TOKEN,
+                              hf_token,
                               directory,
                               model_loading_timeout,
                               env,
@@ -92,29 +92,13 @@ def _run_container(script_file_path):
     # Create a Docker client
     client = docker.from_env()
 
-    try:
-        # Check if the container exists and is running
-        logger.info(f"going to check if the {FMBENCH_MODEL_CONTAINER_NAME} container is running")
-        container = client.containers.get(FMBENCH_MODEL_CONTAINER_NAME)
-        logger.info(f"after checking if the {FMBENCH_MODEL_CONTAINER_NAME} container is running")
-        if container.status == "running":
-            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is already running.")
-        else:
-            logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} is not running.")
+    try:        
+        logger.info(f"going to run script {script_file_path}")
         subprocess.run(["bash", script_file_path], check=True)
         logger.info(f"done running bash script")
-        return True
-    except docker.errors.NotFound:
-        logger.info(f"Container {FMBENCH_MODEL_CONTAINER_NAME} not found. Running the script directly.")
-        subprocess.run(["bash", script_file_path], check=True)
-        logger.info(f"done running bash script")
-        return True
-    except subprocess.CalledProcessError as e:
-        logger.error(f"Error running deploy_model.sh script: {e}")
+        return True    
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
-
-
     return False
 
 def _check_model_deployment(endpoint, model_id, container_type, model_loading_timeout, model_copies):

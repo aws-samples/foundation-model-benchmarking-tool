@@ -183,7 +183,7 @@ def get_model_copies_to_start_nvidia(tp_degree: int, model_copies: str) -> Tuple
                      f"setting model_copies to max possible for this instance which is {model_copies_possible}")
         model_copies = model_copies_possible
     else:
-        logger.error(f"model_copies={model_copies} and model_copies_possible={model_copies_possible}, "
+        logger.info(f"model_copies={model_copies} and model_copies_possible={model_copies_possible}, "
                      f"it is possible to run {model_copies} models, going with that")
 
     return model_copies, gpus_needed_per_model_copy

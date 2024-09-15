@@ -272,12 +272,17 @@ def prepare_docker_compose_yml(model_name: str,
             sp_fpath = os.path.join(pc["dir_path_on_host"], "serving.properties")
             logger.info(f"writing {serving_properties} to {sp_fpath}")
             Path(sp_fpath).write_text(serving_properties)
+        else:
+            logger.info(f"serving_properties={serving_properties}, skipping")
 
-        # write config.properties
-        conf_dir = os.path.join(pc["dir_path_on_host"], "conf")
-        os.makedirs(conf_dir, exist_ok=True)
-        cp_fpath = os.path.join(conf_dir, "config.properties")
-        logger.info(f"writing {pc['config_properties']} to {cp_fpath}")
-        Path(cp_fpath).write_text(pc['config_properties'])
+        # write config.properties, only applicable to DJL
+        if pc['config_properties'] is not None:
+            conf_dir = os.path.join(pc["dir_path_on_host"], "conf")
+            os.makedirs(conf_dir, exist_ok=True)
+            cp_fpath = os.path.join(conf_dir, "config.properties")
+            logger.info(f"writing {pc['config_properties']} to {cp_fpath}")
+            Path(cp_fpath).write_text(pc['config_properties'])
+        else:
+            logger.info(f"config_properties={pc['config_properties']}, skipping")
 
     return model_copies_as_int

@@ -256,12 +256,13 @@ def _create_triton_service_gpu(model_id: str,
         home = str(Path.home())
         dir_path_on_host: str = os.path.join(home, Path(model_id).name)
         
-        cname: str = constants.FMBENCH_MODEL_CONTAINER_NAME
+        cname: str = FMBENCH_MODEL_CONTAINER_NAME
         ports_per_model_server: int = 3 # http, grps, metrics
+        logger.info(f"_create_triton_service_gpu, model_id={model_id}, home={home}, dir_path_on_host={dir_path_on_host}")
         volumes = [f"{home}/tensorrtllm_backend:/tensorrtllm_backend",
                    f"{home}/{model_id}:/{model_id}",
-                   f"{home}/{dir_path_on_host}/engines:/engines",
-                   f"{home}/{dir_path_on_host}/scripts:/scripts"]
+                   f"{dir_path_on_host}/engines:/engines",
+                   f"{dir_path_on_host}/scripts:/scripts"]
         
         # copy trtiton serving script
         triton_scripts_dir = os.path.join(dir_path_on_host, "scripts")
@@ -281,14 +282,14 @@ def _create_triton_service_gpu(model_id: str,
                     "shm_size": shm_size,
                     "ulimits": {"memlock": -1, "stack": 67108864},
                     "volumes": volumes,
-                    "ports": [f"{port + i + 1 + ports_per_model_server}:{port + i + 1 + ports_per_model_server}" for i in range(num_model_copies)],
+                    "ports": [f"{base_port + i + i*ports_per_model_server}:{base_port + i + i*ports_per_model_server}" for i in range(num_model_copies)],
                     "deploy": {"resources": {"reservations": {"devices": [{"driver": "nvidia", "count": "all", "capabilities": "[gpu]"}]}}},
                     "tty": True,                    
                     "command": f"bash -c \"/scripts/{constants.TRITON_SERVE_SCRIPT} {model_id} {tp_degree} {batch_size} {num_model_copies} && bash\"",
                     "restart": "on-failure"
                 }
             }
-
+        services.update(service)
         per_container_info_list.append(dict(dir_path_on_host=dir_path_on_host, config_properties=None))
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
@@ -311,7 +312,7 @@ def create_triton_service(model_id: str,
     mounting, and other aspects to the docker compose file, such as the entrypoint command, port mapping, and more.
     """
 
-    if accelerator == accelerator.ACCELERATOR_TYPE.NEURON:
+    if accelerator == constants.ACCELERATOR_TYPE.NEURON:
         logger.info(f"accelerator={accelerator}, calling the neuron version of this function")
         return _create_triton_service_neuron(model_id, 
                           num_model_copies, 
@@ -321,8 +322,7 @@ def create_triton_service(model_id: str,
                           shm_size, 
                           env,
                           base_port, 
-                          accelerator,
-                          dir_path) 
+                          accelerator) 
     else:
         logger.info(f"accelerator={accelerator}, calling the gpu version of this function")
         return _create_triton_service_gpu(model_id, 
@@ -334,7 +334,6 @@ def create_triton_service(model_id: str,
                           env,
                           base_port, 
                           accelerator,
-                          dir_path, 
                           tp_degree,
                           batch_size) 
 
