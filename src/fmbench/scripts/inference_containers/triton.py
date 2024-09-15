@@ -2,6 +2,7 @@
 Triton specific code
 """
 import os
+import json
 import shutil
 import logging
 from pathlib import Path
@@ -13,6 +14,14 @@ from fmbench.scripts.inference_containers.utils import (STOP_AND_RM_CONTAINER,
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+CONFIG_PROPERTIES: str = """
+            inference_address=http://0.0.0.0:{port}
+            management_address=http://0.0.0.0:{port}
+            cluster_address=http://0.0.0.0:8888
+            model_store=/opt/ml/model
+            load_models=ALL
+            """
 
 def create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory):
     """
@@ -158,8 +167,9 @@ def _create_triton_service_neuron(model_id: str,
             instance_dir: str = os.path.join(dir_path_on_host, f"i{i+1}")
             triton_instance_dir: str = os.path.join(instance_dir, "triton")
             os.makedirs(triton_instance_dir, exist_ok=True)
-            current_dir = os.path.dirname(os.path.realpath(__file__))
-            triton_content = os.path.join(current_dir, "triton")
+            current_dir: str = os.path.dirname(os.path.realpath(__file__))
+            parent_dir: str = os.path.abspath(os.path.join(current_dir, os.pardir))
+            triton_content: str = os.path.join(parent_dir, constants.TRITON_CONTENT_DIR_NAME)
 
             # Copy all files from triton_content to the instance's triton directory
             for item in os.listdir(triton_content):
@@ -191,11 +201,13 @@ def _create_triton_service_neuron(model_id: str,
                 }
             }
             services.update(service)
-            per_container_info_list.append(dict(dir_path_on_host=instance_dir, config_properties=None))
+            config_properties = CONFIG_PROPERTIES.format(port=port)
+            per_container_info_list.append(dict(dir_path_on_host=instance_dir, config_properties=config_properties))
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    num_ports_per_instance = 3 # 3 ports, one for hhtp, oe fpor grps, one for metrics
+    num_ports_per_instance = 0 # there is 1 port per instance for triton on neuron so the nginx points to those 4 that
+                               # are port numbers for each container.
     return services, per_container_info_list, num_ports_per_instance
 
 

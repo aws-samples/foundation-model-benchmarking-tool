@@ -15,11 +15,11 @@ from os import listdir
 from pathlib import Path
 from os.path import isfile, join
 import fmbench.scripts.constants as constants
+from typing import Dict, List, Optional, Tuple, Union
 import fmbench.scripts.inference_containers.djl as djl
 import fmbench.scripts.inference_containers.vllm as vllm
 import fmbench.scripts.inference_containers.triton as triton
 import fmbench.scripts.inference_containers.utils as ic_utils
-from typing import Dict, List, Optional, Tuple, Union
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)

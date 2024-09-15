@@ -33,7 +33,7 @@ PLATFORM: str = constants.PLATFORM_EC2
 
 # globals
 HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "hf_token.txt")
-
+FMBENCH_MODEL_CONTAINER_NAME: str = "fmbench_model_container"
 
 def _set_up(model_name: str, local_model_path: str):
     """
