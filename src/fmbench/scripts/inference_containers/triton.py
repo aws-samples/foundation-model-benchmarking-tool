@@ -295,7 +295,7 @@ def _create_triton_service_gpu(model_id: str,
                     "ulimits": {"memlock": -1, "stack": 67108864},
                     "volumes": volumes,
                     "ports": [f"{base_port + i + i*ports_per_model_server}:{base_port + i + i*ports_per_model_server}" for i in range(num_model_copies)],
-                    "deploy": {"resources": {"reservations": {"devices": [{"driver": "nvidia", "count": "all", "capabilities": "[gpu]"}]}}},
+                    "deploy": {"resources": {"reservations": {"devices": [{"driver": "nvidia", "count": "all", "capabilities": ['gpu']}]}}},
                     "tty": True,                    
                     "command": f"bash -c \"/scripts/{constants.TRITON_SERVE_SCRIPT} {model_id} {tp_degree} {batch_size} {num_model_copies} && bash\"",
                     "restart": "on-failure"
