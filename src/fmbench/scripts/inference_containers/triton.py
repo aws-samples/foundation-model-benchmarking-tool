@@ -3,6 +3,7 @@ Triton specific code
 """
 import os
 import json
+import stat
 import shutil
 import logging
 from pathlib import Path
@@ -41,7 +42,15 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
 
         # download the model
         export HF_TOKEN={hf_token}
-        pip install -U "huggingface_hub[cli]"
+        pip freeze | grep huggingface-hub
+        RESULT=$?
+        if [ $RESULT -eq 0 ]; then
+          echo huggingface-hub is already installed..
+        else
+          echo huggingface-hub is not installed, going to install it now
+          pip install -U "huggingface_hub[cli]"
+        fi
+
         huggingface-cli download {model_id} --local-dir $HOME/{model_id}
 
         # bring up the inference container and load balancer
@@ -206,9 +215,8 @@ def _create_triton_service_neuron(model_id: str,
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    num_ports_per_instance = 0 # there is 1 port per instance for triton on neuron so the nginx points to those 4 that
-                               # are port numbers for each container.
-    return services, per_container_info_list, num_ports_per_instance
+    nginx_command = ":" # noop for nginx
+    return services, per_container_info_list, nginx_command
 
 
 def _create_triton_service_gpu(model_id: str, 
@@ -270,7 +278,8 @@ def _create_triton_service_gpu(model_id: str,
         
         cname: str = FMBENCH_MODEL_CONTAINER_NAME
         ports_per_model_server: int = 3 # http, grps, metrics
-        logger.info(f"_create_triton_service_gpu, model_id={model_id}, home={home}, dir_path_on_host={dir_path_on_host}")
+        logger.info(f"_create_triton_service_gpu, model_id=\"{model_id}\", home=\"{home}\", dir_path_on_host=\"{dir_path_on_host}\", "
+                    f"tp_degree=\"{tp_degree}\", batch_size=\"{batch_size}\", num_model_copies=\"{num_model_copies}\"")
         volumes = [f"{home}/tensorrtllm_backend:/tensorrtllm_backend",
                    f"{home}/{model_id}:/{model_id}",
                    f"{dir_path_on_host}/engines:/engines",
@@ -284,29 +293,37 @@ def _create_triton_service_gpu(model_id: str,
         triton_serve_model_script_src_path = os.path.join(script_dir_path, constants.TRITON_SERVE_SCRIPT)
         logger.info(f"going to copy {triton_serve_model_script_src_path} to {triton_serve_model_script_dst_path}")
         shutil.copyfile(triton_serve_model_script_src_path, triton_serve_model_script_dst_path)
+        st = os.stat(triton_serve_model_script_dst_path)
+        os.chmod(triton_serve_model_script_dst_path, st.st_mode | stat.S_IEXEC)
 
         # setup the services section
         service = {
                 cname: {
                     "image": image,
                     "container_name": cname,
-                    "user": 'triton',
                     "shm_size": shm_size,
                     "ulimits": {"memlock": -1, "stack": 67108864},
                     "volumes": volumes,
-                    "ports": [f"{base_port + i + i*ports_per_model_server}:{base_port + i + i*ports_per_model_server}" for i in range(num_model_copies)],
+                    "ports": [f"{base_port + i*ports_per_model_server}:{base_port + i*ports_per_model_server}" for i in range(num_model_copies)],
                     "deploy": {"resources": {"reservations": {"devices": [{"driver": "nvidia", "count": "all", "capabilities": ['gpu']}]}}},
                     "tty": True,                    
-                    "command": f"bash -c \"/scripts/{constants.TRITON_SERVE_SCRIPT} {model_id} {tp_degree} {batch_size} {num_model_copies} && bash\"",
+                    "command": f"bash -c \"/scripts/{constants.TRITON_SERVE_SCRIPT} {model_id} {tp_degree} {batch_size} {num_model_copies} {base_port} && bash\"",
                     "restart": "on-failure"
                 }
             }
         services.update(service)
-        per_container_info_list.append(dict(dir_path_on_host=dir_path_on_host, config_properties=None))
+        # for the triton container we could have multiple model servers within the same container
+        nginx_server_lines = [f"        server {cname}:{base_port + i*ports_per_model_server};" for i in range(num_model_copies)]
+        per_container_info_list.append(dict(dir_path_on_host=dir_path_on_host,
+                                            config_properties=None,
+                                            container_name=cname,
+                                            nginx_server_lines=nginx_server_lines))
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    return services, per_container_info_list, ports_per_model_server
+    # ask the nginx lb to wait for a few minutes for the triton container to come up
+    nginx_command = "sh -c \"echo going to sleep for 240s && sleep 240 && echo after sleep && nginx -g \'daemon off;\' && echo started nginx\""
+    return services, per_container_info_list, nginx_command
 
 def create_triton_service(model_id: str, 
                           num_model_copies: int, 

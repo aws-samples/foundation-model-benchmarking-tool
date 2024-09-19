@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-8b-g5.12xl-tp=2-mc=max=ec2"      
+  name: "llama3-8b-g5.12xl-tp=4-mc=max=ec2"      
   model_name: "Meta-Llama-3-8B-Instruct"
   
 # AWS and SageMaker settings
@@ -196,9 +196,11 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 2
+      tp_degree: 4
       shm_size: 12g
       model_loading_timeout: 2400
+      batch_size: 256
+
     # modify the serving properties to match your model and requirements
     serving.properties:
     # runs are done for each combination of payload file and concurrency level

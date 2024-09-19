@@ -102,5 +102,5 @@ def create_djl_service(model_id: str,
     except Exception as e:
         logger.error(f"Error occurred while generating configuration files for djl/vllm: {e}")
         services, per_container_info_list=None, None
-    num_ports_per_instance = 1 # uses only 1 port, same port for data and mgmt
-    return services, per_container_info_list, num_ports_per_instance
+    nginx_command = ":" # noop for nginx
+    return services, per_container_info_list, nginx_command

@@ -60,6 +60,10 @@ class EC2Predictor(FMBenchPredictor):
             if container_type == constants.CONTAINER_TYPE_DJL:
                 payload = payload | dict(parameters=self._inference_spec["parameters"])
                 response = requests.post(self._endpoint_name, json=payload)
+                # record the latency for the response generated
+                latency = time.perf_counter() - st
+                full_output = response.text
+                response.raise_for_status()
             elif container_type == constants.CONTAINER_TYPE_TRITON:
                 if self._accelerator == constants.ACCELERATOR_TYPE.NEURON:
                     triton_payload = dict(text_input=payload["inputs"],
@@ -69,6 +73,11 @@ class EC2Predictor(FMBenchPredictor):
 
                 logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {triton_payload}")
                 response = requests.post(self._endpoint_name, json=triton_payload)
+                # record the latency for the response generated
+                latency = time.perf_counter() - st
+                response.raise_for_status()
+                response_json = json.loads(response.text)
+                full_output = response_json['text_output']
             elif container_type == constants.CONTAINER_TYPE_VLLM:
                 # vllm uses prompt rather than input and then
                 # the code in the calling function still expects input
@@ -77,15 +86,13 @@ class EC2Predictor(FMBenchPredictor):
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
                 response = requests.post(self._endpoint_name, json=payload2)
+                # record the latency for the response generated
+                latency = time.perf_counter() - st
+                response.raise_for_status()
+                full_output = response.text
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 
-            # record the latency for the response generated
-            latency = time.perf_counter() - st
-            
-            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
-            response.raise_for_status()
-            full_output = response.text
             answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
             response_json = dict(generated_text=answer_only)
             # counts the completion tokens for the model using the default/user provided tokenizer
@@ -93,6 +100,7 @@ class EC2Predictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
+
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
                                          time_to_first_token=TTFT,

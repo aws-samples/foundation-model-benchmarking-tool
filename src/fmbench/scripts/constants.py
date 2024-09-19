@@ -25,5 +25,6 @@ PLATFORM_SAGEMAKER: str = "sagemaker"
 PLATFORM_EKS: str = "eks"
 PLATFORM_EC2: str = "ec2"
 
-# inference server listen port (this + 1)
-BASE_PORT: int = 8079
+# inference server listen port
+BASE_PORT_FOR_CONTAINERS: int = 8000
+LISTEN_PORT: int = 8080

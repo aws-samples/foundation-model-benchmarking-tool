@@ -34,7 +34,8 @@ def _create_config_files(model_id: str,
                         shm_size: str, 
                         env: List, 
                         accelerator: constants.ACCELERATOR_TYPE,
-                        dir_path: str) -> Tuple:
+                        dir_path: str,
+                        listen_port: int) -> Tuple:
     """
     Creates the docker compose yml file, nginx config file, these are common to all containers
     and then creates individual config.properties files
@@ -107,12 +108,24 @@ def _create_config_files(model_id: str,
         placement:
             constraints: [node.role == manager]
     """
+
+    # do we need to create a load balancer?
+    # if the model copies or the model containers are > 1
+    # then yes..note that we could have a situation where multiple
+    # model servers are created within a single container so go with
+    # model copies as the guide rather than containers
+    lb_needed = True if num_model_copies > 1 else False
     try:
-        base_port = constants.BASE_PORT if num_model_copies == 1 else constants.BASE_PORT + 1
+        if lb_needed is False:
+            base_port = listen_port
+            logger.info(f"lb_needed={lb_needed}, going to make the container listen on {listen_port} instead of "
+                        f"{base_port}")
+        else:
+            base_port = constants.BASE_PORT_FOR_CONTAINERS
         if user == constants.CONTAINER_TYPE_TRITON:            
             logger.info(f"container type is {constants.CONTAINER_TYPE_TRITON}, accelerator={accelerator}. "
                         f"preparing the service for docker-compose")
-            services, per_container_info_list, num_ports_per_instance = triton.create_triton_service(model_id, 
+            services, per_container_info_list, nginx_command = triton.create_triton_service(model_id, 
                                                                     num_model_copies, 
                                                                     devices_per_model, 
                                                                     image, 
@@ -125,7 +138,7 @@ def _create_config_files(model_id: str,
                                                                     batch_size)
         else:
             logger.info(f"Container type is {user}. Preparing the service for docker-compose")
-            services, per_container_info_list, num_ports_per_instance = djl.create_djl_service(model_id, 
+            services, per_container_info_list, nginx_command = djl.create_djl_service(model_id, 
                                                                     num_model_copies, 
                                                                     devices_per_model, 
                                                                     image, 
@@ -135,34 +148,54 @@ def _create_config_files(model_id: str,
                                                                     base_port,
                                                                     accelerator)
         # Load balancer setup
-        if num_model_copies > 1:
+        if lb_needed is True:
+            fmbench_container_names = [ci['container_name'] for ci in per_container_info_list]
+            # if this is a triton container and 
             lb = {
                 "image": "nginx:alpine",
                 "container_name": "fmbench_model_container_load_balancer",
-                "ports": ["8080:80"],
+                "command": nginx_command,
+                "restart": "on-failure",
+                "ports": [f"{listen_port}:80"],
                 "volumes": ["./nginx.conf:/etc/nginx/nginx.conf:ro"],
-                "depends_on": [f"fmbench_model_container_{i+1}" for i in range(num_model_copies)],
+                "depends_on": fmbench_container_names,
                 "deploy": {"placement": {"constraints": ['node.role == manager']}}
             }
+            if nginx_command is None:
+                lb.pop("command")
             services.update({"loadbalancer": lb})
+        else:
+            logger.info(f"not creating load balancer")
         docker_compose = {"services": services}
+
         # nginx.conf generation
-        if num_model_copies > 1:
-            nginx_server_lines = "\n".join([f"        server fmbench_model_container_{i+1}:{base_port + i + 1 + num_ports_per_instance};" for i in range(num_model_copies)])
+        if lb_needed is True:
+            # the container info list contains the nginx.conf "server fmbench_model_Container_1:8000" type lines
+            # as well ..but..not all inference containers are the same..for DJL we would have one model server
+            # per container (or even if we have multiple they listen on the same port (?) so we dont have to care
+            # about it in the nginx ln) but in Triton the model servers listen on different ports and so even if
+            # there is a single triton container it could have say 4 model servers on different ports..all this 
+            # to say that the nginx_conf_lines is a list and so we have a list of list situation happening here and 
+            # we need to flatten this list of list
+            
+            nginx_server_lines = [l for ci in per_container_info_list for l in ci['nginx_server_lines']]
+            # make it into a string
+            nginx_server_lines = "\n".join(nginx_server_lines)
+
             nginx_config = f"""
-            ### Nginx Load Balancer
-            events {{}}
-            http {{
-                upstream fmcluster {{
+### Nginx Load Balancer
+events {{}}
+http {{
+    upstream fmcluster {{
 {nginx_server_lines}
-                }}
-                server {{
-                    listen 80;
-                    location / {{
-                        proxy_pass http://fmcluster;
-                    }}
-                }}
-            }}
+    }}
+    server {{
+        listen 80;
+        location / {{from fmbench.scripts.inference_containers import (djl, vllm, triton)
+            proxy_pass http://fmcluster;
+        }}
+    }}
+}}
             """
         else:
             nginx_config = None
@@ -181,7 +214,8 @@ def prepare_docker_compose_yml(model_name: str,
                                shm_size: str,
                                env: Dict,
                                serving_properties: Optional[str],
-                               dir_path: str) -> int:
+                               dir_path: str,
+                               listen_port: int) -> int:
 
     # convert the env dict to a list of k=v pairs
     env_as_list = []
@@ -241,7 +275,8 @@ def prepare_docker_compose_yml(model_name: str,
                                                                                  shm_size,
                                                                                  env_as_list,
                                                                                  accelerator,
-                                                                                 dir_path)
+                                                                                 dir_path,
+                                                                                 listen_port)
 
     yaml.Dumper.ignore_aliases = lambda self, data: True
     docker_compose_yaml = yaml.dump(docker_compose)
