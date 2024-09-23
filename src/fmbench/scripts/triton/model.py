@@ -187,30 +187,11 @@ class TritonPythonModel:
           batch_prompts.extend(batch_prompts[-1] for _ in range(self.batch_size - batch_prompts_size))
 
           start_time = time.time()
-          # get the input id, attention mask for the batch prompts to generate outputs for prompts of different
-          # token lengths concurrently. The attention mask is used to track the non padded prompt tokens that are
-          # removed from the generated text so that the input prompt is not provided with the generated text
-          encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", padding='longest')
+          encoded_inputs = self.tokenizer.batch_encode_plus(batch_prompts, return_tensors="pt", pad_to_max_length=True)
           input_ids = encoded_inputs['input_ids']
           attention_mask = encoded_inputs['attention_mask']
-
-          # Adjust sequence_length parameter
-          prompt_lengths_batch = attention_mask.sum(dim=1).tolist()
-          max_prompt_length_in_batch = max(prompt_lengths_batch)
-          max_new_tokens = params.get('max_new_tokens', _MAX_NEW_TOKENS)
-          total_sequence_length = max_prompt_length_in_batch + max_new_tokens
-          if total_sequence_length > _MAX_MODEL_LEN:
-              max_new_tokens = _MAX_MODEL_LEN - max_prompt_length_in_batch
-              if max_new_tokens <= 0:
-                  max_new_tokens = _MAX_NEW_TOKENS
-          params['max_new_tokens'] = max_new_tokens
-          params['pad_token_id'] = self.tokenizer.pad_token_id
-          params['eos_token_id'] = self.tokenizer.eos_token_id
-          # pass in the attention mask. Without the attention mask, the model treats all tokens—including padding—as valid input. 
-          # This can lead to increased computational load, especially when the padded length is much longer than the prompts inputted.
-          generated_token_seqs = self.model.sample(input_ids, attention_mask=attention_mask, **params)
+          generated_token_seqs = self.model.sample(input_ids, **params)
           generated_token_seqs = generated_token_seqs[:batch_prompts_size]
-
           # Use attention_mask to determine the actual length of the prompt (excluding padding)
           new_generated_token_seqs = []
           for i, seq in enumerate(generated_token_seqs):
@@ -246,6 +227,9 @@ class TritonPythonModel:
     self.logger.log_info(f"requests execution time: {requests_end - requests_start}")
 
     return responses
+
+  def finalize(self):
+    self.logger.log_info("Cleaning up...")
 
   def finalize(self):
     self.logger.log_info("Cleaning up...")

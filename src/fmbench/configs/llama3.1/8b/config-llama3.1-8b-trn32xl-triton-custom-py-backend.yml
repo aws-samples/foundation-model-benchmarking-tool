@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-8b-trn1.32xl-ec2-triton"      
-  model_name: "Meta-Llama-3-8B-Instruct"
+  name: "llama3-1-8b-trn1.32xl-ec2-triton"      
+  model_name: "Meta-Llama-1-3-8B-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -76,7 +76,7 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
@@ -142,7 +142,15 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_djl:
-    top_k: 50
+    temperature: 0.1
+    do_sample: yes
+    top_p: 0.92
+    top_k: 120  
+    bad_words: ""
+    stop_words: "<|eot_id|>"
+    pad_id: 2
+    end_id: 2
+    max_tokens: 100
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -157,13 +165,13 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Meta-Llama-3-8B-Instruct #model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Meta-Llama-3.1-8B #model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Meta-Llama-3-8B-Instruct"
+    model_name: "Meta-Llama-3.1-8B"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://localhost:8080/v2/models/Meta-Llama-3-8B-Instruct/generate' 
+    ep_name: 'http://localhost:8080/v2/models/Meta-Llama-3.1-8B/generate' 
     instance_type: "trn1.32xlarge"
-    image_uri: tritonserver-neuronx:latest # tritonserver-neuronx:24.06-2.x
+    image_uri: tritonserver-neuronx:fmbench
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
@@ -197,12 +205,12 @@ experiments:
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 8
       batch_size: 4
-      n_positions: 8192
       shm_size: 12g
       model_loading_timeout: 2400
       # The max new tokens, context length of the model, and the neuron 
       # config are used within the model respository of the triton container
-      # during model deployment
+      # during model deployment - this is specific to uising triton with a custom
+      # python backend
       max_new_tokens: 100
       context_len: 8192
       neuron_config:
@@ -214,19 +222,19 @@ experiments:
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
-    # - 1
+    - 1
     - 2
-    # - 3
-    # - 4
+    - 3
+    - 4
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.

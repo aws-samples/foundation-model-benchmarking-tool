@@ -136,7 +136,7 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
 def _create_triton_service_neuron(model_id: str, 
                           num_model_copies: int, 
                           devices_per_model: int, 
-                          image: str, 
+                          image: str,
                           user: str, 
                           shm_size: str, 
                           env: List,
@@ -147,9 +147,12 @@ def _create_triton_service_neuron(model_id: str,
     mounting, and other aspects to the docker compose file, such as the entrypoint command, port mapping, and more.
     """
     try:
+        # initialize the cnames, services dictionary for triton on neuron, 
+        # and more 
         cnames: List = []
         services: Dict = {}
         per_container_info_list: List = []
+        ports_per_model_server: int = 3 # http, grps, metrics
         home = str(Path.home())
         dir_path_on_host: str = os.path.join(home, Path(model_id).name)
         
@@ -168,9 +171,6 @@ def _create_triton_service_neuron(model_id: str,
                 gpus = ",".join([str(j + device_offset) for j in range(devices_per_model)])
                 extra_env = [f"NVIDIA_VISIBLE_DEVICES={gpus}"]
                 env = env + extra_env
-
-            # Compute port
-            port = base_port + i + 1
 
             # Setup Triton model content for each instance
             instance_dir: str = os.path.join(dir_path_on_host, f"i{i+1}")
@@ -199,23 +199,27 @@ def _create_triton_service_neuron(model_id: str,
                 cname: {
                     "image": image,
                     "container_name": cname,
-                    "user": '',
                     "shm_size": shm_size,
                     "devices": devices,
                     "environment": env,
                     "volumes": volumes,
-                    "ports": [f"{port}:{port}"],
+                    "ports": [f"{base_port + i*ports_per_model_server}:{base_port + i*ports_per_model_server}"],
                     "deploy": {"restart_policy": {"condition": "on-failure"}},
-                    "command": f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {port} {total_neuron_cores}"
+                    "command": f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {base_port + i*ports_per_model_server} {total_neuron_cores}"
                 }
             }
             services.update(service)
-            config_properties = CONFIG_PROPERTIES.format(port=port)
-            per_container_info_list.append(dict(dir_path_on_host=instance_dir, config_properties=config_properties))
+            # for the triton container we could have multiple model servers within the same container
+            nginx_server_lines = [f"        server {cname}:{base_port + i*ports_per_model_server};"]
+            config_properties = CONFIG_PROPERTIES.format(port=(base_port + i*ports_per_model_server))
+            per_container_info_list.append(dict(dir_path_on_host=instance_dir, 
+                                                config_properties=config_properties, 
+                                                container_name=cname,
+                                                nginx_server_lines=nginx_server_lines))
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    nginx_command = None
+    nginx_command = "sh -c \"echo going to sleep for 240s && sleep 240 && echo after sleep && nginx -g \'daemon off;\' && echo started nginx\""
     return services, per_container_info_list, nginx_command
 
 
