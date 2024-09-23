@@ -78,7 +78,7 @@ def create_djl_service(model_id: str,
                        f"{dir_path_on_host}/i{i+1}/conf:/opt/djl/conf:ro",
                        f"{dir_path_on_host}/i{i+1}/model_server_logs:/opt/djl/logs"]
             # compute the port
-            port = base_port + i + 1
+            port = base_port + i
 
             service = {
                 cname: {
@@ -98,9 +98,18 @@ def create_djl_service(model_id: str,
                 service[cname].pop("devices")
             services.update(service)
             config_properties = CONFIG_PROPERTIES.format(port=port)
-            per_container_info_list.append(dict(dir_path_on_host=f"{dir_path_on_host}/i{i+1}", config_properties=config_properties))
+
+
+            nginx_server_lines = [f"        server {cname}:{port};"]
+    
+            per_container_info_list.append(dict(dir_path_on_host=f"{dir_path_on_host}/i{i+1}",
+                                                config_properties=config_properties,
+                                                container_name=cname,
+                                                nginx_server_lines=nginx_server_lines))
     except Exception as e:
         logger.error(f"Error occurred while generating configuration files for djl/vllm: {e}")
         services, per_container_info_list=None, None
-    nginx_command = ":" # noop for nginx
+    # since the djl container comes up immediately and the nginx lb does not have to wait
+    # so the nginx command is a noop
+    nginx_command = None
     return services, per_container_info_list, nginx_command

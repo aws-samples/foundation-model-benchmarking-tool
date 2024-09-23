@@ -215,7 +215,7 @@ def _create_triton_service_neuron(model_id: str,
     except Exception as e:
         logger.error(f"Error occurred while creating configuration files for triton: {e}")
         services, per_container_info_list = None, None
-    nginx_command = ":" # noop for nginx
+    nginx_command = None
     return services, per_container_info_list, nginx_command
 
 

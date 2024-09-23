@@ -121,7 +121,7 @@ def run_notebooks(config_file: str) -> None:
         else:
             logging.info(f"Skipping {step} as it is not marked for execution")
 
-    logger.info(f"FMBench has completed the benchmarking process. Check S3 bucket \"{config['aws']['bucket']}\" for results")
+    logger.info(f"FMBench has completed the benchmarking process. Check the \"results-*\" folder for results")
 
 
 # main function to run all of the fmbench process through a single command via this python package

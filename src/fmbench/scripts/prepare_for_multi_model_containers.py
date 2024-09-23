@@ -130,7 +130,7 @@ def _create_config_files(model_id: str,
                                                                     devices_per_model, 
                                                                     image, 
                                                                     user, 
-                                                                    shm_size, 
+                                                                    shm_size,
                                                                     env, 
                                                                     base_port,
                                                                     accelerator,
@@ -191,12 +191,12 @@ http {{
     }}
     server {{
         listen 80;
-        location / {{from fmbench.scripts.inference_containers import (djl, vllm, triton)
+        location / {{
             proxy_pass http://fmcluster;
         }}
     }}
 }}
-            """
+"""
         else:
             nginx_config = None
     except Exception as e:

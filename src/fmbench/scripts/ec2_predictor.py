@@ -47,8 +47,7 @@ class EC2Predictor(FMBenchPredictor):
         prompt: str = payload['inputs']
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload['inputs'])
-        try:
-            st = time.perf_counter()
+        try:            
             split_input_and_inference_params: Optional[bool] = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
@@ -59,6 +58,7 @@ class EC2Predictor(FMBenchPredictor):
             # is given to you as you deploy a model on EC2 using the DJL serving stack
             if container_type == constants.CONTAINER_TYPE_DJL:
                 payload = payload | dict(parameters=self._inference_spec["parameters"])
+                st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload)
                 # record the latency for the response generated
                 latency = time.perf_counter() - st
@@ -72,6 +72,7 @@ class EC2Predictor(FMBenchPredictor):
                     triton_payload = dict(text_input=payload["inputs"]) | self._inference_spec["parameters"]
 
                 logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {triton_payload}")
+                st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=triton_payload)
                 # record the latency for the response generated
                 latency = time.perf_counter() - st
@@ -85,6 +86,7 @@ class EC2Predictor(FMBenchPredictor):
                 payload2 = copy.deepcopy(payload)
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
+                st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload2)
                 # record the latency for the response generated
                 latency = time.perf_counter() - st

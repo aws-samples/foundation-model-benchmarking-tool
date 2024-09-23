@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-8b-g5.12xl-tp=2-mc=max=ec2"      
+  name: "llama3-8b-g5.12xl-tp=2-mc=max-triton-ec2"      
   model_name: "Meta-Llama-3-8B-Instruct"
   
 # AWS and SageMaker settings
@@ -87,7 +87,8 @@ datasets:
   prompt_template_keys:
   - input
   - context
-  
+  ground_truth_col_key: answers
+  question_col_key: input
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -114,16 +115,8 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
-  - language: en
-    min_length_in_tokens: 1
-    max_length_in_tokens: 924
-    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -147,8 +140,11 @@ pricing: pricing.yml
 inference_parameters: 
   ec2_djl:
     temperature: 0.1
+    do_sample: yes
+    top_p: 0.92
+    top_k: 120  
     bad_words: ""
-    stop_words: ""
+    stop_words: "<|eot_id|>"
     pad_id: 2
     end_id: 2
     max_tokens: 100
@@ -198,6 +194,7 @@ experiments:
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 2
       shm_size: 12g
+      batch_size: 256
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties:
