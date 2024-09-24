@@ -117,7 +117,13 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
     elif container_type == constants.CONTAINER_TYPE_TRITON:
-        data = {"text_input": "tell me a story of the little red riding hood", "max_tokens": 50}
+        if is_neuron_instance:
+            data = {
+                    "text_input": "tell me a story of the little red riding hood",
+                    "sampling_parameters": json.dumps({"top_k": 50, "sequence_length": 2048})
+                }
+        else:
+            data = {"text_input": "tell me a story of the little red riding hood", "max_tokens": 50}
     headers = {"content-type": "application/json"}
     container_check_timeout = 60
     logger.info(f"going to check every {container_check_timeout}s for the inference endpoint to be up...")

@@ -5,6 +5,7 @@
 
 CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
 CONFIG_FILE_PATH=src/fmbench/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml
+#src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton.yml
 #config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml
 #config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml
 #src/fmbench/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml
