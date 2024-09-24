@@ -142,15 +142,8 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_djl:
-    temperature: 0.1
-    do_sample: yes
-    top_p: 0.92
-    top_k: 120  
-    bad_words: ""
-    stop_words: "<|eot_id|>"
-    pad_id: 2
-    end_id: 2
-    max_tokens: 100
+    top_k: 50  
+    max_tokens: 4096
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
