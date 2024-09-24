@@ -37,7 +37,6 @@ MODEL_FOLDER=/opt/tritonserver/inflight_batcher_llm
 MAX_BATCH_SIZE=$BATCH_SIZE
 INSTANCE_COUNT=1
 MAX_QUEUE_DELAY_MS=10000
-#10000
 TRITON_BACKEND=tensorrtllm
 FILL_TEMPLATE_SCRIPT=/tensorrtllm_backend/tools/fill_template.py
 echo "going to run a whole bunch of pre and post processing commands"

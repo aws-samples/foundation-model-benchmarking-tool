@@ -194,7 +194,7 @@ experiments:
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 2
       shm_size: 12g
-      batch_size: 256
+      batch_size: 64
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties:
