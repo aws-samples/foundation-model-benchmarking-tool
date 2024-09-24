@@ -120,7 +120,7 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
         if is_neuron_instance:
             data = {
                     "text_input": "tell me a story of the little red riding hood",
-                    "sampling_parameters": json.dumps({"top_k": 50, "sequence_length": 2048})
+                    "sampling_parameters": json.dumps({"top_k": 50})
                 }
         else:
             data = {"text_input": "tell me a story of the little red riding hood", "max_tokens": 50}

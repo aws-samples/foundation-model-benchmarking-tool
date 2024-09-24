@@ -1,11 +1,6 @@
 {
   "model": "$HF_MODEL_ID",
-  "tokenizer": "$HF_MODEL_ID",
-  "tp_degree": "$TP_DEGREE",
-  "amp": "f16",
-  "n_positions": "$N_POSITIONS",
-  "batch_size": "$BATCH_SIZE",
-  "neuron_config": {
-    "on_device_embedding": "$NEURON_CONFIG"
-  }
+  "disable_log_requests": true,
+  "tensor_parallel_size": "$TP_DEGREE",
+  "use_v2_block_manager": true
 }

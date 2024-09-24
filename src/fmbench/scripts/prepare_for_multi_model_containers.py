@@ -230,9 +230,10 @@ def prepare_docker_compose_yml(model_name: str,
     batch_size: int = inference_params.get('batch_size', 4)
     n_positions: int = inference_params.get('n_positions', 8192)
     # this is specific to the triton container
-    max_new_tokens: int = inference_params.get('max_new_tokens', 100)
-    context_len: int = inference_params.get('context_len', 8192)    
-    inference_parameters: Dict = inference_params.get('parameters', None)
+    vllm_model_params: Optional[Dict] = inference_params.get('vllm_model_params', dict(max_num_seqs=4, 
+                                                                                   dtype="float16", 
+                                                                                   max_model_len=8192,
+                                                                                   block_size=8192))
 
     # first check if this is an NVIDIA instance or a AWS Chips instance    
     accelerator = ic_utils.get_accelerator_type()
@@ -254,11 +255,7 @@ def prepare_docker_compose_yml(model_name: str,
         triton.handle_triton_serving_properties_and_inf_params(triton_content, 
                                                                tp_degree, 
                                                                batch_size, 
-                                                               n_positions, 
-                                                               on_device_embedding_parameters,
-                                                               max_new_tokens,
-                                                               context_len,
-                                                               inference_parameters, 
+                                                               vllm_model_params,
                                                                model_id)
 
     # create the docker compose and nginx.conf file in the top level

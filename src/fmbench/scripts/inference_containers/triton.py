@@ -60,19 +60,14 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     """
     return script
 
-def handle_triton_serving_properties_and_inf_params(triton_dir: str, 
-                                                    tp_degree: int, 
-                                                    batch_size: int, 
-                                                    n_positions: int,
-                                                    on_device_embedding_parameters: dict,
-                                                    max_new_tokens: int,
-                                                    context_len: int,
-                                                    inference_parameters: Dict, 
+def handle_triton_serving_properties_and_inf_params(triton_dir: str,
+                                                    tp_degree: int,
+                                                    batch_size: int,
+                                                    model_json_params: Dict,
                                                     hf_model_id: str):
     """
-    Substitutes parameters within the triton model repository files: config.pbtxt, model.json, model.py and substitutes the batch size, 
-    tensor parallel degree, hf mdoel id, and n positions from the configuration file into those files before the model repository is prepared 
-    within the container.
+    Substitutes parameters within the triton model repository files for the vllm backend: config.pbtxt, model.json and substitutes the batch size, 
+    hf mdoel id from the configuration file into those files before the model repository is prepared within the container.
     """
     try:
         # iterate through each of the file in the triton directory
@@ -89,23 +84,15 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     # Replace placeholders in model.json
                     # this includes TP degree, batch size, 
                     # and HF model id
-                    content["tp_degree"] = tp_degree
-                    content["batch_size"] = batch_size
+                    content["tensor_parallel_size"] = tp_degree
                     content['model'] = hf_model_id
-                    content['tokenizer'] = hf_model_id
-                    content['n_positions'] = n_positions
-                    # If neuron config is in the model.json, then replace with what is given
-                    # in the config file, else go with default. Default values are: 
-                    # "on_device_embedding": {"max_length": 8192, "top_k": 50, "do_sample": true}
-                    if 'neuron_config' in content:
-                        content['neuron_config']['on_device_embedding'] = on_device_embedding_parameters
-                        logger.info(f"Updated neuron_config['on_device_embedding'] with values from inference_parameters: {on_device_embedding_parameters}")
-                    else:
-                        logger.info("neuron_config not found in inference_spec; leaving on_device_embedding as is")
+                    # update the model.json to contain additional variables, such as
+                    # max_num_seqs, max_model_len, batch_size and more
+                    content.update(model_json_params)
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
-                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, batch_size={batch_size}, and inference_parameters.")
-
+                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, model_json_params={model_json_params}")
+                    
                 # upate the config.pbtxt with the batch size parameter fetched from the configuration file
                 elif file == "config.pbtxt":
                     with open(file_path, "r") as f:
@@ -114,23 +101,12 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
                     with open(file_path, "w") as f:
                         f.write(content)
                     logger.info(f"Updated {file_path} with batch_size={batch_size}.")
-                
-                # update the model.py file with the model context length and the max new tokens
-                # that is passed within the model container
-                elif file == "model.py":
-                    with open(file_path, "r") as f:
-                        content = f.read()
-                    content = content.replace("{MODEL_MAX_LEN}", str(context_len))
-                    content = content.replace("{MAX_NEW_TOKENS}", str(max_new_tokens))
-                    with open(file_path, "w") as f:
-                        f.write(content)
-                        logger.info(f"Updated {file_path} with context_len={context_len} and max_new_tokens={max_new_tokens}.")
                 else:
                     # If there are files within the triton folder that do not need
                     # to have values subsituted within it, then call it out.
                     logger.info(f"No substitutions needed for {file_path}")
     except Exception as e:
-        raise Exception(f"Error occurred while preparing files for the triton model container: {e}")
+        raise Exception(f"Error occurred while preparing files for the triton model container with vllm backend: {e}")
 
 
 def _create_triton_service_neuron(model_id: str, 
