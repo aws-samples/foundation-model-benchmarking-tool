@@ -120,10 +120,10 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
     ```{.bash}
         # curl the docker file for triton
-        curl -o ./Dockerfile_triton https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/192-triton-itegration/src/fmbench/scripts/triton/Dockerfile_triton
+        curl -o ./Dockerfile_triton https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/Dockerfile_triton
 
         # curl the script that builds and pushes the triton image locally
-        curl -o build_and_push_triton.sh https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/192-triton-itegration/src/fmbench/scripts/triton/build_and_push_triton.sh
+        curl -o build_and_push_triton.sh https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/build_and_push_triton.sh
 
         # Make the triton build and push script executable, and run it
         chmod +x build_and_push_triton.sh
@@ -146,7 +146,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
-    fmbench --config-file <tmp/path/to/be/added> --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-custom-py-backend.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and and do a `tail` on `fmbench.log` to see a live log of the run.

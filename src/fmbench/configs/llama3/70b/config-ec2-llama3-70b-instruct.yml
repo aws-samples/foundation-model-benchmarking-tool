@@ -184,6 +184,16 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+      # how many copies of the model, 1, 2,..max
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
+      model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 8
+      shm_size: 12g
+      model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     ec2:
       # The following line specifies the runtime and GPU settings for the instance
@@ -196,6 +206,7 @@ experiments:
       model_loading_timeout: 7200
     serving.properties: |
       engine=MPI
+      option.tensor_parallel_degree=8
       option.max_rolling_batch_size=256
       option.model_id=meta-llama/Meta-Llama-3-70B-Instruct
       option.rolling_batch=lmi-dist
