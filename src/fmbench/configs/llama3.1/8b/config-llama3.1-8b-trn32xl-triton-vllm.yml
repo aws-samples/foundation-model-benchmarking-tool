@@ -207,6 +207,10 @@ experiments:
       vllm_model_params:
         max_num_seqs: 4
         dtype: "float16"
+        # The max_model_len and block_size arguments are required to be same as
+        # max sequence length when targeting neuron device.
+        # Currently, this is a known limitation in continuous batching support
+        # in transformers-neuronx. View the latest vllm documentation: https://vllm.readthedocs.io/_/downloads/en/stable/pdf/
         max_model_len: 8192
         block_size: 8192
     # modify the serving properties to match your model and requirements
@@ -227,11 +231,16 @@ experiments:
     - 2
     - 3
     - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      NEURON_CC_FLAGS: -O3
 
 report:
   latency_budget: 2

@@ -20,7 +20,7 @@ cd $GIT_CLONE_DIR
 git checkout main
 git fetch origin 5b734fb7edfdf3f8a836a3ddee81eba506230fdd
 git reset --hard 5b734fb7edfdf3f8a836a3ddee81eba506230fdd
-git apply --ignore-whitespace /scripts/vllm-neuron-issue-1.patch
+git apply --ignore-whitespace /triton/vllm-neuron-issue-1.patch
 
 mkdir -p $LOG_ROOT
 OUTPUT_LOG="$LOG_ROOT/triton_server.log"
