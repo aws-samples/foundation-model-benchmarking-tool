@@ -1,0 +1,120 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'CloudFormation template for FMBench set up on an EC2 instance'
+
+Parameters:
+     KeyPairName:
+       Type: AWS::EC2::KeyPair::KeyName
+       Description: Name of an existing EC2 KeyPair to enable SSH access to the instance
+
+# The Deep learning pytorch AMI is different for each of the region
+Mappings:
+  RegionMap:
+    us-west-2:
+      AMI: ami-05075044f63a733ad
+    us-east-1:
+      AMI: ami-05c3e698bd0cffe7e
+
+Resources:
+  FMBenchSecurityGroup:
+   Type: 'AWS::EC2::SecurityGroup'
+   Properties:
+    GroupDescription: Enable SSH access via port 22
+    SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+  FMBenchKeyPair:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: fmbench-key-pair
+  FMBenchEC2Role:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: !Sub 'FMBenchEC2Role-${AWS::Region}'
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+          - Effect: Allow
+            Principal:
+              Service: sagemaker.amazonaws.com
+            Action: 'sts:AssumeRole'
+          - Effect: Allow
+            Principal:
+              Service: bedrock.amazonaws.com
+            Action: 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSageMakerFullAccess
+        - arn:aws:iam::aws:policy/AmazonBedrockFullAccess
+
+  FMBenchInstanceProfile:
+    Type: 'AWS::IAM::InstanceProfile'
+    Properties:
+      Path: "/"
+      Roles:
+        - !Ref FMBenchEC2Role
+
+  FMBenchInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap 
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - AMI  # AMI ID for "Deep Learning OSS Nvidia Driver AMI GPU PyTorch"
+      InstanceType: g5.12xlarge
+      KeyName: !Ref KeyPairName
+      IamInstanceProfile: !Ref FMBenchInstanceProfile
+      SecurityGroupIds:
+        - !Ref FMBenchSecurityGroup
+      Tags: 
+        - Key: Name
+          Value: FMBenchInstance
+        - Key: fmbench-version
+          Value: "1.0"
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeSize: 100
+            VolumeType: gp2
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          apt-get update
+          apt-get install -y wget
+          wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+          bash Miniconda3-latest-Linux-x86_64.sh -b -p /home/ubuntu/miniconda3
+          rm -f Miniconda3-latest-Linux-x86_64.sh
+          echo 'export PATH="/home/ubuntu/miniconda3/bin:$PATH"' >> /home/ubuntu/.bashrc
+          export PATH="/home/ubuntu/miniconda3/bin:$PATH"
+          conda init bash
+
+          apt-get install --reinstall -y docker.io
+          apt-get install -y docker-compose
+          docker compose version
+
+          conda create --name fmbench_python311 -y python=3.11 ipykernel
+          source activate fmbench_python311
+          pip install -U fmbench
+
+          curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- /tmp
+
+Outputs:
+  InstanceId:
+    Description: InstanceId of the newly created EC2 instance
+    Value: !Ref FMBenchInstance
+  PublicDNS:
+    Description: Public DNSName of the newly created EC2 instance
+    Value: !GetAtt FMBenchInstance.PublicDnsName
+  PublicIP:
+    Description: Public IP address of the newly created EC2 instance
+    Value: !GetAtt FMBenchInstance.PublicIp
+  KeyPairName:
+    Description: Name of the created key pair
+    Value: !Ref FMBenchKeyPair
+  KeyPairFingerprint:
+    Description: Fingerprint of the created key pair
+    Value: !GetAtt FMBenchKeyPair.KeyFingerprint

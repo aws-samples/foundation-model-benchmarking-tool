@@ -1,0 +1,6 @@
+{
+  "model": "$HF_MODEL_ID",
+  "disable_log_requests": true,
+  "tensor_parallel_size": "$TP_DEGREE",
+  "use_v2_block_manager": true
+}
