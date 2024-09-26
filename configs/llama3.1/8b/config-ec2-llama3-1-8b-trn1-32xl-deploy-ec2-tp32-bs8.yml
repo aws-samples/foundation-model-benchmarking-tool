@@ -188,6 +188,16 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+      # how many copies of the model, 1, 2,..max
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
+      model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 32
+      shm_size: 12g
+      model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
@@ -219,6 +229,7 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
+      NEURON_CC_FLAGS: -O3
 
 report:
   latency_budget: 2

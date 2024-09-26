@@ -182,12 +182,22 @@ experiments:
       # The following line specifies the runtime and Inferentia settings for the instance
       # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
       # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: -u djl --device /dev/neuron0  --device /dev/neuron3  --device /dev/neuron2  --device /dev/neuron4  --device /dev/neuron5  --device /dev/neuron1 
+      gpu_or_neuron_setting: -u djl --device /dev/neuron0  --device /dev/neuron1  --device /dev/neuron2  --device /dev/neuron3  --device /dev/neuron4  --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+      # how many copies of the model, 1, 2,..max
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
+      model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 8
+      shm_size: 12g
+      model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
@@ -200,7 +210,6 @@ experiments:
       option.max_rolling_batch_size=8
       option.dtype=fp16
       option.model_loading_timeout=2400
-      option.neuron_optimize_level=3
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -222,6 +231,7 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
+      NEURON_CC_FLAGS: -O3
 
 report:
   latency_budget: 2

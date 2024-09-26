@@ -236,6 +236,7 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
+      NEURON_CC_FLAGS: -O3
 
 report:
   latency_budget: 3
