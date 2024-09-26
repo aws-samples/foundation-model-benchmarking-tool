@@ -96,7 +96,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 **_As of 2024-09-26 this has been tested on a `trn1.32xlarge` instance_**
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download). (Note: Configure the storage of your EC2 instance to **500GB** for this test)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download). (Note: **_Configure the storage of your EC2 instance to 500GB for this test_**)
 
     ```{.bash}
     # Install Docker and Git using the YUM package manager
