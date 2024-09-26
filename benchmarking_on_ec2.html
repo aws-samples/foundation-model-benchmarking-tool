@@ -1458,11 +1458,13 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </li>
 </ol>
 <h2 id="benchmarking-on-an-instance-type-with-nvidia-gpu-and-the-triton-inference-server">Benchmarking on an instance type with NVIDIA GPU and the Triton inference server<a class="headerlink" href="#benchmarking-on-an-instance-type-with-nvidia-gpu-and-the-triton-inference-server" title="Permanent link">&para;</a></h2>
+<ol>
+<li>
 <p>No special procedure needed, just follow steps in the <a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips</a> section and then run <code>FMBench</code> with a config file for Triton. For example for benchmarking <code>Llama3-8b</code> model on a <code>g5.12xlarge</code> use the following command (after completing the steps for setting up <code>FMBench</code>).</p>
-<div class="language-text highlight"><pre><span></span><code>```{.bash}
-fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp &gt; fmbench.log 2&gt;&amp;1
-```
-</code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
+</li>
+</ol>
 <h2 id="benchmarking-on-an-instance-type-with-aws-chips-and-the-triton-inference-server">Benchmarking on an instance type with AWS Chips and the Triton inference server<a class="headerlink" href="#benchmarking-on-an-instance-type-with-aws-chips-and-the-triton-inference-server" title="Permanent link">&para;</a></h2>
 <p><strong><em>As of 2024-09-26 this has been tested on a <code>trn1.32xlarge</code> instance</em></strong></p>
 <ol>
