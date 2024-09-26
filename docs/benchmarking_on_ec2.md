@@ -358,3 +358,4 @@ No special procedure needed, just follow steps in the [Benchmarking on an instan
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
+
