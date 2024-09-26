@@ -8,6 +8,7 @@
 # CloudFormation template would error out.
 BUCKET=aws-blogs-artifacts-public
 CONFIGS_ONLY=configs
+list_of_files_to_be_uploaded=()
 for i in `cat manifest.txt | grep $CONFIGS_ONLY`
 do
   wget -q --spider https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/$i --no-check-certificate
@@ -29,10 +30,19 @@ do
         : # noop
     else
         echo "contents of the $REMOTE_FILE and the local $LOCAL_FILE are different, needs to be updated manually"
+        list_of_files_to_be_uploaded+=($LOCAL_FILE)
     fi
     rm -f $TEMP_FILE
 
   else
     echo $i does not exist in the ${BUCKET}, copy it there manually
+    list_of_files_to_be_uploaded+=($i)
   fi
 done
+
+# print a full list of all files to be uploaded
+echo "here is a list of all the files to be uploaded"
+for item in "${list_of_files_to_be_uploaded[@]}"; do
+  echo "$item"
+done
+

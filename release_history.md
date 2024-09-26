@@ -1,6 +1,10 @@
+## 2.0.4
+
+1. Support for AMD CPU based instances such as `m7a`.
+
 ## 2.0.3
 
-1. Support for a EFA directory for benchmarking on EC2.
+1. Support for a EFS directory for benchmarking on EC2.
 
 ## 2.0.2
 

@@ -1,5 +1,10 @@
 # Releases
 
+## 2.0.7
+
+1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
+1. Misc. bug fixes.
+
 ## 2.0.6
 
 1. Run multiple model copies with the DJL serving container and an Nginx load balancer on Amazon EC2.
