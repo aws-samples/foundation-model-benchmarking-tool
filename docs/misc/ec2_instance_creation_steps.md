@@ -14,7 +14,7 @@ Follow the steps below to create an EC2 instance for hosting a model in an LMI.
 1. Click "Launch Instances":
    ![](../img/ec2connect4.png)
 
-1. Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. Select the one that says “Deep Learning OSS Nvidia Driver AMI GPU PyTorch”. **Your version number might be different**. 
+1. Type in a name for your instance (recommended to include your alias in the name), and then scroll down. Search for ‘deep learning ami’ in the box. Select the one that says **Deep Learning OSS Nvidia Driver AMI GPU PyTorch** for a GPU instance type, select **Deep Learning AMI Neuron (Ubuntu 22.04)** for an Inferential/Trainium instance type. **Your version number might be different**. 
     ![](../img/ec2connect5a.png)
 
 1. Name your instance _FMBenchInstance_.

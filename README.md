@@ -81,7 +81,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
-## 2.0.7
+## 2.0.8
 
 1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
 1. Misc. bug fixes.

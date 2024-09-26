@@ -24,7 +24,7 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`.
 
     ```{.bash}
     wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
