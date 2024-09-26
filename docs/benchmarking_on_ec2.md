@@ -86,7 +86,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 ## Benchmarking on an instance type with NVIDIA GPU and the Triton inference server
 
-No special procedure needed, just follow steps in the [Benchmarking on an instance type with NVIDIA GPUs or AWS Chips](#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips) section and then run `FMBench` with a config file for Triton. For example for benchmarking `Llama3-8b` model on a `g5.12xlarge` use the following command (after completing the steps for setting up `FMBench`).
+1. No special procedure needed, just follow steps in the [Benchmarking on an instance type with NVIDIA GPUs or AWS Chips](#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips) section and then run `FMBench` with a config file for Triton. For example for benchmarking `Llama3-8b` model on a `g5.12xlarge` use the following command (after completing the steps for setting up `FMBench`).
 
     ```{.bash}
     fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
