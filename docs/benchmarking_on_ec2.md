@@ -96,7 +96,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 **_As of 2024-09-26 this has been tested on a `trn1.32xlarge` instance_**
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download). (Note: **_Configure the storage of your EC2 instance to 500GB for this test_**)
 
     ```{.bash}
     # Install Docker and Git using the YUM package manager
@@ -156,7 +156,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
-    fmbench --config-file tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and and do a `tail` on `fmbench.log` to see a live log of the run.
