@@ -1404,7 +1404,7 @@
 <h2 id="benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips<a class="headerlink" href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
-<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
+<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
@@ -1469,7 +1469,7 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <p><strong><em>As of 2024-09-26 this has been tested on a <code>trn1.32xlarge</code> instance</em></strong></p>
 <ol>
 <li>
-<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
+<p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a>. (Note: <strong><em>Configure the storage of your EC2 instance to 500GB for this test</em></strong>)</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
@@ -1522,7 +1522,7 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </li>
 <li>
 <p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 <li>
