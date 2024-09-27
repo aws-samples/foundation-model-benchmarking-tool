@@ -35,7 +35,8 @@ def _create_config_files(model_id: str,
                         env: List, 
                         accelerator: constants.ACCELERATOR_TYPE,
                         dir_path: str,
-                        listen_port: int) -> Tuple:
+                        listen_port: int, 
+                        backend: constants.BACKEND) -> Tuple:
     """
     Creates the docker compose yml file, nginx config file, these are common to all containers
     and then creates individual config.properties files
@@ -135,7 +136,8 @@ def _create_config_files(model_id: str,
                                                                     base_port,
                                                                     accelerator,
                                                                     tp_degree,
-                                                                    batch_size)
+                                                                    batch_size, 
+                                                                    backend)
         else:
             logger.info(f"Container type is {user}. Preparing the service for docker-compose")
             services, per_container_info_list, nginx_command = djl.create_djl_service(model_id, 
@@ -229,11 +231,20 @@ def prepare_docker_compose_yml(model_name: str,
     tp_degree: int = inference_params.get('tp_degree', None)
     batch_size: int = inference_params.get('batch_size', 4)
     n_positions: int = inference_params.get('n_positions', 8192)
+    backend: Optional[str] = inference_params.get('backend', None)
+    max_model_len: Optional[int] = inference_params.get('max_model_len', 8192)
+    triton_content: Optional[str] = None
+    if backend is not None:
+        if backend == constants.BACKEND.VLLM_BACKEND:
+            triton_content = constants.TRITON_CONTENT_DIR_NAME_VLLM
+        elif backend == constants.BACKEND.DJL_BACKEND:
+            triton_content = constants.TRITON_CONTENT_DIR_NAME_DJL
+        else:
+            logger.error(f"No backend={backend} provided")
+    else:
+        logger.error(f"No backend={backend} provided")
     # this is specific to the triton container
-    vllm_model_params: Optional[Dict] = inference_params.get('vllm_model_params', dict(max_num_seqs=4, 
-                                                                                   dtype="float16", 
-                                                                                   max_model_len=8192,
-                                                                                   block_size=8192))
+    model_params: Optional[Dict] = inference_params.get('model_params', None)
 
     # first check if this is an NVIDIA instance or a AWS Chips instance    
     accelerator = ic_utils.get_accelerator_type()
@@ -246,17 +257,15 @@ def prepare_docker_compose_yml(model_name: str,
     # special handling for Triton && Neuron
     if user == constants.CONTAINER_TYPE_TRITON and accelerator == constants.ACCELERATOR_TYPE.NEURON:
         logger.info(f"running Triton container on neuron, creating specific config files for this combination")
-        on_device_embedding_parameters: dict = inference_params.get('neuron_config', dict(max_length=8192, 
-                                                                                   top_k=50, 
-                                                                                   do_sample=True))
         current_dir: str = os.path.dirname(os.path.realpath(__file__))
-        triton_content: str = os.path.join(current_dir, "triton")
+        triton_content: str = os.path.join(current_dir, triton_content)
         # handles custom tensor pd, batch size into the model repository files
         triton.handle_triton_serving_properties_and_inf_params(triton_content, 
                                                                tp_degree, 
-                                                               batch_size, 
-                                                               vllm_model_params,
-                                                               model_id)
+                                                               model_params,
+                                                               max_model_len,
+                                                               model_id,
+                                                               backend)
 
     # create the docker compose and nginx.conf file in the top level
     # directory path for this model
@@ -273,7 +282,8 @@ def prepare_docker_compose_yml(model_name: str,
                                                                                  env_as_list,
                                                                                  accelerator,
                                                                                  dir_path,
-                                                                                 listen_port)
+                                                                                 listen_port, 
+                                                                                 backend)
 
     yaml.Dumper.ignore_aliases = lambda self, data: True
     docker_compose_yaml = yaml.dump(docker_compose)
