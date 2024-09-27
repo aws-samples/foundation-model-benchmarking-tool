@@ -63,6 +63,7 @@ configs/llama3/70b/config-llama3-70b-instruct-g5-48xl.yml
 configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml
 configs/llama3/70b/config-llama3-70b-instruct-p4d.yml
 configs/llama3/8b/config-bedrock.yml
+configs/llama3/8b/config-llama3-8b-trn1-32xl-tp16-bs-4-ec2.yml
 configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml
 configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml
 configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml
