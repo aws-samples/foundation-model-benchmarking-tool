@@ -86,12 +86,27 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 ## Benchmarking on an instance type with NVIDIA GPU and the Triton inference server
 
-1. No special procedure needed, just follow steps in the [Benchmarking on an instance type with NVIDIA GPUs or AWS Chips](#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips) section and then run `FMBench` with a config file for Triton. For example for benchmarking `Llama3-8b` model on a `g5.12xlarge` use the following command (after completing the steps for setting up `FMBench`).
+1. Follow steps in the [Benchmarking on an instance type with NVIDIA GPUs or AWS Chips](#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips) section to install `FMBench` but do not run any benchmarking tests yet.
+
+1. Once `FMBench` is installed then install the following additional dependencies for Triton.
+
+    ```{.bash}
+    cd ~
+    git clone https://github.com/triton-inference-server/tensorrtllm_backend.git  --branch v0.12.0
+    # Update the submodules
+    cd tensorrtllm_backend
+    # Install git-lfs if needed
+    apt-get update && apt-get install git-lfs -y --no-install-recommends
+    git lfs install
+    git submodule update --init --recursive
+    ```
+
+1. Now you are ready to run benchmarking with Triton. For example for benchmarking `Llama3-8b` model on a `g5.12xlarge` use the following command:
 
     ```{.bash}
     fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
     ```
-    
+
 ## Benchmarking on an instance type with AWS Chips and the Triton inference server
 
 **_As of 2024-09-26 this has been tested on a `trn1.32xlarge` instance_**
