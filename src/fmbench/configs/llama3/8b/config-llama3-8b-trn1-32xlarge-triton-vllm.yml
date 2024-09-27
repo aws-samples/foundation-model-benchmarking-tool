@@ -184,6 +184,8 @@ experiments:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
       container_type: triton
+      # mention the backend type, if any
+      backend: vllm
       # how many copies of the model, 1, 2,..max
       # set to 1 in the code if not configured,
       # max: FMBench figures out the max number of model containers to be run
@@ -197,14 +199,13 @@ experiments:
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 8
-      batch_size: 0
       shm_size: 12g
       model_loading_timeout: 2400
       # The model.json parameters are replaced within the model.json file
       # for the triton on vllm option. The model.json already contains
       # the tp degree and model id from above in this config file. This is a dictionary
       # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
-      vllm_model_params:
+      model_params:
         max_num_seqs: 4
         dtype: "float16"
         # The max_model_len and block_size arguments are required to be same as
