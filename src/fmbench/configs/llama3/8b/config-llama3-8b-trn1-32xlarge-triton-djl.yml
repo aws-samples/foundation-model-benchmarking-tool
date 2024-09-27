@@ -208,7 +208,7 @@ experiments:
       # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
       model_params:
         amp: "f16"
-        n_positions: 8192
+        n_positions: 4096
         model_loading_timeout: 2400
         model_loader: "tnx"
         rolling_batch: "auto"
@@ -216,6 +216,9 @@ experiments:
         max_rolling_batch_size: 8
         output_formatter: "json"
         trust_remote_code: true
+        attention_layout: 'BSH'
+        collectives_layout: 'BSH'
+        context_length_estimate: 3072, 3584, 4096
     # modify the serving properties to match your model and requirements
     serving.properties:
 
@@ -232,14 +235,11 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    - 3
     - 4
-    - 5
-    - 6
-    - 7
     - 8
-    - 9
     - 10
+    - 12
+    - 14
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
