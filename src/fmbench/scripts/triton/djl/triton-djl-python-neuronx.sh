@@ -37,7 +37,7 @@ OUTPUT_LOG="$LOG_ROOT/triton-server.log"
 rm -rf $MODEL_REPO
 mkdir -p $MODEL_REPO
 VERSION=1
-MODEL_NAME=llama3-8b-instruct
+MODEL_NAME=$MODEL_NAME
 mkdir -p $MODEL_REPO/$MODEL_NAME/$VERSION
 cp /triton/model.py $MODEL_REPO/$MODEL_NAME/$VERSION/model.py
 cp /triton/model.json $MODEL_REPO/$MODEL_NAME/$VERSION/model.json

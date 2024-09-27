@@ -85,8 +85,8 @@ def _handle_djl_params(triton_dir: str,
                     # Replace placeholders in model.json
                     # this includes TP degree, batch size, 
                     # and HF model id
-                    content["tensor_parallel_size"] = tp_degree
-                    content['model'] = hf_model_id
+                    content["tensor_parallel_degree"] = tp_degree
+                    content['model_id'] = hf_model_id
                     # update the model.json to contain additional variables, such as
                     # max_num_seqs, max_model_len, batch_size and more
                     content.update(model_json_params)
@@ -246,6 +246,7 @@ def _create_triton_service_neuron(model_id: str,
                     shutil.copytree(s, d, dirs_exist_ok=True)
             # Set execute permissions for the script. The triton volumes contain the model repostory that
             # are mapped into the container and used during deployment
+            # os.chmod((triton_instance_dir), 0o755)
             os.chmod(os.path.join(triton_instance_dir, os.path.basename(triton_inference_script)), 0o755)
             volumes = [f"{triton_instance_dir}:/scripts/triton:rw",
                        f"{triton_instance_dir}:/triton:rw"]
