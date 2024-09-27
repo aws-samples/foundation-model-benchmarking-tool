@@ -1460,8 +1460,23 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <h2 id="benchmarking-on-an-instance-type-with-nvidia-gpu-and-the-triton-inference-server">Benchmarking on an instance type with NVIDIA GPU and the Triton inference server<a class="headerlink" href="#benchmarking-on-an-instance-type-with-nvidia-gpu-and-the-triton-inference-server" title="Permanent link">&para;</a></h2>
 <ol>
 <li>
-<p>No special procedure needed, just follow steps in the <a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips</a> section and then run <code>FMBench</code> with a config file for Triton. For example for benchmarking <code>Llama3-8b</code> model on a <code>g5.12xlarge</code> use the following command (after completing the steps for setting up <code>FMBench</code>).</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<p>Follow steps in the <a href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips</a> section to install <code>FMBench</code> but do not run any benchmarking tests yet.</p>
+</li>
+<li>
+<p>Once <code>FMBench</code> is installed then install the following additional dependencies for Triton.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nb">cd</span><span class="w"> </span>~
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/triton-inference-server/tensorrtllm_backend.git<span class="w">  </span>--branch<span class="w"> </span>v0.12.0
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># Update the submodules</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="nb">cd</span><span class="w"> </span>tensorrtllm_backend
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># Install git-lfs if needed</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>apt-get<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>git-lfs<span class="w"> </span>-y<span class="w"> </span>--no-install-recommends
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>git<span class="w"> </span>lfs<span class="w"> </span>install
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>git<span class="w"> </span>submodule<span class="w"> </span>update<span class="w"> </span>--init<span class="w"> </span>--recursive
+</span></code></pre></div>
+</li>
+<li>
+<p>Now you are ready to run benchmarking with Triton. For example for benchmarking <code>Llama3-8b</code> model on a <code>g5.12xlarge</code> use the following command:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 </ol>
@@ -1470,64 +1485,64 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <ol>
 <li>
 <p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a>. (Note: <strong><em>Configure the storage of your EC2 instance to 500GB for this test</em></strong>)</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Start the Docker service</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Start the Docker service</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Setup the <code>fmbench_python311</code> conda environment.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Activate the newly created conda environment</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="c1"># Activate the newly created conda environment</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
 </span></code></pre></div>
 </li>
 <li>
 <p>First we need to build the required docker image for <code>triton</code>, and push it locally. To do this, curl the <code>Triton Dockerfile</code> and the script to build and push the triton image locally:</p>
-<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="w">    </span><span class="c1"># curl the docker file for triton</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>curl<span class="w"> </span>-o<span class="w"> </span>./Dockerfile_triton<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/Dockerfile_triton
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="c1"># curl the script that builds and pushes the triton image locally</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span>curl<span class="w"> </span>-o<span class="w"> </span>build_and_push_triton.sh<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/build_and_push_triton.sh
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="c1"># Make the triton build and push script executable, and run it</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span>chmod<span class="w"> </span>+x<span class="w"> </span>build_and_push_triton.sh
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span>./build_and_push_triton.sh
+<p><div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="w">    </span><span class="c1"># curl the docker file for triton</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span>curl<span class="w"> </span>-o<span class="w"> </span>./Dockerfile_triton<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/Dockerfile_triton
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="c1"># curl the script that builds and pushes the triton image locally</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span>curl<span class="w"> </span>-o<span class="w"> </span>build_and_push_triton.sh<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/build_and_push_triton.sh
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="c1"># Make the triton build and push script executable, and run it</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span>chmod<span class="w"> </span>+x<span class="w"> </span>build_and_push_triton.sh
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span>./build_and_push_triton.sh
 </span></code></pre></div>
    - Now wait until the docker image is saved locally and then follow the instructions below to start a benchmarking test.</p>
 </li>
 <li>
 <p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo. Replace <code>/tmp</code> in the command below with a different path if you want to store the config files and the <code>FMBench</code> generated data in a different directory.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
 </span></code></pre></div>
 </li>
 <li>
 <p>To download the model files from HuggingFace, create a <code>hf_token.txt</code> file in the <code>/tmp/fmbench-read/scripts/</code> directory containing the Hugging Face token you would like to use. In the command below replace the <code>hf_yourtokenstring</code> with your Hugging Face token.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
 </span></code></pre></div>
 </li>
 <li>
 <p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Open a new Terminal and and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
 </span></code></pre></div>
 </li>
 <li>
@@ -1539,30 +1554,30 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <ol>
 <li>
 <p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Start the Docker service</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
-</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
-</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
-</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Start the Docker service</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w">  </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Setup the <code>fmbench_python311</code> conda environment.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Activate the newly created conda environment</span>
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># Activate the newly created conda environment</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
 </span></code></pre></div>
 </li>
 <li>
@@ -1573,51 +1588,51 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </li>
 <li>
 <p>The container being build is for CPU only (GPU support might be added in future).</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Clone the vLLM project repository from GitHub</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/vllm-project/vllm.git
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># Change the directory to the cloned vLLM project</span>
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="nb">cd</span><span class="w"> </span>vllm
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="c1"># Build a Docker image using the provided Dockerfile for CPU, with a shared memory size of 4GB</span>
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>sudo<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cpu<span class="w"> </span>-t<span class="w"> </span>vllm-cpu-env<span class="w"> </span>--shm-size<span class="o">=</span>4g<span class="w"> </span>.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># Clone the vLLM project repository from GitHub</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/vllm-project/vllm.git
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="c1"># Change the directory to the cloned vLLM project</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nb">cd</span><span class="w"> </span>vllm
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="c1"># Build a Docker image using the provided Dockerfile for CPU, with a shared memory size of 4GB</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>sudo<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cpu<span class="w"> </span>-t<span class="w"> </span>vllm-cpu-env<span class="w"> </span>--shm-size<span class="o">=</span>4g<span class="w"> </span>.
 </span></code></pre></div>
 </li>
 </ol>
 </li>
 <li>
 <p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo. Replace <code>/tmp</code> in the command below with a different path if you want to store the config files and the <code>FMBench</code> generated data in a different directory.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
 </span></code></pre></div>
 </li>
 <li>
 <p>To download the model files from HuggingFace, create a <code>hf_token.txt</code> file in the <code>/tmp/fmbench-read/scripts/</code> directory containing the Hugging Face token you would like to use. In the command below replace the <code>hf_yourtokenstring</code> with your Hugging Face token.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
 </span></code></pre></div>
 </li>
 <li>
 <p>Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use <code>sudo</code> each time.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>newgrp<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>newgrp<span class="w"> </span>docker
 </span></code></pre></div>
 </li>
 <li>
 <p>Install <code>docker-compose</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nv">DOCKER_CONFIG</span><span class="o">=</span><span class="si">${</span><span class="nv">DOCKER_CONFIG</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.docker</span><span class="si">}</span>
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>sudo<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/docker/compose/releases/latest/download/docker-compose-<span class="k">$(</span>uname<span class="w"> </span>-s<span class="k">)</span>-<span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
-</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>docker<span class="w"> </span>compose<span class="w"> </span>version
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nv">DOCKER_CONFIG</span><span class="o">=</span><span class="si">${</span><span class="nv">DOCKER_CONFIG</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.docker</span><span class="si">}</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>sudo<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/docker/compose/releases/latest/download/docker-compose-<span class="k">$(</span>uname<span class="w"> </span>-s<span class="k">)</span>-<span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>docker<span class="w"> </span>compose<span class="w"> </span>version
 </span></code></pre></div>
 </li>
 <li>
 <p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Open a new Terminal and and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
 </span></code></pre></div>
 </li>
 <li>
@@ -1629,30 +1644,30 @@ command below. The config file for this example can be viewed <a href="src/fmben
 <ol>
 <li>
 <p>Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new <code>conda</code> environment for <code>FMBench</code>. See instructions for downloading anaconda <a href="https://www.anaconda.com/download">here</a></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
-</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
-</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># Start the Docker service</span>
-</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
-</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
-</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
-</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w"> </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
-</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
-</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
-</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Install Docker and Git using the YUM package manager</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>sudo<span class="w"> </span>yum<span class="w"> </span>install<span class="w"> </span>docker<span class="w"> </span>git<span class="w"> </span>-y
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Start the Docker service</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>sudo<span class="w"> </span>systemctl<span class="w"> </span>start<span class="w"> </span>docker
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="c1"># Download the Miniconda installer for Linux</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>wget<span class="w"> </span>https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>bash<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w"> </span>-b<span class="w"> </span><span class="c1"># Run the Miniconda installer in batch mode (no manual intervention)</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>rm<span class="w"> </span>-f<span class="w"> </span>Miniconda3-latest-Linux-x86_64.sh<span class="w">    </span><span class="c1"># Remove the installer script after installation</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>/home/<span class="nv">$USER</span>/miniconda3/bin/conda<span class="w"> </span>shell.bash<span class="w"> </span>hook<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Initialize conda for bash shell</span>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>conda<span class="w"> </span>init<span class="w">  </span><span class="c1"># Initialize conda, adding it to the shell</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Setup the <code>fmbench_python311</code> conda environment.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
-</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
-</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
-</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># Activate the newly created conda environment</span>
-</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
-</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>
-</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
-</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Create a new conda environment named &#39;fmbench_python311&#39; with Python 3.11 and ipykernel</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>conda<span class="w"> </span>create<span class="w"> </span>--name<span class="w"> </span>fmbench_python311<span class="w"> </span>-y<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.11<span class="w"> </span>ipykernel
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="c1"># Activate the newly created conda environment</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="nb">source</span><span class="w"> </span>activate<span class="w"> </span>fmbench_python311
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># Upgrade pip and install the fmbench package</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>pip<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>fmbench
 </span></code></pre></div>
 </li>
 <li>
@@ -1663,51 +1678,51 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </li>
 <li>
 <p>The container being build is for CPU only (GPU support might be added in future).</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Clone the vLLM project repository from GitHub</span>
-</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/vllm-project/vllm.git
-</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>
-</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="c1"># Change the directory to the cloned vLLM project</span>
-</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="nb">cd</span><span class="w"> </span>vllm
-</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
-</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># Build a Docker image using the provided Dockerfile for CPU, with a shared memory size of 12GB</span>
-</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>sudo<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cpu<span class="w"> </span>-t<span class="w"> </span>vllm-cpu-env<span class="w"> </span>--shm-size<span class="o">=</span>12g<span class="w"> </span>.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># Clone the vLLM project repository from GitHub</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/vllm-project/vllm.git
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="c1"># Change the directory to the cloned vLLM project</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="nb">cd</span><span class="w"> </span>vllm
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1"># Build a Docker image using the provided Dockerfile for CPU, with a shared memory size of 12GB</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>sudo<span class="w"> </span>docker<span class="w"> </span>build<span class="w"> </span>-f<span class="w"> </span>Dockerfile.cpu<span class="w"> </span>-t<span class="w"> </span>vllm-cpu-env<span class="w"> </span>--shm-size<span class="o">=</span>12g<span class="w"> </span>.
 </span></code></pre></div>
 </li>
 </ol>
 </li>
 <li>
 <p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo. Replace <code>/tmp</code> in the command below with a different path if you want to store the config files and the <code>FMBench</code> generated data in a different directory.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
 </span></code></pre></div>
 </li>
 <li>
 <p>To download the model files from HuggingFace, create a <code>hf_token.txt</code> file in the <code>/tmp/fmbench-read/scripts/</code> directory containing the Hugging Face token you would like to use. In the command below replace the <code>hf_yourtokenstring</code> with your Hugging Face token.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="nb">echo</span><span class="w"> </span>hf_yourtokenstring<span class="w"> </span>&gt;<span class="w"> </span>/tmp/fmbench-read/scripts/hf_token.txt
 </span></code></pre></div>
 </li>
 <li>
 <p>Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use <code>sudo</code> each time.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
-</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>newgrp<span class="w"> </span>docker
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>sudo<span class="w"> </span>usermod<span class="w"> </span>-a<span class="w"> </span>-G<span class="w"> </span>docker<span class="w"> </span><span class="nv">$USER</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>newgrp<span class="w"> </span>docker
 </span></code></pre></div>
 </li>
 <li>
 <p>Install <code>docker-compose</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="nv">DOCKER_CONFIG</span><span class="o">=</span><span class="si">${</span><span class="nv">DOCKER_CONFIG</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.docker</span><span class="si">}</span>
-</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins
-</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>sudo<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/docker/compose/releases/latest/download/docker-compose-<span class="k">$(</span>uname<span class="w"> </span>-s<span class="k">)</span>-<span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
-</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
-</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>docker<span class="w"> </span>compose<span class="w"> </span>version
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="nv">DOCKER_CONFIG</span><span class="o">=</span><span class="si">${</span><span class="nv">DOCKER_CONFIG</span><span class="k">:-</span><span class="nv">$HOME</span><span class="p">/.docker</span><span class="si">}</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>mkdir<span class="w"> </span>-p<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>sudo<span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/docker/compose/releases/latest/download/docker-compose-<span class="k">$(</span>uname<span class="w"> </span>-s<span class="k">)</span>-<span class="k">$(</span>uname<span class="w"> </span>-m<span class="k">)</span><span class="w"> </span>-o<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>sudo<span class="w"> </span>chmod<span class="w"> </span>+x<span class="w"> </span><span class="nv">$DOCKER_CONFIG</span>/cli-plugins/docker-compose
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>docker<span class="w"> </span>compose<span class="w"> </span>version
 </span></code></pre></div>
 </li>
 <li>
 <p>Run <code>FMBench</code> with a packaged or a custom config file. <strong><em>This step will also deploy the model on the EC2 instance</em></strong>. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
 </span></code></pre></div>
 </li>
 <li>
 <p>Open a new Terminal and and do a <code>tail</code> on <code>fmbench.log</code> to see a live log of the run.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>tail<span class="w"> </span>-f<span class="w"> </span>fmbench.log
 </span></code></pre></div>
 </li>
 <li>
