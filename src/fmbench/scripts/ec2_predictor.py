@@ -4,21 +4,30 @@ import copy
 import time
 import logging
 import requests
-import subprocess
 import pandas as pd
 from datetime import datetime
 from typing import Dict, Optional
 from fmbench.utils import count_tokens
+from fmbench.scripts.ec2_metrics import collect_ec2_metrics, stop_collect
+from fmbench.scripts.neuron_metrics import start_collection, stop_collection, get_collected_data, reset_collection
 from fmbench.scripts import constants
-from fmbench.scripts.inference_containers.utils import get_accelerator_type
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
+from fmbench.scripts.constants import ACCELERATOR_TYPE, IS_NEURON_INSTANCE
+                                           
                                             
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+from enum import Enum
+
+class CONTAINER_TYPE(str, Enum):
+    DJL = 'djl'
+    VLLM = 'vllm'
+
 class EC2Predictor(FMBenchPredictor):
+    _metrics_collection_started = False
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
@@ -27,13 +36,23 @@ class EC2Predictor(FMBenchPredictor):
         try:
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec
-            self._accelerator = get_accelerator_type()
+            self._accelerator_type: ACCELERATOR_TYPE = (ACCELERATOR_TYPE.NEURON 
+                                            if IS_NEURON_INSTANCE(metadata.get('instance_type', ''))
+                                            else ACCELERATOR_TYPE.NVIDIA)
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
-        logger.info(f"_endpoint_name={self._endpoint_name}, _inference_spec={self._inference_spec}")
+            self._accelerator_type = ACCELERATOR_TYPE.NVIDIA
+        logger.info(f"_endpoint_name={self._endpoint_name}, _inference_spec={self._inference_spec}, _accelerator_type={self._accelerator_type}")
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
+        if not self._metrics_collection_started:
+            logger.info(f"Starting metrics collection for {self._accelerator_type}")
+            if self._accelerator_type == ACCELERATOR_TYPE.NVIDIA:
+                collect_ec2_metrics()
+            else:
+                start_collection()
+            self._metrics_collection_started = True
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
@@ -47,7 +66,10 @@ class EC2Predictor(FMBenchPredictor):
         prompt: str = payload['inputs']
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload['inputs'])
-        try:            
+        try:
+            # Global flag us
+            # collect_ec2_metrics()
+            st = time.perf_counter()
             split_input_and_inference_params: Optional[bool] = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
@@ -58,27 +80,7 @@ class EC2Predictor(FMBenchPredictor):
             # is given to you as you deploy a model on EC2 using the DJL serving stack
             if container_type == constants.CONTAINER_TYPE_DJL:
                 payload = payload | dict(parameters=self._inference_spec["parameters"])
-                st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload)
-                # record the latency for the response generated
-                latency = time.perf_counter() - st
-                full_output = response.text
-                response.raise_for_status()
-            elif container_type == constants.CONTAINER_TYPE_TRITON:
-                if self._accelerator == constants.ACCELERATOR_TYPE.NEURON:
-                    triton_payload = dict(text_input=payload["inputs"],
-                                          sampling_parameters=json.dumps(self._inference_spec["parameters"]))
-                else:
-                    triton_payload = dict(text_input=payload["inputs"]) | self._inference_spec["parameters"]
-
-                logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {triton_payload}")
-                st = time.perf_counter()
-                response = requests.post(self._endpoint_name, json=triton_payload)
-                # record the latency for the response generated
-                latency = time.perf_counter() - st
-                response.raise_for_status()
-                response_json = json.loads(response.text)
-                full_output = response_json['text_output']
             elif container_type == constants.CONTAINER_TYPE_VLLM:
                 # vllm uses prompt rather than input and then
                 # the code in the calling function still expects input
@@ -86,15 +88,16 @@ class EC2Predictor(FMBenchPredictor):
                 payload2 = copy.deepcopy(payload)
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
-                st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload2)
-                # record the latency for the response generated
-                latency = time.perf_counter() - st
-                response.raise_for_status()
-                full_output = response.text
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 
+            # record the latency for the response generated
+            latency = time.perf_counter() - st
+            
+            # For other response types, change the logic below and add the response in the `generated_text` key within the response_json dict
+            response.raise_for_status()
+            full_output = response.text
             answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
             response_json = dict(generated_text=answer_only)
             # counts the completion tokens for the model using the default/user provided tokenizer
@@ -102,7 +105,6 @@ class EC2Predictor(FMBenchPredictor):
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
-
         return FMBenchPredictionResponse(response_json=response_json,
                                          latency=latency,
                                          time_to_first_token=TTFT,
@@ -143,8 +145,31 @@ class EC2Predictor(FMBenchPredictor):
                     start_time: datetime,
                     end_time: datetime,
                     period: int = 60) -> pd.DataFrame:
-        # not implemented
-        return None
+
+        logger.info("Entering get_metrics function")
+        metrics_df = pd.DataFrame()
+        
+        try:
+            if self._accelerator_type == ACCELERATOR_TYPE.NVIDIA:
+                logger.info("Stopping EC2 metrics collection for NVIDIA")
+                metrics_df = stop_collect()
+            else:
+                logger.info("Stopping Neuron metrics collection")
+                stop_collection()
+                metrics_df = get_collected_data()
+                reset_collection()
+
+            if not metrics_df.empty:
+                metrics_df["EndpointName"] = self.endpoint_name
+                metrics_df["ModelLatency"] = None
+                logger.info(f"Metrics dataframe shape: {metrics_df.shape}")
+            else:
+                logger.warning("No metrics collected")
+
+        except Exception as e:
+            logger.error(f"Error occurred while collecting metrics: {e}", exc_info=True)
+
+        return metrics_df
 
     @property
     def inference_parameters(self) -> Dict:
@@ -153,3 +178,4 @@ class EC2Predictor(FMBenchPredictor):
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     return EC2Predictor(endpoint_name, inference_spec, metadata)
+
