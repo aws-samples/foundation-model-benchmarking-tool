@@ -127,3 +127,16 @@ pricing:
     cohere.command-r-plus-v1:0:
       input-per-1k-tokens: 0.0030
       output-per-1k-tokens: 0.0150
+    # OpenAI
+    gpt-4o-mini:
+      input-per-1k-tokens: 0.000150
+      output-per-1k-tokens: 0.000600
+    gpt-4o:
+      input-per-1k-tokens: 0.0050
+      output-per-1k-tokens: 0.0150
+    o1-preview:
+      input-per-1k-tokens: 0.0150
+      output-per-1k-tokens: 0.060
+      
+
+
