@@ -115,3 +115,55 @@ pricing:
     us.meta.llama3-2-90b-instruct-v1:0:
       input-per-1k-tokens: 0.002
       output-per-1k-tokens: 0.002
+    meta.llama3-1-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.00022
+      output-per-1k-tokens: 0.00022
+    meta.llama3-1-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama3-1-405b-instruct-v1:0:
+      input-per-1k-tokens: 0.00532
+      output-per-1k-tokens: 0.016
+    meta.llama3-8b-instruct-v1:0:
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    meta.llama3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00265
+      output-per-1k-tokens: 0.0035
+    meta.llama2-13b-chat-v1:
+      input-per-1k-tokens: 0.00075
+      output-per-1k-tokens: 0.00100      
+    meta.llama2-70b-chat-v1: 
+      input-per-1k-tokens: 0.00195
+      output-per-1k-tokens: 0.00256
+      
+    #  ai21
+    ai21.j2-mid-v1:
+      input-per-1k-tokens: 0.0125
+      output-per-1k-tokens: 0.0125
+    ai21.j2-ultra-v1: 
+      input-per-1k-tokens: 0.0188
+      output-per-1k-tokens: 0.0188
+    # Cohere
+    cohere.command-text-v14: 
+      input-per-1k-tokens: 0.0015
+      output-per-1k-tokens: 0.0020
+    cohere.command-light-text-v14: 
+      input-per-1k-tokens: 0.0003
+      output-per-1k-tokens: 0.0006
+    cohere.command-r-plus-v1:0:
+      input-per-1k-tokens: 0.0030
+      output-per-1k-tokens: 0.0150
+    # OpenAI
+    gpt-4o-mini:
+      input-per-1k-tokens: 0.000150
+      output-per-1k-tokens: 0.000600
+    gpt-4o:
+      input-per-1k-tokens: 0.0050
+      output-per-1k-tokens: 0.0150
+    o1-preview:
+      input-per-1k-tokens: 0.0150
+      output-per-1k-tokens: 0.060
+      
+
+
