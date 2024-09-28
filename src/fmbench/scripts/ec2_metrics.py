@@ -11,6 +11,8 @@ import csv
 import time
 import psutil
 import logging
+import tempfile
+import pandas as pd
 from nvitop import Device, ResourceMetricCollector
 
 
@@ -21,11 +23,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-csv_file_name = "EC2_system_metrics.csv"
+# Use a temporary file
+temp_file = tempfile.NamedTemporaryFile(mode='w+t', delete=False, suffix='.csv')
+csv_file_name = temp_file.name
 
 # Global flag to control data collection for now, change in future.
 collecting = True
-
+collected_data = []
 
 def stop_collect(collector=None):
     """
@@ -34,6 +38,25 @@ def stop_collect(collector=None):
     global collecting
     collecting = False
     logger.info("Stopped collection")
+    # Calculate GPUMemoryUtilization
+    df = pd.DataFrame(collected_data, columns=[
+        "timestamp",
+        "CPUUtilization",
+        "MemoryUtilization",
+        "memory_used_mean",
+        "DiskUtilization",
+        "GPUUtilization",
+        "gpu_memory_used_mean",
+        "gpu_memory_free_mean",
+        "gpu_memory_total_mean",
+    ])
+    
+    # Calculate GPUMemoryUtilization
+    df['GPUMemoryUtilization'] = df['gpu_memory_used_mean'] / df['gpu_memory_total_mean'] * 100
+    
+    # Select and rename the required columns
+    return df[["timestamp", "CPUUtilization", "MemoryUtilization", "DiskUtilization", "GPUUtilization", "GPUMemoryUtilization"]]
+
 
 
 def _collect_ec2_utilization_metrics():
@@ -57,12 +80,9 @@ def _collect_ec2_utilization_metrics():
             return False
 
         try:
-            # Open the CSV file in append mode and write the collected metrics
-            with open(csv_file_name, mode="a", newline="") as csv_file:
-                csv_writer = csv.writer(csv_file)
 
                 # Collect CPU mean utilization
-                cpu_percent_mean = metrics.get(
+                CPUUtilization = metrics.get(
                     "metrics-daemon/host/cpu_percent (%)/mean", psutil.cpu_percent()
                 )
                 memory_percent_mean = metrics.get(
@@ -73,6 +93,10 @@ def _collect_ec2_utilization_metrics():
                     "metrics-daemon/host/memory_used (GiB)/mean",
                     psutil.virtual_memory().available,
                 )
+                # Disk utilization using host_disk_usage_percent
+                # disk_usage_percent = metrics.get(
+                #     "metrics-daemon/host/disk_usage_percent (%)/mean", None
+                # )
 
                 # Extract the current timestamp
                 timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -115,6 +139,9 @@ def _collect_ec2_utilization_metrics():
                         total_gpu_memory_total += gpu_memory_total_mean
 
                 # Calculate the mean values across all GPUs
+                GPUUtilization = ( 
+                    total_gpu_utilization / num_gpus if num_gpus > 0 else 0
+                )
                 gpu_utilization_mean_total = (
                     total_gpu_utilization / num_gpus if num_gpus > 0 else None
                 )
@@ -131,16 +158,22 @@ def _collect_ec2_utilization_metrics():
                 # Write the row to the CSV file
                 row = [
                     timestamp,
-                    cpu_percent_mean,
-                    memory_percent_mean,
+                    CPUUtilization,
+                    memory_percent_mean,  # This will be renamed to MemoryUtilization
                     memory_used_mean,
-                    gpu_utilization_mean_total,  # Mean utilization out of n gpus%, example if there are 4 gpus, it is out of 400%
+                    psutil.disk_usage('/').percent,  # Add DiskUtilization
+                    gpu_utilization_mean_total,
                     gpu_memory_used_mean_total,
                     gpu_memory_free_mean_total,
                     gpu_memory_total_mean_total,
                 ]
                 # logger.info(f"Writing row: {row}")
-                csv_writer.writerow(row)
+                #csv_writer.writerow(row)
+                collected_data.append(row)
+
+                with open(csv_file_name, mode="a", newline="") as csv_file:
+                    csv_writer = csv.writer(csv_file)
+                    csv_writer.writerow(row)                
 
         except ValueError as e:
             return False
@@ -163,15 +196,17 @@ def collect_ec2_metrics():
     """
     global collecting
     collecting = True
+    collected_data = []
     # Initialize the CSV file and write the header once
     with open(csv_file_name, mode="w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         header = [
             "timestamp",
-            "cpu_percent_mean",
-            "memory_percent_mean",
+            "CPUUtilization",
+            "MemoryUtilization",
             "memory_used_mean",
-            "gpu_utilization_mean",
+            "DiskUtilization",
+            "GPUUtilization",
             "gpu_memory_used_mean",
             "gpu_memory_free_mean",
             "gpu_memory_total_mean",
