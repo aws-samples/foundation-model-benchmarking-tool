@@ -19,8 +19,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-class OpenAIPredictor(FMBenchPredictor):
-    
+class ExternalPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
                  endpoint_name: str,
@@ -64,7 +63,7 @@ class OpenAIPredictor(FMBenchPredictor):
         except Exception as e:
             exception_msg = f"""exception while creating predictor/initializing variables
                             for endpoint_name={self._endpoint_name}, exception=\"{e}\", 
-                            OpenAIPredictor cannot be created"""
+                            ExternalPredictor cannot be created"""
             logger.error(exception_msg)
             raise ValueError(exception_msg)
 
@@ -72,6 +71,7 @@ class OpenAIPredictor(FMBenchPredictor):
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
         os.environ["OPENAI_API_KEY"] = self._api_key
+        os.environ["GEMINI_API_KEY"] = self._api_key
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
         prompt_tokens: Optional[int] = None
@@ -151,7 +151,7 @@ class OpenAIPredictor(FMBenchPredictor):
                        duration: float,
                        prompt_tokens: int,
                        completion_tokens: int) -> float:
-        """Represents the function to calculate the cost for OpenAI experiments.
+        """Represents the function to calculate the cost for OpenAI/Gemini experiments.
         instance_type represents the model name
         """
 
@@ -163,9 +163,9 @@ class OpenAIPredictor(FMBenchPredictor):
             if self._pt_model_id is None:
                 logger.info("calculate_cost, calculating cost with token based pricing")
                 # Retrieve the pricing information for the instance type
-                openai_pricing = pricing['pricing']['token_based']
+                non_aws_model_pricing = pricing['pricing']['token_based']
                 # Calculate cost based on the number of input and output tokens
-                model_pricing = openai_pricing.get(instance_type, None)
+                model_pricing = non_aws_model_pricing.get(instance_type, None)
                 if model_pricing:
                     input_token_cost = (prompt_tokens / 1000.0) * model_pricing['input-per-1k-tokens']
                     output_token_cost = (completion_tokens / 1000.0) * model_pricing['output-per-1k-tokens']
@@ -211,4 +211,4 @@ class OpenAIPredictor(FMBenchPredictor):
 
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
-    return OpenAIPredictor(endpoint_name, inference_spec, metadata)
+    return ExternalPredictor(endpoint_name, inference_spec, metadata)
