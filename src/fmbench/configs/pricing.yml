@@ -164,6 +164,11 @@ pricing:
     o1-preview:
       input-per-1k-tokens: 0.0150
       output-per-1k-tokens: 0.060
+    # Google
+    gemini/gemini-1.5-flash:
+      input-per-1k-tokens: 0.000075
+      output-per-1k-tokens: 0.00030
+    
       
 
 

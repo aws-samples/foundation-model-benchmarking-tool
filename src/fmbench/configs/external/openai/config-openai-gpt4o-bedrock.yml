@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-openai-bedrock models"      
-  model_name: "openai & bedrock models"
+  name: "fmbench-openai-gemini-bedrock models"      
+  model_name: "openai, gemini & bedrock models"
   
 # AWS and SageMaker settings
 aws:
@@ -99,7 +99,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_5000-6000
+  dataset_of_interest: en_1000-2000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -118,6 +118,48 @@ inference_parameters:
 
 # Model configurations for openAI models
 experiments:
+  - name: gemini/gemini-1.5-flash
+    model_name: gemini/gemini-1.5-flash
+    ep_name: gemini/gemini-1.5-flash
+    instance_type: gemini/gemini-1.5-flash
+    instance_count:
+    inference_script: external_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      api_key:  <your-api-key>
+      parameter_set: external
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    env:
+  - name: gemini/gemini-1.5-pro
+    model_name: gemini/gemini-1.5-pro
+    ep_name: gemini/gemini-1.5-pro
+    instance_type: gemini/gemini-1.5-pro
+    instance_count:
+    inference_script: external_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      api_key:  <your-api-key>
+      parameter_set: external
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    env:
   - name: gpt-4o-mini
     model_name: gpt-4o-mini
     ep_name: gpt-4o-mini
@@ -126,7 +168,7 @@ experiments:
     inference_script: openai_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key: <your-api-key>
+      api_key:  <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
