@@ -197,6 +197,7 @@ experiments:
       #       The DJL serving containers supports auto.  
       model_copies: max
       shm_size: 12g
+      model_loading_timeout: 2400
       # The model.json parameters are replaced within the model.json file
       # for the triton on vllm/djl/tensorrt options. The model.json already contains
       # the tp degree and model id from above in this config file. This is a dictionary
@@ -207,7 +208,6 @@ experiments:
         # if you set the model_copies parameter then it is mandatory to set the 
         # tp_degree, shm_size, model_loading_timeout parameters
         tp_degree: 8
-        model_loading_timeout: 2400
         # The model.json parameters are replaced within the model.json file
         # for the triton on vllm option. The model.json already contains
         # the tp degree and model id from above in this config file. This is a dictionary
