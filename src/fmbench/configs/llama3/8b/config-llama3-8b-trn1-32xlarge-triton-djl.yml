@@ -205,20 +205,21 @@ experiments:
         # tp_degree, shm_size, model_loading_timeout parameters
         tp_degree: 8
         amp: "f16"
-        n_positions: 4096
-        model_loading_timeout: 2400
-        model_loader: "tnx"
-        rolling_batch: "auto"
-        rolling_batch_strategy: "continuous_batching"
-        max_rolling_batch_size: 64
-        output_formatter: "json"
-        trust_remote_code: true
         attention_layout: 'BSH'
         collectives_layout: 'BSH'
         context_length_estimate: 3072, 3584, 4096
-        # if you set the model_copies parameter then it is mandatory to set the 
-        # tp_degree, shm_size, model_loading_timeout parameters
+        max_rolling_batch_size: 8
+        model_loader: "tnx"
+        model_loading_timeout: 2400
+        n_positions: 4096
+        output_formatter: "json"
+        rolling_batch: "auto"
+        rolling_batch_strategy: "continuous_batching"
+        trust_remote_code: true
         max_model_len: 4096
+        # # if you set the model_copies parameter then it is mandatory to set the 
+        # # tp_degree, shm_size, model_loading_timeout parameters
+        # max_model_len: 4096
         # modify the serving properties to match your model and requirements
         serving.properties:
 

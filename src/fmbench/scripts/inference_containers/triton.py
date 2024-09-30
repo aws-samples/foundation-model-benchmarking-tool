@@ -86,6 +86,7 @@ def _handle_djl_params_for_triton_on_neuron(triton_dir: str,
                     # this includes TP degree, batch size, 
                     # and HF model id
                     content["tensor_parallel_degree"] = tp_degree
+                    [inference_container_params.pop(key, None) for key in ['tp_degree', 'max_model_len']]
                     content['model_id'] = hf_model_id
                     # update the model.json to contain additional variables, such as
                     # max_num_seqs, max_model_len, batch_size and more
@@ -93,6 +94,7 @@ def _handle_djl_params_for_triton_on_neuron(triton_dir: str,
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
                     logger.info(f"Updated {file_path} with tp_degree={tp_degree}, inference_container_params={inference_container_params}")
+                    logger.info(f"Updated content in model.json: {content}")
                 
                 # update the model.py. This file is given for DJL but not for VLLM
                 elif file == "model.py":

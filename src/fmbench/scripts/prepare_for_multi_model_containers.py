@@ -234,7 +234,8 @@ def prepare_docker_compose_yml(model_name: str,
     batch_size: int = inference_container_params.get('max_rolling_batch_size', 4)
     n_positions: int = inference_container_params.get('n_positions', 8192)
     backend: Optional[str] = inference_params.get('backend', None)
-    max_model_len: Optional[int] = inference_container_params.get('max_model_len', 8192)
+    max_model_len: Optional[int] = inference_container_params.get('max_model_len', 4096)
+    logger.info(f"setting max model len to {max_model_len}")
     triton_content: Optional[str] = None
     if backend is not None:
         if backend == constants.BACKEND.VLLM_BACKEND:
