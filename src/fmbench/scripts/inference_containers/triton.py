@@ -86,6 +86,8 @@ def _handle_djl_params_for_triton_on_neuron(triton_dir: str,
                     # this includes TP degree, batch size, 
                     # and HF model id
                     content["tensor_parallel_degree"] = tp_degree
+                    # if there is a tp degree and max model len in the inference container parameters, delete it since those will already be added here. TP
+                    # degree is required in the inference_container_params.
                     [inference_container_params.pop(key, None) for key in ['tp_degree', 'max_model_len']]
                     content['model_id'] = hf_model_id
                     # update the model.json to contain additional variables, such as
