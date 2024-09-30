@@ -225,17 +225,18 @@ def prepare_docker_compose_yml(model_name: str,
         for k,v in env.items():
             env_as_list.append(f"{k}={v}")
 
-    # Get the tp degree, batch size, n_positions and inference parameters that are used
-    # during model deployment. This is representative of serving.properties for models served 
-    # on the triton container
-    container_params: int = inference_params.get('container_params', None)
-    logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
-    tp_degree: int = container_params.get('tp_degree', None)
-    if tp_degree is None:
+    # this is specific to the triton container
+    # then default it to None and let the inference
+    # container the best default values for parameters
+    container_params: Optional[Dict] = inference_params.get('container_params', None)
+    logger.info(f"container_params that will be used for {image} image: {container_params}")
+    if container_params is not None:
+        logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
+        tp_degree: int = container_params.get('tp_degree', None)
+    else:
         tp_degree = inference_params.get('tp_degree', None)
         logger.info(f"TP degree being used for this experiment found in inference spec within the config file: {tp_degree}")
     batch_size: int = inference_params.get('batch_size', 4)
-    n_positions: int = container_params.get('n_positions', 8192)
     backend: Optional[str] = inference_params.get('backend', None)
     triton_content: Optional[str] = None
     if backend is not None:
@@ -247,11 +248,6 @@ def prepare_docker_compose_yml(model_name: str,
             logger.error(f"No backend={backend} provided")
     else:
         logger.error(f"No backend={backend} provided")
-    # this is specific to the triton container
-    # then default it to None and let the inference
-    # container the best default values for parameters
-    container_params: Optional[Dict] = inference_params.get('container_params', None)
-    logger.info(f"container_params that will be used for {backend} type backend: {container_params}")
 
     # first check if this is an NVIDIA instance or a AWS Chips instance    
     accelerator = ic_utils.get_accelerator_type()
