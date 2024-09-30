@@ -18,7 +18,8 @@ class ACCELERATOR_TYPE(str, Enum):
 
 class BACKEND(str, Enum):
     VLLM_BACKEND = 'vllm'
-    DJL_BACKEND = "djl"
+    DJL_BACKEND = 'djl'
+    TENSORRT_BACKEND = 'tensorrt'
 
 class MODEL_COPIES(str, Enum):
     AUTO = 'auto'

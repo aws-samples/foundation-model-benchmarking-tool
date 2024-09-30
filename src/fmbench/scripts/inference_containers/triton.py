@@ -61,11 +61,11 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     return script
 
 
-def _handle_djl_params(triton_dir: str,
-                        tp_degree: int,
-                        model_json_params: Dict,
-                        max_model_len: int,
-                        hf_model_id: str):
+def _handle_djl_params_for_triton_on_neuron(triton_dir: str,
+                                            tp_degree: int,
+                                            inference_container_params: Dict,
+                                            max_model_len: int,
+                                            hf_model_id: str):
     """
     Substitutes parameters within the triton model repository files for the djl backend: model.json and model.py and substitutes the batch size, 
     hf mdoel id from the configuration file into those files before the model repository is prepared within the container.
@@ -89,10 +89,10 @@ def _handle_djl_params(triton_dir: str,
                     content['model_id'] = hf_model_id
                     # update the model.json to contain additional variables, such as
                     # max_num_seqs, max_model_len, batch_size and more
-                    content.update(model_json_params)
+                    content.update(inference_container_params)
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
-                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, model_json_params={model_json_params}")
+                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, inference_container_params={inference_container_params}")
                 
                 # update the model.py. This file is given for DJL but not for VLLM
                 elif file == "model.py":
@@ -111,10 +111,10 @@ def _handle_djl_params(triton_dir: str,
         raise Exception(f"Error occurred while preparing files for the triton model container with djl backend: {e}")
 
 
-def _handle_vllm_params(triton_dir: str,
-                        tp_degree: int,
-                        model_json_params: Dict,
-                        hf_model_id: str):
+def _handle_vllm_params_for_triton_on_neuron(triton_dir: str,
+                                            tp_degree: int,
+                                            inference_container_params: Dict,
+                                            hf_model_id: str):
     """
     Substitutes parameters within the triton model repository files for the vllm backend: config.pbtxt, model.json and substitutes the batch size, 
     hf mdoel id from the configuration file into those files before the model repository is prepared within the container.
@@ -127,7 +127,6 @@ def _handle_vllm_params(triton_dir: str,
         for root, dirs, files in os.walk(triton_dir):
             for file in files:
                 file_path = os.path.join(root, file)
-
                 if file == "model.json":
                     with open(file_path, "r") as f:
                         content = json.load(f)
@@ -138,10 +137,10 @@ def _handle_vllm_params(triton_dir: str,
                     content['model'] = hf_model_id
                     # update the model.json to contain additional variables, such as
                     # max_num_seqs, max_model_len, batch_size and more
-                    content.update(model_json_params)
+                    content.update(inference_container_params)
                     with open(file_path, "w") as f:
                         json.dump(content, f, indent=2)
-                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, model_json_params={model_json_params}")
+                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, inference_container_params={inference_container_params}")
                 else:
                     # If there are files within the triton folder that do not need
                     # to have values subsituted within it, then call it out.
@@ -152,7 +151,7 @@ def _handle_vllm_params(triton_dir: str,
 
 def handle_triton_serving_properties_and_inf_params(triton_dir: str,
                                                     tp_degree: int,
-                                                    model_json_params: Dict,
+                                                    inference_container_params: Dict,
                                                     max_model_len: int,
                                                     hf_model_id: str, 
                                                     backend: constants.BACKEND):
@@ -160,12 +159,19 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
     Substitutes parameters within the triton model repository files for different container types
     """
     try:
+        # if serving.properties are provided in the inference container parameters, then pop 
+        # it out, since it is not needed for deploying the model using triton on neuron
+        if 'serving.properties' in inference_container_params:
+            del inference_container_params['serving.properties']
+            logger.info(f"Removed the serving properties for deploying the model on triton on neuron: {inference_container_params}")
+        else:
+            logger.info(f"No serving properties provided, using the inference model parameters directly in model deployment")
         if backend == constants.BACKEND.VLLM_BACKEND:
             logger.info(f"Handling parameter subsitution for {backend}")
-            _handle_vllm_params(triton_dir, tp_degree, model_json_params, hf_model_id)
+            _handle_vllm_params_for_triton_on_neuron(triton_dir, tp_degree, inference_container_params, hf_model_id)
         elif backend == constants.BACKEND.DJL_BACKEND:
             logger.info(f"Handling parameter subsitution for {backend}")
-            _handle_djl_params(triton_dir, tp_degree, model_json_params, max_model_len, hf_model_id)
+            _handle_djl_params_for_triton_on_neuron(triton_dir, tp_degree, inference_container_params, max_model_len, hf_model_id)
         else:
             # If there are no backend container options for deploying on triton, throw an exception
             logger.info(f"No backend option provided for triton. Backend={backend}")

@@ -183,7 +183,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     privileged_mode: str = experiment_config['ec2'].get('privileged_mode', False)
     container_type: str = experiment_config['inference_spec'].get('container_type', constants.CONTAINER_TYPE_DJL)
     env = experiment_config.get('env')
-    serving_properties: str = experiment_config['serving.properties']
+    serving_properties: str = experiment_config['inference_spec']['inference_container_params'].get('serving.properties', None)
+    logger.info(f"Serving properties provided to deploy on container type={container_type} using image_uri={image_uri}: {serving_properties}")
     model_loading_timeout: int = experiment_config['ec2']['model_loading_timeout']
     
     HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()

@@ -30,7 +30,7 @@ git fetch origin 38c4b7e863570a045308af814c72f4504297222e
 git reset --hard 38c4b7e863570a045308af814c72f4504297222e
 pip3 install -r requirements-neuron.txt
 pip3 install .
-pip3 install pynvml==11.5.3
+pip3 install pynvml==11.5.3 transformers==4.44.2
 
 mkdir -p $LOG_ROOT
 OUTPUT_LOG="$LOG_ROOT/triton-server.log"
