@@ -7,7 +7,7 @@ import litellm
 import logging
 import pandas as pd
 from datetime import datetime
-from typing import Dict, Optional, List
+from typing import Dict, Optional
 from litellm import completion, token_counter
 from fmbench.scripts.stream_responses import get_response_stream
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -70,6 +70,10 @@ class ExternalPredictor(FMBenchPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
+        # Initialize the key in the inference spec for each model. If the key is 
+        # an OpenAI API key or a Gemini API key, it will be initialized here.
+        # The inference format for each option (OpenAI/Gemini) is the same using LiteLLM
+        # for streaming/non-streaming
         os.environ["OPENAI_API_KEY"] = self._api_key
         os.environ["GEMINI_API_KEY"] = self._api_key
         latency: Optional[float] = None

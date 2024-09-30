@@ -136,6 +136,12 @@ pricing:
     meta.llama2-70b-chat-v1: 
       input-per-1k-tokens: 0.00195
       output-per-1k-tokens: 0.00256
+    meta.llama3-2-3b-instruct-v1:0:
+      input-per-1k-tokens: 0.00015
+      output-per-1k-tokens: 0.00015
+    meta.llama3-2-1b-instruct-v1:0:
+      input-per-1k-tokens: 0.0001
+      output-per-1k-tokens: 0.0001
       
     #  ai21
     ai21.j2-mid-v1:
@@ -168,6 +174,9 @@ pricing:
     gemini/gemini-1.5-flash:
       input-per-1k-tokens: 0.000075
       output-per-1k-tokens: 0.00030
+    gemini/gemini-1.5-pro:
+      input-per-1k-tokens: 0.0003125
+      output-per-1k-tokens: 0.00125
     
       
 

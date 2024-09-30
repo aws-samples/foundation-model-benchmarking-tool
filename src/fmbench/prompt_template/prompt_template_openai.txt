@@ -7,4 +7,4 @@ context: """
 {context}
 """
 
-Question: {input} 
+Question: {input}
