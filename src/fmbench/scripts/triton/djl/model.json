@@ -1,5 +1,0 @@
-{
-    "model_id": "$HF_MODEL_ID",
-    "tensor_parallel_degree": "$TP_DEGREE"
-  }
-  

@@ -12,7 +12,6 @@ import asyncio, threading, copy
 import triton_python_backend_utils as pb_utils
 
 _MODEL_ARGS_FILENAME: str = "model.json"
-_MAX_MODEL_LEN: int = {MAX_MODEL_LEN}
 
 class TritonPythonModel:
 
@@ -113,11 +112,11 @@ class TritonPythonModel:
             params_dict[k] = int(params_dict[k])
 
     if not params_dict:
-        params_dict["max_new_tokens"] = _MAX_MODEL_LEN
+        params_dict["max_new_tokens"] = 8192
         params_dict["top_k"] = 50
     else:
         if "max_new_tokens" not in params_dict:
-          params_dict["max_new_tokens"] = _MAX_MODEL_LEN
+          params_dict["max_new_tokens"] = 8192
 
     return params_dict
 

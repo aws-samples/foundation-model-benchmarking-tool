@@ -76,11 +76,11 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -144,6 +144,7 @@ inference_parameters:
   ec2_djl:
     top_k: 50  
     max_tokens: 100
+    max_model_len: 4096
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -200,7 +201,7 @@ experiments:
       # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
       # For tensorrt, the tp degree, batch size and other relevant parameters are 
       # extracted directly from the inference spec.
-      inference_container_params:
+      container_params:
         # if you set the model_copies parameter then it is mandatory to set the 
         # tp_degree, shm_size, model_loading_timeout parameters
         tp_degree: 8
@@ -216,7 +217,6 @@ experiments:
         rolling_batch: "auto"
         rolling_batch_strategy: "continuous_batching"
         trust_remote_code: true
-        max_model_len: 4096
         # # if you set the model_copies parameter then it is mandatory to set the 
         # # tp_degree, shm_size, model_loading_timeout parameters
         # max_model_len: 4096

@@ -228,14 +228,15 @@ def prepare_docker_compose_yml(model_name: str,
     # Get the tp degree, batch size, n_positions and inference parameters that are used
     # during model deployment. This is representative of serving.properties for models served 
     # on the triton container
-    inference_container_params: int = inference_params.get('inference_container_params', None)
-    logger.info(f"Inference container parameters provided in the configuration file within inference spec: {inference_container_params}")
-    tp_degree: int = inference_container_params.get('tp_degree', None)
-    batch_size: int = inference_container_params.get('max_rolling_batch_size', 4)
-    n_positions: int = inference_container_params.get('n_positions', 8192)
+    container_params: int = inference_params.get('container_params', None)
+    logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
+    tp_degree: int = container_params.get('tp_degree', None)
+    if tp_degree is None:
+        tp_degree = inference_params.get('tp_degree', None)
+        logger.info(f"TP degree being used for this experiment found in inference spec within the config file: {tp_degree}")
+    batch_size: int = inference_params.get('batch_size', 4)
+    n_positions: int = container_params.get('n_positions', 8192)
     backend: Optional[str] = inference_params.get('backend', None)
-    max_model_len: Optional[int] = inference_container_params.get('max_model_len', 4096)
-    logger.info(f"setting max model len to {max_model_len}")
     triton_content: Optional[str] = None
     if backend is not None:
         if backend == constants.BACKEND.VLLM_BACKEND:
@@ -249,8 +250,8 @@ def prepare_docker_compose_yml(model_name: str,
     # this is specific to the triton container
     # then default it to None and let the inference
     # container the best default values for parameters
-    inference_container_params: Optional[Dict] = inference_params.get('inference_container_params', None)
-    logger.info(f"inference_container_params that will be used for {backend} type backend: {inference_container_params}")
+    container_params: Optional[Dict] = inference_params.get('container_params', None)
+    logger.info(f"container_params that will be used for {backend} type backend: {container_params}")
 
     # first check if this is an NVIDIA instance or a AWS Chips instance    
     accelerator = ic_utils.get_accelerator_type()
@@ -268,8 +269,7 @@ def prepare_docker_compose_yml(model_name: str,
         # handles custom tensor pd, batch size into the model repository files
         triton.handle_triton_serving_properties_and_inf_params(triton_content, 
                                                                tp_degree, 
-                                                               inference_container_params,
-                                                               max_model_len,
+                                                               container_params,
                                                                model_id,
                                                                backend)
 

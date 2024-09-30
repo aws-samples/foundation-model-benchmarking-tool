@@ -196,16 +196,22 @@ experiments:
       #       available. In this case only a single container is created, no load balancer is created.
       #       The DJL serving containers supports auto.  
       model_copies: max
-      # if you set the model_copies parameter then it is mandatory to set the 
-      # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 8
       shm_size: 12g
-      model_loading_timeout: 2400
       # The model.json parameters are replaced within the model.json file
-      # for the triton on vllm option. The model.json already contains
+      # for the triton on vllm/djl/tensorrt options. The model.json already contains
       # the tp degree and model id from above in this config file. This is a dictionary
       # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
-      model_params:
+      # For tensorrt, the tp degree, batch size and other relevant parameters are 
+      # extracted directly from the inference spec.
+      container_params:
+        # if you set the model_copies parameter then it is mandatory to set the 
+        # tp_degree, shm_size, model_loading_timeout parameters
+        tp_degree: 8
+        model_loading_timeout: 2400
+        # The model.json parameters are replaced within the model.json file
+        # for the triton on vllm option. The model.json already contains
+        # the tp degree and model id from above in this config file. This is a dictionary
+        # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
         max_num_seqs: 4
         dtype: "float16"
         # The max_model_len and block_size arguments are required to be same as
@@ -214,30 +220,30 @@ experiments:
         # in transformers-neuronx. View the latest vllm documentation: https://vllm.readthedocs.io/_/downloads/en/stable/pdf/
         max_model_len: 4096
         block_size: 4096
-    # modify the serving properties to match your model and requirements
-    serving.properties:
+        # modify the serving properties to match your model and requirements
+        serving.properties:
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    # - payload_en_1000-2000.jsonl
+    # - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    - 2
-    - 3
-    - 4
-    - 5
-    - 6
-    - 7
-    - 8
-    - 9
-    - 10
+    # - 2
+    # - 3
+    # - 4
+    # - 5
+    # - 6
+    # - 7
+    # - 8
+    # - 9
+    # - 10
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
