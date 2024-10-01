@@ -39,7 +39,7 @@ s3_read_data:
     - triviaqa_e.jsonl
     - triviaqa.jsonl
     tokenizer_prefix: tokenizer 
-    prompt_template_dir: gemma_tokenizer
+    prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_gemini.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 

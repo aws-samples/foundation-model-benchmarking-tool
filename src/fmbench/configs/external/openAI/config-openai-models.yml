@@ -38,7 +38,7 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: openai_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_openai.txt ## add your desired prompt template type
 
