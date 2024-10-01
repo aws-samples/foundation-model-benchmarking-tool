@@ -230,12 +230,15 @@ def prepare_docker_compose_yml(model_name: str,
     # container the best default values for parameters
     container_params: Optional[Dict] = inference_params.get('container_params', None)
     logger.info(f"container_params that will be used for {image} image: {container_params}")
-    if container_params is not None:
-        logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
+    if container_params is not None and 'tp_degree' in container_params:
         tp_degree: int = container_params.get('tp_degree', None)
-    else:
+        logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
+    elif 'tp_degree' in inference_params:
         tp_degree = inference_params.get('tp_degree', None)
         logger.info(f"TP degree being used for this experiment found in inference spec within the config file: {tp_degree}")
+    else:
+        logger.error(f"TP degree is not provided in the inference spec or the container params. Please specify the TP degree in the configuration file")
+        return
     batch_size: int = inference_params.get('batch_size', 4)
     backend: Optional[str] = inference_params.get('backend', None)
     triton_content: Optional[str] = None
