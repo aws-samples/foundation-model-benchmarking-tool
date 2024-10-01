@@ -45,7 +45,7 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
+    1_generate_data.ipynb: no
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_get_evaluations.ipynb: yes
@@ -99,7 +99,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_500-1000 # en_5000-6000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -118,15 +118,15 @@ inference_parameters:
 
 # Model configurations for openAI models
 experiments:
-  - name: gemini/gemini-1.5-flash
-    model_name: gemini/gemini-1.5-flash
-    ep_name: gemini/gemini-1.5-flash
-    instance_type: gemini/gemini-1.5-flash
+  - name: gemini/gemini-1.5-pro
+    model_name: gemini/gemini-1.5-pro
+    ep_name: gemini/gemini-1.5-pro
+    instance_type: gemini/gemini-1.5-pro
     instance_count:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key:  <your-api-key>
+      api_key: <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
@@ -139,15 +139,15 @@ experiments:
     concurrency_levels:
     - 1
     env:
-  - name: gemini/gemini-1.5-pro
-    model_name: gemini/gemini-1.5-pro
-    ep_name: gemini/gemini-1.5-pro
-    instance_type: gemini/gemini-1.5-pro
+  - name: gemini/gemini-1.5-flash
+    model_name: gemini/gemini-1.5-flash
+    ep_name: gemini/gemini-1.5-flash
+    instance_type: gemini/gemini-1.5-flash
     instance_count:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key:  <your-api-key>
+      api_key: <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
@@ -165,10 +165,10 @@ experiments:
     ep_name: gpt-4o-mini
     instance_type: gpt-4o-mini
     instance_count:
-    inference_script: openai_predictor.py
+    inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key:  <your-api-key>
+      api_key: <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
@@ -186,7 +186,7 @@ experiments:
     ep_name: gpt-4o
     instance_type: gpt-4o
     instance_count:
-    inference_script: openai_predictor.py
+    inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
       api_key: <your-api-key>
@@ -343,6 +343,66 @@ experiments:
     - 1
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
+    env:
+  - name: amazon.titan-text-express-v1
+    model_id: amazon.titan-text-express-v1
+    model_version: "*"
+    model_name: amazon.titan-text-express-v1
+    ep_name: amazon.titan-text-express-v1
+    instance_type: amazon.titan-text-express-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
+    env: 
+  - name: mistral.mistral-7b-instruct-v0:2
+    model_id: mistral.mistral-7b-instruct-v0:2
+    model_version: "*"
+    model_name: mistral.mistral-7b-instruct-v0:2
+    ep_name: mistral.mistral-7b-instruct-v0:2
+    instance_type: mistral.mistral-7b-instruct-v0:2
+    image_uri:
+    deploy: no
+    instance_count: 1
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    # - 2
+    # - 4
+    # - 6
+    # - 8
+    # - 10
     env:
     
 report:
