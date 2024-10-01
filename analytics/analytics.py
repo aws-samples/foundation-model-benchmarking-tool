@@ -13,7 +13,7 @@ import argparse
 import pandas as pd
 from pathlib import Path
 from tomark import Tomark
-from sagemaker_cost_rpm_plot import plot_best_cost_instance_heatmap
+from sagemaker_cost_rpm_plot import plot_best_cost_instance_heatmap, plot_tps_vs_cost
 
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -273,7 +273,7 @@ def main():
     # create a csv file with all the raw metrics
     df_summary_payload_of_interest.to_csv(summary_file_payload_of_interest_raw_metrics, index=False)
     cols_to_remove = ['payload_file', 'instance_count', 'error_rate', 'prompt_token_count_mean', 'prompt_token_throughput', 'completion_token_count_mean', 'latency_p50',
-                      'latency_p99', 'cost_per_txn', 'completion_token_throughput']
+                      'latency_p99', 'completion_token_throughput']
     # filter out the columns as needed and only give the relevant columns in the analysis markdown table
     df_summary_payload_of_interest_trimmed = df_summary_payload_of_interest.drop(columns=cols_to_remove)
     df_summary_payload_of_interest_trimmed_grouped = df_summary_payload_of_interest_trimmed.loc[df_summary_payload_of_interest_trimmed.groupby('instance_type')['concurrency'].idxmax()].reset_index()
@@ -285,6 +285,7 @@ def main():
                                       f"{args.model_id}-cost-rpm-heatmap-for-"
                                       f"{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.html")
     df1 = pd.read_csv(summary_file_payload_of_interest)
+    logger.info(f"df columns: {df1.columns}")
     # if an instance type has multiple entries then keep the one with the least cost per token
     shape_before = df1.shape
     df1 = df1.loc[df1.groupby('instance_type').cost_per_1k_tokens.idxmin()].reset_index(drop=True)
@@ -300,6 +301,16 @@ def main():
                                     subtitle,
                                     args.cost_weight,
                                     1 - args.cost_weight)
+    # save the line chart
+    # TPS vs Cost line chart
+    tps_vs_cost_fname: str = os.path.join(ANALYTICS_RESULTS_DIR,
+                                        f"{args.model_id}-tps-vs-cost-for-"
+                                        f"{Path(args.payload_file).stem}-p95-latency={args.latency_threshold}s.html")
+
+    _ = plot_tps_vs_cost(df1,
+                        tps_vs_cost_fname,
+                        args.model_id,
+                        subtitle)
 
 
 if __name__ == "__main__":
