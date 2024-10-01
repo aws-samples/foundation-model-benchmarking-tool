@@ -118,7 +118,7 @@ experiments:
     ep_name: gpt-4o-mini
     instance_type: gpt-4o-mini
     instance_count:
-    inference_script: openai_predictor.py
+    inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
       api_key: <your-openai-api-key>
@@ -139,7 +139,7 @@ experiments:
     ep_name: gpt-4o
     instance_type: gpt-4o
     instance_count:
-    inference_script: openai_predictor.py
+    inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
       api_key: <your-openai-api-key>
