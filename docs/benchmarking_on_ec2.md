@@ -96,7 +96,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
     # Update the submodules
     cd tensorrtllm_backend
     # Install git-lfs if needed
-    apt-get update && apt-get install git-lfs -y --no-install-recommends
+    sudo apt-get update && sudo apt-get install git-lfs -y --no-install-recommends
     git lfs install
     git submodule update --init --recursive
     ```
