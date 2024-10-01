@@ -96,7 +96,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
     # Update the submodules
     cd tensorrtllm_backend
     # Install git-lfs if needed
-    apt-get update && apt-get install git-lfs -y --no-install-recommends
+    sudo apt-get update && sudo apt-get install git-lfs -y --no-install-recommends
     git lfs install
     git submodule update --init --recursive
     ```
@@ -168,10 +168,10 @@ command below. The config file for this example can be viewed [here](src/fmbench
     echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
     ```
 
-1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
+1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports. 
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-djl.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and and do a `tail` on `fmbench.log` to see a live log of the run.
@@ -182,7 +182,31 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
+ - **Note**: To deploy a model on AWS Chips using Triton with `djl` or `vllm` backend, the configuration file requires the `backend` and `container_params` parameters within the `inference_spec` dictionary. The backend options are `vllm`/`djl` and the `container_params` contains container specific parameters to deploy the model, for example `tensor parallel degree`, `n positions`, etc. Tensor parallel degree is a necessary field to be added. If no other parameters are provided, the container will choose the default parameters during deployment.
 
+    ``` {.python}
+      # Backend options: [djl, vllm]
+      backend: djl
+
+      # Container parameters that are used during model deployment
+      container_params:
+        # tp degree is a mandatory parameter
+        tp_degree: 8
+        amp: "f16"
+        attention_layout: 'BSH'
+        collectives_layout: 'BSH'
+        context_length_estimate: 3072, 3584, 4096
+        max_rolling_batch_size: 8
+        model_loader: "tnx"
+        model_loading_timeout: 2400
+        n_positions: 4096
+        output_formatter: "json"
+        rolling_batch: "auto"
+        rolling_batch_strategy: "continuous_batching"
+        trust_remote_code: true
+        # modify the serving properties to match your model and requirements
+        serving.properties:
+    ```
 
 ## Benchmarking on an CPU instance type with AMD processors
 

@@ -144,6 +144,7 @@ inference_parameters:
   ec2_djl:
     top_k: 50  
     max_tokens: 100
+    max_model_len: 4096
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -174,18 +175,15 @@ experiments:
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and Inferentia settings for the instance
-      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
-      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: -u triton --device /dev/neuron0 --device /dev/neuron1 --device /dev/neuron2 --device /dev/neuron3 --device /dev/neuron4 --device /dev/neuron5 --device /dev/neuron6 --device /dev/neuron7 --device /dev/neuron8 --device /dev/neuron9 --device /dev/neuron10 --device /dev/neuron11 --device /dev/neuron12 --device /dev/neuron13 --device /dev/neuron14 --device /dev/neuron15
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 8000
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
       container_type: triton
-      # mention the backend type, if any
-      backend: vllm
+      # For deploying a model using the triton inference container: 
+      # mention the backend type, if any. Options for triton are: [djl, vllm or tensorrt]
+      backend: djl
       # how many copies of the model, 1, 2,..max
       # set to 1 in the code if not configured,
       # max: FMBench figures out the max number of model containers to be run
@@ -197,7 +195,6 @@ experiments:
       #       The DJL serving containers supports auto.  
       model_copies: max
       shm_size: 12g
-      model_loading_timeout: 2400
       # The model.json parameters are replaced within the model.json file
       # for the triton on vllm/djl/tensorrt options. The model.json already contains
       # the tp degree and model id from above in this config file. This is a dictionary
@@ -205,21 +202,20 @@ experiments:
       # For tensorrt, the tp degree, batch size and other relevant parameters are 
       # extracted directly from the inference spec.
       container_params:
-        # if you set the model_copies parameter then it is mandatory to set the 
-        # tp_degree, shm_size, model_loading_timeout parameters
+        # tp degree is a mandatory parameter
         tp_degree: 8
-        # The model.json parameters are replaced within the model.json file
-        # for the triton on vllm option. The model.json already contains
-        # the tp degree and model id from above in this config file. This is a dictionary
-        # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
-        max_num_seqs: 4
-        dtype: "float16"
-        # The max_model_len and block_size arguments are required to be same as
-        # max sequence length when targeting neuron device.
-        # Currently, this is a known limitation in continuous batching support
-        # in transformers-neuronx. View the latest vllm documentation: https://vllm.readthedocs.io/_/downloads/en/stable/pdf/
-        max_model_len: 4096
-        block_size: 4096
+        amp: "f16"
+        attention_layout: 'BSH'
+        collectives_layout: 'BSH'
+        context_length_estimate: 3072, 3584, 4096
+        max_rolling_batch_size: 8
+        model_loader: "tnx"
+        model_loading_timeout: 2400
+        n_positions: 4096
+        output_formatter: "json"
+        rolling_batch: "auto"
+        rolling_batch_strategy: "continuous_batching"
+        trust_remote_code: true
         # modify the serving properties to match your model and requirements
         serving.properties:
 
@@ -236,14 +232,15 @@ experiments:
     concurrency_levels:
     - 1
     - 2
-    - 3
     - 4
-    - 5
-    - 6
-    - 7
     - 8
-    - 9
     - 10
+    - 12
+    - 14
+    - 15
+    - 18
+    - 20
+    - 25
 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.

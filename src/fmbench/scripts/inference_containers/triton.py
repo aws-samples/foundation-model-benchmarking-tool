@@ -60,53 +60,59 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     """
     return script
 
+
 def handle_triton_serving_properties_and_inf_params(triton_dir: str,
                                                     tp_degree: int,
-                                                    batch_size: int,
-                                                    model_json_params: Dict,
-                                                    hf_model_id: str):
+                                                    container_params: Dict,
+                                                    hf_model_id: str, 
+                                                    backend: constants.BACKEND):
     """
-    Substitutes parameters within the triton model repository files for the vllm backend: config.pbtxt, model.json and substitutes the batch size, 
-    hf mdoel id from the configuration file into those files before the model repository is prepared within the container.
+    Substitutes parameters within the triton model repository files for different container types
+    For both containers (djl and vllm), the only file that is created based on custom user provided
+    metrics is the "model.json" file. Other files (config.pbtxt and model.py) remain unchanged. The
+    model.json file contains the model id, tp degree, and another set of container parameters provided
+    in the configuration file specific to the djl/vllm containers
     """
     try:
-        # iterate through each of the file in the triton directory
-        # and substitute the HF model id, TP degree and batch size in 
-        # model.json and config.pbtxt. model.py remains the same for 
-        # all HF models
-        for root, dirs, files in os.walk(triton_dir):
-            for file in files:
-                file_path = os.path.join(root, file)
-
-                if file == "model.json":
-                    with open(file_path, "r") as f:
-                        content = json.load(f)
-                    # Replace placeholders in model.json
-                    # this includes TP degree, batch size, 
-                    # and HF model id
-                    content["tensor_parallel_size"] = tp_degree
-                    content['model'] = hf_model_id
-                    # update the model.json to contain additional variables, such as
-                    # max_num_seqs, max_model_len, batch_size and more
-                    content.update(model_json_params)
-                    with open(file_path, "w") as f:
-                        json.dump(content, f, indent=2)
-                    logger.info(f"Updated {file_path} with tp_degree={tp_degree}, model_json_params={model_json_params}")
-                    
-                # upate the config.pbtxt with the batch size parameter fetched from the configuration file
-                elif file == "config.pbtxt":
-                    with open(file_path, "r") as f:
-                        content = f.read()
-                    content = content.replace("{BATCH_SIZE}", str(batch_size))
-                    with open(file_path, "w") as f:
-                        f.write(content)
-                    logger.info(f"Updated {file_path} with batch_size={batch_size}.")
-                else:
-                    # If there are files within the triton folder that do not need
-                    # to have values subsituted within it, then call it out.
-                    logger.info(f"No substitutions needed for {file_path}")
+        model_json_file: str = "model.json"
+        model_json_content: Dict = {}
+        model_json_path: str = os.path.join(triton_dir, model_json_file)
+        # if there is a tp degree in inference container parameters, delete it since those will already be added here. TP
+        # degree is required in the container_params within the configuration file
+        container_params.pop('tp_degree', None)
+        # if serving.properties are provided in the inference container parameters, then pop 
+        # it out, since it is not needed for deploying the model using triton on neuron
+        if 'serving.properties' in container_params:
+            del container_params['serving.properties']
+            logger.info(f"Removed the serving properties for deploying the model on triton on neuron: {container_params}")
+        else:
+            logger.info(f"No serving properties provided, using the inference model parameters directly in model deployment")
+        if backend == constants.BACKEND.VLLM_BACKEND:
+            logger.info(f"Handling parameter subsitution for {backend}")
+            with open(model_json_path, "w") as f:
+                model_json_content['model']: str = hf_model_id
+                model_json_content["tensor_parallel_size"] = tp_degree
+                # update the model.json to contain additional variables, such as
+                # max_num_seqs, max_model_len, batch_size and more
+                model_json_content.update(container_params)
+                json.dump(model_json_content, f, indent=2)
+                logger.info(f"Updated {model_json_path}, model.json={model_json_content}")
+        elif backend == constants.BACKEND.DJL_BACKEND:
+            logger.info(f"Handling parameter subsitution for {backend}")
+            with open(model_json_path, "w") as f:
+                model_json_content['model_id']: str = hf_model_id
+                model_json_content["tensor_parallel_degree"] = tp_degree
+                # update the model.json to contain additional variables, such as
+                # max_num_seqs, max_model_len, batch_size and more
+                model_json_content.update(container_params)
+                json.dump(model_json_content, f, indent=2)
+                logger.info(f"Updated {model_json_path}, model.json={model_json_content}")
+        else:
+            # If there are no backend container options for deploying on triton, throw an exception
+            logger.info(f"No backend option provided for triton. Please use a valid backend type (vllm/djl) for the model.json file to be created. Backend provided={backend}")
+            return
     except Exception as e:
-        raise Exception(f"Error occurred while preparing files for the triton model container with vllm backend: {e}")
+        raise Exception(f"Error occurred while preparing files for the triton model container: {e}")
 
 
 def _create_triton_service_neuron(model_id: str, 
@@ -117,7 +123,8 @@ def _create_triton_service_neuron(model_id: str,
                           shm_size: str, 
                           env: List,
                           base_port: int, 
-                          accelerator: constants.ACCELERATOR_TYPE) -> Tuple:
+                          accelerator: constants.ACCELERATOR_TYPE, 
+                          backend: constants.BACKEND) -> Tuple:
     """
     Creates the Triton service-specific part of the docker compose file. This function is responsible for handling the volume
     mounting, and other aspects to the docker compose file, such as the entrypoint command, port mapping, and more.
@@ -130,7 +137,21 @@ def _create_triton_service_neuron(model_id: str,
         per_container_info_list: List = []
         ports_per_model_server: int = 3 # http, grps, metrics
         home = str(Path.home())
+        triton_content_dir: Optional[str] = None
+        triton_inference_script: Optional[str] = None
         dir_path_on_host: str = os.path.join(home, Path(model_id).name)
+
+        if backend == constants.BACKEND.VLLM_BACKEND:
+            logger.info(f"Setting triton_content_dir to {constants.TRITON_CONTENT_DIR_NAME_VLLM}")
+            triton_content_dir = constants.TRITON_CONTENT_DIR_NAME_VLLM
+            triton_inference_script = constants.TRITON_INFERENCE_SCRIPT_VLLM
+        elif backend == constants.BACKEND.DJL_BACKEND:
+            logger.info(f"Setting triton_content_dir to {constants.TRITON_CONTENT_DIR_NAME_DJL}")
+            triton_content_dir = constants.TRITON_CONTENT_DIR_NAME_DJL
+            triton_inference_script = constants.TRITON_INFERENCE_SCRIPT_DJL
+        else: 
+            logger.error(f"Triton content directory for {backend} not provided.")
+            return
         
         # Iterate through the number of model copies and prepare the docker service for triton
         for i in range(num_model_copies):
@@ -150,11 +171,11 @@ def _create_triton_service_neuron(model_id: str,
 
             # Setup Triton model content for each instance
             instance_dir: str = os.path.join(dir_path_on_host, f"i{i+1}")
-            triton_instance_dir: str = os.path.join(instance_dir, "triton")
+            triton_instance_dir: str = os.path.join(instance_dir, triton_content_dir)
             os.makedirs(triton_instance_dir, exist_ok=True)
             current_dir: str = os.path.dirname(os.path.realpath(__file__))
             parent_dir: str = os.path.abspath(os.path.join(current_dir, os.pardir))
-            triton_content: str = os.path.join(parent_dir, constants.TRITON_CONTENT_DIR_NAME)
+            triton_content: str = os.path.join(parent_dir, triton_content_dir)
 
             # Copy all files from triton_content to the instance's triton directory
             for item in os.listdir(triton_content):
@@ -166,7 +187,8 @@ def _create_triton_service_neuron(model_id: str,
                     shutil.copytree(s, d, dirs_exist_ok=True)
             # Set execute permissions for the script. The triton volumes contain the model repostory that
             # are mapped into the container and used during deployment
-            os.chmod(os.path.join(triton_instance_dir, os.path.basename(constants.TRITON_INFERENCE_SCRIPT)), 0o755)
+            # os.chmod((triton_instance_dir), 0o755)
+            os.chmod(os.path.join(triton_instance_dir, os.path.basename(triton_inference_script)), 0o755)
             volumes = [f"{triton_instance_dir}:/scripts/triton:rw",
                        f"{triton_instance_dir}:/triton:rw"]
             # Create the Triton service
@@ -181,7 +203,7 @@ def _create_triton_service_neuron(model_id: str,
                     "volumes": volumes,
                     "ports": [f"{base_port + i*ports_per_model_server}:{base_port + i*ports_per_model_server}"],
                     "deploy": {"restart_policy": {"condition": "on-failure"}},
-                    "command": f"{constants.TRITON_INFERENCE_SCRIPT} {model_id} {Path(model_id).name} {base_port + i*ports_per_model_server} {total_neuron_cores}"
+                    "command": f"{triton_inference_script} {model_id} {Path(model_id).name} {base_port + i*ports_per_model_server} {total_neuron_cores}"
                 }
             }
             services.update(service)
@@ -315,7 +337,8 @@ def create_triton_service(model_id: str,
                           base_port: int, 
                           accelerator: constants.ACCELERATOR_TYPE,
                           tp_degree: int,
-                          batch_size: int) -> Tuple:
+                          batch_size: int,
+                          backend: constants.BACKEND) -> Tuple:
     """
     Creates the Triton service-specific part of the docker compose file. This function is responsible for handling the volume
     mounting, and other aspects to the docker compose file, such as the entrypoint command, port mapping, and more.
@@ -331,7 +354,8 @@ def create_triton_service(model_id: str,
                           shm_size, 
                           env,
                           base_port, 
-                          accelerator) 
+                          accelerator,
+                          backend) 
     else:
         logger.info(f"accelerator={accelerator}, calling the gpu version of this function")
         return _create_triton_service_gpu(model_id, 
