@@ -74,8 +74,11 @@ class ExternalPredictor(FMBenchPredictor):
         # an OpenAI API key or a Gemini API key, it will be initialized here.
         # The inference format for each option (OpenAI/Gemini) is the same using LiteLLM
         # for streaming/non-streaming
-        os.environ["OPENAI_API_KEY"] = self._api_key
-        os.environ["GEMINI_API_KEY"] = self._api_key
+        # set the environment for the specific model 
+        if 'gemini' in self.endpoint_name:
+            os.environ["GEMINI_API_KEY"] = self._api_key
+        else:
+            os.environ["OPENAI_API_KEY"] = self._api_key
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
         prompt_tokens: Optional[int] = None
