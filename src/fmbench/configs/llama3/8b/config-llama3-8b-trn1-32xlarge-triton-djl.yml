@@ -202,8 +202,7 @@ experiments:
       # For tensorrt, the tp degree, batch size and other relevant parameters are 
       # extracted directly from the inference spec.
       container_params:
-        # if you set the model_copies parameter then it is mandatory to set the 
-        # tp_degree, shm_size, model_loading_timeout parameters
+        # tp degree is a mandatory parameter
         tp_degree: 8
         amp: "f16"
         attention_layout: 'BSH'
@@ -217,9 +216,6 @@ experiments:
         rolling_batch: "auto"
         rolling_batch_strategy: "continuous_batching"
         trust_remote_code: true
-        # # if you set the model_copies parameter then it is mandatory to set the 
-        # # tp_degree, shm_size, model_loading_timeout parameters
-        # max_model_len: 4096
         # modify the serving properties to match your model and requirements
         serving.properties:
 
