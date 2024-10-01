@@ -63,7 +63,6 @@ configs/llama3/70b/config-llama3-70b-instruct-g5-48xl.yml
 configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml
 configs/llama3/70b/config-llama3-70b-instruct-p4d.yml
 configs/llama3/8b/config-bedrock.yml
-configs/llama3/8b/config-llama3-8b-trn1-32xl-tp16-bs-4-ec2.yml
 configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml
 configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml
 configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml
@@ -99,6 +98,8 @@ configs/llama3/8b/config-llama3-8b-instruct-p4d-djl-vllm.yml
 configs/llama3/8b/config-llama3-8b-instruct-p5-djl-lmi-dist.yml
 configs/llama3/8b/config-llama3-8b-trn1-32xl-tp-16-bs-4-byoe.yml
 configs/llama3/8b/config-llama3-8b-trn1-32xl-tp-8-bs-4-byoe.yml
+configs/llama3/8b/config-llama3-8b-trn1-32xl-tp16-bs-4-ec2.yml
+configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-djl.yml
 configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-vllm.yml
 configs/llama3/8b/config-llama3-8b-trn1.yml
 configs/llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml

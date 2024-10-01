@@ -1,5 +1,10 @@
 # Releases
 
+## 2.0.9
+
+1. Triton-djl support for AWS Chips.
+1. Tokenizer files are now downloaded directly from Hugging Face (unless provided manually as before) 
+
 ## 2.0.7
 
 1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
