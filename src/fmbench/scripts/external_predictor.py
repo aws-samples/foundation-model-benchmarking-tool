@@ -18,7 +18,8 @@ from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-
+# This class handles predictions for non AWS models: OpenAI & Gemini models. This predictor class
+# is tested with the following models: gpt-4o-mini, gpt-4o, gemini-1.5-pro, gemini-1.5-flash
 class ExternalPredictor(FMBenchPredictor):
     # overriding abstract method
     def __init__(self,
@@ -28,9 +29,7 @@ class ExternalPredictor(FMBenchPredictor):
         try:
             # initialize private member variables
             self._endpoint_name = endpoint_name
-            self._pt_model_id = None
             self._inference_spec = inference_spec
-            self._aws_region = boto3.Session().region_name
             # litellm supports the following inference params as per
             # https://litellm.vercel.app/docs/completion/input
             self._temperature = 0.1
@@ -167,32 +166,21 @@ class ExternalPredictor(FMBenchPredictor):
         input_token_cost: Optional[float] = None
         output_token_cost: Optional[float] = None
         try:
-            if self._pt_model_id is None:
+            # Retrieve the pricing information for the instance type
+            non_aws_model_pricing = pricing['pricing']['token_based']
+            # Calculate cost based on the number of input and output tokens
+            model_pricing = non_aws_model_pricing.get(instance_type, None)
+            if model_pricing:
                 logger.info("calculate_cost, calculating cost with token based pricing")
-                # Retrieve the pricing information for the instance type
-                non_aws_model_pricing = pricing['pricing']['token_based']
-                # Calculate cost based on the number of input and output tokens
-                model_pricing = non_aws_model_pricing.get(instance_type, None)
-                if model_pricing:
-                    input_token_cost = (prompt_tokens / 1000.0) * model_pricing['input-per-1k-tokens']
-                    output_token_cost = (completion_tokens / 1000.0) * model_pricing['output-per-1k-tokens']
-                    experiment_cost = input_token_cost + output_token_cost
-                    logger.info(f"instance_type={instance_type}, prompt_tokens={prompt_tokens}, "
-                                f"input_token_cost={input_token_cost}, output_token_cost={completion_tokens}, "
-                                f"output_token_cost={output_token_cost}, experiment_cost={experiment_cost}")
-                else:
-                    logger.error(f"model pricing for \"{instance_type}\" not found, "
-                                 f"cannot calculate experiment cost")
+                input_token_cost = (prompt_tokens / 1000.0) * model_pricing['input-per-1k-tokens']
+                output_token_cost = (completion_tokens / 1000.0) * model_pricing['output-per-1k-tokens']
+                experiment_cost = input_token_cost + output_token_cost
+                logger.info(f"instance_type={instance_type}, prompt_tokens={prompt_tokens}, "
+                            f"input_token_cost={input_token_cost}, output_token_cost={completion_tokens}, "
+                            f"output_token_cost={output_token_cost}, experiment_cost={experiment_cost}")
             else:
-                logger.info("calculate_cost, calculating cost with PT pricing")
-                instance_based_pricing = pricing['pricing']['instance_based']
-                hourly_rate = instance_based_pricing.get(instance_type, None)
-                # calculating the experiment cost for instance based pricing
-                duration_in_hours_ceil = math.ceil(duration/3600)
-                experiment_cost = hourly_rate * duration_in_hours_ceil
-                logger.info(f"instance_type={instance_type}, hourly_rate={hourly_rate}, "
-                            f"duration_in_hours_ceil={duration_in_hours_ceil}, experiment_cost={experiment_cost}")
-
+                logger.error(f"model pricing for \"{instance_type}\" not found, "
+                             f"cannot calculate experiment cost")
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
