@@ -38,8 +38,8 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: gemini_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
-    prompt_template_dir: prompt_template
+    tokenizer_prefix: tokenizer 
+    prompt_template_dir: gemma_tokenizer
     prompt_template_file: prompt_template_gemini.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
@@ -121,7 +121,7 @@ experiments:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key: <your-gemini-api-key>
+      api_key: <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
@@ -142,7 +142,7 @@ experiments:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key: <your-gemini-api-key>
+      api_key: <your-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
