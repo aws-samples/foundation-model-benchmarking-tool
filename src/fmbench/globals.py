@@ -208,6 +208,12 @@ DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENC
 # this is for custom tokenizers
 TOKENIZER_DIR_S3 = config['s3_read_data']['tokenizer_prefix']
 TOKENIZER = 'tokenizer'
+# we take the first experiment's model id as the model whose tokenizer is used for 
+# counting tokens on the dataset. This is done just for ease of coding, this is just
+# token counting logic on the client side (does not impact the tokenizer the model uses)
+# NOTE: if tokenizer files are provided in the tokenizer directory then they take precedence
+# if the files are not present then we load the tokenizer for this model id from Hugging Face
+TOKENIZER_MODEL_ID = config['experiments'][0]['model_id']
 
 DEPLOYMENT_SCRIPT_S3 = config['s3_read_data']['scripts_prefix']
 

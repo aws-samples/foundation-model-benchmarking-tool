@@ -2,7 +2,7 @@
 
 You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. 
 The context may contain multiple question answer pairs as an example. Only answer the final question provided in the question section below.
-If you dont know the answer just say that you dont know. 
+If you dont know the answer just say that you dont know. Be concise with your answer.
 
 ```
 {context}

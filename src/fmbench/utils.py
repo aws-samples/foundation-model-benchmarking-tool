@@ -412,10 +412,17 @@ class CustomTokenizer:
     """A custom tokenizer class"""
     TOKENS: int = 1000
     WORDS: int = 750
+    HF_TOKEN_FNAME: str = os.path.join(os.path.dirname(os.path.realpath(__file__)), "scripts", "hf_token.txt")
+    if Path(HF_TOKEN_FNAME).is_file() is True:
+        print(f"{HF_TOKEN_FNAME} file found, going to set HF_TOKEN env var")
+        HF_TOKEN: str = Path(HF_TOKEN_FNAME).read_text().strip()
+        os.environ["HF_TOKEN"] = HF_TOKEN
+    else:
+        print(f"{HF_TOKEN_FNAME} file not found")
 
-    def __init__(self, bucket, prefix, local_dir):
+    def __init__(self, bucket, prefix, local_dir, model_id):
         print(f"CustomTokenizer, based on HF transformers, {bucket} "
-              f"prefix: {prefix} local_dir: {local_dir}")
+              f"prefix: {prefix} local_dir: {local_dir}, model_id: {model_id}")
         # Check if the tokenizer files exist in s3 and if not, use the autotokenizer
         download_multiple_files_from_s3(bucket, prefix, local_dir)
         # Load the tokenizer from the local directory
@@ -426,11 +433,18 @@ class CustomTokenizer:
         if dir_not_empty > 0:
             print(f"loading the provided tokenizer from local_dir={local_dir}, abs_path={abs_path}")
             self.tokenizer = AutoTokenizer.from_pretrained(local_dir)
-            print("successfully loaded the tokenizer using AutoTokenizer.from_pretrained")
+            print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from {local_dir}")
         else:
-            print(f"no tokenizer provided, the {local_dir}, abs_path={abs_path} is empty, "
-                  f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
-            self.tokenizer = None
+            print(f"{local_dir} directory is empty")
+            try:
+                print(f"going to download tokenizer from HF for \"{model_id}\"")
+                self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+                print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from HF for \"{model_id}\"")
+            except Exception as e:
+                print("exception while loading tokenizer from HuggingFace")
+                print(f"no tokenizer provided, the {local_dir}, abs_path={abs_path} is empty, "
+                      f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
+                self.tokenizer = None
 
     def count_tokens(self, text):
         if self.tokenizer is not None:
@@ -438,4 +452,4 @@ class CustomTokenizer:
         else:
             return int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
 
-_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER)
+_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER, globals.TOKENIZER_MODEL_ID)
