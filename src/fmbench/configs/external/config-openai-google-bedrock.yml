@@ -95,10 +95,8 @@ datasets:
 # LLM panelist information, inference parameters, etc.
 model_evaluations: model_eval_all_info.yml
 
-
 metrics:
   dataset_of_interest: en_5000-6000
-
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
   
