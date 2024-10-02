@@ -77,9 +77,12 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
         model_json_file: str = "model.json"
         model_json_content: Dict = {}
         model_json_path: str = os.path.join(triton_dir, model_json_file)
+        if container_params is None or container_params == {}:
+            logger.error(f"container_params is not specified, fix the config file to proceed")
+            ValueError("container_params is not specified, fix the config file to proceed")
         # if there is a tp degree in inference container parameters, delete it since those will already be added here. TP
-        # degree is required in the container_params within the configuration file
-        container_params.pop('tp_degree', None)
+        # degree is required in the container_params within the configuration file        
+        del container_params['tp_degree']
         # if serving.properties are provided in the inference container parameters, then pop 
         # it out, since it is not needed for deploying the model using triton on neuron
         if 'serving.properties' in container_params:
@@ -90,7 +93,7 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
         if backend == constants.BACKEND.VLLM_BACKEND:
             logger.info(f"Handling parameter subsitution for {backend}")
             with open(model_json_path, "w") as f:
-                model_json_content['model']: str = hf_model_id
+                model_json_content['model'] = hf_model_id
                 model_json_content["tensor_parallel_size"] = tp_degree
                 # update the model.json to contain additional variables, such as
                 # max_num_seqs, max_model_len, batch_size and more
@@ -100,7 +103,7 @@ def handle_triton_serving_properties_and_inf_params(triton_dir: str,
         elif backend == constants.BACKEND.DJL_BACKEND:
             logger.info(f"Handling parameter subsitution for {backend}")
             with open(model_json_path, "w") as f:
-                model_json_content['model_id']: str = hf_model_id
+                model_json_content['model_id'] = hf_model_id
                 model_json_content["tensor_parallel_degree"] = tp_degree
                 # update the model.json to contain additional variables, such as
                 # max_num_seqs, max_model_len, batch_size and more

@@ -34,6 +34,7 @@ pricing:
     m7a.24xlarge: 5.564
     m5.xlarge: 0.192
     g5.xlarge: 1.006
+    g5.4xlarge: 1.624
     g5.2xlarge: 1.212
     g5.12xlarge: 5.672
     g5.24xlarge: 8.144

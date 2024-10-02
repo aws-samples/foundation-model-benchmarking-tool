@@ -363,7 +363,10 @@ def _download_multiple_files_from_local_write_path(prefix, local_dir):
 def _download_multiple_files_from_local_read_path(prefix, local_dir):    
     src = _get_local_read_path(prefix)
     print(f"_download_multiple_files_from_local_read_path, prefix={prefix}, src={src}, local_dir={local_dir}")
-    shutil.copytree(src, local_dir, dirs_exist_ok=True)
+    if Path(src).is_dir():
+        shutil.copytree(src, local_dir, dirs_exist_ok=True)
+    else:
+        print(f"_download_multiple_files_from_local_read_path, {src} does not exist, no files to copy")
 
 def download_multiple_files_from_s3(bucket_name, prefix, local_dir):
     if _is_write_local_or_both():

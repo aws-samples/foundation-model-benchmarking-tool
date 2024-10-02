@@ -207,8 +207,7 @@ http {{
     return docker_compose, nginx_config, per_container_info_list
 
 
-def prepare_docker_compose_yml(model_name: str,
-                               model_id: str,
+def prepare_docker_compose_yml(model_id: str,
                                model_copies: str,
                                inference_params: Dict,
                                image: str,
@@ -228,19 +227,16 @@ def prepare_docker_compose_yml(model_name: str,
     # this is specific to the triton container
     # then default it to None and let the inference
     # container the best default values for parameters
-    container_params: Optional[Dict] = inference_params.get('container_params', None)
-    logger.info(f"container_params that will be used for {image} image: {container_params}")
-    if container_params is not None and 'tp_degree' in container_params:
-        tp_degree: int = container_params.get('tp_degree', None)
-        logger.info(f"Inference container parameters provided in the configuration file within inference spec: {container_params}")
-    elif 'tp_degree' in inference_params:
-        tp_degree = inference_params.get('tp_degree', None)
-        logger.info(f"TP degree being used for this experiment found in inference spec within the config file: {tp_degree}")
-    else:
-        logger.error(f"TP degree is not provided in the inference spec or the container params. Please specify the TP degree in the configuration file")
-        return
-    batch_size: int = inference_params.get('batch_size', 4)
-    backend: Optional[str] = inference_params.get('backend', None)
+    container_params: Optional[Dict] = inference_params.get('container_params', dict())
+    logger.info(f"container_params that will be used for {image} image: {container_params}")  
+
+    # the following code handles backwards compatibility where batch_Size and tp_degree are now specified
+    # as part of container params but if not found then it falls back to the original scheme where
+    # they were specified as part of the inference params
+    batch_size: int = container_params.get('batch_size', inference_params.get('batch_size', 4))
+    tp_degree: int = container_params.get('tp_degree', inference_params.get('tp_degree', 1))
+
+    backend: Optional[str] = inference_params.get('backend')
     triton_content: Optional[str] = None
     if backend is not None:
         if backend == constants.BACKEND.VLLM_BACKEND:

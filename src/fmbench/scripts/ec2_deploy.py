@@ -219,8 +219,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model_copies_actual = 1
     if (container_type == constants.CONTAINER_TYPE_DJL) or (container_type == constants.CONTAINER_TYPE_TRITON):  
         logger.info(f"container_type={container_type}, is_neuron_instance={is_neuron_instance}, going to create docker compose yml")
-        model_copies_actual = prepare_docker_compose_yml(model_name=Path(model_id).name,
-                                                         model_id=model_id,
+        model_copies_actual = prepare_docker_compose_yml(model_id=model_id,
                                                          model_copies=model_copies,
                                                          inference_params=experiment_config['inference_spec'],
                                                          image=image_uri,
