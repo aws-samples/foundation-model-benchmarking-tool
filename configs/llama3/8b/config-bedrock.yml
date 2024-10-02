@@ -1,0 +1,441 @@
+general:
+  name: "fmbench-bedrock"      
+  model_name: "FMs available in Amazon Bedrock"
+  
+# AWS and SageMaker settings
+aws:
+  region: {region}
+  # uncomment and set the Role ARN if not running on sagemaker
+  sagemaker_execution_role: {role_arn}
+  ## these are the buckets/resources you will create in your account below:
+  bucket: {write_bucket}
+
+## WRITE BUCKET -- Write the results, data, metrics, endpoint.json and payloads to this bucket directory
+dir_paths:
+    data_prefix: data ## add the prefix for all your data management/storage
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics
+    models_dir: models
+    metadata_dir: metadata ## add a file here to dynamically track the metrics dir
+
+## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
+s3_read_data:
+    read_bucket: {read_bucket}
+    scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+    script_files:
+    - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    configs_prefix: configs
+    config_files:
+    - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
+    source_data_files:
+    - 2wikimqa_e.jsonl
+    - 2wikimqa.jsonl
+    - hotpotqa_e.jsonl
+    - hotpotqa.jsonl
+    - narrativeqa.jsonl
+    - triviaqa_e.jsonl
+    - triviaqa.jsonl
+    tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    prompt_template_dir: prompt_template
+    prompt_template_file: prompt_template_titan_text.txt ## add your desired prompt template type
+
+## section that enables container to run notebooks and python scripts automatically 
+run_steps:
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: no
+    3_run_inference.ipynb: yes
+    4_model_metric_analysis.ipynb: yes
+    5_cleanup.ipynb: no
+
+datasets:
+  prompt_template_keys:
+  - input
+  - context
+  # - text
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 3840
+    payload_file: payload_en_3000-3840.jsonl
+ 
+metrics:
+  dataset_of_interest: en_3000-3840
+  
+pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
+  
+inference_parameters: 
+  bedrock:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
+
+# Model configurations for mistral 7b instruct on Amazon Bedrock
+experiments:
+  - name: mistral.mistral-7b-instruct-v0:2
+    model_id: mistral.mistral-7b-instruct-v0:2
+    model_version: "*"
+    model_name: mistral.mistral-7b-instruct-v0:2
+    ep_name: mistral.mistral-7b-instruct-v0:2
+    instance_type: mistral.mistral-7b-instruct-v0:2
+    image_uri:
+    deploy: no
+    instance_count: 1
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: mistral.mixtral-8x7b-instruct-v0:1
+    model_id: mistral.mixtral-8x7b-instruct-v0:1
+    model_version: "*"
+    model_name: mistral.mixtral-8x7b-instruct-v0:1
+    ep_name: mistral.mixtral-8x7b-instruct-v0:1
+    instance_type: mistral.mixtral-8x7b-instruct-v0:1
+    image_uri:
+    deploy: no
+    instance_count: 1
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+    
+
+  - name: meta.llama2-13b-chat-v1
+    model_id: meta.llama2-13b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-13b-chat-v1
+    ep_name: meta.llama2-13b-chat-v1
+    instance_type: meta.llama2-13b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: meta.llama2-70b-chat-v1
+    model_id: meta.llama2-70b-chat-v1
+    model_version: "*"
+    model_name: meta.llama2-70b-chat-v1
+    ep_name: meta.llama2-70b-chat-v1
+    instance_type: meta.llama2-70b-chat-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: amazon.titan-text-lite-v1
+    model_id: amazon.titan-text-lite-v1
+    model_version: "*"
+    model_name: amazon.titan-text-lite-v1
+    ep_name: amazon.titan-text-lite-v1
+    instance_type: 'amazon.titan-text-lite-v1'
+    image_uri: 
+    deploy: no 
+    instance_count: 
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: amazon.titan-text-express-v1
+    model_id: amazon.titan-text-express-v1
+    model_version: "*"
+    model_name: amazon.titan-text-express-v1
+    ep_name: amazon.titan-text-express-v1
+    instance_type: amazon.titan-text-express-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env: 
+  - name: anthropic.claude-3-sonnet-20240229-v1:0
+    model_id: anthropic.claude-3-sonnet-20240229-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-sonnet-20240229-v1:0
+    ep_name: anthropic.claude-3-sonnet-20240229-v1:0
+    instance_type: anthropic.claude-3-sonnet-20240229-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: anthropic.claude-3-haiku-20240307-v1:0
+    model_id: anthropic.claude-3-haiku-20240307-v1:0
+    model_version: "*"
+    model_name: anthropic.claude-3-haiku-20240307-v1:0
+    ep_name: anthropic.claude-3-haiku-20240307-v1:0
+    instance_type: anthropic.claude-3-haiku-20240307-v1:0
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: cohere.command-text-v14
+    model_id: cohere.command-text-v14
+    model_version: "*"
+    model_name: cohere.command-text-v14
+    ep_name: cohere.command-text-v14
+    instance_type: cohere.command-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: cohere.command-light-text-v14
+    model_id: cohere.command-light-text-v14
+    model_version: "*"
+    model_name: cohere.command-light-text-v14
+    ep_name: cohere.command-light-text-v14
+    instance_type: cohere.command-light-text-v14
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: ai21.j2-mid-v1
+    model_id: ai21.j2-mid-v1
+    model_version: "*"
+    model_name: ai21.j2-mid-v1
+    ep_name: ai21.j2-mid-v1
+    instance_type: ai21.j2-mid-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+  - name: ai21.j2-ultra-v1
+    model_id: ai21.j2-ultra-v1
+    model_version: "*"
+    model_name: ai21.j2-ultra-v1
+    ep_name: ai21.j2-ultra-v1
+    instance_type: ai21.j2-ultra-v1
+    image_uri:
+    deploy: no
+    instance_count:
+    deployment_script:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    env:
+    
+report:
+  latency_budget: 2
+  cost_per_10k_txn_budget: 50
+  error_rate_budget: 0
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025

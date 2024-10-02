@@ -1,0 +1,94 @@
+# This file contains the evaluation information for majority voting. Here, we initialize
+# the embeddings model used to calculate quantitative metrics such as 
+# cosine similarity. The other part of this evaluation is using subjective
+# evaluation methods: majority voting. In the case of when a ground truth
+# is provided, FMBench can use majority voting with the help of a 'panel of judges' to get a verdict [correct, incorrect].
+# For more information, view this paper: https://arxiv.org/pdf/2404.18796. Majority voting using a panel of LLM evaluators
+# helps in getting a 'close to human evaluation', reduces cost of evaluations, and eliminates intra model bias.
+model_evaluations:
+  ground_truth_col: {ground_truth}
+  question_col: {question}
+
+  PoLL_Composition_and_Voting: 
+    method: majority_vote
+    # Set this variable to yes if you want to make partial correct/incorrect decisions based
+    # on quantitative metrics like cosine similarity, levenshtein score and token set ratio. Set
+    # this to yes only if you have a very direct QnA use case
+    use_quantitative_metrics: yes
+  
+  model_eval_dir:
+    # This is the directory in S3 and locally where all the evaluation instructions are stored for 
+    # evaluating the candidate model responses using majority voting
+    eval_prompts_dir: eval_criteria
+    # the directory contains a folder that contains all the files with rules for evaluations
+    # and another directory that stores the standard prompt template that is used for evlauation
+    # of different answers at runtime. For example, `claude_eval_prompt_templates` contains the 
+    # prompt template that claude will use for majority voting, etc.
+    eval_prompt_template_dir_list:
+    - claude_eval_prompt_templates
+    - llama3_eval_prompt_templates
+    - cohere_eval_prompt_templates
+    - mistral_eval_prompt_templates
+  
+    # These are the rules that are prefilled within the 
+    # prompt templates evaluating for majority voting
+    eval_instructions_dir: eval_instructions
+    eval_instructions_files:
+    - evaluation_instructions_majority_vote.txt
+
+  # This represents the information that is used to get the quantitative metrics 
+  # from the evaluation step. This includes calculating the cosine similarity. 
+  # If a ground truth is provided, measure the cosine similarity against the ground truth, 
+  # else measure it against the context provided. We use the `sentence-transformers/all-mpnet-base-v2`
+  # dataset. There is also an option to use the Titan embeddings model (WIP)
+  quantitative_eval_info:
+    embeddings_model_id:
+      model_id: sentence-transformers/all-mpnet-base-v2
+    # This contains information about quantitative metrics thresholds that need to be set while
+    # evaluating whether a candidate model response is correct or incorrect without parsing it through
+    # the panel of LLM evaluation procedure
+
+    # There are two cosine similarity verdict scores that are used, one to determine whether a candidate model
+    # response is incorrect and another to determine whether it is correct. If the incorrect threshold is met, for 
+    # example if the LLM evaluator provides an incorrect verdict, the actual incorrectness will be defined once
+    # it also is below the incorrect cosine similarity threshold of for example 0.40. 
+    # If the LLM evaluator provides a correct verdict and it exceeds the correctness cosine similarity score of
+    # 0.05 for example, then the answer is defined as correctly evaluated as "correct"
+    incorrect_verdict_cosine_similarity_threshold: 0.40
+    correct_verdict_cosine_similarity_threshold: 0.01
+  # This represents the information that is used to get subjective evaluations on the 
+  # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
+  # each content from the inference step on different evaluation criteria. The information about 
+  # the LLM as a judge panel is given below that is used in the majority voting
+  subjective_eval_info:
+    # this is the judge panel list that is used in the evaluation process
+    judge_panel_list:
+      # Information on judge 1 on the evaluation judge panel
+      - model_id: meta.llama3-70b-instruct-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "llama3_eval_prompt_templates"
+        eval_prompt_template_name: "llama3_eval_{method_name}"
+      # Information on judge 2 on the evaluation judge panel
+      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "claude_eval_prompt_templates"
+        eval_prompt_template_name: "claude_eval_{method_name}"
+      # Information on judge 3 on the evaluation judge panel
+      # We use the most powerful cohere model - cohere command R +
+      - model_id: cohere.command-r-plus-v1:0
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "cohere_eval_prompt_templates"
+        eval_prompt_template_name: "cohere_eval_{method_name}"
+    # number of parallel calls made asyncronously to bedrock using Ray
+    run_parallel_inference_count: 10
+    # Common inference parameters used in the evaluation process
+    # We use LiteLLM for interfacing with Bedrock
+    inference_parameters:
+      temperature: 0.1
+      max_tokens: 300
+      top_p: 0.92
+      caching: False
+    

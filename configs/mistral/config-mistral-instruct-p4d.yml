@@ -1,0 +1,140 @@
+general:
+  name: "Mistral-7B-Instruct-v0-2-p4d"
+  model_name: "Mistral-7B-Instruct-v0-2"
+ 
+aws:
+  region: {region}
+  sagemaker_execution_role: {role_arn}
+  bucket: {write_bucket}
+
+dir_paths:
+    data_prefix: data
+    prompts_prefix: prompts
+    all_prompts_file: all_prompts.csv
+    metrics_dir: metrics
+    models_dir: models
+    metadata_dir: metadata
+
+s3_read_data:
+    read_bucket: {read_bucket}
+    scripts_prefix: scripts
+    script_files:
+    - hf_token.txt
+    configs_prefix: configs
+    config_files:
+    - pricing.yml # mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
+    source_data_prefix: source_data
+    source_data_files:
+    - 2wikimqa_e.jsonl
+    - 2wikimqa.jsonl
+    - hotpotqa_e.jsonl
+    - hotpotqa.jsonl
+    - narrativeqa.jsonl
+    - triviaqa_e.jsonl
+    - triviaqa.jsonl
+    tokenizer_prefix: tokenizer_mistral
+    prompt_template_dir: prompt_template
+    prompt_template_file: prompt_template_mistral.txt
+
+## section that enables container to run notebooks and python scripts automatically 
+run_steps:
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: yes
+    2_deploy_model.ipynb: yes
+    3_run_inference.ipynb: yes
+    4_model_metric_analysis.ipynb: yes
+    5_cleanup.ipynb: yes
+
+datasets:
+  prompt_template_keys:
+  - input
+  - context
+  filters:
+  - language: en    
+    min_length_in_tokens: 1
+    max_length_in_tokens: 500
+    payload_file: payload_en_1-500.jsonl
+  - language: en
+    min_length_in_tokens: 500
+    max_length_in_tokens: 1000
+    payload_file: payload_en_500-1000.jsonl
+  - language: en
+    min_length_in_tokens: 1000
+    max_length_in_tokens: 2000
+    payload_file: payload_en_1000-2000.jsonl
+  - language: en
+    min_length_in_tokens: 2000
+    max_length_in_tokens: 3000
+    payload_file: payload_en_2000-3000.jsonl
+  - language: en
+    min_length_in_tokens: 3000
+    max_length_in_tokens: 4000
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 305
+    max_length_in_tokens: 3997
+    payload_file: payload_en_305-3997.jsonl
+  - language: en
+    min_length_in_tokens: 1600
+    max_length_in_tokens: 5000
+    payload_file: payload_en_1600-5000.jsonl
+
+metrics:
+  dataset_of_interest: en_1000-2000
+  
+pricing: pricing.yml
+  
+inference_parameters:
+  sagemaker:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 200
+
+experiments:
+  - name: Mistral-7B-Instruct-v0.2-p4d
+    model_id: mistralai/Mistral-7B-Instruct-v0.2
+    model_version: "*"
+    model_name: Mistral-7B-Instruct-v0-2
+    ep_name: Mistral-7B-Instruct-v0-2
+    download_from_hf_place_in_s3: None
+    model_s3_path: None
+    instance_type: "ml.p4d.24xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.26.0-deepspeed0.12.6-cu121
+    deploy: yes
+    instance_count: 1
+    deployment_script: deploy_w_djl_serving.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: sagemaker
+    serving.properties: |
+      engine=Python
+      option.tensor_parallel_degree=2
+      option.model_id=mistralai/Mistral-7B-Instruct-v0.2
+      option.max_rolling_batch_size=64
+      option.rolling_batch=vllm
+      option.dtype=fp16
+    payload_files:
+    - payload_en_1000-2000.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 5
+    - 10
+    - 20
+    - 30
+    env:
+
+report:
+  latency_budget: 1
+  cost_per_10k_txn_budget: 20
+  error_rate_budget: 0
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025
+  latency_vs_token_len_chart: 
+    y_ticks:
+    title: "Effect of token length on inference latency for \"mistralai/Mistral-7B-Instruct-v0.2\""
