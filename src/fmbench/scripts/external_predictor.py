@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 # Initialize the key in the inference spec for each model. If the key is 
 # an OpenAI API key or a Gemini API key, it will be initialized here.
 SCRIPT_DIRECTORY: str = os.path.dirname(os.path.realpath(__file__))
-EXTERNAL_OPEN_AI_KEY_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "openai_key.txt")
+EXTERNAL_OPENAI_KEY_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "openai_key.txt")
 EXTERNAL_GEMINI_KEY_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "gemini_key.txt")
 
 # This class handles predictions for non AWS models: OpenAI & Gemini models. This predictor class
@@ -86,12 +86,12 @@ class ExternalPredictor(FMBenchPredictor):
 
         try:
             # OpenAI key
-            if Path(EXTERNAL_OPEN_AI_KEY_FNAME).is_file():
-                openai_key = Path(EXTERNAL_OPEN_AI_KEY_FNAME).read_text().strip()
+            if Path(EXTERNAL_OPENAI_KEY_FNAME).is_file():
+                openai_key = Path(EXTERNAL_OPENAI_KEY_FNAME).read_text().strip()
                 os.environ["OPENAI_API_KEY"] = openai_key
-                logger.info(f"OpenAI key file found and loaded: {EXTERNAL_OPEN_AI_KEY_FNAME}")
+                logger.info(f"OpenAI key file found and loaded: {EXTERNAL_OPENAI_KEY_FNAME}")
             else:
-                logger.warning(f"OpenAI key file not found: {EXTERNAL_OPEN_AI_KEY_FNAME}")
+                logger.warning(f"OpenAI key file not found: {EXTERNAL_OPENAI_KEY_FNAME}")
 
             # Gemini Key
             if Path(EXTERNAL_GEMINI_KEY_FNAME).is_file():
