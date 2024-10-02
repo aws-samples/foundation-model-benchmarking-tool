@@ -25,6 +25,8 @@ s3_read_data:
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
     - hf_token.txt  ## add your scripts files you have in s3 (including inference files, serving stacks, if any)
+    - openai_key.txt ## add your api keys for non aws models here so that they are used successfully during prediction
+    - gemini_key.txt
 
     configs_prefix: configs
     config_files:
@@ -87,10 +89,6 @@ datasets:
     min_length_in_tokens: 5000
     max_length_in_tokens: 6000
     payload_file: payload_en_5000-6000.jsonl
-  - language: en
-    min_length_in_tokens: 305
-    max_length_in_tokens: 3997
-    payload_file: payload_en_305-3997.jsonl
  
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -121,7 +119,6 @@ experiments:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key: <your-openai-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
@@ -142,7 +139,6 @@ experiments:
     inference_script: external_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      api_key: <your-openai-api-key>
       parameter_set: external
     payload_files:
     - payload_en_1-500.jsonl
