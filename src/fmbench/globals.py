@@ -213,7 +213,7 @@ TOKENIZER = 'tokenizer'
 # token counting logic on the client side (does not impact the tokenizer the model uses)
 # NOTE: if tokenizer files are provided in the tokenizer directory then they take precedence
 # if the files are not present then we load the tokenizer for this model id from Hugging Face
-TOKENIZER_MODEL_ID = config['experiments'][0]['model_id']
+TOKENIZER_MODEL_ID = config['experiments'][0].get('model_id')
 
 DEPLOYMENT_SCRIPT_S3 = config['s3_read_data']['scripts_prefix']
 

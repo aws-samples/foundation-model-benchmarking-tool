@@ -6,6 +6,7 @@ import boto3
 import litellm
 import logging
 import pandas as pd
+from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional
 from litellm import completion, token_counter
@@ -17,6 +18,12 @@ from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
 # set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize the key in the inference spec for each model. If the key is 
+# an OpenAI API key or a Gemini API key, it will be initialized here.
+SCRIPT_DIRECTORY: str = os.path.dirname(os.path.realpath(__file__))
+EXTERNAL_OPEN_AI_KEY_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "openai_key.txt")
+EXTERNAL_GEMINI_KEY_FNAME: str = os.path.join(SCRIPT_DIRECTORY, "gemini_key.txt")
 
 # This class handles predictions for non AWS models: OpenAI & Gemini models. This predictor class
 # is tested with the following models: gpt-4o-mini, gpt-4o, gemini-1.5-pro, gemini-1.5-flash
@@ -46,11 +53,6 @@ class ExternalPredictor(FMBenchPredictor):
             # override these defaults if there is an inference spec provided
             if inference_spec:
                 parameters: Optional[Dict] = inference_spec.get('parameters')
-                self._api_key: Optional[str] = inference_spec.get('api_key', None)
-                logger.info(f"Open AI API key: {self._api_key}")
-                if self._api_key is None:
-                    logger.error(f"API key is not provided for external model id, please provide the key in the config file.")
-                    return
                 if parameters:
                     self._temperature = parameters.get('temperature', self._temperature)
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
@@ -69,15 +71,9 @@ class ExternalPredictor(FMBenchPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
-        # Initialize the key in the inference spec for each model. If the key is 
-        # an OpenAI API key or a Gemini API key, it will be initialized here.
         # The inference format for each option (OpenAI/Gemini) is the same using LiteLLM
         # for streaming/non-streaming
         # set the environment for the specific model 
-        if 'gemini' in self.endpoint_name:
-            os.environ["GEMINI_API_KEY"] = self._api_key
-        else:
-            os.environ["OPENAI_API_KEY"] = self._api_key
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
         prompt_tokens: Optional[int] = None
@@ -85,8 +81,26 @@ class ExternalPredictor(FMBenchPredictor):
         TTFT: Optional[float] = None
         TPOT: Optional[float] = None
         TTLT: Optional[float] = None
+        openai_key: Optional[str] = None
+        gemini_key: Optional[str] = None
 
         try:
+            # OpenAI key
+            if Path(EXTERNAL_OPEN_AI_KEY_FNAME).is_file():
+                openai_key = Path(EXTERNAL_OPEN_AI_KEY_FNAME).read_text().strip()
+                os.environ["OPENAI_API_KEY"] = openai_key
+                logger.info(f"OpenAI key file found and loaded: {EXTERNAL_OPEN_AI_KEY_FNAME}")
+            else:
+                logger.warning(f"OpenAI key file not found: {EXTERNAL_OPEN_AI_KEY_FNAME}")
+
+            # Gemini Key
+            if Path(EXTERNAL_GEMINI_KEY_FNAME).is_file():
+                gemini_key = Path(EXTERNAL_GEMINI_KEY_FNAME).read_text().strip()
+                os.environ["GEMINI_API_KEY"] = gemini_key
+                logger.info(f"Gemini key file found and loaded: {EXTERNAL_GEMINI_KEY_FNAME}")
+            else:
+                logger.warning(f"Gemini key file not found: {EXTERNAL_GEMINI_KEY_FNAME}")
+
             # recording latency for when streaming is enabled
             st = time.perf_counter()
             response = completion(model=self._endpoint_name,
