@@ -2,17 +2,22 @@ import os
 import json
 import copy
 import time
+import stat
 import logging
 import requests
+import tempfile
 import subprocess
 import pandas as pd
+from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional
-from fmbench.utils import count_tokens
 from fmbench.scripts import constants
+from fmbench.utils import count_tokens
 from fmbench.scripts.inference_containers.utils import get_accelerator_type
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
+from fmbench.scripts.inference_containers.utils import (STOP_AND_RM_CONTAINER,
+                                                        FMBENCH_MODEL_CONTAINER_NAME)
                                             
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -111,6 +116,25 @@ class EC2Predictor(FMBenchPredictor):
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
 
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        script = f"""#!/bin/sh
+
+        {STOP_AND_RM_CONTAINER}
+        """
+        tmpdir = tempfile.gettempdir()
+        script_file_path = os.path.join(tmpdir, "shutdown_container.sh")
+        Path(script_file_path).write_text(script)
+        st = os.stat(script_file_path)
+        os.chmod(script_file_path, st.st_mode | stat.S_IEXEC)
+
+        logger.info(f"going to run script {script_file_path}")
+        subprocess.run(["bash", script_file_path], check=True)
+        logger.info(f"done running bash script")
+        return None
+    
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
@@ -150,6 +174,12 @@ class EC2Predictor(FMBenchPredictor):
     def inference_parameters(self) -> Dict:
         """The inference parameters property."""
         return self._inference_spec.get("parameters")
+    
+    @property
+    def platform_type(self) -> Dict:
+        """The inference parameters property."""
+        return constants.PLATFORM_EC2
+
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     return EC2Predictor(endpoint_name, inference_spec, metadata)

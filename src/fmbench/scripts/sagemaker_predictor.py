@@ -6,6 +6,7 @@ import sagemaker
 import pandas as pd
 from datetime import datetime
 from typing import Dict, Optional
+from fmbench.scripts import constants
 from fmbench.utils import count_tokens
 from sagemaker.predictor import Predictor
 from sagemaker.serializers import JSONSerializer
@@ -209,11 +210,22 @@ class SageMakerPredictor(FMBenchPredictor):
                     period: int = 60) -> pd.DataFrame:
         return get_endpoint_metrics(self._endpoint_name, self._variant_name, start_time, end_time)
         
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        return None
+    
     @property
     def inference_parameters(self) -> Dict:
         """The inference parameters property."""
         return self._inference_spec.get("parameters")
 
 
+    @property
+    def platform_type(self) -> Dict:
+        """The inference parameters property."""
+        return constants.PLATFORM_SAGEMAKER
+    
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     return SageMakerPredictor(endpoint_name, inference_spec, metadata)

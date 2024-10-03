@@ -31,6 +31,8 @@ class MODEL_COPIES(str, Enum):
 PLATFORM_SAGEMAKER: str = "sagemaker"
 PLATFORM_EKS: str = "eks"
 PLATFORM_EC2: str = "ec2"
+PLATFORM_BEDROCK: str = "bedrock"
+PLATFORM_EXTERNAL: str = "external"
 
 # inference server listen port
 BASE_PORT_FOR_CONTAINERS: int = 8000

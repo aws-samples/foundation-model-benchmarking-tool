@@ -65,6 +65,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml)  
+[├── llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml](configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml)  
@@ -124,6 +125,9 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml](configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml)  
 [└── llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml]( configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
+[llama3.2](configs/llama3.2)  
+[├── llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+[└── llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml]( configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  

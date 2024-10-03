@@ -7,6 +7,7 @@ import logging
 import requests
 import pandas as pd
 from datetime import datetime
+from fmbench.scripts import constants
 from fmbench.utils import count_tokens
 from typing import Dict, Optional, List
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
@@ -125,10 +126,21 @@ class RESTPredictor(FMBenchPredictor):
         # not implemented
         return None
 
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        return None
+    
     @property
     def inference_parameters(self) -> Dict:
         """The inference parameters property."""
         return self._inference_spec.get("parameters")
 
+    @property
+    def platform_type(self) -> Dict:
+        """The inference parameters property."""
+        return constants.PLATFORM_EXTERNAL
+    
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     return RESTPredictor(endpoint_name, inference_spec, metadata)

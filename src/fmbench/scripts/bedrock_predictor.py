@@ -7,6 +7,7 @@ import litellm
 import logging
 import pandas as pd
 from datetime import datetime
+from fmbench.scripts import constants
 from typing import Dict, Optional, List
 from litellm import completion, token_counter
 from fmbench.scripts.stream_responses import get_response_stream
@@ -255,6 +256,12 @@ class BedrockPredictor(FMBenchPredictor):
         # not implemented
         return None
 
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        return None
+
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
@@ -267,6 +274,10 @@ class BedrockPredictor(FMBenchPredictor):
                     max_tokens=self._max_tokens,
                     top_p=self._top_p)
 
+    @property
+    def platform_type(self) -> Dict:
+        """The inference parameters property."""
+        return constants.PLATFORM_BEDROCK
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
     if endpoint_name in EMBEDDING_MODELS:

@@ -56,6 +56,8 @@ configs/llama3.1/8b/config-llama3.1-8b-inf2-48xl-deploy-tp-8-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml
 configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml
+configs/llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml
+configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml
 configs/llama3/70b/config-bedrock.yml
 configs/llama3/70b/config-ec2-llama3-70b-instruct.yml
 configs/llama3/70b/config-ec2-neuron-llama3-70b-inf2-48xl-deploy-sm.yml
@@ -79,6 +81,7 @@ configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-djl-ec2.yml
 configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml
 configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml
 configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml
+configs/llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml
 configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml
 configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml
 configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml
@@ -122,6 +125,7 @@ configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml
 configs/phi/config-phi-3-g5.yml
 llama2_tokenizer/.keep
 llama3_1_tokenizer/.keep
+llama3_2_tokenizer/.keep
 llama3_tokenizer/.keep
 mistral_tokenizer/.keep
 phi_tokenizer/.keep

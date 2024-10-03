@@ -39,6 +39,13 @@ class FMBenchPredictor(ABC):
         """
         pass
 
+    @abstractmethod
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        return None
+
     @abstractproperty
     def endpoint_name(self) -> str:
         """The endpoint name property."""
@@ -46,6 +53,11 @@ class FMBenchPredictor(ABC):
 
     @abstractproperty
     def inference_parameters(self) -> Dict:
+        """The inference parameters property."""
+        pass
+
+    @abstractproperty
+    def platform_type(self) -> Dict:
         """The inference parameters property."""
         pass
 

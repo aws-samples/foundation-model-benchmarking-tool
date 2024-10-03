@@ -63,6 +63,8 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Mistral-7b-instruct**          |        |        |        |      ✅        | ✅                   |                     | ✅           | ✅           | ✅                           |                                    |
 | **Mistral-7b-AWQ**               |        |        |        |               |                      |                     |              | ✅           |                             |                                    |
 | **Mixtral-8x7b-instruct**        |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
+| **Llama3.2-1b instruct**         |  ✅    |      |      |              |                    |                   |              |              |                            |                                    |
+| **Llama3.2-3b instruct**         |  ✅    |      |      |              |                    |                   |              |              |                            |                                    |
 | **Llama3.1-8b instruct**         |  ✅    |   ✅   |   ✅   | ✅             | ✅                   | ✅                  |              |              | ✅                           |                                    |
 | **Llama3.1-70b instruct**        |        |        |        | ✅             |                      | ✅                  |              |              | ✅                           |                                    |
 | **Llama3-8b instruct**           |  ✅    |        |        | ✅             | ✅                   | ✅                  | ✅           | ✅           | ✅                           |                                    |
@@ -81,6 +83,12 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+
+## 2.0.10
+
+1. `Llama3.2-1b` and `Llama3.2-3b` support on EC2 g5.
+1. `Llama3-8b` on EC2 `g6e` instances.
+
 ## 2.0.9
 
 1. Triton-djl support for AWS Chips.
@@ -91,11 +99,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
 1. Misc. bug fixes.
 
-## 2.0.6
 
-1. Run multiple model copies with the DJL serving container and an Nginx load balancer on Amazon EC2.
-1. Config files for `Llama3.1-8b` on `g5`, `p4de` and `p5` Amazon EC2 instance types.
-1. Better analytics for creating internal leaderboards.
 
 
 [Release history](./release_history.md)
