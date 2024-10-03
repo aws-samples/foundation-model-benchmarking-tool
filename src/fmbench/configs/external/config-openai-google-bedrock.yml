@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-openai-gemini-bedrock models"      
+  name: "fmbench-opus-sonnet-gpt-gemini-llama"      
   model_name: "openai, gemini & bedrock models"
   
 # AWS and SageMaker settings
@@ -40,7 +40,7 @@ s3_read_data:
     - narrativeqa.jsonl
     - triviaqa_e.jsonl
     - triviaqa.jsonl
-    tokenizer_prefix: llama3_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
+    tokenizer_prefix: tokenizer
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_claude.txt ## add your desired prompt template type
 
@@ -48,7 +48,7 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_get_evaluations.ipynb: yes
     5_model_metric_analysis.ipynb: yes
@@ -114,15 +114,38 @@ inference_parameters:
 
 # Model configurations for openAI models
 experiments:
-  - name: gemini/gemini-1.5-pro
-    model_name: gemini/gemini-1.5-pro
-    ep_name: gemini/gemini-1.5-pro
-    instance_type: gemini/gemini-1.5-pro
+  - name: anthropic.claude-3-opus-20240229-v1:0
+    # model_id is interpreted in conjunction with the deployment_script, so if you
+    # use a JumpStart model id then set the deployment_script to jumpstart.py.
+    # if deploying directly from HuggingFace this would be a HuggingFace model id
+    # see the DJL serving deployment script in the code repo for reference.    
+    model_id: anthropic.claude-3-opus-20240229-v1:0
+    model_version: 
+    model_name: anthropic.claude-3-opus-20240229-v1:0
+    ep_name: anthropic.claude-3-opus-20240229-v1:0
+    instance_type: anthropic.claude-3-opus-20240229-v1:0
+    image_uri:
+    deploy: no
+    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
+    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
+    # See repo for details
     instance_count:
-    inference_script: external_predictor.py
+    deployment_script:
+    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+    # and Bedrock. You can also add your own. See repo for details
+    inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
-      parameter_set: external
+      # this should match one of the sections in the inference_parameters section above
+      parameter_set: bedrock
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
+      stop_token: "<|eot_id|>"
+    # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -131,28 +154,15 @@ experiments:
     - payload_en_3000-4000.jsonl
     - payload_en_4000-5000.jsonl
     - payload_en_5000-6000.jsonl
+    # concurrency level refers to number of requests sent in parallel to an endpoint
+    # the next set of requests is sent once responses for all concurrent requests have
+    # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
-    env:
-  - name: gemini/gemini-1.5-flash
-    model_name: gemini/gemini-1.5-flash
-    ep_name: gemini/gemini-1.5-flash
-    instance_type: gemini/gemini-1.5-flash
-    instance_count:
-    inference_script: external_predictor.py
-    inference_spec:
-      split_input_and_parameters: no
-      parameter_set: external
-    payload_files:
-    - payload_en_1-500.jsonl
-    - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
-    concurrency_levels:
-    - 1
+    # Environment variables to be passed to the container
+    # this is not a fixed list, you can add more parameters as applicable.
     env:
   - name: gpt-4o-mini
     model_name: gpt-4o-mini
@@ -193,6 +203,96 @@ experiments:
     - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
+    env:
+  - name: gemini/gemini-1.5-pro
+    model_name: gemini/gemini-1.5-pro
+    ep_name: gemini/gemini-1.5-pro
+    instance_type: gemini/gemini-1.5-pro
+    instance_count:
+    inference_script: external_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: external
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    env:
+  - name: gemini/gemini-1.5-flash
+    model_name: gemini/gemini-1.5-flash
+    ep_name: gemini/gemini-1.5-flash
+    instance_type: gemini/gemini-1.5-flash
+    instance_count:
+    inference_script: external_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: external
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    concurrency_levels:
+    - 1
+    env:
+  - name: anthropic.claude-3-5-sonnet-20240620-v1:0
+    # model_id is interpreted in conjunction with the deployment_script, so if you
+    # use a JumpStart model id then set the deployment_script to jumpstart.py.
+    # if deploying directly from HuggingFace this would be a HuggingFace model id
+    # see the DJL serving deployment script in the code repo for reference.    
+    model_id: anthropic.claude-3-5-sonnet-20240620-v1:0
+    model_version: 
+    model_name: anthropic.claude-3-5-sonnet-20240620-v1:0
+    ep_name: anthropic.claude-3-5-sonnet-20240620-v1:0
+    instance_type: anthropic.claude-3-5-sonnet-20240620-v1:0
+    image_uri:
+    deploy: no
+    # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
+    # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
+    # See repo for details
+    instance_count:
+    deployment_script:
+    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+    # and Bedrock. You can also add your own. See repo for details
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      # this should match one of the sections in the inference_parameters section above
+      parameter_set: bedrock
+      # to stream responses, set stream to true. Enter the start and stop token for the 
+      # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
+      # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
+      # the stop token only.
+      stream: False
+      start_token:
+      stop_token: "<|eot_id|>"
+    # runs are done for each combination of payload file and concurrency level
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
+    # concurrency level refers to number of requests sent in parallel to an endpoint
+    # the next set of requests is sent once responses for all concurrent requests have
+    # been received.
+    
+    # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
+    concurrency_levels:
+    - 1
+    # Environment variables to be passed to the container
+    # this is not a fixed list, you can add more parameters as applicable.
     env:
   # Experiment for claude 3 sonnet
   - name: anthropic.claude-3-sonnet-20240229-v1:0
@@ -329,7 +429,6 @@ experiments:
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
-    
     # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
