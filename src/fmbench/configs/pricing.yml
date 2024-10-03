@@ -49,6 +49,12 @@ pricing:
     anthropic.claude-3-5-sonnet-20240620-v1:0:
       input-per-1k-tokens: 0.003
       output-per-1k-tokens: 0.015
+    anthropic.claude-3-opus-20240229-v1:0:
+      input-per-1k-tokens: 0.015
+      output-per-1k-tokens: 0.075
+    anthropic.claude-3-5-sonnet-20240620-v1:0:
+      input-per-1k-tokens: 0.003
+      output-per-1k-tokens: 0.015
     anthropic.claude-3-haiku-20240307-v1:0:
       input-per-1k-tokens: 0.00025
       output-per-1k-tokens: 0.00125
