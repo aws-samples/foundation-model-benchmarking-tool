@@ -66,6 +66,7 @@ configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml
 configs/llama3/70b/config-llama3-70b-instruct-p4d.yml
 configs/llama3/8b/config-bedrock.yml
 configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml
+configs/llama3/8b/config-ec2-llama3-8b-g6e-2xlarge.yml
 configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml
 configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml
 configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml
@@ -84,6 +85,7 @@ configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml
 configs/llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml
 configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml
 configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml
+configs/llama3/8b/config-llama3-8b-inf2-48xlarge-triton-djl.yml
 configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml
 configs/llama3/8b/config-llama3-8b-inf2-g5.yml
 configs/llama3/8b/config-llama3-8b-instruct-all.yml

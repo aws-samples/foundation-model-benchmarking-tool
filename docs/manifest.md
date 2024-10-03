@@ -50,6 +50,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **└── llama3/8b**  
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-g6e-2xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-g6e-2xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml)  
@@ -68,6 +69,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml)  
+[├── llama3/8b/config-llama3-8b-inf2-48xlarge-triton-djl.yml](configs/llama3/8b/config-llama3-8b-inf2-48xlarge-triton-djl.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml](configs/llama3/8b/config-llama3-8b-inf2-g5-byoe-w-openorca.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-g5.yml](configs/llama3/8b/config-llama3-8b-inf2-g5.yml)  
 [├── llama3/8b/config-llama3-8b-instruct-all.yml](configs/llama3/8b/config-llama3-8b-instruct-all.yml)  
