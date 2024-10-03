@@ -211,6 +211,7 @@ experiments:
     concurrency_levels:
     - 1
     - 2
+    - 3
     - 4
     - 6
     - 8
