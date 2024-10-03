@@ -1,7 +1,9 @@
 import re
 import logging
 import pandas as pd
+import seaborn as sns
 from typing import List
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 
 # Configure logging
@@ -182,6 +184,78 @@ def plot_best_cost_instance_heatmap(summary_payload_df: pd.DataFrame,
     logger.info("======================================")
     logger.info(f"Heatmap plotting completed, saved to {output_filename}")
     logger.info("======================================")
+
+    return fig
+
+def plot_tps_vs_cost(df: pd.DataFrame,
+                     output_filename: str,
+                     model_id: str,
+                     subtitle: str) -> go.Figure:
+    """
+    Creates an interactive line chart to visualize the cost per second vs transactions per second
+    for different instance types.
+
+    Args:
+        df (pd.DataFrame): Input DataFrame containing instance data.
+        output_filename (str): Name of the file to save the plot.
+        model_id (str): ID of the model being analyzed.
+        subtitle (str): Subtitle for the plot.
+
+    Returns:
+        go.Figure: Plotly figure object.
+    """
+    # Calculate transactions per second for each instance type
+    df['transactions_per_second'] = df['transactions_per_minute'] / 60
+    
+    # Calculate cost per second
+    df['cost_per_second'] = df['transactions_per_second'] * df['cost_per_txn']
+
+    # Create the plot
+    fig = go.Figure()
+
+    # Add line traces for each instance type
+    for instance_type, group in df.groupby('instance_type'):
+        # Sort the group by TPS to ensure proper line connection
+        group = group.sort_values('transactions_per_second')
+        
+        fig.add_trace(go.Scatter(
+            x=group['transactions_per_second'],
+            y=group['cost_per_second'],
+            mode='lines+markers',
+            name=instance_type,
+            line=dict(shape='linear', width=2),  # Ensure linear interpolation and set line width
+            marker=dict(size=8),  # Marker size
+            connectgaps=True,
+            hoverinfo='text',
+            hovertext=[f"Instance Type: {instance_type}<br>"
+                       f"TPS: {tps:.2f}<br>"
+                       f"Cost per Second: ${cost_per_sec:.4f}<br>"
+                       f"Cost per Txn: ${cost_per_txn:.4f}<br>"
+                       f"Transactions per Minute: {tpm:.0f}"
+                       for tps, cost_per_sec, cost_per_txn, tpm in zip(group['transactions_per_second'], 
+                                                                       group['cost_per_second'],
+                                                                       group['cost_per_txn'],
+                                                                       group['transactions_per_minute'])]
+        ))
+
+    # Customize the plot
+    fig.update_layout(
+        title=f"Cost per Second vs TPS for {model_id}<br>{subtitle}",
+        xaxis_title="Transactions Per Second (TPS)",
+        yaxis_title="Cost per Second ($)",
+        legend_title="Instance Type",
+        font=dict(size=14),
+        hovermode="closest",
+        hoverdistance=10,  # Increase hover "snapping" distance
+    )
+
+    # Update axes to show more gridlines
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightGrey')
+    fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightGrey')
+
+    # Save the plot as an HTML file
+    fig.write_html(output_filename)
+    logger.info(f"Interactive TPS vs Cost per Second plot saved as {output_filename}")
 
     return fig
 
