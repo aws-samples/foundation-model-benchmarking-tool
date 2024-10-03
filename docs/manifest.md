@@ -12,33 +12,33 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── bedrock/config-bedrock-llama3-streaming.yml](configs/bedrock/config-bedrock-llama3-streaming.yml)  
 [├── bedrock/config-bedrock-models-OpenOrca.yml](configs/bedrock/config-bedrock-models-OpenOrca.yml)  
 [├── bedrock/config-bedrock-titan-text-express.yml](configs/bedrock/config-bedrock-titan-text-express.yml)  
-[└── bedrock/config-bedrock.yml]( configs/bedrock/config-bedrock.yml)  
+[└── bedrock/config-bedrock.yml](configs/bedrock/config-bedrock.yml)  
 **bert**  
-[└── bert/config-distilbert-base-uncased.yml]( configs/bert/config-distilbert-base-uncased.yml)  
+[└── bert/config-distilbert-base-uncased.yml](configs/bert/config-distilbert-base-uncased.yml)  
 **byoe**  
-[└── byoe/config-model-byo-sagemaker-endpoint.yml]( configs/byoe/config-model-byo-sagemaker-endpoint.yml)  
+[└── byoe/config-model-byo-sagemaker-endpoint.yml](configs/byoe/config-model-byo-sagemaker-endpoint.yml)  
 **eks_manifests**  
 [├── eks_manifests/llama3-ray-service.yaml](configs/eks_manifests/llama3-ray-service.yaml)  
-[└── eks_manifests/mistral-ray-service.yaml]( configs/eks_manifests/mistral-ray-service.yaml)  
+[└── eks_manifests/mistral-ray-service.yaml](configs/eks_manifests/mistral-ray-service.yaml)  
 **gemma**  
-[└── gemma/config-gemma-2b-g5.yml]( configs/gemma/config-gemma-2b-g5.yml)  
+[└── gemma/config-gemma-2b-g5.yml](configs/gemma/config-gemma-2b-g5.yml)  
 **llama2**  
 **├── llama2/13b**  
 [│   ├── llama2/13b/config-bedrock-sagemaker-llama2.yml](configs/llama2/13b/config-bedrock-sagemaker-llama2.yml)  
 [│   ├── llama2/13b/config-byo-rest-ep-llama2-13b.yml](configs/llama2/13b/config-byo-rest-ep-llama2-13b.yml)  
 [│   ├── llama2/13b/config-llama2-13b-inf2-g5-p4d.yml](configs/llama2/13b/config-llama2-13b-inf2-g5-p4d.yml)  
-[│   └── llama2/13b/config-llama2-13b-inf2-g5.yml]( configs/llama2/13b/config-llama2-13b-inf2-g5.yml)  
+[│   └── llama2/13b/config-llama2-13b-inf2-g5.yml](configs/llama2/13b/config-llama2-13b-inf2-g5.yml)  
 **├── llama2/70b**  
 [│   ├── llama2/70b/config-ec2-llama2-70b.yml](configs/llama2/70b/config-ec2-llama2-70b.yml)  
 [│   ├── llama2/70b/config-llama2-70b-g5-p4d-tgi.yml](configs/llama2/70b/config-llama2-70b-g5-p4d-tgi.yml)  
 [│   ├── llama2/70b/config-llama2-70b-g5-p4d-trt.yml](configs/llama2/70b/config-llama2-70b-g5-p4d-trt.yml)  
-[│   └── llama2/70b/config-llama2-70b-inf2-g5.yml]( configs/llama2/70b/config-llama2-70b-inf2-g5.yml)  
+[│   └── llama2/70b/config-llama2-70b-inf2-g5.yml](configs/llama2/70b/config-llama2-70b-inf2-g5.yml)  
 **└── llama2/7b**  
 [├── llama2/7b/config-llama2-7b-byo-sagemaker-endpoint.yml](configs/llama2/7b/config-llama2-7b-byo-sagemaker-endpoint.yml)  
 [├── llama2/7b/config-llama2-7b-g4dn-g5-trt.yml](configs/llama2/7b/config-llama2-7b-g4dn-g5-trt.yml)  
 [├── llama2/7b/config-llama2-7b-g5-no-s3-quick.yml](configs/llama2/7b/config-llama2-7b-g5-no-s3-quick.yml)  
 [├── llama2/7b/config-llama2-7b-g5-quick.yml](configs/llama2/7b/config-llama2-7b-g5-quick.yml)  
-[└── llama2/7b/config-llama2-7b-inf2-g5.yml]( configs/llama2/7b/config-llama2-7b-inf2-g5.yml)  
+[└── llama2/7b/config-llama2-7b-inf2-g5.yml](configs/llama2/7b/config-llama2-7b-inf2-g5.yml)  
 **llama3**  
 **├── llama3/70b**  
 [│   ├── llama3/70b/config-bedrock.yml -> ../../bedrock/config-bedrock.yml](configs/llama3/70b/config-bedrock.yml -> ../../bedrock/config-bedrock.yml)  
@@ -46,7 +46,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   ├── llama3/70b/config-ec2-neuron-llama3-70b-inf2-48xl-deploy-sm.yml](configs/llama3/70b/config-ec2-neuron-llama3-70b-inf2-48xl-deploy-sm.yml)  
 [│   ├── llama3/70b/config-llama3-70b-instruct-g5-48xl.yml](configs/llama3/70b/config-llama3-70b-instruct-g5-48xl.yml)  
 [│   ├── llama3/70b/config-llama3-70b-instruct-g5-p4d.yml](configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml)  
-[│   └── llama3/70b/config-llama3-70b-instruct-p4d.yml]( configs/llama3/70b/config-llama3-70b-instruct-p4d.yml)  
+[│   └── llama3/70b/config-llama3-70b-instruct-p4d.yml](configs/llama3/70b/config-llama3-70b-instruct-p4d.yml)  
 **└── llama3/8b**  
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml)  
@@ -108,11 +108,11 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-trn1.yml](configs/llama3/8b/config-llama3-8b-trn1.yml)  
 [├── llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml](configs/llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml)  
 [├── llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml](configs/llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml)  
-[└── llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml]( configs/llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml)  
+[└── llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml](configs/llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml)  
 [llama3.1](configs/llama3.1)  
 **├── llama3.1/70b**  
 [│   ├── llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-48xl-deploy-ec2.yml)  
-[│   └── llama3.1/70b/config-ec2-llama3-1-70b-inf2-deploy-sm.yml]( configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-deploy-sm.yml)  
+[│   └── llama3.1/70b/config-ec2-llama3-1-70b-inf2-deploy-sm.yml](configs/llama3.1/70b/config-ec2-llama3-1-70b-inf2-deploy-sm.yml)  
 **└── llama3.1/8b**  
 [├── llama3.1/8b/client-config-ec2-llama3-1-8b.yml](configs/llama3.1/8b/client-config-ec2-llama3-1-8b.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2-tp24-bs12.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2-tp24-bs12.yml)  
@@ -141,10 +141,10 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-llama3.1-8b-inf2-48xl-deploy-tp-8-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-inf2-48xl-deploy-tp-8-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml](configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml)  
-[└── llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml]( configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
+[└── llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
 [llama3.2](configs/llama3.2)  
 [├── llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
-[└── llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml]( configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+[└── llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  
@@ -159,8 +159,8 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── mistral/config-mistral-instruct-v2-p5-lmi-dist.yml](configs/mistral/config-mistral-instruct-v2-p5-lmi-dist.yml)  
 [├── mistral/config-mistral-instruct-v2-p5-trtllm.yml](configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml)  
 [├── mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml](configs/mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml)  
-[└── mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml]( configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml)  
+[└── mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml](configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml)  
 [model_eval_all_info.yml](configs/model_eval_all_info.yml)  
 **phi**  
-[└── phi/config-phi-3-g5.yml]( configs/phi/config-phi-3-g5.yml)  
+[└── phi/config-phi-3-g5.yml](configs/phi/config-phi-3-g5.yml)  
 [pricing.yml](configs/pricing.yml)  

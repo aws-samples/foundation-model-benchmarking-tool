@@ -54,7 +54,8 @@ def convert_to_markdown_links(tree_output, directory):
                 # Format the path as a Markdown hyperlink
                 path_link = path.replace('├── ', '')\
                     .replace('└──', '')\
-                    .replace('│   ', '')
+                    .replace('│   ', '')\
+                    .strip()
                 path_readable = path.replace(f"{directory}/", '')
                 # if the path is adirectory then we dont want to put a link for it
                 # because we dont support directory listing, it will just return a broken
