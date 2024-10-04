@@ -211,9 +211,8 @@ experiments:
     concurrency_levels:
     - 1
     - 2
+    - 3
     - 4
-    - 6
-    - 8
     
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
