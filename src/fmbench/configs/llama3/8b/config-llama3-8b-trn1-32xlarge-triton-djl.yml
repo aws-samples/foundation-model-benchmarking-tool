@@ -143,8 +143,7 @@ pricing: pricing.yml
 inference_parameters: 
   ec2_djl:
     top_k: 50  
-    max_tokens: 100
-    max_model_len: 4096
+    max_new_tokens: 100
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model

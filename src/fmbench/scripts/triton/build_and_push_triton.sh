@@ -17,13 +17,3 @@
         exit 1
     fi
 
-    # Save the Docker image locally in the home directory
-    HOME_DIR=$(eval echo ~$USER)
-    docker save ${IMAGE_NAME}:${IMAGE_TAG} | gzip > ${HOME_DIR}/${IMAGE_NAME}_${IMAGE_TAG}.tar.gz
-
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to save Docker image"
-        exit 1
-    else
-        echo "Triton docker image saved as ${IMAGE_NAME}_${IMAGE_TAG}.tar.gz in the home directory (${HOME_DIR})."
-    fi
