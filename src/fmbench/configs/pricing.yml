@@ -55,6 +55,7 @@ pricing:
     g6.24xlarge: 6.6752
     g6.48xlarge: 13.3504
     g6e.2xlarge: 2.242
+    g6e.4xlarge: 3.1294
     g6e.12xlarge: 10.493
     g6e.16xlarge: 7.577
     g6e.24xlarge: 15.066
