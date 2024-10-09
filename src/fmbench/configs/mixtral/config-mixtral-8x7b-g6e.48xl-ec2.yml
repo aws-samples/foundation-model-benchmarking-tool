@@ -1,6 +1,6 @@
 # config file for a rest endpoint supported on fmbench - 
 general:
-  name: "Mixtral-8x7B-Instruct-v0.1-AWQ-djl-ec2"      
+  name: "Mixtral-8x7B-Instruct-v0.1-AWQ-ec2"      
   model_name: "Mixtral-8x7B-Instruct-v0.1-AWQ"
   
 # AWS and SageMaker settings
