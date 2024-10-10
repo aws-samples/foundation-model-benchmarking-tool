@@ -9,7 +9,9 @@ import pandas as pd
 from datetime import datetime
 from fmbench.scripts import constants
 from typing import Dict, Optional, List
+from botocore.exceptions import ClientError
 from litellm import completion, token_counter
+from litellm import completion, RateLimitError
 from fmbench.scripts.stream_responses import get_response_stream
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
                                                FMBenchPredictionResponse)
@@ -120,80 +122,98 @@ class BedrockPredictor(FMBenchPredictor):
         TTFT: Optional[float] = None
         TPOT: Optional[float] = None
         TTLT: Optional[float] = None
+        # add logic to retry if there are throttling errors
+        INITIAL_RETRY_DELAY: float = 2.0 
+        MAX_RETRY_DELAY: float = 60.0  
+        retry_count = 0
+        while True:
+            try:
+                # recording latency for when streaming is enabled
+                st = time.perf_counter()
+                # this response is for text generation models on bedrock: Claude, Llama, Mistral etc.
+                logger.info(f"Invoking {self._bedrock_model} to get inference")
+                # cohere does not support top_p and apprarently LiteLLM does not
+                # know that?
+                if 'cohere' not in self._endpoint_name:
+                    response = completion(model=self._bedrock_model,
+                                        model_id=self._pt_model_id,
+                                        messages=[{"content": prompt_input_data,
+                                                    "role": "user"}],
+                                        temperature=self._temperature,
+                                        max_tokens=self._max_tokens,
+                                        top_p=self._top_p,
+                                        caching=self._caching,
+                                        stream=self._stream)
+                else:
+                    response = completion(model=self._bedrock_model,
+                                        model_id=self._pt_model_id,
+                                        messages=[{"content": prompt_input_data,
+                                                    "role": "user"}],
+                                        temperature=self._temperature,
+                                        max_tokens=self._max_tokens,
+                                        caching=self._caching,
+                                        stream=self._stream)
+                logger.info(f"stop token: {self._stop}, streaming: {self._stream}, "
+                            f"response: {response}")
 
-        try:
-            # recording latency for when streaming is enabled
-            st = time.perf_counter()
-            # this response is for text generation models on bedrock: Claude, Llama, Mistral etc.
-            logger.info(f"Invoking {self._bedrock_model} to get inference")
-            # cohere does not support top_p and apprarently LiteLLM does not
-            # know that?
-            if 'cohere' not in self._endpoint_name:
-                response = completion(model=self._bedrock_model,
-                                      model_id=self._pt_model_id,
-                                      messages=[{"content": prompt_input_data,
-                                                 "role": "user"}],
-                                      temperature=self._temperature,
-                                      max_tokens=self._max_tokens,
-                                      top_p=self._top_p,
-                                      caching=self._caching,
-                                      stream=self._stream)
-            else:
-                response = completion(model=self._bedrock_model,
-                                      model_id=self._pt_model_id,
-                                      messages=[{"content": prompt_input_data,
-                                                 "role": "user"}],
-                                      temperature=self._temperature,
-                                      max_tokens=self._max_tokens,
-                                      caching=self._caching,
-                                      stream=self._stream)
-            logger.info(f"stop token: {self._stop}, streaming: {self._stream}, "
-                        f"response: {response}")
+                # Get the response and the TTFT, TPOT, TTLT metrics if the streaming
+                # for responses is set to true
+                if self._stream is True:
+                    response_dict_from_streaming = get_response_stream(response,
+                                                                    st,
+                                                                    self._start,
+                                                                    self._stop,
+                                                                    is_sagemaker=False)
+                    TTFT = response_dict_from_streaming.get('TTFT')
+                    TPOT = response_dict_from_streaming.get('TPOT')
+                    TTLT = response_dict_from_streaming.get('TTLT')
+                    response = response_dict_from_streaming['response']
+                    self._response_json["generated_text"] = json.loads(response)[0].get('generated_text')
+                    # Getting in the total input and output tokens using token counter.
+                    # Streaming on liteLLM does not support prompt tokens and completion tokens 
+                    # in the invocation response format
+                    prompt_tokens = token_counter(model=self._endpoint_name,
+                                                messages=[{"content": prompt_input_data,
+                                                            "role": "user"}])
+                    completion_tokens = token_counter(text=self._response_json["generated_text"])
+                    # Extract latency in seconds
+                    latency = time.perf_counter() - st
+                    logger.info(f"streaming prompt token count: {prompt_tokens}, "
+                                f"completion token count: {completion_tokens}, latency: {latency}")
+                # If streaming is set to false, then get the response in the normal
+                # without streaming format from LiteLLM
+                else:
+                    # Iterate through the entire model response
+                    # Since we are not sending batched requests so we only expect a single completion
+                    for choice in response.choices:
+                        # Extract the message and the message's content from LiteLLM
+                        if choice.message and choice.message.content:
+                            # Extract the response from the dict
+                            self._response_json["generated_text"] = choice.message.content
+                            break
 
-            # Get the response and the TTFT, TPOT, TTLT metrics if the streaming
-            # for responses is set to true
-            if self._stream is True:
-                response_dict_from_streaming = get_response_stream(response,
-                                                                   st,
-                                                                   self._start,
-                                                                   self._stop,
-                                                                   is_sagemaker=False)
-                TTFT = response_dict_from_streaming.get('TTFT')
-                TPOT = response_dict_from_streaming.get('TPOT')
-                TTLT = response_dict_from_streaming.get('TTLT')
-                response = response_dict_from_streaming['response']
-                self._response_json["generated_text"] = json.loads(response)[0].get('generated_text')
-                # Getting in the total input and output tokens using token counter.
-                # Streaming on liteLLM does not support prompt tokens and completion tokens 
-                # in the invocation response format
-                prompt_tokens = token_counter(model=self._endpoint_name,
-                                              messages=[{"content": prompt_input_data,
-                                                         "role": "user"}])
-                completion_tokens = token_counter(text=self._response_json["generated_text"])
-                # Extract latency in seconds
-                latency = time.perf_counter() - st
-                logger.info(f"streaming prompt token count: {prompt_tokens}, "
-                            f"completion token count: {completion_tokens}, latency: {latency}")
-            # If streaming is set to false, then get the response in the normal
-            # without streaming format from LiteLLM
-            else:
-                # Iterate through the entire model response
-                # Since we are not sending batched requests so we only expect a single completion
-                for choice in response.choices:
-                    # Extract the message and the message's content from LiteLLM
-                    if choice.message and choice.message.content:
-                        # Extract the response from the dict
-                        self._response_json["generated_text"] = choice.message.content
-                        break
+                    # Extract number of input and completion prompt tokens
+                    prompt_tokens = response.usage.prompt_tokens
+                    completion_tokens = response.usage.completion_tokens
+                    # Extract latency in seconds
+                    latency = response._response_ms / 1000
+                    # If we get here, the call was successful, so we break out of the retry loop
+                    break
+            except (RateLimitError, ClientError) as e:
+                # if the error is a throttling or too many requests exception, wait and retry again. The wait time between
+                # each failed request increases exponentially
+                if isinstance(e, ClientError) and e.response['Error']['Code'] not in ['ThrottlingException', 'TooManyRequestsException']:
+                    logger.error(f"Unhandled ClientError: {str(e)}")
+                    raise  # Re-raise if it's not a throttling error
+                retry_count += 1
+                wait_time = min(INITIAL_RETRY_DELAY * (2 ** (retry_count - 1)), MAX_RETRY_DELAY)
+                logger.warning(f"Throttling error encountered: {str(e)}. Retrying in {wait_time:.2f} seconds... (Attempt {retry_count})")
+                time.sleep(wait_time)
 
-                # Extract number of input and completion prompt tokens
-                prompt_tokens = response.usage.prompt_tokens
-                completion_tokens = response.usage.completion_tokens
-                # Extract latency in seconds
-                latency = response._response_ms / 1000
-        except Exception as e:
-            logger.error(f"exception during prediction, endpoint_name={self._endpoint_name}, "
-                         f"exception={e}")
+            except Exception as e:
+                logger.error(f"Unexpected error during prediction, endpoint_name={self._endpoint_name}, "
+                            f"exception={e}")
+                raise  # Re-raise unexpected exceptions
 
         return FMBenchPredictionResponse(response_json=self._response_json,
                                          latency=latency,
@@ -202,7 +222,6 @@ class BedrockPredictor(FMBenchPredictor):
                                          time_to_last_token=TTLT,
                                          completion_tokens=completion_tokens,
                                          prompt_tokens=prompt_tokens)
-
     def calculate_cost(self,
                        instance_type: str,
                        instance_count: int,
