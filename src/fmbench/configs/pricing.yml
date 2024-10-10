@@ -4,6 +4,8 @@ pricing:
     # SageMaker Hourly Instance Pricing
     ml.m5.xlarge: 0.23
     ml.g5.xlarge: 1.4084
+    ml.g5.4xlarge: 2.03
+    ml.g5.8xlarge: 3.06
     ml.g5.2xlarge: 1.515
     ml.g5.12xlarge: 7.09
     ml.g5.24xlarge: 10.18
@@ -16,7 +18,12 @@ pricing:
     ml.p4d.24xlarge: 37.688
     ml.p5.48xlarge: 113.068
     ml.p3.2xlarge: 3.825
+    ml.g4dn.xlarge: 0.7364
+    ml.g4dn.2xlarge: 0.94
+    ml.g4dn.4xlarge: 1.505
+    ml.g4dn.8xlarge: 2.72
     ml.g4dn.12xlarge: 4.89
+    ml.g4dn.16xlarge: 5.44
     ml.g6.2xlarge: 1.222
     ml.g6.16xlarge: 4.246
     ml.g6.12xlarge: 5.752
@@ -70,6 +77,12 @@ pricing:
     anthropic.claude-3-sonnet-20240229-v1:0:
       input-per-1k-tokens: 0.00300
       output-per-1k-tokens: 0.01500
+    anthropic.claude-3-5-sonnet-20240620-v1:0:
+      input-per-1k-tokens: 0.00300
+      output-per-1k-tokens: 0.01500
+    anthropic.claude-3-opus-20240229-v1:0:
+      input-per-1k-tokens: 0.015
+      output-per-1k-tokens: 0.075
     anthropic.claude-v2:1:
       input-per-1k-tokens: 0.008
       output-per-1k-tokens: 0.024
@@ -94,6 +107,18 @@ pricing:
       input-per-1k-tokens: 0.00045
       output-per-1k-tokens: 0.0007
     ## Llama
+    meta.llama3-2-1b-instruct-v1:0:
+      input-per-1k-tokens: 0.0001
+      output-per-1k-tokens: 0.0001
+    meta.llama3-2-3b-instruct-v1:0:
+      input-per-1k-tokens: 0.00015
+      output-per-1k-tokens: 0.00015
+    meta.llama3-2-11b-instruct-v1:0:
+      input-per-1k-tokens: 0.00035
+      output-per-1k-tokens: 0.00035
+    meta.llama3-2-90b-instruct-v1:0:
+      input-per-1k-tokens: 0.002
+      output-per-1k-tokens: 0.002
     meta.llama3-1-8b-instruct-v1:0:
       input-per-1k-tokens: 0.00022
       output-per-1k-tokens: 0.00022
