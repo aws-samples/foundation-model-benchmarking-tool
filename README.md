@@ -83,6 +83,9 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.13
+
+1. Update `pricing.yml` additional config files.
 
 ## 2.0.11
 
@@ -94,10 +97,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. Triton-djl support for AWS Chips.
 1. Tokenizer files are now downloaded directly from Hugging Face (unless provided manually as before) 
 
-## 2.0.8
 
-1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
-1. Misc. bug fixes.
 
 [Release history](./release_history.md)
 

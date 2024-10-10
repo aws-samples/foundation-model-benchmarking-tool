@@ -75,12 +75,14 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-g6e.24xl-tp-2-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.24xl-tp-2-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.24xl-tp-4-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.24xl-tp-4-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.24xl-tp-4-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.24xl-tp-4-mc-max-triton-ec2.yml)  
+[├── llama3/8b/config-llama3-8b-g6e.2xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.2xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-2-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-2-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-2-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-2-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-4-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-4-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-4-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-4-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-triton-ec2.yml)  
+[├── llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml)  
@@ -160,6 +162,8 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── mistral/config-mistral-instruct-v2-p5-trtllm.yml](configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml)  
 [├── mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml](configs/mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml)  
 [└── mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml](configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml)  
+**mixtral**  
+[└── mixtral/config-mixtral-8x7b-g6e.48xl-ec2.yml](configs/mixtral/config-mixtral-8x7b-g6e.48xl-ec2.yml)  
 [model_eval_all_info.yml](configs/model_eval_all_info.yml)  
 **phi**  
 [└── phi/config-phi-3-g5.yml](configs/phi/config-phi-3-g5.yml)  

@@ -1,3 +1,8 @@
+## 2.0.8
+
+1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
+1. Misc. bug fixes.
+
 ## 2.0.6
 
 1. Run multiple model copies with the DJL serving container and an Nginx load balancer on Amazon EC2.
@@ -104,3 +109,8 @@
 1. Report enhancements: New business summary chart, config file embedded in the report, version numbering and others.
 
 1. Additional config files: Meta Llama3 on Inf2, Mistral instruct with `lmi-dist` on `p4d` and `p5` instances.
+
+## 2.0.8
+
+1. Support Triton-TensorRT for GPU instances and Triton-vllm for AWS Chips.
+1. Misc. bug fixes.
