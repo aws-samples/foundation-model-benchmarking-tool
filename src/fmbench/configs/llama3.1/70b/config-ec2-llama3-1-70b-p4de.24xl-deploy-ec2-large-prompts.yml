@@ -253,7 +253,7 @@ experiments:
 
 report:
   latency_budget: 60
-  cost_per_10k_txn_budget: 400
+  cost_per_10k_txn_budget: 7000
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
