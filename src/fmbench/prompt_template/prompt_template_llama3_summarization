@@ -1,0 +1,9 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+You are an assistant for summarization tasks. Use the following pieces of retrieved context in the section demarcated by "```" to summarize the context.
+
+Context: {input} 
+
+Summarize the entire context. Your summary should be detailed, long and should cover all important key aspects of the context.
+
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
