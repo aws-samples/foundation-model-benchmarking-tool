@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-1-70b-inf2.48xl-ec2"      
+  name: "llama3-1-70b-g6e.24xl-ec2-longbench"      
   model_name: "llama3-1-70b-instruct"
   
 # AWS and SageMaker settings
@@ -55,7 +55,6 @@ s3_read_data:
   - narrativeqa.jsonl
   - triviaqa_e.jsonl
   - triviaqa.jsonl
-
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
@@ -80,13 +79,17 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
   prompt_template_keys:
   - input
   - context
+  # maximum number of iterations per concurrency and payload size combination
+  max_iters_per_combination: 105
+  # minimum number of iterations per concurrency and payload size combination
+  min_iters_per_combination: 5
   
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
@@ -120,6 +123,10 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
+  - language: en
+    min_length_in_tokens: 1
+    max_length_in_tokens: 924
+    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -147,8 +154,6 @@ inference_parameters:
     top_p: 0.92
     top_k: 120  
     max_new_tokens: 100
-    Content-type: application/json
-    return_full_text: False
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -168,17 +173,21 @@ experiments:
     model_name: "Llama-3.1-70b-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "inf2.48xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1
+    instance_type: "g6e.24xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
-    # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+    # FMBench comes packaged witsh multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
     # for a llama3-70b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
+      # The following line specifies the runtime and Inferentia settings for the instance
+      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
+      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
+      gpu_or_neuron_setting: --gpus all --shm-size 12g
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
@@ -191,21 +200,16 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 24
+      tp_degree: 4
       shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
-      engine=Python
-      option.entryPoint=djl_python.transformers_neuronx
+      engine=MPI
+      option.tensor_parallel_degree=4
+      option.max_rolling_batch_size=4
       option.model_id=meta-llama/Meta-Llama-3.1-70b-Instruct
-      option.load_split_model=True
-      option.tensor_parallel_degree=24
-      option.n_positions=4096
-      option.rolling_batch=auto
-      option.max_rolling_batch_size=8
-      option.dtype=fp16
-      option.model_loading_timeout=2400
+      option.rolling_batch=lmi-dist
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -220,18 +224,19 @@ experiments:
     concurrency_levels:
     - 1
     - 2
+    - 3
     - 4
+    - 5
     - 6
+    - 7
     - 8
-    - 10 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      NEURON_CC_FLAGS: -O3
 
 report:
-  latency_budget: 2
-  cost_per_10k_txn_budget: 20
+  latency_budget: 3
+  cost_per_10k_txn_budget: 200
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
