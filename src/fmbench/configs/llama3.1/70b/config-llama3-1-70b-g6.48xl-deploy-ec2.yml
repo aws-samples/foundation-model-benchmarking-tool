@@ -176,10 +176,6 @@ experiments:
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and Inferentia settings for the instance
-      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
-      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: --gpus all --shm-size 12g
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
