@@ -117,16 +117,8 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
-  - language: en
-    min_length_in_tokens: 1
-    max_length_in_tokens: 924
-    payload_file: payload_en_1-924.jsonl
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
@@ -184,10 +176,6 @@ experiments:
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and Inferentia settings for the instance
-      # '-u djl' tells the container to use the Deep Java Library (DJL) runtime
-      # '--device /dev/neuron0 ... /dev/neuron5' specifies the Inferentia devices to be used
-      gpu_or_neuron_setting: --gpus all --shm-size 12g
       #This setting specifies the timeout (in seconds) for loading the model. 
       model_loading_timeout: 2400
     inference_spec:
