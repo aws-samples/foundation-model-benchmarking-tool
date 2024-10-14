@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-1-70b-inf2.48xl-ec2"      
+  name: "llama3-1-70b-inf2.48xl-ec2-djl"      
   model_name: "llama3-1-70b-instruct"
   
 # AWS and SageMaker settings
@@ -80,7 +80,7 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  5_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
@@ -112,10 +112,6 @@ datasets:
     min_length_in_tokens: 2000
     max_length_in_tokens: 3000
     payload_file: payload_en_2000-3000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
   - language: en
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
@@ -199,7 +195,6 @@ experiments:
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
       option.model_id=meta-llama/Meta-Llama-3.1-70b-Instruct
-      option.load_split_model=True
       option.tensor_parallel_degree=24
       option.n_positions=4096
       option.rolling_batch=auto
