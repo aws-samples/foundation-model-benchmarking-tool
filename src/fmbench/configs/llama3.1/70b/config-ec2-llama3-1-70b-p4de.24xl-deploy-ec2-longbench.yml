@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-1-70b-p4de.24xl-ec2-synthetic-large-prompts"      
+  name: "llama3-1-70b-p4de.24xl-ec2-longbench"      
   model_name: "llama3-1-70b-instruct"
   
 # AWS and SageMaker settings
@@ -85,6 +85,7 @@ datasets:
   # dataset related configuration
   prompt_template_keys:
   - input
+  - context
   # maximum number of iterations per concurrency and payload size combination
   max_iters_per_combination: 105
   # minimum number of iterations per concurrency and payload size combination
@@ -152,7 +153,7 @@ inference_parameters:
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    max_new_tokens: 512
+    max_new_tokens: 100
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -231,6 +232,16 @@ experiments:
     - 35
     - 37
     - 40
+    - 41
+    - 42
+    - 43
+    - 44
+    - 45
+    - 46
+    - 47
+    - 48
+    - 48
+    - 50
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
