@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-1-70b-inf2.48xl-ec2-djl"      
+  name: "llama3-1-70b-inf2.48xl-ec2"      
   model_name: "llama3-1-70b-instruct"
   
 # AWS and SageMaker settings
@@ -138,13 +138,8 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_djl:
-    do_sample: yes
-    temperature: 0.1
-    top_p: 0.92
-    top_k: 120  
+    top_k: 50  
     max_new_tokens: 100
-    Content-type: application/json
-    return_full_text: False
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -163,9 +158,9 @@ experiments:
     model_version:
     model_name: "Llama-3.1-70b-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://127.0.0.1:8080/invocations' 
+    ep_name: 'http://localhost:8080/v2/models/Meta-Llama-3.1-70b-Instruct/generate' 
     instance_type: "inf2.48xlarge"
-    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-neuronx-sdk2.19.1
+    image_uri: tritonserver-neuronx:fmbench 
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
@@ -176,31 +171,49 @@ experiments:
     # This section defines the settings for Amazon EC2 instances
     ec2:
       #This setting specifies the timeout (in seconds) for loading the model. 
-      model_loading_timeout: 2400
+      model_loading_timeout: 10000
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
+      container_type: triton
+      # For deploying a model using the triton inference container: 
+      # mention the backend type, if any. Options for triton are: [djl, vllm or tensorrt]
+      backend: djl
       # how many copies of the model, 1, 2,..max
-      # set to 1 in the code if not configured, setting to max means that 
-      # the code will determine how many copies can be loaded based on TP and 
-      # number of GPU/Neuron devices available
+      # set to 1 in the code if not configured,
+      # max: FMBench figures out the max number of model containers to be run
+      #      based on TP degree configured and number of neuron cores/GPUs available.
+      #      For example, if TP=2, GPUs=8 then FMBench will start 4 containers and 1 load balancer,
+      # auto: only supported if the underlying inference container would automatically 
+      #       start multiple copies of the model internally based on TP degree and neuron cores/GPUs
+      #       available. In this case only a single container is created, no load balancer is created.
+      #       The DJL serving containers supports auto.  
       model_copies: max
-      # if you set the model_copies parameter then it is mandatory to set the 
-      # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 24
       shm_size: 12g
-      model_loading_timeout: 2400
-    # modify the serving properties to match your model and requirements
-    serving.properties: |
-      engine=Python
-      option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=meta-llama/Meta-Llama-3.1-70b-Instruct
-      option.tensor_parallel_degree=24
-      option.n_positions=4096
-      option.rolling_batch=auto
-      option.max_rolling_batch_size=8
-      option.dtype=fp16
-      option.model_loading_timeout=2400
+      # The model.json parameters are replaced within the model.json file
+      # for the triton on vllm/djl/tensorrt options. The model.json already contains
+      # the tp degree and model id from above in this config file. This is a dictionary
+      # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
+      # For tensorrt, the tp degree, batch size and other relevant parameters are 
+      # extracted directly from the inference spec.
+      container_params:
+        # tp degree is a mandatory parameter
+        tp_degree: 24
+        amp: "f16"
+        attention_layout: 'BSH'
+        collectives_layout: 'BSH'
+        context_length_estimate: 3072, 3584, 4096
+        max_rolling_batch_size: 8
+        model_loader: "tnx"
+        model_loading_timeout: 2400
+        n_positions: 4096
+        output_formatter: "json"
+        rolling_batch: "auto"
+        rolling_batch_strategy: "continuous_batching"
+        neuron_optimize_level: 2
+        trust_remote_code: true
+        # modify the serving properties to match your model and requirements
+        serving.properties:
 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
@@ -215,18 +228,18 @@ experiments:
     concurrency_levels:
     - 1
     - 2
+    - 3
     - 4
-    - 6
-    - 8
-    - 10 
+    - 5
+    - 6 
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
       NEURON_CC_FLAGS: -O2
 
 report:
-  latency_budget: 2
-  cost_per_10k_txn_budget: 20
+  latency_budget: 3
+  cost_per_10k_txn_budget: 200
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
