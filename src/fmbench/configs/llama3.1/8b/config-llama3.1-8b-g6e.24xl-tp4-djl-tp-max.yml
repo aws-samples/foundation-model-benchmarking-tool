@@ -1,7 +1,7 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3.1-8b-g6e.48xl-tp=4-mc=max-triton-ec2"      
+  name: "llama3.1-8b-g6e.24xl-tp=4-mc=max-djl-ec2"      
   model_name: "Meta-Llama-3.1-8B-Instruct"
   
 # AWS and SageMaker settings
@@ -89,6 +89,7 @@ datasets:
   - context
   ground_truth_col_key: answers
   question_col_key: input
+  
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -140,15 +141,12 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_djl:
-    temperature: 0.1
     do_sample: yes
+    temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    bad_words: ""
-    stop_words: "<|eot_id|>"
-    pad_id: 2
-    end_id: 2
-    max_tokens: 100
+    max_new_tokens: 100
+
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -167,15 +165,15 @@ experiments:
     model_version:
     model_name: "Meta-Llama-3.1-8B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: http://localhost:8080/v2/models/ensemble/generate
-    instance_type: "g6e.48xlarge"
-    image_uri: nvcr.io/nvidia/tritonserver:24.08-trtllm-python-py3
+    ep_name: 'http://127.0.0.1:8080/invocations' 
+    instance_type: "g6e.24xlarge"
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
-    # for a llama3.1-8b-instruct deployed on ec2
+    # for a llama3-8b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
@@ -185,7 +183,6 @@ experiments:
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
-      container_type: triton
       # how many copies of the model, 1, 2,..max
       # set to 1 in the code if not configured, setting to max means that 
       # the code will determine how many copies can be loaded based on TP and 
@@ -193,13 +190,16 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 8
+      tp_degree: 4
       shm_size: 12g
       model_loading_timeout: 2400
-      batch_size: 256
-
     # modify the serving properties to match your model and requirements
-    serving.properties:
+    serving.properties: |
+      engine=MPI
+      option.tensor_parallel_degree=4
+      option.max_rolling_batch_size=4
+      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -215,9 +215,6 @@ experiments:
     - 2
     - 3
     - 4
-    - 6
-    - 8
-    - 10
     
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
