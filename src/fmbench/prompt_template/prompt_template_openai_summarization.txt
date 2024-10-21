@@ -1,0 +1,7 @@
+You are an assistant for summarization tasks. Use the following pieces of retrieved context in the 'context' section to provide a detailed summary. 
+
+context: """
+{input}
+"""
+
+Summarize the entire context. Your summary should be detailed, long and should cover all important key aspects of the context.
