@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
 general:
-  name: "llama3-1-70b-g6.48xl-ec2"      
-  model_name: "llama3-1-70b-instruct"
+  name: "llama3.1-70b-g6e.24xl-tp=4-mc=max-djl-ec2"      
+  model_name: "Meta-Llama-3.1-70b-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -152,7 +152,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Llama-3.1-70b-Instruct"
+  - name: "Meta-Llama-3.1-70b-Instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -162,10 +162,10 @@ experiments:
     #from huggingface to grab
     model_id: meta-llama/Meta-Llama-3.1-70b-Instruct #model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Llama-3.1-70b-Instruct"
+    model_name: "Meta-Llama-3.1-70b-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
-    instance_type: "g6.48xlarge"
+    instance_type: "g6e.24xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -188,13 +188,13 @@ experiments:
       model_copies: max
       # if you set the model_copies parameter then it is mandatory to set the 
       # tp_degree, shm_size, model_loading_timeout parameters
-      tp_degree: 8
+      tp_degree: 4
       shm_size: 12g
       model_loading_timeout: 2400
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=MPI
-      option.tensor_parallel_degree=8
+      option.tensor_parallel_degree=4
       option.max_rolling_batch_size=4
       option.model_id=meta-llama/Meta-Llama-3.1-70b-Instruct
       option.rolling_batch=lmi-dist
@@ -214,6 +214,10 @@ experiments:
     - 2
     - 3
     - 4
+    - 5
+    - 6
+    - 7
+    - 8
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
