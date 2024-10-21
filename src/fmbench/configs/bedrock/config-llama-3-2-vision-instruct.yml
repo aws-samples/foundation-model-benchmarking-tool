@@ -122,7 +122,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_1-500
+  dataset_of_interest: en_3000-3840
 
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -189,9 +189,9 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -210,7 +210,7 @@ experiments:
     env:
 
 report:
-  latency_budget: 2
+  latency_budget: 1
   cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
