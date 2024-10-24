@@ -2,7 +2,7 @@
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
   name: "llama3-8b-g6e.2xl-ec2"      
-  model_name: "llama3-8b-instruct"
+  model_name: "llama3-8b"
   
 # AWS and SageMaker settings
 aws:
@@ -76,7 +76,7 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
+  1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
@@ -140,7 +140,6 @@ inference_parameters:
   ec2_ollama:
     model: llama3.1
     stream: false
-    format: json
     options:
       temperature: 0.1
       top_p: 0.92
@@ -153,7 +152,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "llama3-8b-instruct"
+  - name: "llama3-8b"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -163,7 +162,7 @@ experiments:
     #from huggingface to grab
     model_id: llama3.1 # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "llama3-8b-instruct"
+    model_name: "llama3-8b"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://localhost:11434/api/generate' 
     instance_type: "g6e.2xlarge"
@@ -209,16 +208,8 @@ experiments:
     concurrency_levels:
     - 1
     - 2
+    - 3
     - 4
-    # Environment variables to be passed to the container
-    # this is not a fixed list, you can add more parameters as applicable.
-    env:
-      MODEL_LOADING_TIMEOUT: 2400
-      VLLM_CPU_KVCACHE_SPACE: 40
-      # This instance is equipped with 64 CPUs, and we are allocating 60 of them to run this container.
-      # For additional details, refer to the following URL:
-      # https://docs.vllm.ai/en/latest/getting_started/cpu-installation.html#related-runtime-environment-variables
-      VLLM_CPU_OMP_THREADS_BIND: 0-59
 
 report:
   latency_budget: 3
