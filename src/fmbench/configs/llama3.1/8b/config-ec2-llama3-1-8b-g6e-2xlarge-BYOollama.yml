@@ -140,6 +140,7 @@ inference_parameters:
   ec2_ollama:
     model: llama3.1
     stream: false
+    format: json
     options:
       temperature: 0.1
       top_p: 0.92
