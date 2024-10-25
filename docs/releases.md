@@ -1,5 +1,10 @@
 # Releases
 
+## 2.0.14
+
+1. `Llama3.1-70b` config files and more.
+1. Support for [`fmbench-orchestrator`](https://github.com/awslabs/fmbench-orchestrator).
+
 ## 2.0.13
 
 1. Update `pricing.yml` additional config files.

@@ -66,7 +66,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Llama3.2-1b instruct**         |  ✅    |      |      |              |                    |                   |              |              |                            |                                    |
 | **Llama3.2-3b instruct**         |  ✅    |      |      |              |                    |                   |              |              |                            |                                    |
 | **Llama3.1-8b instruct**         |  ✅    |   ✅   |   ✅   | ✅             | ✅                   | ✅                  |              |              | ✅                           |                                    |
-| **Llama3.1-70b instruct**        |        |        |        | ✅             |                      | ✅                  |              |              | ✅                           |                                    |
+| **Llama3.1-70b instruct**        |        |   ✅   |    ✅    | ✅             |                      | ✅                  |              |              | ✅                           |                                    |
 | **Llama3-8b instruct**           |  ✅    |        |        | ✅             | ✅                   | ✅                  | ✅           | ✅           | ✅                           |                                    |
 | **Llama3-70b instruct**          |  ✅    |        |        |               | ✅                   | ✅                  | ✅           |              | ✅                           |                                    |
 | **Llama2-13b chat**              |        |        |        |               | ✅                   | ✅                  | ✅           |              | ✅                           |                                    |
@@ -83,6 +83,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.14
+
+1. `Llama3.1-70b` config files and more.
+1. Support for [`fmbench-orchestrator`](https://github.com/awslabs/fmbench-orchestrator).
+
 ## 2.0.13
 
 1. Update `pricing.yml` additional config files.
@@ -91,12 +96,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 1. `Llama3.2-1b` and `Llama3.2-3b` support on EC2 g5.
 1. `Llama3-8b` on EC2 `g6e` instances.
-
-## 2.0.9
-
-1. Triton-djl support for AWS Chips.
-1. Tokenizer files are now downloaded directly from Hugging Face (unless provided manually as before) 
-
 
 
 [Release history](./release_history.md)
@@ -114,7 +113,7 @@ You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both optio
 
 ### Quickstart
 
-**_FMBench on a SageMaker Notebook_**
+**_FMBench on a Amazon SageMaker Notebook_**
 
 1. Each `FMBench` run works with a configuration file that contains the information about the model, the deployment steps, and the tests to run. A typical `FMBench` workflow involves either directly using an already provided config file from the [`configs`](https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs) folder in the `FMBench` GitHub repo or editing an already provided config file as per your own requirements (say you want to try benchmarking on a different instance type, or a different inference container etc.).
 
@@ -175,6 +174,15 @@ account=`aws sts get-caller-identity | jq .Account | tr -d '"'`
 region=`aws configure get region`
 fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/bedrock/config-bedrock-titan-text-express.yml > fmbench.log 2>&1
 ```
+
+## Running `FMBench` via the `FMBench-orchestrator`
+
+**_FMBench on Amazon EC2 via the _FMBench orchestrator_**
+
+If you want to benchmark FMs on Amazon EC2 then you can use the [`fmbench-orchestrator`](https://github.com/awslabs/fmbench-orchestrator) as a quick and simple way to get started. The `orchestrator` is a Python program that can be installed on an EC2 machine and it in turn launches other EC2 machines for benchmarking purposes. The orchestrator installs and runs `FMBench` on these EC2 machines, downloads the benchmarking result from these machines and finally terminates these machines once the benchmarking finished.
+
+As an example, consider a scenario that you want to benchmark say the `Llama3.1-8b` model on a `g5.2xlarge`, `g6.2xlarge`, `p4d.24xlarge`, `p5e.48xlarge` and a `trn1.32xlarge`. Usually this would mean that you have to create these EC2 instances, install the pre-requisites, installed FMBench, run FMBench, download the results and then repeat the process for the next instance. This is tedious work. The orchestrator makes this super convenient by doing all this for you and doing this in parallel. It will spawn all these EC2 VMs and do all the steps mentioned above and at the end of the test you will have results from all the instances downloaded on the orchestrator VM and all the EC2 VMs that were spawned would have automatically been terminated. See the [`orchestrator README`](https://github.com/awslabs/fmbench-orchestrator?tab=readme-ov-file#overview) for more details.
+
 
 ## Results
 
