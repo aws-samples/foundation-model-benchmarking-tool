@@ -14,6 +14,8 @@
 </h4>
 
 
+🚨 Try out the new [FMBench orchestrator](#running-fmbench-via-the-fmbench-orchestrator) 🚨  
+
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
 Here are some salient features of `FMBench`:
@@ -177,7 +179,7 @@ fmbench --config-file s3://sagemaker-fmbench-read-${region}-${account}/configs/b
 
 ## Running `FMBench` via the `FMBench-orchestrator`
 
-**_FMBench on Amazon EC2 via the _FMBench orchestrator_**
+**_FMBench on Amazon EC2 via the FMBench orchestrator_**
 
 If you want to benchmark FMs on Amazon EC2 then you can use the [`fmbench-orchestrator`](https://github.com/awslabs/fmbench-orchestrator) as a quick and simple way to get started. The `orchestrator` is a Python program that can be installed on an EC2 machine and it in turn launches other EC2 machines for benchmarking purposes. The orchestrator installs and runs `FMBench` on these EC2 machines, downloads the benchmarking result from these machines and finally terminates these machines once the benchmarking finished.
 
