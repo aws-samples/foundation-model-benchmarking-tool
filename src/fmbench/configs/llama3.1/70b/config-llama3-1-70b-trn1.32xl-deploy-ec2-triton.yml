@@ -154,7 +154,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Meta-Llama-3.1-70B-Instruct #model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Llama-3.1-70b-Instruct #model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "Meta-Llama-3-70B-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted

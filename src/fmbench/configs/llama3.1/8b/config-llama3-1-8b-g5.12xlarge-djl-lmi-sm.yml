@@ -95,7 +95,7 @@ inference_parameters:
 experiments:
  
   - name: llama-3-1-8b-instruct-g6-48xl
-    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Llama-3-1-8B-Instruct
     ep_name: Llama-3-1-8B-Instruct
@@ -111,7 +111,7 @@ experiments:
       engine=MPI
       option.tensor_parallel_degree=2
       option.max_rolling_batch_size=4
-      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=meta-llama/Meta-Llama-3.1-8b-Instruct
       option.rolling_batch=lmi-dist
     payload_files:
     - payload_en_1-500.jsonl
