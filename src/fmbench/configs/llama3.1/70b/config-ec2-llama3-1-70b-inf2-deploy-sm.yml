@@ -163,7 +163,7 @@ experiments:
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
     prefix: "lmi"
-    model_id: meta-llama/Meta-Llama-3.1-70B-Instruct # model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Llama-3.1-70B-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "Llama-3.1-70B-Instruct"
     model_id_wo_repo: "Meta-Llama-3.1-70B-Instruct"
