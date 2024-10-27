@@ -66,9 +66,17 @@ class EC2Predictor(FMBenchPredictor):
                 st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload)
                 # record the latency for the response generated
-                latency = time.perf_counter() - st
-                full_output = response.text
+                latency = time.perf_counter() - st                
+                #logger.info(f"full_output={response.text}")
                 response.raise_for_status()
+                """
+                the output is of the form
+                {"generated_text": "\n\nSuining had a population of 658,798 in 2002."}
+                we only need the generated_text field from this
+                """
+                full_output = json.loads(response.text).get("generated_text")
+                if full_output is None:
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")      
             elif container_type == constants.CONTAINER_TYPE_TRITON:
                 if self._accelerator == constants.ACCELERATOR_TYPE.NEURON:
                     triton_payload = dict(text_input=payload["inputs"],
@@ -97,6 +105,37 @@ class EC2Predictor(FMBenchPredictor):
                 latency = time.perf_counter() - st
                 response.raise_for_status()
                 full_output = response.text
+            elif container_type == constants.CONTAINER_TYPE_OLLAMA:
+                # ollama uses prompt rather than input and then
+                # the code in the calling function still expects input
+                # so make a copy
+                payload2 = copy.deepcopy(payload)
+                payload2['prompt'] = payload2.pop('inputs')
+                payload2 = payload2 | self._inference_spec["parameters"]
+                st = time.perf_counter()
+                response = requests.post(self._endpoint_name, json=payload2)
+                # record the latency for the response generated
+                latency = time.perf_counter() - st
+                response.raise_for_status()
+                """
+                the output is of the form
+                {"model":"llama3.1:8b",
+                 "created_at":"2024-10-27T13:44:12.400070826Z",
+                 "response":"Once upon a time, in a small village nestled",
+                 "done":true,
+                 "done_reason":"length",
+                 "context":[128006,882,128007,271,73457,757,264,3446,128009,128006,78191,128007,271,12805,5304,264,892,11,304,264,2678,14458,89777],
+                 "total_duration":195361027,
+                 "load_duration":25814720,
+                 "prompt_eval_count":14,
+                 "prompt_eval_duration":14601000,
+                 "eval_count":10,
+                 "eval_duration":96146000}
+                we only need the response field from this
+                """
+                full_output = json.loads(response.text).get("response")
+                if full_output is None:
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")              
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 

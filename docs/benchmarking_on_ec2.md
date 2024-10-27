@@ -21,7 +21,7 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 - [Benchmarking on an CPU instance type with Intel processors](#benchmarking-on-an-cpu-instance-type-with-intel-processors)
 
 - [Benchmarking the Triton inference server](#benchmarking-the-triton-inference-server)
-- [Benchmarking the Ollama Inference Server(BYO Endpoint)](#Benchmarking-Ollama-Inference-Server-BYO-Ollama)
+- [Benchmarking the Ollama Inference Server(BYO Endpoint)](#Benchmarking-Ollama-Inference-Server)
 
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
@@ -400,11 +400,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
 
-## Benchmarking-Ollama-Inference-Server-BYO-Ollama
+## Benchmarking Ollama inference server
 
 **_As of 10/24/2024, this has been tested on `g6e.2xlarge` with `llama 3.1 8b`_**
 
-1. Install Ollama
+1. Install Ollama.
 
     ```{bash}
 
@@ -412,7 +412,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
     ```
 
-1. Pull the model required
+1. Pull the model required.
 
     ```{bash}
 
@@ -420,7 +420,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
     ```
 
-1. Serve the model
+1. Serve the model. This might produce the following error message: `Error: accepts 0 arg(s), received 1` but you can safely ignore this error.
 
     ```{bash}
 
@@ -435,8 +435,10 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```
 
 
-1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
+1. Run `FMBench` with a packaged or a custom config file. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
-    fmbench --config-file /tmp/fmbench-read/configs/llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-BYOollama.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    ```{.bash}
+    fmbench --config-file /tmp/fmbench-read/configs/llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    ```
 
 

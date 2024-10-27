@@ -444,7 +444,7 @@ class CustomTokenizer:
                 self.tokenizer = AutoTokenizer.from_pretrained(model_id)
                 print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from HF for \"{model_id}\"")
             except Exception as e:
-                print("exception while loading tokenizer from HuggingFace")
+                print("exception while loading tokenizer from HuggingFace, exception={e}")
                 print(f"no tokenizer provided, the {local_dir}, abs_path={abs_path} is empty, "
                       f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
                 self.tokenizer = None
