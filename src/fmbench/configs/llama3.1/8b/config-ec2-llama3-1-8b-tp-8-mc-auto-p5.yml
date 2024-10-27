@@ -207,7 +207,7 @@ experiments:
       engine=MPI
       option.tensor_parallel_degree=8
       option.max_rolling_batch_size=256
-      option.model_id=meta-llama/Meta-Llama-3.1-8b-Instruct
+      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
       option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
