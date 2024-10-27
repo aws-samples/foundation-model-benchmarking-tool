@@ -21,6 +21,7 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 - [Benchmarking on an CPU instance type with Intel processors](#benchmarking-on-an-cpu-instance-type-with-intel-processors)
 
 - [Benchmarking the Triton inference server](#benchmarking-the-triton-inference-server)
+- [Benchmarking the Ollama Inference Server(BYO Endpoint)](#Benchmarking-Ollama-Inference-Server-BYO-Ollama)
 
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
@@ -397,5 +398,45 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```
 
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
+
+
+## Benchmarking-Ollama-Inference-Server-BYO-Ollama
+
+**_As of 10/24/2024, this has been tested on `g6e.2xlarge` with `llama 3.1 8b`_**
+
+1. Install Ollama
+
+    ```{bash}
+
+    curl -fsSL https://ollama.com/install.sh | sh
+
+    ```
+
+1. Pull the model required
+
+    ```{bash}
+
+    ollama pull llama3.1:8b
+
+    ```
+
+1. Serve the model
+
+    ```{bash}
+
+    ollama serve llama3.1:8b
+
+    ```
+    
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory.
+
+    ```{.bash}
+    curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- /tmp
+    ```
+
+
+1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
+
+    fmbench --config-file /tmp/fmbench-read/configs/llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-BYOollama.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
 
 
