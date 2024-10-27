@@ -131,6 +131,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   └── llama3.1/70b/config-llama3-1-7b-inf2.48xl-triton-ec2.yml](configs/llama3.1/70b/config-llama3-1-7b-inf2.48xl-triton-ec2.yml)  
 **└── llama3.1/8b**  
 [├── llama3.1/8b/client-config-ec2-llama3-1-8b.yml](configs/llama3.1/8b/client-config-ec2-llama3-1-8b.yml)  
+[├── llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2-tp24-bs12.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2-tp24-bs12.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-inf2.yml)  
