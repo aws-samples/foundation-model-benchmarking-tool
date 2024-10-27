@@ -86,6 +86,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.15
+1. Support for [Ollama](https://github.com/ollama/ollama), see more details [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/benchmarking_on_ec2.html#benchmarking-models-on-ollama).
+1. Fix bugs with token counting.
+
 ## 2.0.14
 
 1. `Llama3.1-70b` config files and more.
@@ -94,11 +98,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## 2.0.13
 
 1. Update `pricing.yml` additional config files.
-
-## 2.0.11
-
-1. `Llama3.2-1b` and `Llama3.2-3b` support on EC2 g5.
-1. `Llama3-8b` on EC2 `g6e` instances.
 
 
 [Release history](./release_history.md)

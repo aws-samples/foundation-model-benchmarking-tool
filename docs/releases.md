@@ -1,5 +1,9 @@
 # Releases
 
+## 2.0.15
+1. Support for [Ollama](https://github.com/ollama/ollama), see more details [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/benchmarking_on_ec2.html#benchmarking-models-on-ollama).
+1. Fix bugs with token counting.
+
 ## 2.0.14
 
 1. `Llama3.1-70b` config files and more.
