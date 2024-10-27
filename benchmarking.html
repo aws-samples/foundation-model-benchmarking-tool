@@ -1295,16 +1295,9 @@
 <thead>
 <tr>
 <th style="text-align: left;">Model</th>
-<th style="text-align: left;">EC2 g5</th>
-<th style="text-align: left;">EC2 p4</th>
-<th style="text-align: left;">EC2 p5</th>
-<th style="text-align: left;">EC2 Inf2/Trn1</th>
-<th style="text-align: left;">SageMaker g4dn/g5/p3</th>
-<th style="text-align: left;">SageMaker Inf2/Trn1</th>
-<th style="text-align: left;">SageMaker P4</th>
-<th style="text-align: left;">SageMaker P5</th>
-<th style="text-align: left;">Bedrock On-demand throughput</th>
-<th style="text-align: left;">Bedrock provisioned throughput</th>
+<th style="text-align: left;">Amazon EC2</th>
+<th style="text-align: left;">Amazon SageMaker</th>
+<th style="text-align: left;">Amazon Bedrock</th>
 </tr>
 </thead>
 <tbody>
@@ -1312,260 +1305,132 @@
 <td style="text-align: left;"><strong>Anthropic Claude-3 Sonnet</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
+<td style="text-align: left;">On-demand, provisioned</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Anthropic Claude-3 Haiku</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Mistral-7b-instruct</strong></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">inf2, trn</td>
+<td style="text-align: left;">g4dn, g5, p3, p4d, p5</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Mistral-7b-AWQ</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">p5</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Mixtral-8x7b-instruct</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama3.2-1b instruct</strong></td>
+<td style="text-align: left;">g5</td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Llama3.2-3b instruct</strong></td>
+<td style="text-align: left;">g5</td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama3.1-8b instruct</strong></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g5, p4d, p4de, p5, p5e, g6e, g6, inf2, trn1</td>
+<td style="text-align: left;">g4dn, g5, p3, inf2, trn1</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama3.1-70b instruct</strong></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">p4d, p4de, p5, p5e, g6e, g5, inf2, trn1</td>
+<td style="text-align: left;">inf2, trn1</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama3-8b instruct</strong></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g5, g6e, inf2, trn1</td>
+<td style="text-align: left;">g4dn, g5, p3, inf2, trn1, p4d, pe</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama3-70b instruct</strong></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g5</td>
+<td style="text-align: left;">g4dn, g5, p3, inf2, trn1, p4d</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama2-13b chat</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g4dn, g5, p3, inf2, trn1, p4d</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Llama2-70b chat</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g4dn, g5, p3, inf2, trn1, p4d</td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Amazon Titan text lite</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Amazon Titan text express</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Cohere Command text</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Cohere Command light text</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>AI21 J2 Mid</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>AI21 J2 Ultra</strong></td>
 <td style="text-align: left;"></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">On-demand</td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Gemma-2b</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g4dn, g5, p3</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>Phi-3-mini-4k-instruct</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g4dn, g5, p3</td>
 <td style="text-align: left;"></td>
 </tr>
 <tr>
 <td style="text-align: left;"><strong>distilbert-base-uncased</strong></td>
 <td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;">✅</td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
-<td style="text-align: left;"></td>
+<td style="text-align: left;">g4dn, g5, p3</td>
 <td style="text-align: left;"></td>
 </tr>
 </tbody>
