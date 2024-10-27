@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/benchmarking_on_ec2.html">
       
       
-        <link rel="prev" href="orchestrator.html">
+        <link rel="prev" href="benchmarking_on_eks.html">
       
       
         <link rel="next" href="neuron.html">
@@ -637,27 +637,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="orchestrator.html" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    EC2 Orchestrator
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -755,6 +734,15 @@
   <a href="#benchmarking-on-an-cpu-instance-type-with-intel-processors" class="md-nav__link">
     <span class="md-ellipsis">
       Benchmarking on an CPU instance type with Intel processors
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#benchmarking-ollama-inference-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking Ollama inference server
     </span>
   </a>
   
@@ -1381,6 +1369,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#benchmarking-ollama-inference-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking Ollama inference server
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1421,6 +1418,7 @@
 <li>
 <p><a href="#benchmarking-the-triton-inference-server">Benchmarking the Triton inference server</a></p>
 </li>
+<li><a href="#Benchmarking-Ollama-Inference-Server">Benchmarking the Ollama Inference Server(BYO Endpoint)</a></li>
 </ul>
 <h2 id="benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips">Benchmarking on an instance type with NVIDIA GPUs or AWS Chips<a class="headerlink" href="#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips" title="Permanent link">&para;</a></h2>
 <ol>
@@ -1774,6 +1772,35 @@ command below. The config file for this example can be viewed <a href="src/fmben
 </li>
 <li>
 <p>All metrics are stored in the <code>/tmp/fmbench-write</code> directory created automatically by the <code>fmbench</code> package. Once the run completes all files are copied locally in a <code>results-*</code> folder as usual.</p>
+</li>
+</ol>
+<h2 id="benchmarking-ollama-inference-server">Benchmarking Ollama inference server<a class="headerlink" href="#benchmarking-ollama-inference-server" title="Permanent link">&para;</a></h2>
+<p><strong><em>As of 10/24/2024, this has been tested on <code>g6e.2xlarge</code> with <code>llama 3.1 8b</code></em></strong></p>
+<ol>
+<li>
+<p>Install Ollama.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>curl -fsSL https://ollama.com/install.sh | sh
+</span></code></pre></div>
+</li>
+<li>
+<p>Pull the model required.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>ollama pull llama3.1:8b
+</span></code></pre></div>
+</li>
+<li>
+<p>Serve the model. This might produce the following error message: <code>Error: accepts 0 arg(s), received 1</code> but you can safely ignore this error.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>ollama serve llama3.1:8b
+</span></code></pre></div>
+</li>
+<li>
+<p>Create local directory structure needed for <code>FMBench</code> and copy all publicly available dependencies from the AWS S3 bucket for <code>FMBench</code>. This is done by running the <code>copy_s3_content.sh</code> script available as part of the <code>FMBench</code> repo. Replace <code>/tmp</code> in the command below with a different path if you want to store the config files and the <code>FMBench</code> generated data in a different directory.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>curl<span class="w"> </span>-s<span class="w"> </span>https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-s<span class="w"> </span>--<span class="w"> </span>/tmp
+</span></code></pre></div>
+</li>
+<li>
+<p>Run <code>FMBench</code> with a packaged or a custom config file. The <code>--write-bucket</code> parameter value is just a placeholder and an actual S3 bucket is not required. You could set the <code>--tmp-dir</code> flag to an EFA path instead of <code>/tmp</code> if using a shared path for storing config files and reports.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>fmbench<span class="w"> </span>--config-file<span class="w"> </span>/tmp/fmbench-read/configs/llama3.1/8b/config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml<span class="w"> </span>--local-mode<span class="w"> </span>yes<span class="w"> </span>--write-bucket<span class="w"> </span>placeholder<span class="w"> </span>--tmp-dir<span class="w"> </span>/tmp<span class="w"> </span>&gt;<span class="w"> </span>fmbench.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
 </li>
 </ol>
 
