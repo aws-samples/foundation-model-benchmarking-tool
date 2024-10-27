@@ -63,7 +63,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
 | **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
 | **Anthropic Claude-3 Haiku**     |                               |                                           | On-demand                          |
-| **Mistral-7b-instruct**          | inf2, trn                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
+| **Mistral-7b-instruct**          | inf2, trn1                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
 | **Mistral-7b-AWQ**               |                               | p5                                        |                                    |
 | **Mixtral-8x7b-instruct**        |                               |                                           | On-demand                          |
 | **Llama3.2-1b instruct**         | g5                            |                                           |                                    |
