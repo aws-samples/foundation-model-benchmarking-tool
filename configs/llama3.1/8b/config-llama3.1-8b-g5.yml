@@ -94,7 +94,7 @@ inference_parameters:
 
 experiments:
   - name: Llama3-1-8b-g5.12xl-djl-inference:0.29.0-lmi11.0.0-cu124
-    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-12xl
@@ -127,7 +127,7 @@ experiments:
     accept_eula: true
     env:
   - name: Llama3-1-8b-g5.24xl-djl-inference:0.29.0-lmi11.0.0-cu124
-    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-24xl
@@ -160,7 +160,7 @@ experiments:
     accept_eula: true
     env:
   - name: Llama3-1-8b-g5.48xl-djl-inference:0.29.0-lmi11.0.0-cu124
-    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-48xl

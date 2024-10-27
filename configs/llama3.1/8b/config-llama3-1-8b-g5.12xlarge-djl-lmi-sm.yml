@@ -95,7 +95,7 @@ inference_parameters:
 experiments:
  
   - name: llama-3-1-8b-instruct-g6-48xl
-    model_id: meta-llama/Meta-Llama-3.1-8B-Instruct
+    model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Llama-3-1-8B-Instruct
     ep_name: Llama-3-1-8B-Instruct
