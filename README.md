@@ -86,6 +86,9 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.16
+1. Update to torch 2.4 for compatibility with SageMaker Notebooks.
+
 ## 2.0.15
 1. Support for [Ollama](https://github.com/ollama/ollama), see more details [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/benchmarking_on_ec2.html#benchmarking-models-on-ollama).
 1. Fix bugs with token counting.
@@ -95,9 +98,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 1. `Llama3.1-70b` config files and more.
 1. Support for [`fmbench-orchestrator`](https://github.com/awslabs/fmbench-orchestrator).
 
-## 2.0.13
 
-1. Update `pricing.yml` additional config files.
 
 
 [Release history](./release_history.md)
