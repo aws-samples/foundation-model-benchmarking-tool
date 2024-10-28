@@ -161,7 +161,9 @@ class SageMakerPredictor(FMBenchPredictor):
                     else:
                         logger.error(f"response_json is a dict, but choices is not a list but rather it is {type(choices)}, dont know how to handle this")
                 else:
-                    logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
+                    response_json["generated_text"] = response_json.get("embedding")
+                    logger.info("Trying to see if embeddings are generated.")
+                    # logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
             else:
                 logger.error(f"response_json data type is {type(response_json)}, dont know how to handle this")
             # counts the completion tokens for the model using the default/user provided tokenizer
