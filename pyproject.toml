@@ -31,6 +31,7 @@ pydantic = "2.7.4"
 ray = "2.32.0"
 sentence-transformers = "3.0.1"
 ec2-metadata = "2.13.0"
+torch = "2.4"
 
 [tool.poetry.dev-dependencies]
 
