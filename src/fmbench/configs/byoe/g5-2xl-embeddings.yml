@@ -1,6 +1,6 @@
 general:
-  name: "BAAI/bge-base-en-v1.5"      
-  model_name: "hf-sentencesimilarity-bge-base-en-v1-5-2024-10-28-01-18-41-707"
+  name: "huggingface-sentencesimilarity-bge-base-en-v1-5"      
+  model_name: "huggingface-sentencesimilarity-bge-base-en-v1-5"
   
 # AWS and SageMaker settings
 aws:
@@ -45,8 +45,8 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: yes
+    1_generate_data.ipynb: no
+    2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: yes
@@ -89,19 +89,16 @@ metrics:
 pricing: pricing.yml
 
 inference_parameters:
-  sagemaker:
-    max_new_tokens: 100
+  embedding:
     top_p: 0.92
-    temperature: 0.1
-    details: True
-    stop: '<|eot_id|>'
+    mode: embedding
 
 experiments:
-  - name: hf-sentencesimilarity-bge-base-en-v1-5-2024-10-28-01-18-41-707
-    model_id: BAAI/bge-base-en-v1.5
+  - name: bge-base-en-v1-5
+    model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
     model_version: "*"
-    model_name: hf-sentencesimilarity-bge-base-en-v1-5-2024-10-28-01-18-41-707
-    ep_name: hf-sentencesimilarity-bge-base-en-v1-5-2024-10-28-01-18-41-707
+    model_name: BAAI/bge-base-en-v1.5
+    ep_name: bge-base-en-v1-5
     instance_type: "ml.g5.2xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
     deploy: yes
@@ -109,7 +106,7 @@ experiments:
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
     inference_spec:
-      parameter_set: sagemaker
+      parameter_set: embedding
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
@@ -118,17 +115,17 @@ experiments:
     - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
+    # - 2
     accept_eula: false
     env:
       SAGEMAKER_PROGRAM: "inference.py"
-      ENDPOINT_SERVER_TIMEOUT: "3600"
-      MODEL_CACHE_ROOT: "/opt/ml/model"
-      SAGEMAKER_ENV: "1"
-      HF_MODEL_ID: "/opt/ml/model"
-      MAX_INPUT_LENGTH: "4095"
-      MAX_TOTAL_TOKENS: "4096"
-    #   # SM_NUM_GPUS: "8"
+      ENDPOINT_SERVER_TIMEOUT: "1200"
+      SM_NUM_GPUS: "1"
+      # MODEL_CACHE_ROOT: "/opt/ml/model"
+      # SAGEMAKER_ENV: "1"
+      # HF_MODEL_ID: "BAAI/bge-base-en-v1.5"
+      # MAX_INPUT_LENGTH: "4095"
+      # MAX_TOTAL_TOKENS: "4096"
     #   # SAGEMAKER_MODEL_SERVER_WORKERS: "2"
 
 report:

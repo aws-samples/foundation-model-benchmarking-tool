@@ -1,5 +1,6 @@
 import time
 import json
+import copy
 import boto3
 import logging
 import sagemaker
@@ -67,7 +68,6 @@ class SageMakerPredictor(FMBenchPredictor):
 
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload["inputs"])
-
         try:
             st = time.perf_counter()
             split_input_and_inference_params = None
@@ -76,8 +76,11 @@ class SageMakerPredictor(FMBenchPredictor):
             response = None
             streaming = self._inference_spec.get("stream", False)
             if split_input_and_inference_params is True:
-                response = self._predictor.predict(payload["inputs"],
-                                                   self._inference_spec["parameters"])
+                payload2 = copy.deepcopy(payload)
+                payload2['text_inputs'] = payload2.pop('inputs')
+                logger.info(f"Payload2 is : {payload2}")
+                payload2 = payload2
+                response = self._predictor.predict(payload2["text_inputs"])
             else:
                 if self._use_messages_api_format is True:
                     # if needed in future add support for system prompt as well
@@ -95,7 +98,10 @@ class SageMakerPredictor(FMBenchPredictor):
                     #     }
                     #   ]
                     # }
-                    payload = payload | dict(self._inference_spec["parameters"])
+                    payload2 = copy.deepcopy(payload)
+                    payload2['text_inputs'] = payload2.pop('inputs')
+                    logger.info(f"Payload2 is : {payload2}")
+                    payload2 = payload2
                 else:
                     # the final payload should look like this:
                     # {
@@ -105,7 +111,10 @@ class SageMakerPredictor(FMBenchPredictor):
                     #    },
                     #   "inputs": "this is the prompt"
                     # }
-                    payload = payload | dict(parameters=self._inference_spec["parameters"])
+                    payload2 = copy.deepcopy(payload)
+                    payload2['text_inputs'] = payload2.pop('inputs')
+                    logger.info(f"Payload2 is : {payload2}")
+                    payload2 = payload2
 
             # if the response streaming is step, call the get_response stream on the 
             # sagemaker endpoint, else use the simple predict call
@@ -129,7 +138,8 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = response_dict.get('response')
             else:
                 logger.info(f"streaming={streaming}, calling predict")
-                response = self._predictor.predict(payload)
+                response = self._predictor.predict(payload2)
+                logger.info(f"Payload2 is : {payload2}")
 
             latency = time.perf_counter() - st
             if isinstance(response, bytes):

@@ -43,7 +43,7 @@ pip install -U dist/*.whl
 
 # run the newly installed version
 echo "going to run fmbench now"
-fmbench --config-file src/fmbench/configs/byoe/g5-2xl-embeddings.yml  --local-mode yes --write-bucket placeholder --tmp-dir /tmp> $LOGFILE 2>&1
+fmbench --config-file $CONFIG_FILE_PATH --local-mode yes --write-bucket placeholder --tmp-dir /tmp> $LOGFILE 2>&1
 
 # Use FMBench to benchmark models on hosted on EC2 using the command below. If you want to write the metrics and results to an
 # s3 bucket, replace `placeholder` with the name of that s3 bucket in your AWS account. Optionally, you can send the results to
