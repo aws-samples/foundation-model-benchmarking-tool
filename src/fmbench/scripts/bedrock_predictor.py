@@ -196,9 +196,7 @@ class BedrockPredictor(FMBenchPredictor):
                     # Getting in the total input and output tokens using token counter.
                     # Streaming on liteLLM does not support prompt tokens and completion tokens 
                     # in the invocation response format
-                    prompt_tokens = token_counter(model=self._endpoint_name,
-                                                messages=[{"content": prompt_input_data,
-                                                            "role": "user"}])
+                    prompt_tokens = token_counter(model=self._endpoint_name, messages=messages)
                     completion_tokens = token_counter(text=self._response_json["generated_text"])
                     # Extract latency in seconds
                     latency = time.perf_counter() - st
