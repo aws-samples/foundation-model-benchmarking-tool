@@ -77,16 +77,22 @@ class SageMakerPredictor(FMBenchPredictor):
             streaming = self._inference_spec.get("stream", False)
             if split_input_and_inference_params is True:
                 payload2 = copy.deepcopy(payload)
-                payload2['text_inputs'] = payload2.pop('inputs')
-                logger.info(f"Payload2 is : {payload2}")
-                payload2 = payload2
-                response = self._predictor.predict(payload2["text_inputs"])
+                payload2['text_inputs'] = payload2.pop('inputs')  # Rename 'inputs' to 'text_inputs'
+                logger.info("split_input params")
+                # Add 'mode' to the payload
+                payload2['mode'] = "embedding"
+
+                logger.info(f"Payload2 in Inference parms is : {payload2}")
+
+                # Ensure 'text_inputs' is structured correctly for the request
+                response = self._predictor.predict(payload2)
             else:
                 if self._use_messages_api_format is True:
                     # if needed in future add support for system prompt as well
                     # and multiple system/user prompts but all that is not needed for now
                     payload = {"messages": [{"role": "user",
                                              "content": payload["inputs"]}]}
+                    logger.info("going to use messages api format")
                     # the final payload should look like this:
                     # {
                     #   "top_p": 0.9,
@@ -100,8 +106,8 @@ class SageMakerPredictor(FMBenchPredictor):
                     # }
                     payload2 = copy.deepcopy(payload)
                     payload2['text_inputs'] = payload2.pop('inputs')
-                    logger.info(f"Payload2 is : {payload2}")
-                    payload2 = payload2
+                    payload2['mode'] = "embedding"
+                    logger.info(f"Payload2 in messages api format is {payload2}")
                 else:
                     # the final payload should look like this:
                     # {
@@ -113,8 +119,8 @@ class SageMakerPredictor(FMBenchPredictor):
                     # }
                     payload2 = copy.deepcopy(payload)
                     payload2['text_inputs'] = payload2.pop('inputs')
-                    logger.info(f"Payload2 is : {payload2}")
-                    payload2 = payload2
+                    payload2['mode'] = "embedding"
+                    logger.info(f"Payload2 in else block in messages api format is: {payload2}")
 
             # if the response streaming is step, call the get_response stream on the 
             # sagemaker endpoint, else use the simple predict call
@@ -138,8 +144,9 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = response_dict.get('response')
             else:
                 logger.info(f"streaming={streaming}, calling predict")
+                logger.info(f"Flag after predictor")
+                payload2['mode'] = "embedding"
                 response = self._predictor.predict(payload2)
-                logger.info(f"Payload2 is : {payload2}")
 
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
@@ -177,7 +184,7 @@ class SageMakerPredictor(FMBenchPredictor):
             else:
                 logger.error(f"response_json data type is {type(response_json)}, dont know how to handle this")
             # counts the completion tokens for the model using the default/user provided tokenizer
-            completion_tokens = count_tokens(response_json.get("generated_text"))
+            completion_tokens = len(response_json.get("generated_text"))
 
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "

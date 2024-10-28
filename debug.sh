@@ -3,7 +3,7 @@
 # 2. Builds and installs a new one
 # 3. Runs fmbench as usual
 
-CONDA_ENV_PATH=/home/ec2-user/miniconda3/envs/fmbench_python311/lib/python3.11/site-packages
+CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
 CONFIG_FILE_PATH=src/fmbench/configs/byoe/g5-2xl-embeddings.yml
 #config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml
 #src/fmbench/configs/bedrock/config-bedrock-llama3-2.yml
