@@ -82,6 +82,7 @@ class BedrockPredictor(FMBenchPredictor):
             self._top_p = 0.9
             # not used for now but kept as placeholders for future
             self._stream = None
+            self._vision_mode = None
             self._start = None
             self._stop = None
 
@@ -97,13 +98,15 @@ class BedrockPredictor(FMBenchPredictor):
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
                     self._top_p = parameters.get('top_p', self._top_p)
                     self._stream = inference_spec.get("stream", self._stream)
+                    self._vision_mode = inference_spec.get("vision_mode", self._vision_mode)
                     self._stop = inference_spec.get("stop_token", self._stop)
                     self._start = inference_spec.get("start_token", self._start)
             self._response_json = {}
             logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
                         f"_temperature={self._temperature} "
                         f"_max_tokens={self._max_tokens}, _top_p={self._top_p} "
-                        f"_stream={self._stream}, _stop={self._stop}, _caching={self._caching}")
+                        f"_stream={self._stream}, _stop={self._stop}, _caching={self._caching}"
+                        f"_vision_mode={self._vision_mode}")
         except Exception as e:
             exception_msg = f"""exception while creating predictor/initializing variables
                             for endpoint_name={self._endpoint_name}, exception=\"{e}\", 
@@ -130,15 +133,37 @@ class BedrockPredictor(FMBenchPredictor):
             try:
                 # recording latency for when streaming is enabled
                 st = time.perf_counter()
-                # this response is for text generation models on bedrock: Claude, Llama, Mistral etc.
                 logger.info(f"Invoking {self._bedrock_model} to get inference")
+
+                # Get the base64 image if in vision mode
+                if self._vision_mode is True:
+                    # Add prefix if needed
+                    if not prompt_input_data.startswith('data:image/'):
+                        prompt_input_data = "data:image/jpeg;base64," + prompt_input_data
+
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": "What's in this image?"},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": prompt_input_data
+                                    },
+                                },
+                            ],
+                        }
+                    ]
+                else:
+                    # Standard text generation format
+                    messages = [{"content": prompt_input_data, "role": "user"}]
                 # cohere does not support top_p and apprarently LiteLLM does not
                 # know that?
                 if 'cohere' not in self._endpoint_name:
                     response = completion(model=self._bedrock_model,
                                         model_id=self._pt_model_id,
-                                        messages=[{"content": prompt_input_data,
-                                                    "role": "user"}],
+                                        messages=messages,
                                         temperature=self._temperature,
                                         max_tokens=self._max_tokens,
                                         top_p=self._top_p,
@@ -147,8 +172,7 @@ class BedrockPredictor(FMBenchPredictor):
                 else:
                     response = completion(model=self._bedrock_model,
                                         model_id=self._pt_model_id,
-                                        messages=[{"content": prompt_input_data,
-                                                    "role": "user"}],
+                                        messages=messages,
                                         temperature=self._temperature,
                                         max_tokens=self._max_tokens,
                                         caching=self._caching,
