@@ -4,25 +4,27 @@
 
 ## Full list of benchmarked models
 
-| Model                           | EC2 g5 | EC2 p4 | EC2 p5 | EC2 Inf2/Trn1 | SageMaker g4dn/g5/p3 | SageMaker Inf2/Trn1 | SageMaker P4 | SageMaker P5 | Bedrock On-demand throughput | Bedrock provisioned throughput |
-|:--------------------------------|:-------|:-------|:-------|:--------------|:---------------------|:--------------------|:-------------|:-------------|:-----------------------------|:--------------------------------|
-| **Anthropic Claude-3 Sonnet**    |        |        |        |               |                      |                     |              |              | ✅                           | ✅                               |
-| **Anthropic Claude-3 Haiku**     |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Mistral-7b-instruct**          |        |        |        |      ✅        | ✅                   |                     | ✅           | ✅           | ✅                           |                                    |
-| **Mistral-7b-AWQ**               |        |        |        |               |                      |                     |              | ✅           |                             |                                    |
-| **Mixtral-8x7b-instruct**        |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Llama3.1-8b instruct**         |  ✅    |   ✅   |   ✅   | ✅             | ✅                   | ✅                  |              |              | ✅                           |                                    |
-| **Llama3.1-70b instruct**        |        |        |        | ✅             |                      | ✅                  |              |              | ✅                           |                                    |
-| **Llama3-8b instruct**           |  ✅    |        |        | ✅             | ✅                   | ✅                  | ✅           | ✅           | ✅                           |                                    |
-| **Llama3-70b instruct**          |  ✅    |        |        |               | ✅                   | ✅                  | ✅           |              | ✅                           |                                    |
-| **Llama2-13b chat**              |        |        |        |               | ✅                   | ✅                  | ✅           |              | ✅                           |                                    |
-| **Llama2-70b chat**              |        |        |        |               | ✅                   | ✅                  | ✅           |              | ✅                           |                                    |
-| **Amazon Titan text lite**       |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Amazon Titan text express**    |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Cohere Command text**          |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Cohere Command light text**    |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **AI21 J2 Mid**                  |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **AI21 J2 Ultra**                |        |        |        |               |                      |                     |              |              | ✅                           |                                    |
-| **Gemma-2b**                     |        |        |        |               | ✅                   |                     |              |              |                             |                                    |
-| **Phi-3-mini-4k-instruct**       |        |        |        |               | ✅                   |                     |              |              |                             |                                    |
-| **distilbert-base-uncased**      |        |        |        |               | ✅                   |                     |              |              |                             |                                    |
+| Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
+|:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
+| **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
+| **Anthropic Claude-3 Haiku**     |                               |                                           | On-demand                          |
+| **Mistral-7b-instruct**          | inf2, trn1                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
+| **Mistral-7b-AWQ**               |                               | p5                                        |                                    |
+| **Mixtral-8x7b-instruct**        |                               |                                           | On-demand                          |
+| **Llama3.2-1b instruct**         | g5                            |                                           |                                    |
+| **Llama3.2-3b instruct**         | g5                            |                                           |                                    |
+| **Llama3.1-8b instruct**         | g5, p4d, p4de, p5, p5e, g6e, g6, inf2, trn1        | g4dn, g5, p3, inf2, trn1                     | On-demand                          |
+| **Llama3.1-70b instruct**        | p4d, p4de, p5, p5e, g6e, g5, inf2, trn1            | inf2, trn1                                 | On-demand                          |
+| **Llama3-8b instruct**           | g5, g6e, inf2, trn1                 | g4dn, g5, p3, inf2, trn1, p4d, p5e             | On-demand                          |
+| **Llama3-70b instruct**          | g5                            | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
+| **Llama2-13b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
+| **Llama2-70b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
+| **Amazon Titan text lite**       |                               |                                           | On-demand                          |
+| **Amazon Titan text express**    |                               |                                           | On-demand                          |
+| **Cohere Command text**          |                               |                                           | On-demand                          |
+| **Cohere Command light text**    |                               |                                           | On-demand                          |
+| **AI21 J2 Mid**                  |                               |                                           | On-demand                          |
+| **AI21 J2 Ultra**                |                               |                                           | On-demand                          |
+| **Gemma-2b**                     |                               | g4dn, g5, p3                                |                                    |
+| **Phi-3-mini-4k-instruct**       |                               | g4dn, g5, p3                                |                                    |
+| **distilbert-base-uncased**      |                               | g4dn, g5, p3                                |                                    |

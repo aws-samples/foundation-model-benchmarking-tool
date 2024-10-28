@@ -1,3 +1,14 @@
+
+## 2.0.13
+
+1. Update `pricing.yml` additional config files.
+
+
+## 2.0.11
+
+1. `Llama3.2-1b` and `Llama3.2-3b` support on EC2 g5.
+1. `Llama3-8b` on EC2 `g6e` instances.
+
 ## 2.0.9
 
 1. Triton-djl support for AWS Chips.

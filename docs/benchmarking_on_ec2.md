@@ -21,7 +21,7 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 - [Benchmarking on an CPU instance type with Intel processors](#benchmarking-on-an-cpu-instance-type-with-intel-processors)
 
 - [Benchmarking the Triton inference server](#benchmarking-the-triton-inference-server)
-- [Benchmarking the Ollama Inference Server(BYO Endpoint)](#Benchmarking-Ollama-Inference-Server)
+- [Benchmarking models on Ollama](#benchmarking-models-on-ollama)
 
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
@@ -400,7 +400,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. All metrics are stored in the `/tmp/fmbench-write` directory created automatically by the `fmbench` package. Once the run completes all files are copied locally in a `results-*` folder as usual.
 
 
-## Benchmarking Ollama inference server
+## Benchmarking models on Ollama
 
 **_As of 10/24/2024, this has been tested on `g6e.2xlarge` with `llama 3.1 8b`_**
 
