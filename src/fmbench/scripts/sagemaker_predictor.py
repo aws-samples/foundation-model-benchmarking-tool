@@ -1,5 +1,6 @@
 import time
 import json
+import copy
 import boto3
 import logging
 import sagemaker
@@ -64,17 +65,23 @@ class SageMakerPredictor(FMBenchPredictor):
         completion_tokens: Optional[int] = None
         streaming: Optional[bool] = None
         stop_token: Optional[str] = None
-
+        
+        
+        
         # represents the number of tokens in the prompt payload
         prompt_tokens = count_tokens(payload["inputs"])
 
         try:
+            container_type = self._inference_spec.get("container_type")
             st = time.perf_counter()
             split_input_and_inference_params = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
+            
+            
             response = None
             streaming = self._inference_spec.get("stream", False)
+            
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
@@ -105,7 +112,13 @@ class SageMakerPredictor(FMBenchPredictor):
                     #    },
                     #   "inputs": "this is the prompt"
                     # }
-                    payload = payload | dict(parameters=self._inference_spec["parameters"])
+                    if container_type:
+                        payload2 = copy.deepcopy(payload)
+                        payload2['text_inputs'] = payload2.pop('inputs')
+                        payload2['mode'] = "embedding"
+                        logger.info(f"Huggingface container is being used")
+                    else:
+                        payload = payload | dict(parameters=self._inference_spec["parameters"])
 
             # if the response streaming is step, call the get_response stream on the 
             # sagemaker endpoint, else use the simple predict call
@@ -129,7 +142,12 @@ class SageMakerPredictor(FMBenchPredictor):
                 response = response_dict.get('response')
             else:
                 logger.info(f"streaming={streaming}, calling predict")
-                response = self._predictor.predict(payload)
+                if container_type:
+                    response = self._predictor.predict(payload2)
+                    logger.info("Running HF")
+                else:
+                    response = self._predictor.predict(payload)
+                    logger.info("Running regular")
 
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
@@ -161,11 +179,15 @@ class SageMakerPredictor(FMBenchPredictor):
                     else:
                         logger.error(f"response_json is a dict, but choices is not a list but rather it is {type(choices)}, dont know how to handle this")
                 else:
-                    logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
+                    response_json["generated_text"] = response_json.get("embedding")
+                    completion_tokens = len(response_json.get("generated_text"))
+                    logger.info("Trying to see if embeddings are generated.")
+                    # logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
             else:
                 logger.error(f"response_json data type is {type(response_json)}, dont know how to handle this")
             # counts the completion tokens for the model using the default/user provided tokenizer
-            completion_tokens = count_tokens(response_json.get("generated_text"))
+            if not completion_tokens:
+                completion_tokens = count_tokens(response_json.get("generated_text"))
 
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "

@@ -89,9 +89,10 @@ experiments:
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
-    inference_script: sagemaker_predictor-WIP.py
+    inference_script: sagemaker_predictor.py
     inference_spec:
       parameter_set: embedding
+      container_type: huggingface
     payload_files:
     - payload_en_50-100.jsonl
     - payload_en_1-50.jsonl
