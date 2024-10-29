@@ -1,0 +1,8 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+You are an assistant for generating descriptions on the image provided in the data. Describe the image, 
+including the key details and other aspects. Do not make up an answer and be accurate. Only refer to the 
+content of the image provided in the data.
+
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+

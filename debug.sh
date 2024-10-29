@@ -4,7 +4,8 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/embeddings/bge-base-en-v1-5-g5-embeddings.yml
+CONFIG_FILE_PATH=src/fmbench/configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-image-dataset.yml
+#src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-g6e.2xl-tp-1-mc-max-djl.yml
 #config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml
 #src/fmbench/configs/bedrock/config-bedrock-llama3-2.yml
 #src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
@@ -43,7 +44,7 @@ pip install -U dist/*.whl
 
 # run the newly installed version
 echo "going to run fmbench now"
-fmbench --config-file $CONFIG_FILE_PATH --local-mode yes --write-bucket placeholder --tmp-dir /tmp> $LOGFILE 2>&1
+fmbench --config-file $CONFIG_FILE_PATH  --local-mode yes --write-bucket placeholder --tmp-dir /tmp> $LOGFILE 2>&1
 
 # Use FMBench to benchmark models on hosted on EC2 using the command below. If you want to write the metrics and results to an
 # s3 bucket, replace `placeholder` with the name of that s3 bucket in your AWS account. Optionally, you can send the results to

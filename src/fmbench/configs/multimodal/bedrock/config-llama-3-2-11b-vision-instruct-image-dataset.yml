@@ -52,7 +52,8 @@ s3_read_data:
   # a multimodal prompt template version to give the answer and a description of the image to back up the answer.
   # To use your own dataset, containing images, questions and ground truth, specify the image column in the dataset
   # section below.
-  - nirajandhakal/realworldqa.jsonl
+  # - nirajandhakal/realworldqa.jsonl
+  - Marqo/marqo-GS-10M.jsonl
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
@@ -65,7 +66,7 @@ s3_read_data:
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3_multimodal_images.txt
+  prompt_template_file: prompt_template_llama3_images_marqo-GS-10M.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -74,10 +75,10 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: yes
+  1_generate_data.ipynb: no
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
+  4_get_evaluations.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
@@ -87,10 +88,7 @@ datasets:
   # This represents the question that is asked as a part of the
   # image messages API format. If this is not provided, a description
   # of the image will be provided instead
-  - input
   image_col: image
-  ground_truth_col_key: answers
-  question_col_key: input
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -125,7 +123,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1-500
 
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 

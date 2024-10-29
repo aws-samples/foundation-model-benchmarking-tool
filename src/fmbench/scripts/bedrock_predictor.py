@@ -143,7 +143,6 @@ class BedrockPredictor(FMBenchPredictor):
                     # Add prefix if needed
                     if not base64_img.startswith('data:image/'):
                         base64_img = "data:image/jpeg;base64," + base64_img
-
                     messages = [
                         {
                             "role": "user",
