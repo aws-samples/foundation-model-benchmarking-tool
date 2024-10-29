@@ -31,8 +31,7 @@ s3_read_data:
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
     # - rajpurkar/squad_v2.jsonl
-    - banking77.jsonl
-    
+    - just_text.jsonl
     tokenizer_prefix: llama3_tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_bert.txt ## add your desired prompt template type
@@ -55,10 +54,18 @@ datasets:
     min_length_in_tokens: 1
     max_length_in_tokens: 50
     payload_file: payload_en_1-50.jsonl
-
+  - language: en    
+    min_length_in_tokens: 50
+    max_length_in_tokens: 100
+    payload_file: payload_en_50-100.jsonl
+  - language: en    
+    min_length_in_tokens: 100
+    max_length_in_tokens: 150
+    payload_file: payload_en_100-150.jsonl
+    
 
 metrics:
-  dataset_of_interest: en_1-50
+  dataset_of_interest: en_50-100
   
 pricing: pricing.yml
 
@@ -67,7 +74,7 @@ inference_parameters:
     top_p: 0.92
     
 experiments:
-  - name: bge-base-en-v1-5
+  - name: bge-base-en-v1-5-c5.xl
     model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
     model_version: "*"
     model_name: bge-base-en-v1.5
@@ -83,9 +90,70 @@ experiments:
       container_type: huggingface
     payload_files:
     - payload_en_1-50.jsonl
-
-
-
+    - payload_en_50-100.jsonl
+    - payload_en_100-150.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 6
+    - 8
+    - 10
+    accept_eula: false
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "1200"
+  
+  - name: bge-base-en-v1-5-c5.2xl
+    model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
+    model_version: "*"
+    model_name: bge-base-en-v1.5
+    ep_name: bge-base-en-v1-5
+    instance_type: "ml.c5.2xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: embedding
+      container_type: huggingface
+    payload_files:
+    - payload_en_1-50.jsonl
+    - payload_en_50-100.jsonl
+    - payload_en_100-150.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 6
+    - 8
+    - 10
+    accept_eula: false
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "1200"
+  
+  - name: bge-base-en-v1-5-c5.4xl
+    model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
+    model_version: "*"
+    model_name: bge-base-en-v1.5
+    ep_name: bge-base-en-v1-5
+    instance_type: "ml.c5.4xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: embedding
+      container_type: huggingface
+    payload_files:
+    - payload_en_1-50.jsonl
+    - payload_en_50-100.jsonl
+    - payload_en_100-150.jsonl
     concurrency_levels:
     - 1
     - 2
@@ -108,9 +176,9 @@ experiments:
     #   # SAGEMAKER_MODEL_SERVER_WORKERS: "2"
 
 report:
-  latency_budget: 0.1
+  latency_budget: 1
   cost_per_10k_txn_budget: 20
-  error_rate_budget: 3
+  error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
