@@ -1,6 +1,6 @@
 general:
-  name: "huggingface-sentencesimilarity-bge-base-en-v1-5"      
-  model_name: "huggingface-sentencesimilarity-bge-base-en-v1-5"
+  name: "bge-base-en-v1-5"      
+  model_name: "bge-base-en-v1-5"
   
 # AWS and SageMaker settings
 aws:
@@ -41,7 +41,7 @@ s3_read_data:
 run_steps:
     0_setup.ipynb: yes
     1_generate_data.ipynb: yes
-    2_deploy_model.ipynb: no
+    2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
     5_cleanup.ipynb: no
@@ -55,22 +55,10 @@ datasets:
     min_length_in_tokens: 1
     max_length_in_tokens: 50
     payload_file: payload_en_1-50.jsonl
-  - language: en    
-    min_length_in_tokens: 50
-    max_length_in_tokens: 100
-    payload_file: payload_en_50-100.jsonl
-  - language: en    
-    min_length_in_tokens: 100
-    max_length_in_tokens: 150
-    payload_file: payload_en_100-150.jsonl
-  # - language: en
-  #   min_length_in_tokens: 500
-  #   max_length_in_tokens: 1000
-  #   payload_file: payload_en_500-1000.jsonl
 
 
 metrics:
-  dataset_of_interest: en_100-150
+  dataset_of_interest: en_1-50
   
 pricing: pricing.yml
 
@@ -94,9 +82,8 @@ experiments:
       parameter_set: embedding
       container_type: huggingface
     payload_files:
-    - payload_en_50-100.jsonl
     - payload_en_1-50.jsonl
-    - payload_en_100-150.jsonl
+
 
 
     concurrency_levels:
@@ -107,12 +94,7 @@ experiments:
     - 6
     - 8
     - 10
-    - 15
-    - 20
-    - 10
-    - 20
-    - 50
-    - 75
+
     accept_eula: false
     env:
       SAGEMAKER_PROGRAM: "inference.py"
