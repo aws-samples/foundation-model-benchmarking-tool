@@ -1,4 +1,4 @@
-import os
+globals.TOKENIZER_MODEL_IDimport os
 import yaml
 import boto3
 import requests
