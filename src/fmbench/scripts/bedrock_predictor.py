@@ -117,6 +117,7 @@ class BedrockPredictor(FMBenchPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
+        base64_img = payload.get('base64_img')
         os.environ["AWS_REGION_NAME"] = self._aws_region
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
@@ -136,26 +137,29 @@ class BedrockPredictor(FMBenchPredictor):
                 logger.info(f"Invoking {self._bedrock_model} to get inference")
 
                 # Get the base64 image if in vision mode
-                if self._vision_mode is True:
+                if base64_img is not None:
+                    logger.info("'base64_img' column provided in the dataset, going to use the multimodal"
+                                "messages API to get inferences on the image")
                     # Add prefix if needed
-                    if not prompt_input_data.startswith('data:image/'):
-                        prompt_input_data = "data:image/jpeg;base64," + prompt_input_data
+                    if not base64_img.startswith('data:image/'):
+                        base64_img = "data:image/jpeg;base64," + base64_img
 
                     messages = [
                         {
                             "role": "user",
                             "content": [
-                                {"type": "text", "text": "What's in this image?"},
+                                {"type": "text", "text": prompt_input_data},
                                 {
                                     "type": "image_url",
                                     "image_url": {
-                                        "url": prompt_input_data
+                                        "url": base64_img
                                     },
                                 },
                             ],
                         }
                     ]
                 else:
+                    logger.info("Going to use the standard text generation messages format to get inferences")
                     # Standard text generation format
                     messages = [{"content": prompt_input_data, "role": "user"}]
                 # cohere does not support top_p and apprarently LiteLLM does not
