@@ -1,3 +1,6 @@
+## 2.0.17
+
+1. Add support for embedding models through SageMaker jumpstart
 
 ## 2.0.13
 
