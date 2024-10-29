@@ -1,1 +1,1 @@
-configs/byoe/g5-2xl-embeddings.yml
+configs/llama3.1/8b/config-llama3.1-8b-g5.yml
