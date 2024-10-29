@@ -101,9 +101,9 @@ experiments:
     model_id: meta-textgeneration-llama-3-8b-instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.12xl
-    ep_name: llama-3-8b-instruct-g5-2xl
-    instance_type: "ml.g5.2xlarge"
-    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
+    ep_name: llama-3-8b-instruct-g5-12xl
+    instance_type: "ml.g5.12xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.27.0-deepspeed0.12.6-cu121'
     deploy: yes
     instance_count: 1
     deployment_script: jumpstart.py
