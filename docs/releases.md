@@ -1,5 +1,8 @@
 # Releases
 
+## 2.0.17
+1. Add support for embedding models through SageMaker jumpstart
+
 ## 2.0.16
 1. Update to torch 2.4 for compatibility with SageMaker Notebooks.
 

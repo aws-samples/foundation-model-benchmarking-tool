@@ -4,7 +4,7 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/byoe/g5-2xl-embeddings.yml
+CONFIG_FILE_PATH=src/fmbench/configs/embeddings/bge-base-en-v1-5-g5-embeddings.yml
 #config-ec2-llama3-1-8b-g6e-2xlarge-byoe-ollama.yml
 #src/fmbench/configs/bedrock/config-bedrock-llama3-2.yml
 #src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
