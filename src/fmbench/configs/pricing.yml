@@ -5,7 +5,6 @@ pricing:
     ml.c5.xlarge: 0.1700
     ml.c5.4xlarge: 0.6800
     ml.m5.xlarge: 0.23
-    ml.c5.xlarge: 0.1700
     ml.g5.xlarge: 1.4084
     ml.g5.4xlarge: 2.03
     ml.g5.8xlarge: 3.06
