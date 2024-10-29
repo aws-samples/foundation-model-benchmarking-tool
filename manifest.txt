@@ -188,4 +188,5 @@ source_data/hotpotqa_e.jsonl
 source_data/narrativeqa.jsonl
 source_data/triviaqa.jsonl
 source_data/triviaqa_e.jsonl
+source_data/just_text.jsonl
 tokenizer/.keep
