@@ -44,7 +44,7 @@ run_steps:
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
-    5_cleanup.ipynb: no
+    5_cleanup.ipynb: yes
 
 
 datasets:
