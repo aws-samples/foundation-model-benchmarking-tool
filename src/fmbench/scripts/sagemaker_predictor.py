@@ -77,11 +77,8 @@ class SageMakerPredictor(FMBenchPredictor):
             split_input_and_inference_params = None
             if self._inference_spec is not None:
                 split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
-            
-            
             response = None
             streaming = self._inference_spec.get("stream", False)
-            
             if split_input_and_inference_params is True:
                 response = self._predictor.predict(payload["inputs"],
                                                    self._inference_spec["parameters"])
@@ -112,11 +109,10 @@ class SageMakerPredictor(FMBenchPredictor):
                     #    },
                     #   "inputs": "this is the prompt"
                     # }
-                    if container_type:
+                    if container_type == constants.CONTAINER_TYPE_HUGGINGFACE:
                         payload2 = copy.deepcopy(payload)
                         payload2['text_inputs'] = payload2.pop('inputs')
                         payload2['mode'] = "embedding"
-                        logger.info(f"Huggingface container is being used")
                     else:
                         payload = payload | dict(parameters=self._inference_spec["parameters"])
 
@@ -179,9 +175,9 @@ class SageMakerPredictor(FMBenchPredictor):
                     else:
                         logger.error(f"response_json is a dict, but choices is not a list but rather it is {type(choices)}, dont know how to handle this")
                 else:
-                    response_json["generated_text"] = response_json.get("embedding")
-                    completion_tokens = len(response_json.get("generated_text"))
-                    logger.info("Trying to see if embeddings are generated.")
+                    if container_type == constants.CONTAINER_TYPE_HUGGINGFACE:
+                        response_json["generated_text"] = response_json.get("embedding")
+                        completion_tokens = len(response_json.get("generated_text"))
                     # logger.error(f"response_json is a dict, but does not contain choices, dont know how to handle this")
             else:
                 logger.error(f"response_json data type is {type(response_json)}, dont know how to handle this")

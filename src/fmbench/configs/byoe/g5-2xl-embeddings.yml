@@ -70,9 +70,9 @@ datasets:
 
 
 metrics:
-  dataset_of_interest: en_50-100
+  dataset_of_interest: en_100-150
   
-pricing: /home/ec2-user/SageMaker/foundation-model-benchmarking-tool/src/fmbench/configs/pricing.yml
+pricing: pricing.yml
 
 inference_parameters:
   embedding:
@@ -82,7 +82,7 @@ experiments:
   - name: bge-base-en-v1-5
     model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
     model_version: "*"
-    model_name: BAAI/bge-base-en-v1.5
+    model_name: bge-base-en-v1.5
     ep_name: bge-base-en-v1-5
     instance_type: "ml.c5.xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
@@ -106,13 +106,13 @@ experiments:
     - 4
     - 6
     - 8
-    # - 10
-    # - 15
-    # - 20
-    # - 10
-    # - 20
-    # - 50
-    # - 75
+    - 10
+    - 15
+    - 20
+    - 10
+    - 20
+    - 50
+    - 75
     accept_eula: false
     env:
       SAGEMAKER_PROGRAM: "inference.py"
@@ -128,7 +128,7 @@ experiments:
 report:
   latency_budget: 0.1
   cost_per_10k_txn_budget: 20
-  error_rate_budget: 0
+  error_rate_budget: 3
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
   txn_count_for_showing_cost: 10000
