@@ -140,10 +140,10 @@ class SageMakerPredictor(FMBenchPredictor):
                 logger.info(f"streaming={streaming}, calling predict")
                 if container_type:
                     response = self._predictor.predict(payload2)
-                    logger.info("Running HF")
+                    logger.info("Running predictor with HuggingFace Container for Embedding model")
                 else:
                     response = self._predictor.predict(payload)
-                    logger.info("Running regular")
+                    logger.info("Running predictor for Foundation model")
 
             latency = time.perf_counter() - st
             if isinstance(response, bytes):
