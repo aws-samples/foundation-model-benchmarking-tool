@@ -64,7 +64,7 @@ s3_read_data:
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3_images_qna.txt
+  prompt_template_file: prompt_template_llama3_images_ScienceQA.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
