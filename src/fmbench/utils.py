@@ -180,6 +180,15 @@ def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
     except Exception as e:
         logger.error(f"upload_file_to_s3, An error occurred: {e}")
 
+def _write_to_local_read(data, dir1, dir2, file_name):
+    dir = _get_local_read_path(dir1 + "/" + dir2 + "/")
+    Path(dir).mkdir(parents=True, exist_ok=True)
+    file = dir + file_name
+    if isinstance(data, str):
+        Path(file).write_text(data)
+    else:
+        Path(file).write_bytes(data)
+
 def _write_to_local(data, dir1, dir2, file_name):
     dir = _get_local_write_path(dir1 + "/" + dir2 + "/")
     Path(dir).mkdir(parents=True, exist_ok=True)
@@ -256,6 +265,28 @@ def read_from_s3(bucket_name, s3_file_path):
     except Exception as e:
         logger.error(f"read_from_s3, An error occurred: {e}")
         return None
+
+# Function to write data to S3
+def write_hf_ds_loaded_at_runtime(data, bucket_name, dir1, dir2, file_name):
+    if _is_write_local_or_both():
+        _write_to_local_read(data, dir1, dir2, file_name)
+    if _is_write_local_only():
+        return
+
+    # Initialize S3 client
+    s3_client = boto3.client('s3')
+
+    # Construct the S3 file path
+    s3_file_path = posixpath.join(nt_to_posix(dir1), nt_to_posix(dir2), file_name)
+    logger.debug(f"write_to_s3, s3_file_path={s3_file_path}")
+    try:
+        # Write the JSON data to the S3 bucket
+        s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=data)
+        return (f"s3://{bucket_name}/{s3_file_path}")
+    except NoCredentialsError:
+        logger.error("write_to_s3, Error: AWS credentials not found.")
+    except Exception as e:
+        logger.error(f"write_to_s3, An error occurred: {e}")
 
 def _get_local_object(bucket: str, key: str, decode: bool) -> str:
     key = nt_to_posix(key)
