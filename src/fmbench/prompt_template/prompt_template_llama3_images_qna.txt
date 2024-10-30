@@ -3,7 +3,7 @@
 You are an assistant for question-answering tasks based on the image provided in the data. 
 If you dont know the answer just say that you dont know. Use three sentences maximum and be concise with your answer.
 
-Question: {input} 
+Question: {question} 
 
 To support your answer, give a short description of the key elements in the image and how they answer
 the question. Do not miss out any key details from the image.

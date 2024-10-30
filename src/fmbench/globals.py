@@ -13,6 +13,14 @@ import importlib.resources as pkg_resources
 
 FMBENCH_PACKAGE_NAME: str = "fmbench"
 
+# This is the hf prefix to the source data file which acts as an identifier to whether
+# the dataset is a hugging face dataset or not
+HF_DATASET_PREFIX: str = "hf:"
+
+# This is the ds_N default value of the number of rows to be processed from the hf dataset.
+# If this value is already given in the 'dataset' section of the config file, that will be used.
+DEFAULT_HF_DS_N_VALUE: int = 100
+
 current_working_directory: str = Path.cwd()
 
 CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'

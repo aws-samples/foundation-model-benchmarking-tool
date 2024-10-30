@@ -86,8 +86,16 @@ datasets:
   # This represents the question that is asked as a part of the
   # image messages API format. If this is not provided, a description
   # of the image will be provided instead
-  - input
+  - question
+  # If you want to benchmark a multimodal model on an image dataset, 
+  # then it an image_col parameter is required. This parameter refers to the 
+  # name of the column in the dataset that contains the images to be used 
+  # during the benchmarking process. If this column is not provided, the 
+  # standard text generation benchmark process is be used in the FMBench run.
   image_col: image
+  # This is the number of rows of the dataset that you want to load
+  # if this parameter is not given, it is defaulted to 100 rows
+  ds_N: 150
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
