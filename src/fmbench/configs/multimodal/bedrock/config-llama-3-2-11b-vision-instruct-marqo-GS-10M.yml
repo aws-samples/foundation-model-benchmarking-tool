@@ -47,13 +47,10 @@ s3_read_data:
   # list of dataset files, the list below is from the https://huggingface.co/datasets/nirajandhakal/realworldqa 
   # dataset. 
   source_data_files:
-  # This dataset contains images, questions about them and associated ground truth responses to the questions.
-  # The questions are multiple-choice short answer type questions. To make the response more descriptive, we use
-  # a multimodal prompt template version to give the answer and a description of the image to back up the answer.
-  # To use your own dataset, containing images, questions and ground truth, specify the image column in the dataset
-  # section below.
-  # - nirajandhakal/realworldqa.jsonl
-  - Marqo/marqo-GS-10M.jsonl
+  # This dataset contains images, questions about them and associated ground truth responses to the questions. 
+  # This is a hugging face dataset only containing images and no questions. The same prompt template for this dataset
+  # is used across all the images.
+  - hf:Marqo/marqo-GS-10M.jsonl
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
