@@ -204,7 +204,13 @@ def _write_to_local(data, dir1, dir2, file_name):
 # Function to write data to S3
 def write_to_s3(data, bucket_name, dir1, dir2, file_name):
     if _is_write_local_or_both():
-        _write_to_local(data, dir1, dir2, file_name)
+        # If the file name starts with 'hf:', then it means that the hugging face dataset
+        # is going to be loaded at runtime and is supposed to be sent to the /tmp/fmbench-read/source_data
+        # folder. In this case, it is written to the local fmbench-read directory.
+        if file_name.startswith("hf:"):
+            _write_to_local_read(data, dir1, dir2, file_name)
+        else:
+            _write_to_local(data, dir1, dir2, file_name)
     if _is_write_local_only():
         return
 
@@ -260,7 +266,6 @@ def read_from_s3(bucket_name, s3_file_path):
         # Fetch the object from S3
         logger.debug(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
         response = s3_client.get_object(Bucket=bucket_name, Key=s3_file_path)
-        
         return response['Body'].read().decode('utf-8')
     except NoCredentialsError:
         logger.error("read_from_s3, Error: AWS credentials not found.")
@@ -268,31 +273,6 @@ def read_from_s3(bucket_name, s3_file_path):
     except Exception as e:
         logger.error(f"read_from_s3, An error occurred: {e}")
         return None
-
-def write_hf_ds_loaded_at_runtime(data, bucket_name, dir1, dir2, file_name):
-    """
-    Writes the HF dataset files converted into JSONL format to the local read path
-    when local mode is set to "yes"
-    """
-    if _is_write_local_or_both():
-        _write_to_local_read(data, dir1, dir2, file_name)
-    if _is_write_local_only():
-        return
-
-    # Initialize S3 client
-    s3_client = boto3.client('s3')
-
-    # Construct the S3 file path
-    s3_file_path = posixpath.join(nt_to_posix(dir1), nt_to_posix(dir2), file_name)
-    logger.debug(f"write_to_s3, s3_file_path={s3_file_path}")
-    try:
-        # Write the JSON data to the S3 bucket
-        s3_client.put_object(Bucket=bucket_name, Key=s3_file_path, Body=data)
-        return (f"s3://{bucket_name}/{s3_file_path}")
-    except NoCredentialsError:
-        logger.error("write_to_s3, Error: AWS credentials not found.")
-    except Exception as e:
-        logger.error(f"write_to_s3, An error occurred: {e}")
 
 def _get_local_object(bucket: str, key: str, decode: bool) -> str:
     key = nt_to_posix(key)

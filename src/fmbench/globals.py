@@ -16,6 +16,7 @@ FMBENCH_PACKAGE_NAME: str = "fmbench"
 # This is the hf prefix to the source data file which acts as an identifier to whether
 # the dataset is a hugging face dataset or not
 HF_DATASET_PREFIX: str = "hf:"
+DEFAULT_IMAGE_FORMAT: str = "JPEG"
 
 # This is the ds_N default value of the number of rows to be processed from the hf dataset.
 # If this value is already given in the 'dataset' section of the config file, that will be used.

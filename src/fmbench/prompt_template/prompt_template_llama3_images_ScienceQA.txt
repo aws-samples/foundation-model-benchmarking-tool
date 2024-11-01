@@ -8,7 +8,7 @@ Question: {question}
 To support your answer, give a short description of the key elements in the image and how they answer
 the question. Do not miss out any key details from the image.
 
-If there is no question provided, then give a short description of the image.
+If there is no question provided, then mention that no image is provided, do not make up an answer.
 
 <|eot_id|><|start_header_id|>assistant<|end_header_id|>
 
