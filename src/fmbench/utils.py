@@ -3,19 +3,19 @@ import os
 import yaml
 import math
 import boto3
+import shutil
 import logging
 import requests
 import tempfile
 import posixpath
 import unicodedata
 from pathlib import Path
+import concurrent.futures
 from fmbench import globals
 from fmbench import defaults
 from typing import Dict, List, Tuple
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
-import shutil
-import concurrent.futures
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -181,13 +181,16 @@ def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
         logger.error(f"upload_file_to_s3, An error occurred: {e}")
 
 def _write_to_local_read(data, dir1, dir2, file_name):
-    dir = _get_local_read_path(dir1 + "/" + dir2 + "/")
-    Path(dir).mkdir(parents=True, exist_ok=True)
-    file = dir + file_name
+    file_dir, actual_file_name = os.path.split(file_name)
+    logger.info(f"File directory: {file_dir}, file name to be written locally: {actual_file_name}")
+    dir_path = _get_local_read_path(dir1 + "/" + dir2 + "/" + file_dir + "/")
+    logger.info(f"dir path: {dir_path}")
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
+    file_path = dir_path + actual_file_name
     if isinstance(data, str):
-        Path(file).write_text(data)
+        Path(file_path).write_text(data)
     else:
-        Path(file).write_bytes(data)
+        Path(file_path).write_bytes(data)
 
 def _write_to_local(data, dir1, dir2, file_name):
     dir = _get_local_write_path(dir1 + "/" + dir2 + "/")
@@ -266,8 +269,11 @@ def read_from_s3(bucket_name, s3_file_path):
         logger.error(f"read_from_s3, An error occurred: {e}")
         return None
 
-# Function to write data to S3
 def write_hf_ds_loaded_at_runtime(data, bucket_name, dir1, dir2, file_name):
+    """
+    Writes the HF dataset files converted into JSONL format to the local read path
+    when local mode is set to "yes"
+    """
     if _is_write_local_or_both():
         _write_to_local_read(data, dir1, dir2, file_name)
     if _is_write_local_only():
