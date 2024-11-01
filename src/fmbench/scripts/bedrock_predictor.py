@@ -82,7 +82,6 @@ class BedrockPredictor(FMBenchPredictor):
             self._top_p = 0.9
             # not used for now but kept as placeholders for future
             self._stream = None
-            self._vision_mode = None
             self._start = None
             self._stop = None
 
@@ -98,15 +97,13 @@ class BedrockPredictor(FMBenchPredictor):
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
                     self._top_p = parameters.get('top_p', self._top_p)
                     self._stream = inference_spec.get("stream", self._stream)
-                    self._vision_mode = inference_spec.get("vision_mode", self._vision_mode)
                     self._stop = inference_spec.get("stop_token", self._stop)
                     self._start = inference_spec.get("start_token", self._start)
             self._response_json = {}
             logger.info(f"__init__, _bedrock_model={self._bedrock_model}, self._pt_model_id={self._pt_model_id},"
                         f"_temperature={self._temperature} "
                         f"_max_tokens={self._max_tokens}, _top_p={self._top_p} "
-                        f"_stream={self._stream}, _stop={self._stop}, _caching={self._caching}"
-                        f"_vision_mode={self._vision_mode}")
+                        f"_stream={self._stream}, _stop={self._stop}, _caching={self._caching}")
         except Exception as e:
             exception_msg = f"""exception while creating predictor/initializing variables
                             for endpoint_name={self._endpoint_name}, exception=\"{e}\", 
