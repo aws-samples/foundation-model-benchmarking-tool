@@ -182,6 +182,8 @@ def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
 
 def _write_to_local_read(data, dir1, dir2, file_name):
     file_dir, actual_file_name = os.path.split(file_name)
+    # remove the hf prefix before sending the file to the local fmbench-read directory
+    file_dir = file_dir.removeprefix("hf:")
     logger.info(f"File directory: {file_dir}, file name to be written locally: {actual_file_name}")
     dir_path = _get_local_read_path(dir1 + "/" + dir2 + "/" + file_dir + "/")
     logger.info(f"dir path: {dir_path}")
