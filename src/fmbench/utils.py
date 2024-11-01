@@ -333,7 +333,9 @@ def _list_local_files(bucket, prefix, suffix):
         dir = _get_local_read_path(prefix)
     else:
         dir = _get_local_write_path(prefix)
-    path_list = list(Path(dir).glob('*' + suffix))
+    logger.info(f"dir for listing local files: {dir}")
+    # Recursively search for files with the suffix in all subdirectories
+    path_list = list(Path(dir).glob('**/*' + suffix))  
     pathname_list = [str(item) for item in path_list]
     if bucket == globals.config['s3_read_data']['read_bucket']:
         return_list = [item.replace(_get_local_read_path(), '') for item in pathname_list]
