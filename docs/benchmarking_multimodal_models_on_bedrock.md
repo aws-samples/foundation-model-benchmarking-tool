@@ -6,7 +6,7 @@ FMBench now enables customers to benchmark multimodal models available through A
 
 Before running multimodal benchmarks, ensure you have:
 
-1. Enabled model access to Llama 3.2 models in your Amazon Bedrock console.
+1. Enabled model access to `meta.llama3-2-11b-instruct-v1:0` in your Amazon Bedrock console.
 
 #### Running Multimodal Benchmarks on FMBench
 
