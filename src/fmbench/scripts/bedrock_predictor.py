@@ -202,6 +202,8 @@ class BedrockPredictor(FMBenchPredictor):
                     latency = time.perf_counter() - st
                     logger.info(f"streaming prompt token count: {prompt_tokens}, "
                                 f"completion token count: {completion_tokens}, latency: {latency}")
+                    logger.info("Completed streaming for the current UUID, moving to the next prediction.")
+                    break  # Explicitly exit the loop for the current prediction
                 # If streaming is set to false, then get the response in the normal
                 # without streaming format from LiteLLM
                 else:
