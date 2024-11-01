@@ -93,6 +93,8 @@ datasets:
   # during the benchmarking process. If this column is not provided, the 
   # standard text generation benchmark process is be used in the FMBench run.
   image_col: image
+  ground_truth_col_key: solution
+  question_col_key: question
   # This is the number of rows of the dataset that you want to load
   # if this parameter is not given, it is defaulted to 100 rows
   ds_N: 150
