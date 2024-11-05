@@ -194,7 +194,7 @@ experiments:
     serving.properties: |
       engine=Python
       option.entryPoint=djl_python.transformers_neuronx
-      option.model_id=meta-llama/Meta-Llama-3.1-70b-Instruct
+      option.model_id=meta-llama/Llama-3.1-70b-Instruct
       option.tensor_parallel_degree=24
       option.n_positions=4096
       option.rolling_batch=auto
