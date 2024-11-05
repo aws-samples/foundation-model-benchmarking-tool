@@ -176,7 +176,7 @@ experiments:
     # This section defines the settings for Amazon EC2 instances
     ec2:
       #This setting specifies the timeout (in seconds) for loading the model. 
-      model_loading_timeout: 2400
+      model_loading_timeout: 3600
     inference_spec:
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
@@ -189,7 +189,7 @@ experiments:
       # tp_degree, shm_size, model_loading_timeout parameters
       tp_degree: 24
       shm_size: 12g
-      model_loading_timeout: 2400
+      model_loading_timeout: 3600
     # modify the serving properties to match your model and requirements
     serving.properties: |
       engine=Python
