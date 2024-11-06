@@ -3,7 +3,7 @@
 ## 2.0.17
 1. Add support for embedding models through SageMaker jumpstart
 1. Add support for LLama 3.2 11b Vision Instruct benchmarking through FMBench
-1. Fix DJL Inference (424 Inference bug)
+1. Fix DJL Inference while deploying djl on EC2(424 Inference bug)
 
 ## 2.0.16
 1. Update to torch 2.4 for compatibility with SageMaker Notebooks.
