@@ -21,6 +21,7 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "phi_tokenizer/.keep",
                              "scripts/.keep",
                              "configs/pricing.yml",
+                             # add new datasets here
                              "source_data/2wikimqa_e.jsonl",
                              "source_data/2wikimqa.jsonl",
                              "source_data/hotpotqa_e.jsonl",
@@ -28,6 +29,7 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "source_data/narrativeqa.jsonl",
                              "source_data/triviaqa_e.jsonl",
                              "source_data/triviaqa.jsonl",
+                             "source_data/text_only.jsonl",
                              "source_data/LICENSE.txt",
                              "source_data/THIRD_PARTY_LICENSES.txt"]
 
