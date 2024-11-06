@@ -4,7 +4,7 @@ By default `FMBench` uses the [`LongBench dataset`](https://github.com/THUDM/Lon
 
 ## Hugging Face Data Preparation is now integrated within FMBench
 
-FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include `hf:`, followed by the `dataset identifier`, `subset name`, and `split name`:
+FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include `hf:`, followed by the `dataset identifier`, `subset name`, and `split name`. If the `subset name` is not provided, it is defaulted to `default`. If the `split name` is not provided, it is defaulted to the next available split in the dataset when it is loaded at runtime:
 
 In your configuration file, add entries to source_data_files using the following format:
 
