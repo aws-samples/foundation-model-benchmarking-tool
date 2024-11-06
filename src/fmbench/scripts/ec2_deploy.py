@@ -112,7 +112,7 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
     start_time = time.time()
     logger.info(f"Checking deployment status at {endpoint}")
     if container_type == constants.CONTAINER_TYPE_DJL:
-        data = {"inputs": ["tell me a story of the little red riding hood"]}
+        data = {"inputs": "tell me a story of the little red riding hood"}
     elif container_type == constants.CONTAINER_TYPE_VLLM:
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
