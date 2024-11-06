@@ -29,7 +29,7 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "source_data/narrativeqa.jsonl",
                              "source_data/triviaqa_e.jsonl",
                              "source_data/triviaqa.jsonl",
-                             "source_data/text_only.jsonl",
+                             "source_data/just_text.jsonl",
                              "source_data/LICENSE.txt",
                              "source_data/THIRD_PARTY_LICENSES.txt"]
 
