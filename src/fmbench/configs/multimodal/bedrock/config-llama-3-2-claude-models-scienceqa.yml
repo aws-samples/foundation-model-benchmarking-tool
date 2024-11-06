@@ -45,13 +45,19 @@ s3_read_data:
   # S3 prefix for the dataset files
   source_data_prefix: source_data
   # list of dataset files, the list below is from the https://huggingface.co/datasets/derek-thomas/ScienceQA
-  source_data_files:
   # This dataset contains images containing science questions and associated ground truth responses to the questions.
   # when this notebook looks for this dataset - if it is prefixed with hf, and if the token is already there
-  # if the token is there and the hf: is there, then download the dataset from hf first and then process it - 
-  # all of this goes into 1_generate_data.ipynb
-  # if img col is specified, we do the post processing for images.
-  - hf:derek-thomas/ScienceQA.jsonl
+  # if the token is there and the hf: is there, then download the dataset from hf first and then process it -
+  source_data_files: 
+  # If a split is specified in the dataset identifier and exists in the loaded dataset, 
+  # it uses that split. If no split is specified (e.g., hf:derek-thomas/ScienceQA), it will default to
+  # the first available split. In the given example below, users can specify the 'train' and 'validation' splits
+  # of the 'derek-thomas/ScienceQA' dataset. If none are provided, then the first available split will be used.
+  
+  # Follow this format below: hf:dataset-id/subset-name/split-name. 
+  # If there is no specified subset name, use "default"
+  - hf:derek-thomas/ScienceQA/default/train
+  - hf:derek-thomas/ScienceQA/default/validation
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file

@@ -44,13 +44,20 @@ s3_read_data:
 
   # S3 prefix for the dataset files
   source_data_prefix: source_data
-  # list of dataset files, the list below is from the https://huggingface.co/datasets/nirajandhakal/realworldqa 
-  # dataset. 
-  source_data_files:
-  # This dataset contains images without any specific questions. In this case, a standard prompt template
-  # "prompt_template_llama3_images_marqo-GS-10M" is used across the entire dataset across all images
-  # to produce consistent responses
-  - hf:Marqo/marqo-GS-10M.jsonl
+  # list of dataset files, the list below is from the marqo-GS-10M
+  # This dataset contains images without any questions. In this case, the same prompt
+  # template "prompt_template_llama3_images_marqo-GS-10M" will be used across all of the images in 
+  # this hugging face dataset. It will ask to describe and mention the key components of each image.
+  source_data_files: 
+  # If a split is specified in the dataset identifier and exists in the loaded dataset, 
+  # it uses that split. If no split is specified (e.g., Marqo/marqo-GS-10M), it will default to
+  # the first available split. In the given example below, users can specify the 'in-domain' and 'novel_document' splits
+  # of the 'Marqo/marqo-GS-10M' dataset. If none are provided, then the first available split will be used.
+  
+  # Follow this format below: hf:dataset-id/subset-name/split-name. 
+  # If there is no specified subset name, use "default"
+  - hf:Marqo/marqo-GS-10M/default/in-domain
+  - hf:Marqo/marqo-GS-10M/default/novel_document
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file

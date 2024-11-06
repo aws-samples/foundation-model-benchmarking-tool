@@ -4,13 +4,23 @@ By default `FMBench` uses the [`LongBench dataset`](https://github.com/THUDM/Lon
 
 ## Hugging Face Data Preparation is now integrated within FMBench
 
-FMBench now supports direct loading of Hugging Face datasets through a simple prefix mechanism. To use a Hugging Face dataset:
+FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include `hf:`, followed by the `dataset identifier`, `subset name`, and `split name`:
+
+In your configuration file, add entries to source_data_files using the following format:
+
 
 1. In your config file, prefix the dataset name with `hf:` in the `source_data_files` section:
 
     ```yaml
     source_data_files:
-    - hf:derek-thomas/ScienceQA.jsonl
+    # Format: hf:dataset-id/subset-name/split-name. Use "default" if no subset name is provided.
+    - hf:THUDM/LongBench/2wikimqa_e/test
+    - hf:THUDM/LongBench/2wikimqa/test
+    - hf:THUDM/LongBench/hotpotqa_e/test
+    - hf:THUDM/LongBench/hotpotqa/test
+    - hf:THUDM/LongBench/narrativeqa/test
+    - hf:THUDM/LongBench/triviaqa_e/test
+    - hf:THUDM/LongBench/triviaqa/test
     ```
 
 When FMBench encounters a dataset prefixed with `hf:`, it will:

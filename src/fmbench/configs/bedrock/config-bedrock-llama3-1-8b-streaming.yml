@@ -45,14 +45,24 @@ s3_read_data:
   # S3 prefix for the dataset files
   source_data_prefix: source_data
   # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
+  
+  # There are two options to use the longbench dataset. The first option is to run the 'copy_s3_content.sh'
+  # script which will copy the jsonl files to the local/s3 path. The second option is given below. Users can now
+  # prefix the hf dataset with a "hf:" and append the split to the dataset id to load that dataset. For example, 
+  # to load the "2wikimqa_e" split of the THUDM/LongBench dataset, specify "hf:THUDM/LongBench/2wikimqa_e" in the list below.
+  # FMBench will load the dataset, convert it into jsonl lines, and upload it to the local/s3 read source data directory
+  # at runtime. This eliminates the need to preprocess hugging face datasets to benchmark the models of choice. Now users
+  # can use any HF dataset on the fly without any data preparation.
   source_data_files:
-  - 2wikimqa_e.jsonl
-  - 2wikimqa.jsonl
-  - hotpotqa_e.jsonl
-  - hotpotqa.jsonl
-  - narrativeqa.jsonl
-  - triviaqa_e.jsonl
-  - triviaqa.jsonl
+  # Follow this format below: hf:dataset-id/subset-name/split-name. 
+  # If there is no specified subset name, use "default"
+  - hf:THUDM/LongBench/2wikimqa_e/test
+  - hf:THUDM/LongBench/2wikimqa/test
+  - hf:THUDM/LongBench/hotpotqa_e/test
+  - hf:THUDM/LongBench/hotpotqa/test
+  - hf:THUDM/LongBench/narrativeqa/test
+  - hf:THUDM/LongBench/triviaqa_e/test
+  - hf:THUDM/LongBench/triviaqa/test
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
