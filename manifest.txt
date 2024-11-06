@@ -16,6 +16,7 @@ configs/bert/config-distilbert-base-uncased.yml
 configs/byoe/config-model-byo-sagemaker-endpoint.yml
 configs/embeddings/bge-base-en-v1-5-c5-embeddings.yml
 configs/embeddings/bge-base-en-v1-5-g5-embeddings.yml
+configs/embeddings/bge-base-en-v1-5-g5-g4dn-c7-embeddings.yml
 configs/gemma/config-gemma-2b-g5.yml
 configs/llama2/13b/config-bedrock-sagemaker-llama2.yml
 configs/llama2/13b/config-byo-rest-ep-llama2-13b.yml
@@ -83,6 +84,7 @@ configs/llama3.1/8b/config-llama3.1-8b-inf2-48xl-deploy-tp-8-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml
 configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml
+configs/llama3.2/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml
 configs/llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml
 configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml
 configs/llama3/70b/config-bedrock.yml
@@ -188,5 +190,4 @@ source_data/hotpotqa_e.jsonl
 source_data/narrativeqa.jsonl
 source_data/triviaqa.jsonl
 source_data/triviaqa_e.jsonl
-source_data/just_text.jsonl
 tokenizer/.keep
