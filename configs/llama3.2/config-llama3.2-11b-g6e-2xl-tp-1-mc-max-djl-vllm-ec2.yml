@@ -1,8 +1,8 @@
 # config file for a rest endpoint supported on fmbench - 
-# this file uses a llama-3-70b-instruct deployed on ec2 on an inf2 instance
+# this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3-1-70b-inf2.48xl-ec2"      
-  model_name: "llama3-1-70b-instruct"
+  name: "llama3.2-3b-g5.4xl-tp=1-mc=max-djl-ec2"      
+  model_name: "Meta-Llama-3.2-3B-Instruct"
   
 # AWS and SageMaker settings
 aws:
@@ -60,14 +60,14 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: llama3_1_tokenizer
+  tokenizer_prefix: llama3_2_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3.txt
+  prompt_template_file: prompt_template_llama3.2_vision.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -76,18 +76,19 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: yes
-  2_deploy_model.ipynb: yes
+  1_generate_data.ipynb: no
+  2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  5_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
   prompt_template_keys:
   - input
   - context
-  
+  ground_truth_col_key: answers
+  question_col_key: input
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -124,6 +125,11 @@ datasets:
 metrics:
   dataset_of_interest: en_3000-3840
   
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
+
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
 # to this file for new instance types and new Bedrock models
@@ -138,15 +144,19 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_djl:
-    top_k: 50  
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
     max_new_tokens: 100
+
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Llama-3.1-70b-Instruct"
+  - name: "meta-llama/Llama-3.2-11B-Vision-Instruct"
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -154,67 +164,48 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Llama-3.1-70B-Instruct #model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Llama-3.2-11B-Vision-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: "Llama-3.1-70b-Instruct"
+    model_name: "Llama-3.2-11B-Vision-Instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
-    ep_name: 'http://localhost:8080/v2/models/Llama-3.1-70B-Instruct/generate' 
-    instance_type: "inf2.48xlarge"
-    image_uri: tritonserver-neuronx:fmbench 
+    ep_name: 'http://127.0.0.1:8080/invocations' 
+    instance_type: "g6e.2xlarge"
+    image_uri: 763104351884.dkr.ecr.us-east-1.amazonaws.com/djl-inference:0.30.0-lmi12.0.0-cu124
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example for a rest DJL predictor
-    # for a llama3-70b-instruct deployed on ec2
+    # for a llama3.2-3b-instruct deployed on ec2
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
-    ec2:
-      #This setting specifies the timeout (in seconds) for loading the model. 
-      model_loading_timeout: 10000
+    ec2:      
+      #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
+      # If the model takes longer than 40 minutes to load, the process will time out and fail.
+      model_loading_timeout: 2400
     inference_spec:
+      container_type: djl
       # this should match one of the sections in the inference_parameters section above
       parameter_set: ec2_djl
-      container_type: triton
-      # For deploying a model using the triton inference container: 
-      # mention the backend type, if any. Options for triton are: [djl, vllm or tensorrt]
-      backend: djl
       # how many copies of the model, 1, 2,..max
-      # set to 1 in the code if not configured,
-      # max: FMBench figures out the max number of model containers to be run
-      #      based on TP degree configured and number of neuron cores/GPUs available.
-      #      For example, if TP=2, GPUs=8 then FMBench will start 4 containers and 1 load balancer,
-      # auto: only supported if the underlying inference container would automatically 
-      #       start multiple copies of the model internally based on TP degree and neuron cores/GPUs
-      #       available. In this case only a single container is created, no load balancer is created.
-      #       The DJL serving containers supports auto.  
+      # set to 1 in the code if not configured, setting to max means that 
+      # the code will determine how many copies can be loaded based on TP and 
+      # number of GPU/Neuron devices available
       model_copies: max
+      # if you set the model_copies parameter then it is mandatory to set the 
+      # tp_degree, shm_size, model_loading_timeout parameters
+      tp_degree: 1
       shm_size: 12g
-      # The model.json parameters are replaced within the model.json file
-      # for the triton on vllm/djl/tensorrt options. The model.json already contains
-      # the tp degree and model id from above in this config file. This is a dictionary
-      # that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more
-      # For tensorrt, the tp degree, batch size and other relevant parameters are 
-      # extracted directly from the inference spec.
-      container_params:
-        # tp degree is a mandatory parameter
-        tp_degree: 24
-        amp: "f16"
-        attention_layout: 'BSH'
-        collectives_layout: 'BSH'
-        context_length_estimate: 3072, 3584, 4096
-        max_rolling_batch_size: 8
-        model_loader: "tnx"
-        model_loading_timeout: 2400
-        n_positions: 4096
-        output_formatter: "json"
-        rolling_batch: "auto"
-        rolling_batch_strategy: "continuous_batching"
-        neuron_optimize_level: 2
-        trust_remote_code: true
-        # modify the serving properties to match your model and requirements
-        serving.properties:
-
+      model_loading_timeout: 2400
+    # modify the serving properties to match your model and requirements
+    serving.properties: |
+      option.tensor_parallel_degree=1
+      option.max_rolling_batch_size=8
+      option.model_id=meta-llama/Llama-3.2-11B-Vision-Instruct
+      option.rolling_batch=vllm
+      option.enforce_eager=true
+      option.max_rolling_batch_prefill_tokens=4096
+      option.max_model_len=4096
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
@@ -231,15 +222,17 @@ experiments:
     - 3
     - 4
     - 5
-    - 6 
+    - 6
+    - 8
+    - 10
+    
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-      NEURON_CC_FLAGS: -O2
 
 report:
-  latency_budget: 3
-  cost_per_10k_txn_budget: 200
+  latency_budget: 2
+  cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
