@@ -46,7 +46,7 @@ s3_read_data:
   source_data_prefix: source_data
   # list of dataset files, the list below is from the https://huggingface.co/datasets/derek-thomas/ScienceQA
   source_data_files:
-  - hf:databricks/databricks-dolly-15k.jsonl
+  - hf:databricks/databricks-dolly-15k/default/train
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
