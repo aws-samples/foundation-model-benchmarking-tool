@@ -145,7 +145,36 @@ experiments:
       # MAX_TOTAL_TOKENS: "4096"
     #   # SAGEMAKER_MODEL_SERVER_WORKERS: "2"
   
-
+  - name: bge-base-en-v1-5-g5.2xl
+    model_id: huggingface-sentencesimilarity-bge-base-en-v1-5
+    model_version: "*"
+    model_name: bge-base-en-v1.5
+    ep_name: bge-base-en-v1-5
+    instance_type: "ml.c7i.xlarge"
+    image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/huggingface-pytorch-inference:1.13.1-transformers4.26.0-gpu-py39-cu117-ubuntu20.04'
+    deploy: yes
+    instance_count: 1
+    deployment_script: jumpstart.py
+    inference_script: sagemaker_predictor.py
+    inference_spec:
+      parameter_set: embedding
+      container_type: huggingface
+    payload_files:
+    - payload_en_1-50.jsonl
+    - payload_en_50-100.jsonl
+    - payload_en_100-150.jsonl
+    concurrency_levels:
+    - 1
+    - 2
+    - 3
+    - 4
+    - 6
+    - 8
+    - 10
+    accept_eula: false
+    env:
+      SAGEMAKER_PROGRAM: "inference.py"
+      ENDPOINT_SERVER_TIMEOUT: "1200"
 
 report:
   latency_budget: 0.1
