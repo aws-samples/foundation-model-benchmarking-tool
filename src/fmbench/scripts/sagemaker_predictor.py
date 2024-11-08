@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 
 # Initialize the SageMaker runtime to support getting response streams
 sagemaker_runtime = boto3.client('sagemaker-runtime')
+sm_client = boto3.client("sagemaker")
 
 
 class SageMakerPredictor(FMBenchPredictor):
@@ -232,7 +233,22 @@ class SageMakerPredictor(FMBenchPredictor):
         """Represents the function to shutdown the predictor
            cleanup the endpooint/container/other resources
         """
-        return None
+        try:
+            ep_name = self.endpoint_name
+            ## Describe the model endpoint 
+            logger.info(f"Going to describe the endpoint -> {ep_name}")
+            resp = sm_client.describe_endpoint(EndpointName=ep_name)
+
+            ## If the given model endpoint is in service, delete it 
+            if resp['EndpointStatus'] == 'InService':
+                logger.info(f"going to delete {ep_name}")
+                ## deleting the model endpoint
+                sm_client.delete_endpoint(EndpointName=ep_name)
+                logger.info(f"deleted {ep_name}")
+                return True
+        except Exception as e:
+            logger.error(f"error deleting endpoint={ep_name}, exception={e}")
+            return False
     
     @property
     def inference_parameters(self) -> Dict:
