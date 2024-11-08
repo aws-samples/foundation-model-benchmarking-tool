@@ -86,15 +86,16 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+# 2.0.18
+1. Delete SageMaker endpoint as soon as the run finishes.
+
+## 2.0.17
+1. Add support for embedding models through SageMaker jumpstart
+1. Add support for LLama 3.2 11b Vision Instruct benchmarking through FMBench
+1. Fix DJL Inference while deploying djl on EC2(424 Inference bug)
 
 ## 2.0.16
 1. Update to torch 2.4 for compatibility with SageMaker Notebooks.
-
-## 2.0.15
-1. Support for [Ollama](https://github.com/ollama/ollama), see more details [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/benchmarking_on_ec2.html#benchmarking-models-on-ollama).
-1. Fix bugs with token counting.
-
-
 
 
 
