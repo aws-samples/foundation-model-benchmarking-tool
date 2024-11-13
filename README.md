@@ -74,6 +74,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Llama3-70b instruct**          | g5                            | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
 | **Llama2-13b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
 | **Llama2-70b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
+| **NousResearch-Hermes-70b**      |                               | g5, inf2, trn1                            | On-demand                          |
 | **Amazon Titan text lite**       |                               |                                           | On-demand                          |
 | **Amazon Titan text express**    |                               |                                           | On-demand                          |
 | **Cohere Command text**          |                               |                                           | On-demand                          |
