@@ -88,7 +88,8 @@ datasets:
   prompt_template_keys:
   - input
   - context
-  
+  ground_truth_col_key: answers
+  question_col_key: input
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -124,7 +125,12 @@ datasets:
 # dataset which is listed below as the dataset_of_interest
 metrics:
   dataset_of_interest: en_2000-3000
-  
+
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
+
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
 # to this file for new instance types and new Bedrock models
