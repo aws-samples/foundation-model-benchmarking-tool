@@ -123,7 +123,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_2000-3000
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
