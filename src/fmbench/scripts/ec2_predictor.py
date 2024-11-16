@@ -104,7 +104,38 @@ class EC2Predictor(FMBenchPredictor):
                 # record the latency for the response generated
                 latency = time.perf_counter() - st
                 response.raise_for_status()
-                full_output = response.text
+                """
+                the output is of the form
+                {
+                    "id": "cmpl-e9d590543c374d828d724a228fae2604",
+                    "object": "text_completion",
+                    "created": 1731734600,
+                    "model": "meta-llama/Llama-3.2-1b-Instruct",
+                    "choices": [
+                        {
+                            "index": 0,
+                            "text": "\n\nThey are both tennis players.",
+                            "logprobs": null,
+                            "finish_reason": "stop",
+                            "stop_reason": null,
+                            "prompt_logprobs": null
+                        }
+                    ],
+                    "usage": {
+                        "prompt_tokens": 1392,
+                        "total_tokens": 1400,
+                        "completion_tokens": 8,
+                        "prompt_tokens_details": null
+                    }
+                }
+                we only need the response field from this
+                """
+                full_output = None
+                choices = json.loads(response.text).get("choices")
+                if choices is not None:
+                    full_output = choices[0].get("text")
+                if full_output is None:
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")
             elif container_type == constants.CONTAINER_TYPE_OLLAMA:
                 # ollama uses prompt rather than input and then
                 # the code in the calling function still expects input

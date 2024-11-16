@@ -1,5 +1,9 @@
 Here is a listing of the various configuration files available out-of-the-box with `FMBench`. Click on any link to view a file. You can use these files as-is or use them as templates to create a custom configuration file for your use-case of interest.
 
+**NousResearchHermes70B**  
+[├── NousResearchHermes70B/config-Nous-Hermes3-1-70b-g5.48xl-tp-8-mc-max-djl.yml](configs/NousResearchHermes70B/config-Nous-Hermes3-1-70b-g5.48xl-tp-8-mc-max-djl.yml)  
+[├── NousResearchHermes70B/config-Nous-Hermes3-1-70b-inf2.48xl-triton-tp24.yml](configs/NousResearchHermes70B/config-Nous-Hermes3-1-70b-inf2.48xl-triton-tp24.yml)  
+[└── NousResearchHermes70B/config-Nous-Hermes3-1-70b-trn1.32xl-deploy-ec2-triton.yml](configs/NousResearchHermes70B/config-Nous-Hermes3-1-70b-trn1.32xl-deploy-ec2-triton.yml)  
 **bedrock**  
 [├── bedrock/config-bedrock-all-anthropic-models-longbench-data.yml](configs/bedrock/config-bedrock-all-anthropic-models-longbench-data.yml)  
 [├── bedrock/config-bedrock-anthropic-models-OpenOrca.yml](configs/bedrock/config-bedrock-anthropic-models-OpenOrca.yml)  
@@ -63,6 +67,14 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-ec2-llama3-8b-m7a-24xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-24xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m7i-12xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7i-12xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-neuron-trn1-32xl-tp16-sm.yml](configs/llama3/8b/config-ec2-llama3-8b-neuron-trn1-32xl-tp16-sm.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4d-tp-2-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4d-tp-2-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4d-tp-4-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4d-tp-4-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4d-tp-8-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4d-tp-8-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4de-tp-2-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4de-tp-2-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4de-tp-4-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4de-tp-4-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p4de-tp-8-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4de-tp-8-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p5-tp-2-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p5-tp-2-mc-max.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-p5-tp-8-mc-auto.yml](configs/llama3/8b/config-ec2-llama3-8b-p5-tp-8-mc-auto.yml)  
 [├── llama3/8b/config-ec2-llama3-8b.yml](configs/llama3/8b/config-ec2-llama3-8b.yml)  
 [├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl-deploy-sm.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-24xl-deploy-sm.yml)  
 [├── llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl-deploy-sm.yml](configs/llama3/8b/config-ec2-neuron-llama3-8b-inf2-48xl-deploy-sm.yml)  
@@ -90,6 +102,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.48xl-tp-8-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.4xl-tp-1-mc-max-triton-ec2.yml)  
+[├── llama3/8b/config-llama3-8b-g6e.xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-24xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml](configs/llama3/8b/config-llama3-8b-inf2-48xl-tp=8-bs=4-byoe.yml)  
 [├── llama3/8b/config-llama3-8b-inf2-48xlarge-triton-djl.yml](configs/llama3/8b/config-llama3-8b-inf2-48xlarge-triton-djl.yml)  
@@ -153,11 +166,13 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-auto-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-auto-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-4-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-4-mc-max-ec2.yml)  
+[├── llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2-conc-1-2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2-conc-1-2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-auto-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-auto-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-4-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-4-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-8-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-8-mc-max-ec2.yml)  
+[├── llama3.1/8b/config-llama3.1-8b-g5.xl-tp-1-mc-max-ec2-conc-1-2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.xl-tp-1-mc-max-ec2-conc-1-2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g6e.12xl-tp-2-mc-max-djl.yml](configs/llama3.1/8b/config-llama3.1-8b-g6e.12xl-tp-2-mc-max-djl.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g6e.12xl-tp-4-mc-max-djl.yml](configs/llama3.1/8b/config-llama3.1-8b-g6e.12xl-tp-4-mc-max-djl.yml)  
@@ -174,9 +189,16 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml](configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml)  
 [└── llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml](configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml)  
 [llama3.2](configs/llama3.2)  
-[├── llama3.2/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml](configs/llama3.2/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml)  
-[├── llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
-[└── llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+**├── llama3.2/11b**  
+[│   └── llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml](configs/llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml)  
+**├── llama3.2/1b**  
+[│   ├── llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2.yml)  
+[│   └── llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml)  
+**└── llama3.2/3b**  
+[└── llama3.2/3b/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/3b/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  
