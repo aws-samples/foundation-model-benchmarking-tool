@@ -218,7 +218,7 @@ experiments:
       VLLM_CPU_OMP_THREADS_BIND: 0-92
 
 report:
-  latency_budget: 35
+  latency_budget: 2
   cost_per_10k_txn_budget: 60
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
