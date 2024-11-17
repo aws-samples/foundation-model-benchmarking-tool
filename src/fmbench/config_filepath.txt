@@ -1,1 +1,1 @@
-configs/llama3.1/8b/config-llama3.1-8b-g5.yml
+configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml

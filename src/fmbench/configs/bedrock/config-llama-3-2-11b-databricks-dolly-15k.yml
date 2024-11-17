@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-bedrock-llama3-1"      
-  model_name: "Llama3-1-8b Model on Amazon Bedrock"
+  name: "fmbench-bedrock-llama3-2-11b-vision-instruct-dolly-dataset"      
+  model_name: "llama3-2 11b on Amazon Bedrock"
   
 # AWS and SageMaker settings
 aws:
@@ -44,38 +44,22 @@ s3_read_data:
 
   # S3 prefix for the dataset files
   source_data_prefix: source_data
-  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
-  
-  # There are two options to use the longbench dataset. The first option is to run the 'copy_s3_content.sh'
-  # script which will copy the jsonl files to the local/s3 path. The second option is given below. Users can now
-  # prefix the hf dataset with a "hf:" and append the split to the dataset id to load that dataset. For example, 
-  # to load the "2wikimqa_e" split of the THUDM/LongBench dataset, specify "hf:THUDM/LongBench/2wikimqa_e" in the list below.
-  # FMBench will load the dataset, convert it into jsonl lines, and upload it to the local/s3 read source data directory
-  # at runtime. This eliminates the need to preprocess hugging face datasets to benchmark the models of choice. Now users
-  # can use any HF dataset on the fly without any data preparation.
+  # list of dataset files, the list below is from the https://huggingface.co/datasets/derek-thomas/ScienceQA
   source_data_files:
-  # Follow this format below: hf:dataset-id/subset-name/split-name. 
-  # If there is no specified subset name, use "default"
-  - hf:THUDM/LongBench/2wikimqa_e/test
-  - hf:THUDM/LongBench/2wikimqa/test
-  - hf:THUDM/LongBench/hotpotqa_e/test
-  - hf:THUDM/LongBench/hotpotqa/test
-  - hf:THUDM/LongBench/narrativeqa/test
-  - hf:THUDM/LongBench/triviaqa_e/test
-  - hf:THUDM/LongBench/triviaqa/test
+  - hf:databricks/databricks-dolly-15k/default/train
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: llama3_1_tokenizer
+  tokenizer_prefix: llama3_2_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3.txt
+  prompt_template_file: prompt_template_llama3_databricks-dolly-15k.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -87,17 +71,21 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
+  4_get_evaluations.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
   prompt_template_keys:
-  - input
+  # This represents the question that is asked as a part of the
+  # image messages API format. If this is not provided, a description
+  # of the image will be provided instead
+  - instruction
   - context
-  ground_truth_col_key: answers
-  question_col_key: input
+  # This is the number of rows of the dataset that you want to load
+  # if this parameter is not given, it is defaulted to 100 rows
+  ds_N: 150
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -124,10 +112,6 @@ datasets:
     payload_file: payload_en_2000-3000.jsonl
   - language: en
     min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
 
@@ -136,7 +120,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1-500
 
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -167,16 +151,17 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options (such as one experiment is SageMaker and the other is Bedrock).
 experiments:
-  - name: meta.llama3-1-8b-instruct-v1:0
+  # for llama3-2, use 'us' as a prefix, else an error will be encountered.
+  - name: us.meta.llama3-2-11b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-1-8b-instruct-v1:0
+    model_id: us.meta.llama3-2-11b-instruct-v1:0
     model_version: 
-    model_name: meta.llama3-1-8b-instruct-v1:0
-    ep_name: meta.llama3-1-8b-instruct-v1:0
-    instance_type: meta.llama3-1-8b-instruct-v1:0
+    model_name: us.meta.llama3-2-11b-instruct-v1:0
+    ep_name: us.meta.llama3-2-11b-instruct-v1:0
+    instance_type: us.meta.llama3-2-11b-instruct-v1:0
     image_uri:
     deploy: no
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -195,7 +180,7 @@ experiments:
       # Time To First Token, Time To Last Token, and Time Per Output Token (TTFT, TTLT, TPOT)
       # metrics to be calculated. The responses from bedrock stream is received in chunks, so mention
       # the stop token only.
-      stream: True
+      stream: False
       start_token:
       stop_token: "<|eot_id|>"
     # runs are done for each combination of payload file and concurrency level
@@ -212,12 +197,19 @@ experiments:
     # for streaming responses on bedrock, only a concurrency of 1 is supported on FMBench
     concurrency_levels:
     - 1
+    - 2
+    - 4
+    - 6
+    - 8
+    - 10
+    - 12
+    - 14
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
 
 report:
-  latency_budget: 2
+  latency_budget: 1
   cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv

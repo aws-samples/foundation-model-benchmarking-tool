@@ -3,19 +3,19 @@ import os
 import yaml
 import math
 import boto3
+import shutil
 import logging
 import requests
 import tempfile
 import posixpath
 import unicodedata
 from pathlib import Path
+import concurrent.futures
 from fmbench import globals
 from fmbench import defaults
 from typing import Dict, List, Tuple
 from transformers import AutoTokenizer
 from botocore.exceptions import NoCredentialsError
-import shutil
-import concurrent.futures
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -180,6 +180,20 @@ def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
     except Exception as e:
         logger.error(f"upload_file_to_s3, An error occurred: {e}")
 
+def _write_to_local_read(data, dir1, dir2, file_name):
+    file_dir, actual_file_name = os.path.split(file_name)
+    # remove the hf prefix before sending the file to the local fmbench-read directory
+    file_dir = file_dir.removeprefix("hf:")
+    logger.info(f"File directory: {file_dir}, file name to be written locally: {actual_file_name}")
+    dir_path = _get_local_read_path(dir1 + "/" + dir2 + "/" + file_dir + "/")
+    logger.info(f"dir path: {dir_path}")
+    Path(dir_path).mkdir(parents=True, exist_ok=True)
+    file_path = dir_path + actual_file_name
+    if isinstance(data, str):
+        Path(file_path).write_text(data)
+    else:
+        Path(file_path).write_bytes(data)
+
 def _write_to_local(data, dir1, dir2, file_name):
     dir = _get_local_write_path(dir1 + "/" + dir2 + "/")
     Path(dir).mkdir(parents=True, exist_ok=True)
@@ -192,7 +206,13 @@ def _write_to_local(data, dir1, dir2, file_name):
 # Function to write data to S3
 def write_to_s3(data, bucket_name, dir1, dir2, file_name):
     if _is_write_local_or_both():
-        _write_to_local(data, dir1, dir2, file_name)
+        # If the file name starts with 'hf:', then it means that the hugging face dataset
+        # is going to be loaded at runtime and is supposed to be sent to the /tmp/fmbench-read/source_data
+        # folder. In this case, it is written to the local fmbench-read directory.
+        if file_name.startswith("hf:"):
+            _write_to_local_read(data, dir1, dir2, file_name)
+        else:
+            _write_to_local(data, dir1, dir2, file_name)
     if _is_write_local_only():
         return
 
@@ -248,7 +268,6 @@ def read_from_s3(bucket_name, s3_file_path):
         # Fetch the object from S3
         logger.debug(f"read_from_s3, reading file from bucket={bucket_name}, key={s3_file_path}")
         response = s3_client.get_object(Bucket=bucket_name, Key=s3_file_path)
-        
         return response['Body'].read().decode('utf-8')
     except NoCredentialsError:
         logger.error("read_from_s3, Error: AWS credentials not found.")
@@ -296,7 +315,9 @@ def _list_local_files(bucket, prefix, suffix):
         dir = _get_local_read_path(prefix)
     else:
         dir = _get_local_write_path(prefix)
-    path_list = list(Path(dir).glob('*' + suffix))
+    logger.info(f"dir for listing local files: {dir}")
+    # Recursively search for files with the suffix in all subdirectories
+    path_list = list(Path(dir).glob('**/*' + suffix))  
     pathname_list = [str(item) for item in path_list]
     if bucket == globals.config['s3_read_data']['read_bucket']:
         return_list = [item.replace(_get_local_read_path(), '') for item in pathname_list]

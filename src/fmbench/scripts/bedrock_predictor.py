@@ -114,6 +114,7 @@ class BedrockPredictor(FMBenchPredictor):
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
         # Represents the prompt payload
         prompt_input_data = payload['inputs']
+        base64_img = payload.get('base64_img')
         os.environ["AWS_REGION_NAME"] = self._aws_region
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
@@ -130,15 +131,39 @@ class BedrockPredictor(FMBenchPredictor):
             try:
                 # recording latency for when streaming is enabled
                 st = time.perf_counter()
-                # this response is for text generation models on bedrock: Claude, Llama, Mistral etc.
                 logger.info(f"Invoking {self._bedrock_model} to get inference")
+
+                # Get the base64 image if in vision mode
+                if base64_img is not None:
+                    logger.info("'base64_img' column provided in the dataset, going to use the multimodal"
+                                "messages API to get inferences on the image")
+                    # Add prefix if needed
+                    if not base64_img.startswith('data:image/'):
+                        base64_img = "data:image/jpeg;base64," + base64_img
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": [
+                                {"type": "text", "text": prompt_input_data},
+                                {
+                                    "type": "image_url",
+                                    "image_url": {
+                                        "url": base64_img
+                                    },
+                                },
+                            ],
+                        }
+                    ]
+                else:
+                    logger.info("Going to use the standard text generation messages format to get inferences")
+                    # Standard text generation format
+                    messages = [{"content": prompt_input_data, "role": "user"}]
                 # cohere does not support top_p and apprarently LiteLLM does not
                 # know that?
                 if 'cohere' not in self._endpoint_name:
                     response = completion(model=self._bedrock_model,
                                         model_id=self._pt_model_id,
-                                        messages=[{"content": prompt_input_data,
-                                                    "role": "user"}],
+                                        messages=messages,
                                         temperature=self._temperature,
                                         max_tokens=self._max_tokens,
                                         top_p=self._top_p,
@@ -147,8 +172,7 @@ class BedrockPredictor(FMBenchPredictor):
                 else:
                     response = completion(model=self._bedrock_model,
                                         model_id=self._pt_model_id,
-                                        messages=[{"content": prompt_input_data,
-                                                    "role": "user"}],
+                                        messages=messages,
                                         temperature=self._temperature,
                                         max_tokens=self._max_tokens,
                                         caching=self._caching,
@@ -172,14 +196,14 @@ class BedrockPredictor(FMBenchPredictor):
                     # Getting in the total input and output tokens using token counter.
                     # Streaming on liteLLM does not support prompt tokens and completion tokens 
                     # in the invocation response format
-                    prompt_tokens = token_counter(model=self._endpoint_name,
-                                                messages=[{"content": prompt_input_data,
-                                                            "role": "user"}])
+                    prompt_tokens = token_counter(model=self._endpoint_name, messages=messages)
                     completion_tokens = token_counter(text=self._response_json["generated_text"])
                     # Extract latency in seconds
                     latency = time.perf_counter() - st
                     logger.info(f"streaming prompt token count: {prompt_tokens}, "
                                 f"completion token count: {completion_tokens}, latency: {latency}")
+                    logger.info("Completed streaming for the current UUID, moving to the next prediction.")
+                    break  # Explicitly exit the loop for the current prediction
                 # If streaming is set to false, then get the response in the normal
                 # without streaming format from LiteLLM
                 else:

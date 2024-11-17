@@ -1,0 +1,13 @@
+<|begin_of_text|><|start_header_id|>user<|end_header_id|>
+
+You are an assistant for question-answering tasks. Use the following pieces of retrieved context in the section demarcated by "```" to answer the question. Only answer the question provided in the question section below.
+If you dont know the answer just say that you dont know. Use three sentences maximum and be concise with your answer.
+
+```
+{context}
+```
+
+Instruction: {instruction} 
+
+<|eot_id|><|start_header_id|>assistant<|end_header_id|>
+
