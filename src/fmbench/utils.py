@@ -183,7 +183,7 @@ def upload_file_to_s3(bucket: str, local_path: str, s3_path: str) -> None:
 def _write_to_local_read(data, dir1, dir2, file_name):
     file_dir, actual_file_name = os.path.split(file_name)
     # remove the hf prefix before sending the file to the local fmbench-read directory
-    file_dir = file_dir.removeprefix("hf:")
+    file_dir = file_dir.removeprefix(globals.HF_DATASET_PREFIX)
     logger.info(f"File directory: {file_dir}, file name to be written locally: {actual_file_name}")
     dir_path = _get_local_read_path(dir1 + "/" + dir2 + "/" + file_dir + "/")
     logger.info(f"dir path: {dir_path}")
@@ -209,7 +209,7 @@ def write_to_s3(data, bucket_name, dir1, dir2, file_name):
         # If the file name starts with 'hf:', then it means that the hugging face dataset
         # is going to be loaded at runtime and is supposed to be sent to the /tmp/fmbench-read/source_data
         # folder. In this case, it is written to the local fmbench-read directory.
-        if file_name.startswith("hf:"):
+        if file_name.startswith(globals.HF_DATASET_PREFIX):
             _write_to_local_read(data, dir1, dir2, file_name)
         else:
             _write_to_local(data, dir1, dir2, file_name)
