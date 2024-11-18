@@ -153,16 +153,16 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options (such as one experiment is SageMaker and the other is Bedrock).
 experiments:
-  - name: meta.llama3-1-70b-instruct-v1:0
+  - name: us.meta.llama3-1-70b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-1-70b-instruct-v1:0
+    model_id: us.meta.llama3-1-70b-instruct-v1:0
     model_version: 
-    model_name: meta.llama3-1-70b-instruct-v1:0
-    ep_name: meta.llama3-1-70b-instruct-v1:0
-    instance_type: meta.llama3-1-70b-instruct-v1:0
+    model_name: us.meta.llama3-1-70b-instruct-v1:0
+    ep_name: us.meta.llama3-1-70b-instruct-v1:0
+    instance_type: us.meta.llama3-1-70b-instruct-v1:0
     image_uri:
     deploy: no
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -203,16 +203,16 @@ experiments:
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:
-  - name: meta.llama3-1-8b-instruct-v1:0
+  - name: us.meta.llama3-1-70b-instruct-v1:0
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.    
-    model_id: meta.llama3-1-8b-instruct-v1:0
+    model_id: us.meta.llama3-1-70b-instruct-v1:0
     model_version: 
-    model_name: meta.llama3-1-8b-instruct-v1:0
-    ep_name: meta.llama3-1-8b-instruct-v1:0
-    instance_type: meta.llama3-1-8b-instruct-v1:0
+    model_name: us.meta.llama3-1-70b-instruct-v1:0
+    ep_name: us.meta.llama3-1-70b-instruct-v1:0
+    instance_type: us.meta.llama3-1-70b-instruct-v1:0
     image_uri:
     deploy: no
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
