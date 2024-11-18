@@ -93,14 +93,14 @@ inference_parameters:
     max_new_tokens: 100
 
 experiments:
-  - name: Llama3-1-8b-g5.12xlarge
+  - name: Llama3-1-8b-g5.xlarge
     model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
-    ep_name: Meta-Llama-3-1-8B-Instruct-g5-12xl
+    ep_name: Meta-Llama-3-1-8B-Instruct-g5-xl
     download_from_hf_place_in_s3: no
     model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
-    instance_type: "ml.g5.12xlarge"
+    instance_type: "ml.g5.xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
     instance_count: 1
@@ -123,14 +123,14 @@ experiments:
 
     accept_eula: true
     env:
-  - name: Llama3-1-8b-g5.24xl
+  - name: Llama3-1-8b-g5.2xl
     model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
-    ep_name: Meta-Llama-3-1-8B-Instruct-g5-24xl
+    ep_name: Meta-Llama-3-1-8B-Instruct-g5-2xl
     download_from_hf_place_in_s3: no
     model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
-    instance_type: "ml.g5.24xlarge"
+    instance_type: "ml.g5.2xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
     instance_count: 1
