@@ -99,7 +99,7 @@ experiments:
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-12xl
     download_from_hf_place_in_s3: no
-    model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.g5.12xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
@@ -110,7 +110,7 @@ experiments:
       parameter_set: sagemaker
     serving.properties: |
       engine=Python
-      option.model_id=s3://{write_bucket}/meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.dtype=fp16
     payload_files:
     - payload_en_1-500.jsonl
@@ -132,7 +132,7 @@ experiments:
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-24xl
     download_from_hf_place_in_s3: no
-    model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.g5.24xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
@@ -143,7 +143,7 @@ experiments:
       parameter_set: sagemaker
     serving.properties: |
       engine=Python
-      option.model_id=s3://{write_bucket}/meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.dtype=fp16
     payload_files:
     - payload_en_1-500.jsonl
@@ -165,7 +165,7 @@ experiments:
     model_name: Meta-Llama-3-1-8B-Instruct
     ep_name: Meta-Llama-3-1-8B-Instruct-g5-48xl
     download_from_hf_place_in_s3: no
-    model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.g5.48xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
@@ -176,7 +176,7 @@ experiments:
       parameter_set: sagemaker
     serving.properties: |
       engine=Python
-      option.model_id=s3://{write_bucket}/meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.dtype=fp16
     payload_files:
     - payload_en_1-500.jsonl
