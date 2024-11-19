@@ -42,7 +42,7 @@ run_steps:
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
-    4_get_evaluations.ipynb: yes
+    4_get_evaluations.ipynb: no
     5_model_metric_analysis.ipynb: yes
     6_cleanup.ipynb: yes
 
@@ -93,13 +93,13 @@ inference_parameters:
     max_new_tokens: 100
 
 experiments:
-  - name: Llama3-1-8b-g5.xlarge
+  - name: Llama3-1-8b-g5.2xl-djl-inference:0.29.0-lmi11.0.0-cu124
     model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
-    ep_name: Meta-Llama-3-1-8B-Instruct-g5-xl
-    download_from_hf_place_in_s3: no
-    model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
+    ep_name: Meta-Llama-3-1-8B-Instruct-g5-2xl
+    download_from_hf_place_in_s3: yes
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.g5.xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
@@ -110,26 +110,27 @@ experiments:
       parameter_set: sagemaker
     serving.properties: |
       engine=Python
-      option.model_id=s3://{write_bucket}/meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.dtype=fp16
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
 
     accept_eula: true
     env:
-  - name: Llama3-1-8b-g5.2xl
+  - name: Llama3-1-8b-g5.4xl-djl-inference:0.29.0-lmi11.0.0-cu124
     model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Meta-Llama-3-1-8B-Instruct
-    ep_name: Meta-Llama-3-1-8B-Instruct-g5-2xl
-    download_from_hf_place_in_s3: no
-    model_s3_path: s3://{write_bucket}/meta-llama/Meta-Llama-3-1-8B-Instruct
+    ep_name: Meta-Llama-3-1-8B-Instruct-g5-4xl
+    download_from_hf_place_in_s3: yes
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.g5.2xlarge"
     image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
     deploy: yes
@@ -140,20 +141,22 @@ experiments:
       parameter_set: sagemaker
     serving.properties: |
       engine=Python
-      option.model_id=s3://{write_bucket}/meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.dtype=fp16
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
+    # - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     - 2
+    # - 4
+    # - 10
 
     accept_eula: true
     env:
-
 report:
   latency_budget: 2
   cost_per_10k_txn_budget: 50
