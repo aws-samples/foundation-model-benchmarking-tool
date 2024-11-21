@@ -444,7 +444,7 @@ class CustomTokenizer:
     else:
         print(f"{HF_TOKEN_FNAME} file not found")
 
-    def __init__(self, bucket, prefix, local_dir, model_id):
+    def __init__(self, bucket, prefix, local_dir, model_id, hf_model_id=None):
         print(f"CustomTokenizer, based on HF transformers, {bucket} "
               f"prefix: {prefix} local_dir: {local_dir}, model_id: {model_id}")
         # Check if the tokenizer files exist in s3 and if not, use the autotokenizer
@@ -461,11 +461,17 @@ class CustomTokenizer:
         else:
             print(f"{local_dir} directory is empty")
             try:
-                print(f"going to download tokenizer from HF for \"{model_id}\"")
-                self.tokenizer = AutoTokenizer.from_pretrained(model_id)
-                print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from HF for \"{model_id}\"")
+                if hf_model_id:
+                    print(f"HF TOKEN ID provided, Overriding Model ID for HF_TOKEN_ID")
+                    print(f"going to download tokenizer from HF for \"{hf_model_id}\"")
+                    self.tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
+                    print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from HF for \"{hf_model_id}\"")
+                else:
+                    print(f"going to download tokenizer from HF for \"{model_id}\"")
+                    self.tokenizer = AutoTokenizer.from_pretrained(model_id)
+                    print(f"successfully loaded the tokenizer using AutoTokenizer.from_pretrained from HF for \"{model_id}\"")
             except Exception as e:
-                print("exception while loading tokenizer from HuggingFace, exception={e}")
+                print(f"exception while loading tokenizer from HuggingFace, exception={e}")
                 print(f"no tokenizer provided, the {local_dir}, abs_path={abs_path} is empty, "
                       f"using default tokenizer i.e. {self.WORDS} words = {self.TOKENS} tokens")
                 self.tokenizer = None
@@ -476,4 +482,4 @@ class CustomTokenizer:
         else:
             return int(math.ceil((self.TOKENS/self.WORDS) * len(text.split())))
 
-_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER, globals.TOKENIZER_MODEL_ID)
+_tokenizer = CustomTokenizer(globals.READ_BUCKET_NAME, globals.TOKENIZER_DIR_S3, globals.TOKENIZER, globals.TOKENIZER_MODEL_ID, globals.HF_TOKENIZER_MODEL_ID)
