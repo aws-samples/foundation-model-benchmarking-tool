@@ -20,7 +20,7 @@ wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/manifest.txt -P ${FMBE
 for i in `cat ${FMBENCH_READ_DIR}/manifest.txt`
 do
   # Skip if filename contains ".keep" in it
-  if [[ $i == *.keep* ]]; then
+  if echo "$i" | grep -q ".keep"; then
     continue
   fi
   dir_path=`dirname $i`
