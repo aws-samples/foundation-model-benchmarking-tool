@@ -9,12 +9,18 @@ configs/bedrock/config-bedrock-haiku-sonnet-majority-voting.yml
 configs/bedrock/config-bedrock-llama3-1-70b-streaming.yml
 configs/bedrock/config-bedrock-llama3-1-8b-streaming.yml
 configs/bedrock/config-bedrock-llama3-1-no-streaming.yml
+configs/bedrock/config-bedrock-llama3-1.yml
 configs/bedrock/config-bedrock-llama3-streaming.yml
 configs/bedrock/config-bedrock-models-OpenOrca.yml
 configs/bedrock/config-bedrock-titan-text-express.yml
 configs/bedrock/config-bedrock.yml
+configs/bedrock/config-claude-3-5-sonnet-v2.yml
+configs/bedrock/config-claude-dolly-dataset.yml
+configs/bedrock/config-llama-3-2-11b-databricks-dolly-15k.yml
+configs/bedrock/config-llama-3-2-1b-3b-no-evals.yml
+configs/bedrock/config-llama-3-2-1b-3b.yml
+configs/bedrock/config-llama-3-2-all-models-longbench-hf-version.yml
 configs/bedrock/config-llama-3-2-all-models.yml
-configs/bedrock/config-llama-3-2-vision-instruct.yml
 configs/bert/config-distilbert-base-uncased.yml
 configs/byoe/config-model-byo-sagemaker-endpoint.yml
 configs/embeddings/bge-base-en-v1-5-c5-embeddings.yml
@@ -67,6 +73,7 @@ configs/llama3.1/8b/config-llama3.1-8b-g5.12xl-tp-4-mc-max-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-auto-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-max-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-4-mc-max-ec2.yml
+configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-g5.4xl-sm.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2-conc-1-2.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-auto-ec2.yml
@@ -93,6 +100,7 @@ configs/llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml
+configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml
 configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml
 configs/llama3.2/3b/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml
@@ -189,6 +197,10 @@ configs/mistral/config-mistral-instruct-v2-p5-trtllm.yml
 configs/mistral/config-mistral-trn1-32xl-deploy-ec2-tp32.yml
 configs/mistral/config-mistral-v3-inf2-48xl-deploy-ec2-tp24.yml
 configs/mixtral/config-mixtral-8x7b-g6e.48xl-ec2.yml
+configs/multimodal/bedrock/config-claude-scienceqa.yml
+configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-marqo-GS-10M.yml
+configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml
+configs/multimodal/bedrock/config-llama-3-2-claude-models-scienceqa.yml
 configs/phi/config-phi-3-g5.yml
 configs/pricing.yml
 llama2_tokenizer/.keep

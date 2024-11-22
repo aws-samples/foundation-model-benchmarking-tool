@@ -87,6 +87,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.22
+
+1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
+
 ## 2.0.19
 1. Config files for `Llama3.1-1b` on AMD/Intel CPU instance types.
 1. Bug fixes for token counting for vLLM.
@@ -94,10 +98,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## 2.0.18
 1. Delete SageMaker endpoint as soon as the run finishes.
 
-## 2.0.17
-1. Add support for embedding models through SageMaker jumpstart
-1. Add support for LLama 3.2 11b Vision Instruct benchmarking through FMBench
-1. Fix DJL Inference while deploying djl on EC2(424 Inference bug)
 
 
 [Release history](./release_history.md)

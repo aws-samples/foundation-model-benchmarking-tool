@@ -13,12 +13,18 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── bedrock/config-bedrock-llama3-1-70b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-70b-streaming.yml)  
 [├── bedrock/config-bedrock-llama3-1-8b-streaming.yml](configs/bedrock/config-bedrock-llama3-1-8b-streaming.yml)  
 [├── bedrock/config-bedrock-llama3-1-no-streaming.yml](configs/bedrock/config-bedrock-llama3-1-no-streaming.yml)  
+[├── bedrock/config-bedrock-llama3-1.yml](configs/bedrock/config-bedrock-llama3-1.yml)  
 [├── bedrock/config-bedrock-llama3-streaming.yml](configs/bedrock/config-bedrock-llama3-streaming.yml)  
 [├── bedrock/config-bedrock-models-OpenOrca.yml](configs/bedrock/config-bedrock-models-OpenOrca.yml)  
 [├── bedrock/config-bedrock-titan-text-express.yml](configs/bedrock/config-bedrock-titan-text-express.yml)  
 [├── bedrock/config-bedrock.yml](configs/bedrock/config-bedrock.yml)  
-[├── bedrock/config-llama-3-2-all-models.yml](configs/bedrock/config-llama-3-2-all-models.yml)  
-[└── bedrock/config-llama-3-2-vision-instruct.yml](configs/bedrock/config-llama-3-2-vision-instruct.yml)  
+[├── bedrock/config-claude-3-5-sonnet-v2.yml](configs/bedrock/config-claude-3-5-sonnet-v2.yml)  
+[├── bedrock/config-claude-dolly-dataset.yml](configs/bedrock/config-claude-dolly-dataset.yml)  
+[├── bedrock/config-llama-3-2-11b-databricks-dolly-15k.yml](configs/bedrock/config-llama-3-2-11b-databricks-dolly-15k.yml)  
+[├── bedrock/config-llama-3-2-1b-3b-no-evals.yml](configs/bedrock/config-llama-3-2-1b-3b-no-evals.yml)  
+[├── bedrock/config-llama-3-2-1b-3b.yml](configs/bedrock/config-llama-3-2-1b-3b.yml)  
+[├── bedrock/config-llama-3-2-all-models-longbench-hf-version.yml](configs/bedrock/config-llama-3-2-all-models-longbench-hf-version.yml)  
+[└── bedrock/config-llama-3-2-all-models.yml](configs/bedrock/config-llama-3-2-all-models.yml)  
 **bert**  
 [└── bert/config-distilbert-base-uncased.yml](configs/bert/config-distilbert-base-uncased.yml)  
 **byoe**  
@@ -166,6 +172,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-auto-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-auto-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-2-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-4-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.24xl-tp-4-mc-max-ec2.yml)  
+[├── llama3.1/8b/config-llama3.1-8b-g5.2xl-g5.4xl-sm.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-g5.4xl-sm.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2-conc-1-2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2-conc-1-2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.2xl-tp-1-mc-max-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-auto-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.48xl-tp-2-mc-auto-ec2.yml)  
@@ -195,6 +202,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   ├── llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2.yml)  
 [│   └── llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml)  
 **└── llama3.2/3b**  
@@ -217,6 +225,12 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **mixtral**  
 [└── mixtral/config-mixtral-8x7b-g6e.48xl-ec2.yml](configs/mixtral/config-mixtral-8x7b-g6e.48xl-ec2.yml)  
 [model_eval_all_info.yml](configs/model_eval_all_info.yml)  
+**multimodal**  
+**└── multimodal/bedrock**  
+[├── multimodal/bedrock/config-claude-scienceqa.yml](configs/multimodal/bedrock/config-claude-scienceqa.yml)  
+[├── multimodal/bedrock/config-llama-3-2-11b-vision-instruct-marqo-GS-10M.yml](configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-marqo-GS-10M.yml)  
+[├── multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml](configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml)  
+[└── multimodal/bedrock/config-llama-3-2-claude-models-scienceqa.yml](configs/multimodal/bedrock/config-llama-3-2-claude-models-scienceqa.yml)  
 **phi**  
 [└── phi/config-phi-3-g5.yml](configs/phi/config-phi-3-g5.yml)  
 [pricing.yml](configs/pricing.yml)  
