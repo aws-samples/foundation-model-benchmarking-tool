@@ -165,6 +165,7 @@ experiments:
     #from huggingface to grab
     prefix: "lmi"
     model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: "llama3-8b-instruct"
     model_id_wo_repo: "Meta-Llama-3-8B-Instruct"

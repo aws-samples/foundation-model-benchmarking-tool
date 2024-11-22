@@ -160,6 +160,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: llama3-8b-inf2.24xl
     ep_name: <your-endpoint-name>

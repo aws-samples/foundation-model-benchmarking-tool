@@ -171,6 +171,11 @@ experiments:
     #from huggingface to grab
     prefix: "lmi"
     model_id: meta-llama/Meta-Llama-3-8B-Instruct # model id, version and image uri not needed for byo endpoint
+    # If you want to use an hf model id tokenizer for the model that is being benchmarked, 
+    # add the model id below to the "hf_tokenizer_model_id" parameter. If this is not provided
+    # OR if the config.json and tokenizer.json are not loaded in the read directory, then the 
+    # default 750-1000 tokens tokenizer will be used.
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: "llama3-8b-instruct"
     model_id_wo_repo: "Meta-Llama-3-8B-Instruct"

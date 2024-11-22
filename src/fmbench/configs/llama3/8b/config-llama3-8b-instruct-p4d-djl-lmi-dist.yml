@@ -95,6 +95,7 @@ experiments:
  
   - name: llama-3-8b-instruct-p4d-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct
     ep_name: llama-3-8b-instruct-p4d
