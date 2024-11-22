@@ -223,7 +223,13 @@ TOKENIZER = 'tokenizer'
 # NOTE: if tokenizer files are provided in the tokenizer directory then they take precedence
 # if the files are not present then we load the tokenizer for this model id from Hugging Face
 TOKENIZER_MODEL_ID = config['experiments'][0].get('model_id')
-HF_TOKENIZER_MODEL_ID = config['experiments'][0].get('hf_model_id')
+
+# If the model that is being benchmarked does not necessarilly have an HF model id, but you
+# want to use the hf tokenizer for that model, then mention the "hf_tokenizer_model_id" in the
+# experiments section to load the tokenizer at runtime. The alternative option to this is
+# to provide the "config.json" and "tokenizer.json" files in the read directory. If neither are provided, 
+# then the default 750-1000 tokens tokenizer will be used.
+HF_TOKENIZER_MODEL_ID = config['experiments'][0].get('hf_tokenizer_model_id')
 
 DEPLOYMENT_SCRIPT_S3 = config['s3_read_data']['scripts_prefix']
 

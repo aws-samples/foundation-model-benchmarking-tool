@@ -95,6 +95,7 @@ experiments:
  
   - name: llama-3-8b-instruct-g6-24xl-djl-deepspeed0.12.6-cu121
     model_id: meta-llama/Meta-Llama-3-8B-Instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct
     ep_name: llama-3-8b-instruct-g6-24xl

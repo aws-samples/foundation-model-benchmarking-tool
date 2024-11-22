@@ -158,6 +158,11 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: meta-textgenerationneuron-llama-3-8b-instruct
+    # If you want to use an hf model id tokenizer for the model that is being benchmarked, 
+    # add the model id below to the "hf_tokenizer_model_id" parameter. If this is not provided
+    # OR if the config.json and tokenizer.json are not loaded in the read directory, then the 
+    # default 750-1000 tokens tokenizer will be used.
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-inf2.24xl
     ep_name: llama-3-8b-instruct-inf2-24xl
@@ -215,6 +220,7 @@ experiments:
 
   - name: llama-3-8b-instruct-g5-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.12xl
     ep_name: llama-3-8b-instruct-g5-12xl
