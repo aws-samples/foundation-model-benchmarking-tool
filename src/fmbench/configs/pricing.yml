@@ -61,6 +61,7 @@ pricing:
     p3.2xlarge: 3.06
     g4dn.12xlarge: 3.912
     g6.2xlarge: 0.9776
+    g6.4xlarge: 1.3512
     g6.16xlarge: 3.3968
     g6.12xlarge: 4.6016
     g6.24xlarge: 6.6752
