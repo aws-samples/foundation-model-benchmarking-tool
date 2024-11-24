@@ -16,7 +16,14 @@ mkdir -p $FMBENCH_READ_DIR/llama3_2_tokenizer
 mkdir -p $FMBENCH_READ_DIR/mistral_tokenizer
 wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/manifest.txt -P ${FMBENCH_READ_DIR}/
 
-# copy each file of the public content for FMBench
+# First create all directories from manifest
+for i in `cat ${FMBENCH_READ_DIR}/manifest.txt`
+do
+  dir_path=`dirname $i`
+  mkdir -p ${FMBENCH_READ_DIR}/$dir_path
+done
+
+# Then download all non-.keep files
 for i in `cat ${FMBENCH_READ_DIR}/manifest.txt`
 do
   # Skip if filename contains ".keep" in it
@@ -24,6 +31,5 @@ do
     continue
   fi
   dir_path=`dirname $i`
-  mkdir -p ${FMBENCH_READ_DIR}/$dir_path
   wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/$i -P ${FMBENCH_READ_DIR}/$dir_path
 done
