@@ -63,20 +63,20 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 1. To download the model files from HuggingFace, create a `hf_token.txt` file in the `/tmp/fmbench-read/scripts/` directory containing the Hugging Face token you would like to use. In the command below replace the `hf_yourtokenstring` with your Hugging Face token. **Replace `/tmp` in the command below if you are using `/path/to/your/custom/tmp` to store the config files and the `FMBench` generated data**.
 
     ```{.bash}
-    echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
+    echo hf_yourtokenstring > $TMP_DIR/fmbench-read/scripts/hf_token.txt
     ```
 
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. **_Skip to the next step if benchmarking for AWS Chips_**. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 1. For example, to run `FMBench` on a `llama3-8b-Instruct` model on an `inf2.48xlarge` instance, run the command 
 command below. The config file for this example can be viewed [here](src/fmbench/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml).
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and do a `tail` on `fmbench.log` to see a live log of the run.
@@ -108,7 +108,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. Now you are ready to run benchmarking with Triton. For example for benchmarking `Llama3-8b` model on a `g5.12xlarge` use the following command:
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 ## Benchmarking on an instance type with AWS Chips and the Triton inference server
@@ -171,13 +171,13 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. To download the model files from HuggingFace, create a `hf_token.txt` file in the `/tmp/fmbench-read/scripts/` directory containing the Hugging Face token you would like to use. In the command below replace the `hf_yourtokenstring` with your Hugging Face token. **Replace `/tmp` in the command below if you are using `/path/to/your/custom/tmp` to store the config files and the `FMBench` generated data**.
 
     ```{.bash}
-    echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
+    echo hf_yourtokenstring > $TMP_DIR/fmbench-read/scripts/hf_token.txt
     ```
 
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports. 
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-djl.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-llama3-8b-trn1-32xlarge-triton-djl.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and and do a `tail` on `fmbench.log` to see a live log of the run.
@@ -276,7 +276,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. To download the model files from HuggingFace, create a `hf_token.txt` file in the `/tmp/fmbench-read/scripts/` directory containing the Hugging Face token you would like to use. In the command below replace the `hf_yourtokenstring` with your Hugging Face token. **Replace `/tmp` in the command below if you are using `/path/to/your/custom/tmp` to store the config files and the `FMBench` generated data**.
 
     ```{.bash}
-    echo hf_yourtokenstring > /tmp/fmbench-read/scripts/hf_token.txt
+    echo hf_yourtokenstring > $TMP_DIR/fmbench-read/scripts/hf_token.txt
     ```
 
 1. Before running FMBench, add the current user to the docker group. Run the following commands to run Docker without needing to use `sudo` each time.
@@ -299,7 +299,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 1. Run `FMBench` with a packaged or a custom config file. **_This step will also deploy the model on the EC2 instance_**. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml --local-mode yes --write-bucket placeholder --tmp-dir /tmp > fmbench.log 2>&1
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and and do a `tail` on `fmbench.log` to see a live log of the run.
