@@ -212,6 +212,9 @@ if eval_config is not None:
 METADATA_DIR:str = config['dir_paths']['metadata_dir']
 METRICS_PATH_FNAME: str = "metrics_path.txt"
 
+# Name of the .txt file where the HF token is stored
+HF_TOKEN_FNAME: str = "hf_token.txt"
+
 DIR_LIST = [DATA_DIR, PROMPTS_DIR, METRICS_DIR, MODELS_DIR, METRICS_PER_INFERENCE_DIR, METRICS_PER_CHUNK_DIR]
 
 # this is for custom tokenizers
