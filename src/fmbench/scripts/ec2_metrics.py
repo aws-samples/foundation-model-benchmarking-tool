@@ -1,18 +1,13 @@
 """
-Collects and logs GPU and CPU metrics to a CSV file.
+Collects and logs GPU and CPU metrics to an EC2 metrics CSV file. This file is populated during the
+duration of the inferences against the model deployed on the EC2 instance.
 """
-
-
-# Need to install these 2 dependencies:
-# pip install psutil==5.9.8
-# pip install nvitop==1.3.2
-
 import csv
 import time
 import psutil
 import logging
+from fmbench.scripts import constants
 from nvitop import Device, ResourceMetricCollector
-
 
 # Setup logging
 logging.basicConfig(
@@ -20,8 +15,6 @@ logging.basicConfig(
     level=logging.INFO,
 )
 logger = logging.getLogger(__name__)
-
-csv_file_name = "EC2_system_metrics.csv"
 
 # Global flag to control data collection for now, change in future.
 collecting = True
@@ -58,7 +51,7 @@ def _collect_ec2_utilization_metrics():
 
         try:
             # Open the CSV file in append mode and write the collected metrics
-            with open(csv_file_name, mode="a", newline="") as csv_file:
+            with open(constants.EC2_SYSTEM_METRICS_FNAME, mode="a", newline="") as csv_file:
                 csv_writer = csv.writer(csv_file)
 
                 # Collect CPU mean utilization
@@ -134,7 +127,7 @@ def _collect_ec2_utilization_metrics():
                     cpu_percent_mean,
                     memory_percent_mean,
                     memory_used_mean,
-                    gpu_utilization_mean_total,  # Mean utilization out of n gpus%, example if there are 4 gpus, it is out of 400%
+                    gpu_utilization_mean_total,
                     gpu_memory_used_mean_total,
                     gpu_memory_free_mean_total,
                     gpu_memory_total_mean_total,
@@ -153,7 +146,7 @@ def _collect_ec2_utilization_metrics():
     collector.daemonize(
         on_collect,
         interval=5,
-        on_stop=stop_collect,  # Adjust the interval as needed in seconds
+        on_stop=stop_collect,
     )
 
 
@@ -164,7 +157,7 @@ def collect_ec2_metrics():
     global collecting
     collecting = True
     # Initialize the CSV file and write the header once
-    with open(csv_file_name, mode="w", newline="") as csv_file:
+    with open(constants.EC2_SYSTEM_METRICS_FNAME, mode="w", newline="") as csv_file:
         csv_writer = csv.writer(csv_file)
         header = [
             "timestamp",
