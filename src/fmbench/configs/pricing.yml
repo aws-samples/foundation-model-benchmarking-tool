@@ -40,6 +40,7 @@ pricing:
     m5.16xlarge: 3.072
     c5.18xlarge: 3.06
     m7i.12xlarge: 2.419
+    m7i.24xlarge: 4.8384
     m7a.4xlarge: 0.9274
     m7a.16xlarge: 3.709
     m7a.24xlarge: 5.564
