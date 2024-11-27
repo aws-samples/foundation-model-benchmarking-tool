@@ -42,3 +42,4 @@ LISTEN_PORT: int = 8080
 
 # This is the file where the EC2 instance utilization metrics are stored
 EC2_SYSTEM_METRICS_FNAME: str = "EC2_system_metrics.csv"
+EC2_UTILIZATION_METRICS_INTERVAL: int = 30

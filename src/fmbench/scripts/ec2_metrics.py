@@ -145,7 +145,7 @@ def _collect_ec2_utilization_metrics():
     logger.info("Starting Daemon collector to run in background")
     collector.daemonize(
         on_collect,
-        interval=5,
+        interval=constants.EC2_UTILIZATION_METRICS_INTERVAL,
         on_stop=stop_collect,
     )
 
