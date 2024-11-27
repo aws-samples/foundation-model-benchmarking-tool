@@ -34,7 +34,7 @@ class EC2Predictor(FMBenchPredictor):
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec
             self._accelerator = get_accelerator_type()
-            # Start collecting EC2 metrics
+            # Start collecting EC2 metrics. This will be called once.
             collect_ec2_metrics()
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
@@ -193,7 +193,8 @@ class EC2Predictor(FMBenchPredictor):
         """Represents the function to shutdown the predictor
            cleanup the endpooint/container/other resources
         """
-        # Stop collecting EC2 metrics
+        # Stop collecting EC2 metrics either when the model container is stopped and removed, 
+        # or once the benchmarking test has completed 
         stop_collect()
 
         script = f"""#!/bin/sh
