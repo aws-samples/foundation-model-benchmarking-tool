@@ -52,10 +52,11 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
     pip install -U fmbench
     ```
 
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `"${1:-/tmp}"` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory. If not specified, it will default to the `\tmp` directory.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    TMP_DIR="${1:-/tmp}"
+    # Replace "/tmp" with "/your-custom-tmp-directory" if you want to use a custom tmp directory to store config files and other FMBench generated data
+    TMP_DIR="/tmp"
     curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
     ```
 
@@ -159,10 +160,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
     ```
    - Now wait until the docker image is saved locally and then follow the instructions below to start a benchmarking test.
 
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `"${1:-/tmp}"` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory. If not specified, it will default to the `\tmp` directory.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    TMP_DIR="${1:-/tmp}"
+    # Replace "/tmp" with "/your-custom-tmp-directory" if you want to use a custom tmp directory to store config files and other FMBench generated data
+    TMP_DIR="/tmp"
     curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
     ```
 
@@ -263,10 +265,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
         sudo docker build -f Dockerfile.cpu -t vllm-cpu-env --shm-size=4g .
         ```
 
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `"${1:-/tmp}"` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory. If not specified, it will default to the `\tmp` directory.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    TMP_DIR="${1:-/tmp}"
+    # Replace "/tmp" with "/your-custom-tmp-directory" if you want to use a custom tmp directory to store config files and other FMBench generated data
+    TMP_DIR="/tmp"
     curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
     ```
 
@@ -359,10 +362,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
         sudo docker build -f Dockerfile.cpu -t vllm-cpu-env --shm-size=12g .
         ```
 
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `"${1:-/tmp}"` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory. If not specified, it will default to the `\tmp` directory.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    TMP_DIR="${1:-/tmp}"
+    # Replace "/tmp" with "/your-custom-tmp-directory" if you want to use a custom tmp directory to store config files and other FMBench generated data
+    TMP_DIR="/tmp"
     curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
     ```
 
@@ -432,10 +436,11 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
     ```
     
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. Replace `"${1:-/tmp}"` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory. If not specified, it will default to the `\tmp` directory.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    TMP_DIR="${1:-/tmp}"
+    # Replace "/tmp" with "/your-custom-tmp-directory" if you want to use a custom tmp directory to store config files and other FMBench generated data
+    TMP_DIR="/tmp"
     curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
     ```
 
