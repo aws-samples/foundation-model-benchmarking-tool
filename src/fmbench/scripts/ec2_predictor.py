@@ -262,7 +262,7 @@ class EC2Predictor(FMBenchPredictor):
             filtered_metrics = metrics_df[(metrics_df['timestamp'] >= start_time) & 
                                             (metrics_df['timestamp'] <= end_time)]
         except FileNotFoundError:
-            logger.warning("Metrics CSV file not found. Ensure collect_ec2_metrics() was called.")
+            logger.warning("Metrics CSV file containin the EC2 metrics not found.")
             filtered_metrics = None
         except Exception as e:
             logger.error(f"Error retrieving metrics: {e}")
