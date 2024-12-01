@@ -91,10 +91,8 @@ def get_ec2_pricing(
 def load_and_update_pricing(
     PRICING_YAML_PATH: Union[Path, str],
     PRICING_FALLBACK_YAML_PATH: Union[Path, str],
-    instance_type: str,
+    instances: List,
     region_code: str = globals.region_name,
-    operating_system: str = "Linux",
-    tenancy: str = "Shared",
 ) -> dict:
     """
     EC2 pricing function which checks if the pricing for a given instance type exists in pricing.yml.
@@ -104,11 +102,9 @@ def load_and_update_pricing(
     Args:
         PRICING_YAML_PATH (Union[Path, str]): Path to the pricing YAML file or S3 URI.
         PRICING_FALLBACK_YAML_PATH (Union[Path, str]): Path to the fallback YAML file or S3 URI.
-        instance_type (str): The EC2 instance type to fetch pricing for (e.g., "t2.micro").
+        instances (List): List of instances in experiments to fetch pricing for (e.g., "t2.micro").
         region_code (str): The AWS region code (default is globals.region_name).
-        operating_system (str): The operating system for the instance (default is "Linux").
-        tenancy (str): The tenancy type for the instance (default is "Shared").
-
+        
     Returns:
         dict: A dictionary containing updated EC2 pricing data.
     """
@@ -128,54 +124,46 @@ def load_and_update_pricing(
                 "Pricing data could not be loaded from any source."
             ) from fallback_error
 
-    # Check if the instance type already exists under 'pricing > instance_based'
-    if "pricing" in pricing_data and "instance_based" in pricing_data["pricing"]:
-        if instance_type in pricing_data["pricing"]["instance_based"]:
-            logger.info(f"Pricing for {instance_type} already exists. Skipping fetch.")
-            return pricing_data
+    for instance_type in instances:
+        # Check if the instance type already exists under 'pricing > instance_based'
+        if "pricing" in pricing_data and "instance_based" in pricing_data["pricing"]:
+            if instance_type in pricing_data["pricing"]["instance_based"]:
+                logger.info(f"Pricing for {instance_type} already exists. Skipping fetch.")
+                continue
+        if "token_based" in pricing_data["pricing"] and instance_type in pricing_data["pricing"]["token_based"]:
+            logger.info(f"Token-based pricing for {instance_type} already exists. Skipping fetch.")
+            continue  # Skip fetching for this instance type
 
-    # Fetch pricing using `get_ec2_pricing`
-    logger.info(
-        f"Fetching pricing for instance type: {instance_type} in region: {region_code}"
-    )
-    try:
-        price = get_ec2_pricing(instance_type, region_code, operating_system, tenancy)
-        if price:
-            # Update the pricing data structure
-            if "pricing" not in pricing_data:
-                pricing_data["pricing"] = {"instance_based": {}}
-            elif "instance_based" not in pricing_data["pricing"]:
-                pricing_data["pricing"]["instance_based"] = {}
-
-            pricing_data["pricing"]["instance_based"][instance_type] = price
-            logger.info(f"Fetched pricing for {instance_type}: {price} USD")
-
-            # Save updated pricing data back to the original file path
-            if not isinstance(PRICING_YAML_PATH, Path):
-                PRICING_YAML_PATH = Path(PRICING_YAML_PATH)
-            with PRICING_YAML_PATH.open("w") as f:
-                yaml.dump(pricing_data, f)
-            logger.info(f"Updated pricing data saved to {PRICING_YAML_PATH}")
-        else:
-            raise ValueError(
-                f"No pricing data found for {instance_type} in {region_code}"
-            )
-    except Exception as e:
-        logger.error(f"Error fetching pricing: {e}")
-        logger.warning(
-            "Fetching pricing failed. Falling back to fallback pricing data."
+        # Fetch pricing using `get_ec2_pricing`
+        logger.info(
+            f"Fetching pricing for instance type: {instance_type} in region: {region_code}"
         )
+        
         try:
-            pricing_data = utils.load_config(PRICING_FALLBACK_YAML_PATH)
+            price = get_ec2_pricing(instance_type, region_code)
+            if price:
+                pricing_data["pricing"]["instance_based"][instance_type] = price
+                logger.info(f"Fetched pricing for {instance_type}: {price} USD")
+            else:
+                raise ValueError(
+                    f"No pricing data found for {instance_type} in {region_code}"
+                )
+        except Exception as e:
+            logger.error(f"Error fetching pricing: {e}")
             logger.warning(
-                f"Fallback pricing data loaded from {PRICING_FALLBACK_YAML_PATH}"
+                "Fetching pricing failed. Falling back to fallback pricing data."
             )
-        except Exception as fallback_error:
-            logger.critical(
-                f"Failed to load fallback pricing YAML after fetch error: {fallback_error}"
-            )
-            raise FileNotFoundError(
-                "Failed to retrieve pricing and fallback pricing data."
-            ) from fallback_error
+            try:
+                pricing_data = utils.load_config(PRICING_FALLBACK_YAML_PATH)
+                logger.warning(
+                    f"Fallback pricing data loaded from {PRICING_FALLBACK_YAML_PATH}"
+                )
+            except Exception as fallback_error:
+                logger.critical(
+                    f"Failed to load fallback pricing YAML after fetch error: {fallback_error}"
+                )
+                raise FileNotFoundError(
+                    "Failed to retrieve pricing and fallback pricing data."
+                ) from fallback_error
 
     return pricing_data
