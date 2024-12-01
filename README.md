@@ -87,8 +87,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
-## 2.0.22
+## 2.0.21
+1. Dynamically get EC2 pricing from Boto3 api
 
+## 2.0.20
 1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
 
 ## 2.0.19
