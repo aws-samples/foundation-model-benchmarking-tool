@@ -3,8 +3,7 @@ import yaml
 import boto3
 import logging
 from pathlib import Path
-from fmbench import utils
-from fmbench import globals
+from fmbench.utils import load_config
 from typing import Dict, Union, List
 
 logger = logging.getLogger(__name__)
@@ -92,7 +91,7 @@ def load_and_update_pricing(
     PRICING_YAML_PATH: Union[Path, str],
     PRICING_FALLBACK_YAML_PATH: Union[Path, str],
     instances: List,
-    region_code: str = globals.region_name,
+    region_code: str = 'us-east-1',
 ) -> dict:
     """
     EC2 pricing function which checks if the pricing for a given instance type exists in pricing.yml.
@@ -103,20 +102,20 @@ def load_and_update_pricing(
         PRICING_YAML_PATH (Union[Path, str]): Path to the pricing YAML file or S3 URI.
         PRICING_FALLBACK_YAML_PATH (Union[Path, str]): Path to the fallback YAML file or S3 URI.
         instances (List): List of instances in experiments to fetch pricing for (e.g., "t2.micro").
-        region_code (str): The AWS region code (default is globals.region_name).
+        region_code (str): The AWS region code (default is us-east-1).
         
     Returns:
         dict: A dictionary containing updated EC2 pricing data.
     """
     try:
         # Load existing pricing data using the `load_config` function
-        pricing_data = utils.load_config(PRICING_YAML_PATH)
+        pricing_data = load_config(PRICING_YAML_PATH)
         logger.info(f"Loaded pricing data from {PRICING_YAML_PATH}")
     except Exception as e:
         logger.error(f"Error loading pricing YAML from {PRICING_YAML_PATH}: {e}")
         logger.warning("Attempting to load fallback pricing YAML.")
         try:
-            pricing_data = utils.load_config(PRICING_FALLBACK_YAML_PATH)
+            pricing_data = load_config(PRICING_FALLBACK_YAML_PATH)
             logger.warning(f"Falling back to {PRICING_FALLBACK_YAML_PATH}")
         except Exception as fallback_error:
             logger.critical(f"Failed to load fallback pricing YAML: {fallback_error}")
@@ -154,7 +153,7 @@ def load_and_update_pricing(
                 "Fetching pricing failed. Falling back to fallback pricing data."
             )
             try:
-                pricing_data = utils.load_config(PRICING_FALLBACK_YAML_PATH)
+                pricing_data = load_config(PRICING_FALLBACK_YAML_PATH)
                 logger.warning(
                     f"Fallback pricing data loaded from {PRICING_FALLBACK_YAML_PATH}"
                 )
