@@ -26,6 +26,8 @@ current_working_directory: str = Path.cwd()
 
 CONFIG_FILEPATH_FILE: str = current_working_directory / 'config_filepath.txt'
 
+PRICING_FALLBACK_YAML_PATH="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/pricing.yml"
+
 # S3 client initialization
 s3_client = boto3.client('s3')
 session = boto3.session.Session()
