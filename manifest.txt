@@ -203,6 +203,7 @@ configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml
 configs/multimodal/bedrock/config-llama-3-2-claude-models-scienceqa.yml
 configs/phi/config-phi-3-g5.yml
 configs/pricing.yml
+configs/pricing_fallback.yml
 llama2_tokenizer/.keep
 llama3_1_tokenizer/.keep
 llama3_2_tokenizer/.keep
