@@ -183,6 +183,13 @@ METRICS_PER_CHUNK_DIR = os.path.join(METRICS_DIR, "per_chunk")
 ENDPOINT_METRICS_FNAME = "endpoint_metrics.csv"
 ENDPOINT_METRICS_SUMMARIZED_FNAME = "endpoint_metrics_summarized.csv"
 
+# These are the column names that are present in the SageMaker and EC2 instance utilization metrics
+# SageMaker utilization metrics contain an EndpointName column
+SAGEMAKER_EP_NAME_COL: str = "EndpointName"
+# These are the list of quantiles that are measured as a part of the metric utilization calculation
+# for EC2 benchmarking
+UTILIZATION_QUANTILE_METRICS = [0, 0.25, 0.5, 0.75, 1.0]
+
 # Models directory based on date and time 
 MODELS_DIR = f"{DATA_DIR}/models"
 
