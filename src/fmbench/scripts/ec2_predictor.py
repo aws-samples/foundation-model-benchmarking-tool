@@ -266,7 +266,6 @@ class EC2Predictor(FMBenchPredictor):
             filtered_metrics = None
         except Exception as e:
             logger.error(f"Error retrieving metrics: {e}")
-            filtered_metrics = None
         return filtered_metrics
 
     @property
