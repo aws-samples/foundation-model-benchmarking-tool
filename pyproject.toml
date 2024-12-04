@@ -32,6 +32,8 @@ ray = "2.32.0"
 torch = "2.4"
 sentence-transformers = "3.0.1"
 ec2-metadata = "2.13.0"
+nvitop = "1.3.2"
+psutil = "5.9.8"
 
 [tool.poetry.dev-dependencies]
 
