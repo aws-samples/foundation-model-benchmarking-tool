@@ -21,16 +21,19 @@ For some enterprise scenarios it might be desirable to run `FMBench` directly on
     pip install -U fmbench
     ```
 
-1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo.
-
-
-        curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh
-
-
-1. Run `FMBench` with a quickstart config file.
+1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
 
     ```{.bash}
-    fmbench --config-file /tmp/fmbench-read/configs/llama2/7b/config-llama2-7b-g5-quick.yml --local-mode yes > fmbench.log 2>&1
+    # Replace "/tmp" with "/path/to/your/custom/tmp" if you want to use a custom tmp directory
+    TMP_DIR="/tmp"
+    curl -s https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/copy_s3_content.sh | sh -s -- "$TMP_DIR"
+    ```
+
+
+1. Run `FMBench` with a packaged or a custom config file. The `--write-bucket` parameter value is just a placeholder and an actual S3 bucket is not required. You could set the `--tmp-dir` flag to an EFA path instead of `/tmp` if using a shared path for storing config files and reports.
+
+    ```{.bash}
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/llama3/8b/config-ec2-llama3-8b.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
     ```
 
 1. Open a new Terminal and navigate to the `foundation-model-benchmarking-tool` directory and do a `tail` on `fmbench.log` to see a live log of the run.
