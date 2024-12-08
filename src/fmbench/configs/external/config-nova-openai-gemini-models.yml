@@ -110,6 +110,11 @@ inference_parameters:
     max_tokens: 100
     top_p: 0.92
     caching: False
+  external:
+    temperature: 0.1
+    max_tokens: 100
+    top_p: 0.92
+    caching: False
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
