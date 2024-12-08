@@ -206,6 +206,12 @@ class ExternalPredictor(FMBenchPredictor):
         # not implemented
         return None
 
+    def shutdown(self) -> None:
+        """Represents the function to shutdown the predictor
+           cleanup the endpooint/container/other resources
+        """
+        return None
+
     @property
     def endpoint_name(self) -> str:
         """The endpoint name property."""
@@ -217,6 +223,12 @@ class ExternalPredictor(FMBenchPredictor):
         return dict(temperature=self._temperature,
                     max_tokens=self._max_tokens,
                     top_p=self._top_p)
+
+    @property
+    def platform_type(self) -> Dict:
+        """The inference parameters property."""
+        return constants.PLATFORM_BEDROCK
+
 
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
