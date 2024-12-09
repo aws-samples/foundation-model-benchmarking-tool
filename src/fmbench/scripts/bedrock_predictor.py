@@ -168,8 +168,8 @@ class BedrockPredictor(FMBenchPredictor):
                     # cohere does not support top_p and apprarently LiteLLM does not
                     # know that?
                     if 'cohere' not in self._endpoint_name:
-                        st = time.perf_counter()
                         logger.info(f"Invoking {self._bedrock_model} to get inference")
+                        st = time.perf_counter()
                         response = completion(model=self._bedrock_model,
                                             model_id=self._pt_model_id,
                                             messages=messages,
@@ -181,8 +181,8 @@ class BedrockPredictor(FMBenchPredictor):
                         # Extract latency in seconds
                         latency = time.perf_counter() - st
                     else:
-                        st = time.perf_counter()
                         logger.info(f"Invoking {self._bedrock_model} to get inference")
+                        st = time.perf_counter()
                         response = completion(model=self._bedrock_model,
                                             model_id=self._pt_model_id,
                                             messages=messages,
@@ -240,8 +240,7 @@ class BedrockPredictor(FMBenchPredictor):
                 # if the current version of litellm does not support the model to benchmark.
                 else:
                     logger.info(f"user has enabled 'use_boto3' to {self._use_boto3}. Calling the bedrock converse API.")
-                    st = time.perf_counter()
-                    response = invoke_bedrock_converse(
+                    response, latency = invoke_bedrock_converse(
                         endpoint_name=self._endpoint_name,
                         messages=messages,
                         temperature=self._temperature,
@@ -252,7 +251,6 @@ class BedrockPredictor(FMBenchPredictor):
                     self._response_json["generated_text"] = response['output']['message']['content'][0]['text']
                     prompt_tokens = response['usage']['inputTokens']
                     completion_tokens = response['usage']['outputTokens']
-                    latency = time.perf_counter() - st
                     break
 
             except (RateLimitError, ClientError) as e:

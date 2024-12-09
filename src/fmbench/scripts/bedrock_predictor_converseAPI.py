@@ -3,9 +3,11 @@ import boto3
 import logging
 from typing import Dict, Optional
 
-# Set up logging
+# set a logger
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+BEDROCK_RUNTIME: str = "bedrock-runtime"
 
 def invoke_bedrock_converse(
     endpoint_name: str,
@@ -27,16 +29,23 @@ def invoke_bedrock_converse(
     Returns:
         Dict containing response data
     """
-    bedrock_client = boto3.client('bedrock-runtime')
-    inference_config = {
-        "temperature": temperature,
-        "maxTokens": max_tokens,
-        "topP": top_p,
-    }
-    response = bedrock_client.converse(
-        modelId=endpoint_name,
-        messages=messages,
-        system=system_prompts,
-        inferenceConfig=inference_config
-    )
-    return response
+    try:
+        response: Optional[Dict] = None
+        bedrock_client = boto3.client(BEDROCK_RUNTIME)
+        inference_config = {
+            "temperature": temperature,
+            "maxTokens": max_tokens,
+            "topP": top_p,
+        }
+        st = time.perf_counter()
+        response = bedrock_client.converse(
+            modelId=endpoint_name,
+            messages=messages,
+            system=system_prompts,
+            inferenceConfig=inference_config
+        )
+        latency = time.perf_counter() - st
+    except Exception as e:
+        logger.error(f"Error occurred while calling the converseAPI to get a response from {endpoint_name}: {e}")
+        response, latency = None, None
+    return response, latency

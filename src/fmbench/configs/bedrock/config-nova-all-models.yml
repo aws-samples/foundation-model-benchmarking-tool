@@ -106,6 +106,10 @@ inference_parameters:
     max_tokens: 100
     top_p: 0.92
     caching: False
+    # Set use_boto3 to "no" if the model is supported by litellm and 
+    # the litellm API will be used to invoke the model. If the model is on
+    # bedrock and is not supported by the latest version of litellm, then set
+    # the parameter below to "yes" and the bedrock converseAPI will be used.
     use_boto3: yes
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
