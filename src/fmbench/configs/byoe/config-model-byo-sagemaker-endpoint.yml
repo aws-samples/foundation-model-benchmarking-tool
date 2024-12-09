@@ -7,6 +7,10 @@ aws:
   region: {region}
   # uncomment and set the Role ARN if not running on sagemaker
   sagemaker_execution_role: {role_arn}
+  # Use S3 only, local file system only, or both (values are s3, local or both)
+  # If set to local or both, set the local_file_system_path parameter
+  s3_and_or_local_file_system: local
+  local_file_system_path: {write_tmpdir}
   ## these are the buckets/resources you will create in your account below:
   bucket: {write_bucket} ## add the name of your desired bucket
 
@@ -21,6 +25,11 @@ dir_paths:
 
 ## READ BUCKET -- Represents the section to read from scripts, source data and tokenizer for a separate s3 bucket for read/write segregation
 s3_read_data:
+    # Use S3 only or local file system only (values are s3 or local)
+    # If set to local, set the local_file_system_path parameter
+    s3_or_local_file_system: local
+    local_file_system_path: {read_tmpdir}
+    # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-<region>-<account_id>
     read_bucket: {read_bucket}
     scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
     script_files:
