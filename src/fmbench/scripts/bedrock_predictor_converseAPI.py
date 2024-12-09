@@ -143,7 +143,6 @@ class BedrockConversePredictor(FMBenchPredictor):
                 logger.info(f"Response generated. Input tokens: {prompt_tokens}, "
                           f"Output tokens: {completion_tokens}, Latency: {latency}")
                 break
-
             except ClientError as e:
                 if e.response['Error']['Code'] in ['ThrottlingException', 'TooManyRequestsException']:
                     retry_count += 1
@@ -153,7 +152,6 @@ class BedrockConversePredictor(FMBenchPredictor):
                 else:
                     logger.error(f"ClientError: {str(e)}")
                     raise
-
             except Exception as e:
                 logger.error(f"Unexpected error: {str(e)}")
                 raise
