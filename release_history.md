@@ -1,3 +1,6 @@
+## 2.0.18
+1. Delete SageMaker endpoint as soon as the run finishes.
+
 ## 2.0.17
 1. Add support for embedding models through SageMaker jumpstart
 1. Add support for LLama 3.2 11b Vision Instruct benchmarking through FMBench

@@ -21,6 +21,7 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "phi_tokenizer/.keep",
                              "scripts/.keep",
                              "configs/pricing.yml",
+                             "configs/pricing_fallback.yml",
                              # add new datasets here
                              "source_data/2wikimqa_e.jsonl",
                              "source_data/2wikimqa.jsonl",

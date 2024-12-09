@@ -72,6 +72,8 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-16xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m7a-24xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7a-24xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m7i-12xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7i-12xlarge.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-m7i-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7i-16xlarge.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-m7i-24xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m7i-24xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-neuron-trn1-32xl-tp16-sm.yml](configs/llama3/8b/config-ec2-llama3-8b-neuron-trn1-32xl-tp16-sm.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-p4d-tp-2-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4d-tp-2-mc-max.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-p4d-tp-4-mc-max.yml](configs/llama3/8b/config-ec2-llama3-8b-p4d-tp-4-mc-max.yml)  
@@ -90,6 +92,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-2-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.12xl-tp-4-mc-max-triton-ec2.yml)  
+[├── llama3/8b/config-llama3-8b-g5.48xl-tp-8-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.48xl-tp-8-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g5.4xl-tp-1-mc-max-triton-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.12xl-tp-2-mc-max-djl-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.12xl-tp-2-mc-max-djl-ec2.yml)  
 [├── llama3/8b/config-llama3-8b-g6e.12xl-tp-2-mc-max-triton-ec2.yml](configs/llama3/8b/config-llama3-8b-g6e.12xl-tp-2-mc-max-triton-ec2.yml)  
@@ -234,3 +237,4 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **phi**  
 [└── phi/config-phi-3-g5.yml](configs/phi/config-phi-3-g5.yml)  
 [pricing.yml](configs/pricing.yml)  
+[pricing_fallback.yml](configs/pricing_fallback.yml)  

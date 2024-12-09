@@ -88,7 +88,9 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## New in this release
 
 ## 2.0.21
-1. Dynamically get EC2 pricing from Boto3 api
+
+1. Dynamically get EC2 pricing from Boto3 API.
+1. Update pricing information and model id for Amazon Bedrock models.
 
 ## 2.0.20
 1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
@@ -96,10 +98,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## 2.0.19
 1. Config files for `Llama3.1-1b` on AMD/Intel CPU instance types.
 1. Bug fixes for token counting for vLLM.
-
-## 2.0.18
-1. Delete SageMaker endpoint as soon as the run finishes.
-
 
 
 [Release history](./release_history.md)

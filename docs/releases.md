@@ -1,6 +1,11 @@
 # Releases
 
-## 2.0.22
+## 2.0.21
+
+1. Dynamically get EC2 pricing from Boto3 API.
+1. Update pricing information and model id for Amazon Bedrock models.
+
+## 2.0.20
 
 1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
 
