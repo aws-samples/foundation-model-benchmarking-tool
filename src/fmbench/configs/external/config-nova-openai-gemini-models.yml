@@ -45,7 +45,7 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
+    1_generate_data.ipynb: no
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_get_evaluations.ipynb: yes
@@ -206,7 +206,7 @@ experiments:
     ep_name: amazon.nova-micro-v1:0
     instance_type: amazon.nova-micro-v1:0
     instance_count:
-    inference_script: bedrock_predictor_converseAPI.py
+    inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
       parameter_set: bedrock
@@ -226,7 +226,7 @@ experiments:
     ep_name: amazon.nova-lite-v1:0
     instance_type: amazon.nova-lite-v1:0
     instance_count:
-    inference_script: bedrock_predictor_converseAPI.py
+    inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
       parameter_set: bedrock
@@ -246,7 +246,7 @@ experiments:
     ep_name: amazon.nova-pro-v1:0
     instance_type: amazon.nova-pro-v1:0
     instance_count:
-    inference_script: bedrock_predictor_converseAPI.py
+    inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
       parameter_set: bedrock
