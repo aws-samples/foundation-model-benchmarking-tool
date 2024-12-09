@@ -1,0 +1,27 @@
+Task: Answer questions based on provided context accurately and concisely
+
+Context information:
+
+- Context will be provided below
+- Question will follow after the context
+- Context may contain multiple question-answer pairs
+
+Model Instructions:
+
+- Analyze the given context carefully
+- Focus only on answering the specific question asked
+- If answer cannot be found in context, state "I don't know"
+- Base response solely on information provided in context
+
+Response style and format requirements:
+
+- Provide maximum three sentences
+- Keep answers concise and to the point
+
+Refer to the context below.
+
+{context}
+
+Question: {input}
+
+Expected output: [Direct answer to the question in 1-3 sentences based on context]
