@@ -85,7 +85,7 @@ class BedrockPredictor(FMBenchPredictor):
             self._stream = None
             self._start = None
             self._stop = None
-            # Initilialize the use_boto3 parameter to "None". This parameter is used if the 
+            # Initilialize the use_boto3 parameter to "False". This parameter is used if the 
             # current version of litellm does not support the model of choice to benchmark. In 
             # this case, the bedrock converseAPI is used
             self._use_boto3 = False
@@ -156,10 +156,14 @@ class BedrockPredictor(FMBenchPredictor):
                             ],
                         }
                     ]
+                elif self._use_boto3 is True:
+                    logger.info("Going to use the standard text generation messages format to get inferences using the bedrock converse API")
+                    messages = [{"role": "user", "content": [{"text": prompt_input_data}]}]
                 else:
-                    logger.info("Going to use the standard text generation messages format to get inferences")
-                    # Standard text generation format
+                    logger.info("Going to use the standard text generation messages format to get inferences using Litellm")
                     messages = [{"content": prompt_input_data, "role": "user"}]
+
+                # This is the logic for getting inference using Litellm when use_boto3 is not enabled in bedrock parameters
                 if self._use_boto3 is False:
                     # cohere does not support top_p and apprarently LiteLLM does not
                     # know that?
@@ -189,18 +193,53 @@ class BedrockPredictor(FMBenchPredictor):
                         latency = time.perf_counter() - st
                     logger.info(f"stop token: {self._stop}, streaming: {self._stream}, "
                                 f"response: {response}")
+                    # Get the response and the TTFT, TPOT, TTLT metrics if the streaming
+                    # for responses is set to true
+                    if self._stream is True:
+                        response_dict_from_streaming = get_response_stream(response,
+                                                                        st,
+                                                                        self._start,
+                                                                        self._stop,
+                                                                        is_sagemaker=False)
+                        TTFT = response_dict_from_streaming.get('TTFT')
+                        TPOT = response_dict_from_streaming.get('TPOT')
+                        TTLT = response_dict_from_streaming.get('TTLT')
+                        response = response_dict_from_streaming['response']
+                        self._response_json["generated_text"] = json.loads(response)[0].get('generated_text')
+                        # Getting in the total input and output tokens using token counter.
+                        # Streaming on liteLLM does not support prompt tokens and completion tokens 
+                        # in the invocation response format
+                        prompt_tokens = token_counter(model=self._endpoint_name, messages=messages)
+                        completion_tokens = token_counter(text=self._response_json["generated_text"])
+                        logger.info(f"streaming prompt token count: {prompt_tokens}, "
+                                    f"completion token count: {completion_tokens}, latency: {latency}")
+                        logger.info("Completed streaming for the current UUID, moving to the next prediction.")
+                        break  # Explicitly exit the loop for the current prediction
+                    # If streaming is set to false, then get the response in the normal
+                    # without streaming format from LiteLLM
+                    else:
+                        # Iterate through the entire model response
+                        # Since we are not sending batched requests so we only expect a single completion
+                        for choice in response.choices:
+                            # Extract the message and the message's content from LiteLLM
+                            if choice.message and choice.message.content:
+                                # Extract the response from the dict
+                                self._response_json["generated_text"] = choice.message.content
+                                break
+
+                        # Extract number of input and completion prompt tokens
+                        prompt_tokens = response.usage.prompt_tokens
+                        completion_tokens = response.usage.completion_tokens
+                        # Extract latency in seconds
+                        latency = response._response_ms / 1000
+                        # If we get here, the call was successful, so we break out of the retry loop
+                        break
+
                 # if use_boto3 is enabled in the bedrock parameters, then use the converseAPI
                 # to invoke the bedrock model, else use litellm. Enable use_boto3 to "yes"
                 # if the current version of litellm does not support the model to benchmark.
                 else:
                     logger.info(f"user has enabled 'use_boto3' to {self._use_boto3}. Calling the bedrock converse API.")
-                    # This is the messages format for the converseAPI
-                    messages = [{
-                        "role": "user",
-                        "content": [
-                            {"text": prompt_input_data}
-                        ]
-                    }]
                     st = time.perf_counter()
                     response = invoke_bedrock_converse(
                         endpoint_name=self._endpoint_name,
@@ -216,47 +255,6 @@ class BedrockPredictor(FMBenchPredictor):
                     latency = time.perf_counter() - st
                     break
 
-                # Get the response and the TTFT, TPOT, TTLT metrics if the streaming
-                # for responses is set to true
-                if self._stream is True:
-                    response_dict_from_streaming = get_response_stream(response,
-                                                                    st,
-                                                                    self._start,
-                                                                    self._stop,
-                                                                    is_sagemaker=False)
-                    TTFT = response_dict_from_streaming.get('TTFT')
-                    TPOT = response_dict_from_streaming.get('TPOT')
-                    TTLT = response_dict_from_streaming.get('TTLT')
-                    response = response_dict_from_streaming['response']
-                    self._response_json["generated_text"] = json.loads(response)[0].get('generated_text')
-                    # Getting in the total input and output tokens using token counter.
-                    # Streaming on liteLLM does not support prompt tokens and completion tokens 
-                    # in the invocation response format
-                    prompt_tokens = token_counter(model=self._endpoint_name, messages=messages)
-                    completion_tokens = token_counter(text=self._response_json["generated_text"])
-                    logger.info(f"streaming prompt token count: {prompt_tokens}, "
-                                f"completion token count: {completion_tokens}, latency: {latency}")
-                    logger.info("Completed streaming for the current UUID, moving to the next prediction.")
-                    break  # Explicitly exit the loop for the current prediction
-                # If streaming is set to false, then get the response in the normal
-                # without streaming format from LiteLLM
-                else:
-                    # Iterate through the entire model response
-                    # Since we are not sending batched requests so we only expect a single completion
-                    for choice in response.choices:
-                        # Extract the message and the message's content from LiteLLM
-                        if choice.message and choice.message.content:
-                            # Extract the response from the dict
-                            self._response_json["generated_text"] = choice.message.content
-                            break
-
-                    # Extract number of input and completion prompt tokens
-                    prompt_tokens = response.usage.prompt_tokens
-                    completion_tokens = response.usage.completion_tokens
-                    # Extract latency in seconds
-                    latency = response._response_ms / 1000
-                    # If we get here, the call was successful, so we break out of the retry loop
-                    break
             except (RateLimitError, ClientError) as e:
                 # if the error is a throttling or too many requests exception, wait and retry again. The wait time between
                 # each failed request increases exponentially

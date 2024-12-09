@@ -156,7 +156,7 @@ experiments:
     ep_name: amazon.nova-pro-v1:0
     instance_type: amazon.nova-pro-v1:0
     instance_count:
-    inference_script: bedrock_predictor_converseAPI.py
+    inference_script: bedrock_predictor.py
     inference_spec:
       split_input_and_parameters: no
       parameter_set: bedrock
