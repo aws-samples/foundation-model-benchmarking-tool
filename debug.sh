@@ -4,7 +4,7 @@
 # 3. Runs fmbench as usual
 
 CONDA_ENV_PATH=$CONDA_PREFIX/lib/python3.11/site-packages
-CONFIG_FILE_PATH=src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-g5-ec2.yml
+CONFIG_FILE_PATH=src/fmbench/configs/bedrock/config-bedrock-llama3-1.yml
 #src/fmbench/configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml
 #src/fmbench/configs/multimodal/bedrock/config-llama-3-2-11b-vision-instruct-image-dataset.yml
 #src/fmbench/configs/llama3.1/8b/config-llama3.1-8b-g6e.2xl-tp-1-mc-max-djl.yml

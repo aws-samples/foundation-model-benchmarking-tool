@@ -556,7 +556,6 @@ class CustomTokenizer:
             print(f"{local_dir} directory is empty")
             try:
                 if hf_model_id:
-                    print(f"HF TOKEN ID provided, Overriding Model ID for HF_TOKEN_ID")
                     print(f'going to download tokenizer from HF for "{hf_model_id}"')
                     self.tokenizer = AutoTokenizer.from_pretrained(hf_model_id)
                     print(
