@@ -149,6 +149,8 @@ experiments:
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
@@ -167,6 +169,8 @@ experiments:
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
     - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
