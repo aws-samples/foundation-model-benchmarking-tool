@@ -34,6 +34,15 @@ pricing:
     ml.trn1.32xlarge: 28.497
     p5e.48xlarge: 110.92
   token_based:
+    amazon.nova-micro-v1:0:
+      input-per-1k-tokens: 0.000035
+      output-per-1k-tokens: 0.00014
+    amazon.nova-lite-v1:0:
+      input-per-1k-tokens: 0.00006
+      output-per-1k-tokens: 0.00024
+    amazon.nova-pro-v1:0:
+      input-per-1k-tokens: 0.0008
+      output-per-1k-tokens: 0.0032
     ai21.j2-mid-v1:
       input-per-1k-tokens: 0.0125
       output-per-1k-tokens: 0.0125
@@ -115,4 +124,3 @@ pricing:
     us.meta.llama3-2-90b-instruct-v1:0:
       input-per-1k-tokens: 0.00072
       output-per-1k-tokens: 0.00072
-
