@@ -38,6 +38,7 @@ Resources:
       InstanceType: ml.m6i.xlarge
       RoleArn: !GetAtt NotebookRole.Arn
       DefaultCodeRepository: !If [ IsNotGovCloud, !GetAtt CodeRepository.CodeRepositoryName, !Ref "AWS::NoValue" ]
+      VolumeSizeInGB: 200
 
   NotebookRole:
     Type: AWS::IAM::Role
