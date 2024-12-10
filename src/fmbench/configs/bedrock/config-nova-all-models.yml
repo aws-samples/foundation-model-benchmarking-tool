@@ -177,8 +177,8 @@ experiments:
     env:
     
 report:
-  latency_budget: 3
-  cost_per_10k_txn_budget: 350
+  latency_budget: 2
+  cost_per_10k_txn_budget: 20
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv
