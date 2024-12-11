@@ -206,7 +206,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     """
 
     if experiment_config.get("download_from_hf_place_in_s3") is True:
-        with tempfile.TemporaryDirectory() as local_model_path:
+        home_dir=os.environ.get("HOME")
+        with tempfile.TemporaryDirectory(dir=home_dir) as local_model_path:
             logger.info(f"created temporary directory {local_model_path}")
         local_model_path = _download_model(experiment_config['model_id'],
                                            local_model_path)
