@@ -1,6 +1,6 @@
 general:
-  name: "fmbench-bedrock-llama3-2-11b-instruct-v1:0"      
-  model_name: "llama3-2-11b-instruct Model on Amazon Bedrock"
+  name: "fmbench-bedrock-llama3-2-11b-vision-instruct-realworldqa"      
+  model_name: "llama3-2 11b on Amazon Bedrock"
   
 # AWS and SageMaker settings
 aws:
@@ -44,15 +44,20 @@ s3_read_data:
 
   # S3 prefix for the dataset files
   source_data_prefix: source_data
-  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
-  source_data_files:
-  - 2wikimqa_e.jsonl
-  - 2wikimqa.jsonl
-  - hotpotqa_e.jsonl
-  - hotpotqa.jsonl
-  - narrativeqa.jsonl
-  - triviaqa_e.jsonl
-  - triviaqa.jsonl
+  # list of dataset files, the list below is from the https://huggingface.co/datasets/derek-thomas/ScienceQA
+  # This dataset contains images containing science questions and associated ground truth responses to the questions.
+  # when this notebook looks for this dataset - if it is prefixed with hf, and if the token is already there
+  # if the token is there and the hf: is there, then download the dataset from hf first and then process it -
+  source_data_files: 
+  # If a split is specified in the dataset identifier and exists in the loaded dataset, 
+  # it uses that split. If no split is specified (e.g., hf:derek-thomas/ScienceQA), it will default to
+  # the first available split. In the given example below, users can specify the 'train' and 'validation' splits
+  # of the 'derek-thomas/ScienceQA' dataset. If none are provided, then the first available split will be used.
+  
+  # Follow this format below: hf:dataset-id/subset-name/split-name. 
+  # If there is no specified subset name, use "default"
+  - hf:derek-thomas/ScienceQA/default/train
+  - hf:derek-thomas/ScienceQA/default/validation
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
@@ -65,7 +70,7 @@ s3_read_data:
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3.txt
+  prompt_template_file: prompt_template_llama3_images_ScienceQA.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -77,17 +82,26 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: no
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: yes
+  4_get_evaluations.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
   prompt_template_keys:
-  - input
-  - context
-  ground_truth_col_key: answers
-  question_col_key: input
+  # This represents the question that is asked as a part of the
+  # image messages API format. If this is not provided, a description
+  # of the image will be provided instead
+  - question
+  # If you want to benchmark a multimodal model on an image dataset, 
+  # then it an image_col parameter is required. This parameter refers to the 
+  # name of the column in the dataset that contains the images to be used 
+  # during the benchmarking process. If this column is not provided, the 
+  # standard text generation benchmark process is be used in the FMBench run.
+  image_col: image
+  # This is the number of rows of the dataset that you want to load
+  # if this parameter is not given, it is defaulted to 100 rows
+  ds_N: 150
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
   # you can filter your dataset to only keep prompts between
@@ -122,7 +136,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1-500
 
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -189,9 +203,6 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
@@ -205,6 +216,7 @@ experiments:
     - 8
     - 10
     - 12
+    - 14
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
     env:

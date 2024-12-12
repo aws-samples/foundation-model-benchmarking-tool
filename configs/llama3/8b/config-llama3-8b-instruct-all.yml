@@ -99,6 +99,7 @@ inference_parameters:
 experiments:
   - name: llama-3-8b-instruct-g5-2xl-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.2xl
     ep_name: llama-3-8b-instruct-g5-2xl
@@ -153,6 +154,7 @@ experiments:
 
   - name: llama-3-8b-instruct-g5-48xl-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.48xl
     ep_name: llama-3-8b-instruct-g5-48xl
@@ -209,6 +211,7 @@ experiments:
 
   - name: llama-3-8b-instruct-g5-24xl-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.24xl
     ep_name: llama-3-8b-instruct-g5-24xl
@@ -263,6 +266,7 @@ experiments:
 
   - name: llama-3-8b-instruct-g5-12xl-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct-g5.12xl
     ep_name: llama-3-8b-instruct-g5-12xl
@@ -316,6 +320,7 @@ experiments:
       option.rolling_batch: lmi-dist
   - name: llama-3-8b-instruct-p4d-djl-deepspeed0.12.6-cu121
     model_id: meta-textgeneration-llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version: "*"
     model_name: llama3-8b-instruct
     ep_name: llama-3-8b-instruct-p4d
@@ -376,6 +381,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: llama3-8b-trn1.32xl
     ep_name: "<your-endpoint-name>"
@@ -465,6 +471,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: llama3-8b-inf2.24xl
     ep_name: "<your-endpoint-name>"
@@ -555,6 +562,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.  
     model_id: llama-3-8b-instruct
+    hf_tokenizer_model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: llama3-8b-inf2.24xl
     ep_name: "<your-endpoint-name>"
