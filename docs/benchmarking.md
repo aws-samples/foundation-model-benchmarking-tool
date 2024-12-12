@@ -6,6 +6,7 @@
 
 | Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
+| **Amazon Nova**                  |                               |                                           | On-demand                          |
 | **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
 | **Anthropic Claude-3 Haiku**     |                               |                                           | On-demand                          |
 | **Mistral-7b-instruct**          | inf2, trn1                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
