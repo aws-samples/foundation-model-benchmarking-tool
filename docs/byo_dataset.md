@@ -4,16 +4,33 @@ By default `FMBench` uses the [`LongBench dataset`](https://github.com/THUDM/Lon
 
 ## Hugging Face Data Preparation is now integrated within FMBench
 
-FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include `hf:`, followed by the `dataset identifier`, `subset name`, and `split name`. If the `subset name` is not provided, it is defaulted to `default`. If the `split name` is not provided, it is defaulted to the next available split in the dataset when it is loaded at runtime:
+FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include `hf:`, followed by the `dataset identifier`, `subset name`, and `split name`. 
 
-In your configuration file, add entries to source_data_files using the following format:
+If you only provide the `dataset-id` and not the `subset name` and `split name`, the following defaults will be used:
+  - Subset name: `default`
+  - Split name: `train`
+
+**Important**: If your dataset does not have the default `subset name` and `split name` provided above, then provide the dataset information in the config file in the following format: `hf:dataset-id/subset-name/split-name.`
+
+
+Example formats:
+  ```yaml
+  source_data_files:
+  # Full specification
+  - hf:databricks/databricks-dolly-15k/default/train
+
+  # Using defaults (subset: default, split: train)
+  - hf:databricks/databricks-dolly-15k
+  ```
+
+In your configuration file, add entries to `source_data_files` using the following format:
 
 
 1. In your config file, prefix the dataset name with `hf:` in the `source_data_files` section:
 
     ```yaml
     source_data_files:
-    # Format: hf:dataset-id/subset-name/split-name. Use "default" if no subset name is provided.
+    # Format: hf:dataset-id/subset-name/split-name.
     - hf:THUDM/LongBench/2wikimqa_e/test
     - hf:THUDM/LongBench/2wikimqa/test
     - hf:THUDM/LongBench/hotpotqa_e/test

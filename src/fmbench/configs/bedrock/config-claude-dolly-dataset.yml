@@ -31,7 +31,7 @@ s3_read_data:
     - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - hf:databricks/databricks-dolly-15k.jsonl
+    - hf:databricks/databricks-dolly-15k
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_claude_dolly_dataset.txt ## add your desired prompt template type
@@ -42,7 +42,7 @@ run_steps:
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
-    4_get_evaluations.ipynb: no
+    4_get_evaluations.ipynb: yes
     5_model_metric_analysis.ipynb: yes
     6_cleanup.ipynb: no
 
