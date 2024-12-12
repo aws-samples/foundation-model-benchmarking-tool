@@ -1,3 +1,7 @@
+## 2.0.19
+1. Config files for `Llama3.1-1b` on AMD/Intel CPU instance types.
+1. Bug fixes for token counting for vLLM.
+
 ## 2.0.18
 1. Delete SageMaker endpoint as soon as the run finishes.
 
