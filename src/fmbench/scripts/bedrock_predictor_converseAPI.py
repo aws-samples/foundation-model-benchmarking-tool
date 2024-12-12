@@ -29,23 +29,19 @@ def invoke_bedrock_converse(
     Returns:
         Dict containing response data
     """
-    try:
-        response: Optional[Dict] = None
-        bedrock_client = boto3.client(BEDROCK_RUNTIME)
-        inference_config = {
-            "temperature": temperature,
-            "maxTokens": max_tokens,
-            "topP": top_p,
-        }
-        st = time.perf_counter()
-        response = bedrock_client.converse(
-            modelId=endpoint_name,
-            messages=messages,
-            system=system_prompts,
-            inferenceConfig=inference_config
-        )
-        latency = time.perf_counter() - st
-    except Exception as e:
-        logger.error(f"Error occurred while calling the converseAPI to get a response from {endpoint_name}: {e}")
-        response, latency = None, None
+    response: Optional[Dict] = None
+    bedrock_client = boto3.client(BEDROCK_RUNTIME)
+    inference_config = {
+        "temperature": temperature,
+        "maxTokens": max_tokens,
+        "topP": top_p,
+    }
+    st = time.perf_counter()
+    response = bedrock_client.converse(
+        modelId=endpoint_name,
+        messages=messages,
+        system=system_prompts,
+        inferenceConfig=inference_config
+    )
+    latency = time.perf_counter() - st
     return response, latency
