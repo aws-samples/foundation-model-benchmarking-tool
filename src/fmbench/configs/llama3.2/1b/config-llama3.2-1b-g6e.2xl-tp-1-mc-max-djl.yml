@@ -121,7 +121,7 @@ inference_parameters:
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    max_new_tokens: 10
+    max_new_tokens: 15
     Content-type: application/json
     return_full_text: False
 
