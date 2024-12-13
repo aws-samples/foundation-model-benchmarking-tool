@@ -121,7 +121,7 @@ inference_parameters:
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    max_new_tokens: 20
+    max_new_tokens: 10
     Content-type: application/json
     return_full_text: False
 
@@ -138,7 +138,7 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id:meta-llama/Llama-3.2-1b-Instruct # model id, version and image uri not needed for byo endpoint
+    model_id: meta-llama/Llama-3.2-1b-Instruct # model id, version and image uri not needed for byo endpoint
     model_version:
     model_name: "llama3.2-1b-instruct"
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
