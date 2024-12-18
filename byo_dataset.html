@@ -484,6 +484,27 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quarto.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quarto
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1345,20 +1366,32 @@
 <h1 id="bring-your-own-dataset">Bring Your Own Dataset<a class="headerlink" href="#bring-your-own-dataset" title="Permanent link">&para;</a></h1>
 <p>By default <code>FMBench</code> uses the <a href="https://github.com/THUDM/LongBench"><code>LongBench dataset</code></a> dataset for testing the models, but this is not the only dataset you can test with. You may want to test with other datasets available on HuggingFace or use your own datasets for testing. </p>
 <h2 id="hugging-face-data-preparation-is-now-integrated-within-fmbench">Hugging Face Data Preparation is now integrated within FMBench<a class="headerlink" href="#hugging-face-data-preparation-is-now-integrated-within-fmbench" title="Permanent link">&para;</a></h2>
-<p>FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include <code>hf:</code>, followed by the <code>dataset identifier</code>, <code>subset name</code>, and <code>split name</code>. If the <code>subset name</code> is not provided, it is defaulted to <code>default</code>. If the <code>split name</code> is not provided, it is defaulted to the next available split in the dataset when it is loaded at runtime:</p>
-<p>In your configuration file, add entries to source_data_files using the following format:</p>
+<p>FMBench supports direct loading of Hugging Face datasets with a simplified prefixing method. To specify a Hugging Face dataset and its split, include <code>hf:</code>, followed by the <code>dataset identifier</code>, <code>subset name</code>, and <code>split name</code>. </p>
+<p>If you only provide the <code>dataset-id</code> and not the <code>subset name</code> and <code>split name</code>, the following defaults will be used:
+  - Subset name: <code>default</code>
+  - Split name: <code>train</code></p>
+<p><strong>Important</strong>: If your dataset does not have the default <code>subset name</code> and <code>split name</code> provided above, then provide the dataset information in the config file in the following format: <code>hf:dataset-id/subset-name/split-name.</code></p>
+<p>Example formats:
+  <div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Full specification</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:databricks/databricks-dolly-15k/default/train</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># Using defaults (subset: default, split: train)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:databricks/databricks-dolly-15k</span>
+</span></code></pre></div></p>
+<p>In your configuration file, add entries to <code>source_data_files</code> using the following format:</p>
 <ol>
 <li>
 <p>In your config file, prefix the dataset name with <code>hf:</code> in the <code>source_data_files</code> section:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># Format: hf:dataset-id/subset-name/split-name. Use &quot;default&quot; if no subset name is provided.</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa_e/test</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa/test</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa_e/test</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa/test</span>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/narrativeqa/test</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa_e/test</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa/test</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># Format: hf:dataset-id/subset-name/split-name.</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa_e/test</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa/test</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa_e/test</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa/test</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/narrativeqa/test</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa_e/test</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa/test</span>
 </span></code></pre></div>
 </li>
 </ol>
@@ -1379,8 +1412,8 @@
 <ul>
 <li>
 <p>Provide the dataset path without the <code>hf:</code> prefix in the config:</p>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-custom-dataset.jsonl</span>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">my-custom-dataset.jsonl</span>
 </span></code></pre></div>
 </li>
 <li>

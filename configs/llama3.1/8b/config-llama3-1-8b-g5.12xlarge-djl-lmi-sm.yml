@@ -6,7 +6,7 @@ general:
 aws:
   region: {region}
   # uncomment and set the Role ARN if not running on sagemaker
-  sagemaker_execution_role: arn:aws:iam::121797993273:role/fmbench-new-test-us-west-2-role
+  sagemaker_execution_role: {role_arn}
   ## these are the buckets/resources you will create in your account below:
   bucket: {write_bucket} ## add the name of your desired bucket
 
