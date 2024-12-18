@@ -31,6 +31,8 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "source_data/triviaqa_e.jsonl",
                              "source_data/triviaqa.jsonl",
                              "source_data/just_text.jsonl",
+                             "source_data/500_token_prompts_synthetic_data.jsonl",
+                             "source_data/synthetic_data_large_prompts.jsonl",
                              "source_data/LICENSE.txt",
                              "source_data/THIRD_PARTY_LICENSES.txt"]
 

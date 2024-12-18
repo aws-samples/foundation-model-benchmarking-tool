@@ -24,7 +24,8 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── bedrock/config-llama-3-2-1b-3b-no-evals.yml](configs/bedrock/config-llama-3-2-1b-3b-no-evals.yml)  
 [├── bedrock/config-llama-3-2-1b-3b.yml](configs/bedrock/config-llama-3-2-1b-3b.yml)  
 [├── bedrock/config-llama-3-2-all-models-longbench-hf-version.yml](configs/bedrock/config-llama-3-2-all-models-longbench-hf-version.yml)  
-[└── bedrock/config-llama-3-2-all-models.yml](configs/bedrock/config-llama-3-2-all-models.yml)  
+[├── bedrock/config-llama-3-2-all-models.yml](configs/bedrock/config-llama-3-2-all-models.yml)  
+[└── bedrock/config-nova-all-models.yml](configs/bedrock/config-nova-all-models.yml)  
 **bert**  
 [└── bert/config-distilbert-base-uncased.yml](configs/bert/config-distilbert-base-uncased.yml)  
 **byoe**  
@@ -202,7 +203,10 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **├── llama3.2/11b**  
 [│   └── llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml](configs/llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml)  
 **├── llama3.2/1b**  
+[│   ├── llama3.2/1b/config-llama3.2-1b-g5.2xl-summarization-500-50.yml](configs/llama3.2/1b/config-llama3.2-1b-g5.2xl-summarization-500-50.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-g5.2xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-g5.2xl-tp-1-mc-max-djl-ec2.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+[│   ├── llama3.2/1b/config-llama3.2-1b-g6e.2xl-tp-1-mc-max-djl.yml](configs/llama3.2/1b/config-llama3.2-1b-g6e.2xl-tp-1-mc-max-djl.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml)  
 [│   ├── llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml](configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml)  

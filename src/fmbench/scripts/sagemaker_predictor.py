@@ -24,6 +24,8 @@ logger = logging.getLogger(__name__)
 sagemaker_runtime = boto3.client('sagemaker-runtime')
 sm_client = boto3.client("sagemaker")
 
+# Initialize the platform where this script deploys the model
+PLATFORM: str = constants.PLATFORM_SAGEMAKER
 
 class SageMakerPredictor(FMBenchPredictor):
     # overriding abstract method

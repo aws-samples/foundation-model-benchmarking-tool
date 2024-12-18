@@ -1,3 +1,6 @@
+## 2.0.20
+1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
+
 ## 2.0.19
 1. Config files for `Llama3.1-1b` on AMD/Intel CPU instance types.
 1. Bug fixes for token counting for vLLM.

@@ -62,6 +62,7 @@ nav:
       - Workflow: workflow.md
       - SageMaker: quickstart.md      
       - EC2: ec2.md
+      - Quarto: quarto.md
   - Benchmarking:
       - Main: benchmarking.md
       - Model evaluations: accuracy.md

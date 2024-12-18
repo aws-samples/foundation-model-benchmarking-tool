@@ -21,6 +21,7 @@ configs/bedrock/config-llama-3-2-1b-3b-no-evals.yml
 configs/bedrock/config-llama-3-2-1b-3b.yml
 configs/bedrock/config-llama-3-2-all-models-longbench-hf-version.yml
 configs/bedrock/config-llama-3-2-all-models.yml
+configs/bedrock/config-nova-all-models.yml
 configs/bert/config-distilbert-base-uncased.yml
 configs/byoe/config-model-byo-sagemaker-endpoint.yml
 configs/embeddings/bge-base-en-v1-5-c5-embeddings.yml
@@ -97,7 +98,10 @@ configs/llama3.1/8b/config-llama3.1-8b-trn1-32xl-deploy-tp-8-ec2.yml
 configs/llama3.1/8b/config-llama3.1-8b-trn32xl-triton-vllm.yml
 configs/llama3.1/8b/server-config-ec2-llama3-1-8b-inf2-48xl-deploy-ec2.yml
 configs/llama3.2/11b/config-llama3.2-11b-g6e-2xl-tp-1-mc-max-djl-vllm-ec2.yml
+configs/llama3.2/1b/config-llama3.2-1b-g5.2xl-summarization-500-50.yml
+configs/llama3.2/1b/config-llama3.2-1b-g5.2xl-tp-1-mc-max-djl-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-g5.4xl-tp-1-mc-max-djl-ec2.yml
+configs/llama3.2/1b/config-llama3.2-1b-g6e.2xl-tp-1-mc-max-djl.yml
 configs/llama3.2/1b/config-llama3.2-1b-m5-16xlarge-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-m7a-16xlarge-ec2.yml
 configs/llama3.2/1b/config-llama3.2-1b-m7a-24xlarge-ec2-summarization.yml
@@ -217,12 +221,14 @@ prompt_template/.keep
 scripts/.keep
 source_data/2wikimqa.jsonl
 source_data/2wikimqa_e.jsonl
+source_data/500_token_prompts_synthetic_data.jsonl
 source_data/LICENSE.txt
 source_data/THIRD_PARTY_LICENSES.txt
 source_data/hotpotqa.jsonl
 source_data/hotpotqa_e.jsonl
 source_data/just_text.jsonl
 source_data/narrativeqa.jsonl
+source_data/synthetic_data_large_prompts.jsonl
 source_data/triviaqa.jsonl
 source_data/triviaqa_e.jsonl
 tokenizer/.keep

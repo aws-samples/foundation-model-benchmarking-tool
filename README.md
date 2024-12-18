@@ -88,6 +88,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.23
+
+1. Bug fixes for Amazon SageMaker BYOE.
+1. Additional config files.
+
 ## 2.0.22
 1. Benchmarks for the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) family of models.
 1. Benchmarks for multi-modal models: LLama3.2-11B, Claude 3 Sonnet and Claude 3.5 Sonnet using the [ScienceQA](https://huggingface.co/datasets/derek-thomas/ScienceQA) dataset.
@@ -96,9 +101,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 1. Dynamically get EC2 pricing from Boto3 API.
 1. Update pricing information and model id for Amazon Bedrock models.
-
-## 2.0.20
-1. Add `hf_tokenizer_model_id` parameter to automatically download tokenizers from Hugging Face.
 
 
 [Release history](./release_history.md)

@@ -1,5 +1,11 @@
 # Releases
 
+## 2.0.23
+
+1. Bug fixes for Amazon SageMaker BYOE.
+1. Additional config files.
+
+
 ## 2.0.22
 1. Benchmarks for the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) family of models.
 1. Benchmarks for multi-modal models: LLama3.2-11B, Claude 3 Sonnet and Claude 3.5 Sonnet using the [ScienceQA](https://huggingface.co/datasets/derek-thomas/ScienceQA) dataset.
