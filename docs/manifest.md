@@ -67,6 +67,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 **└── llama3/8b**  
 [├── llama3/8b/config-bedrock.yml](configs/llama3/8b/config-bedrock.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-c5-18xlarge.yml)  
+[├── llama3/8b/config-ec2-llama3-8b-c8g-24xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-c8g-24xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-g6e-2xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-g6e-2xlarge.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml](configs/llama3/8b/config-ec2-llama3-8b-inf2-48xl.yml)  
 [├── llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml](configs/llama3/8b/config-ec2-llama3-8b-m5-16xlarge.yml)  

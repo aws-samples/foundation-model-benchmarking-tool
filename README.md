@@ -88,6 +88,10 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.24
+
+1. ARM benchmarking support (AWS Graviton 3 Chips)
+
 ## 2.0.23
 
 1. Bug fixes for Amazon SageMaker BYOE.
@@ -96,11 +100,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 ## 2.0.22
 1. Benchmarks for the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) family of models.
 1. Benchmarks for multi-modal models: LLama3.2-11B, Claude 3 Sonnet and Claude 3.5 Sonnet using the [ScienceQA](https://huggingface.co/datasets/derek-thomas/ScienceQA) dataset.
-
-## 2.0.21
-
-1. Dynamically get EC2 pricing from Boto3 API.
-1. Update pricing information and model id for Amazon Bedrock models.
 
 
 [Release history](./release_history.md)

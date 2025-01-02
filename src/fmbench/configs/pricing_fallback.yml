@@ -74,6 +74,7 @@ pricing:
     g6e.16xlarge: 7.577
     g6e.24xlarge: 15.066
     g6e.48xlarge: 30.131
+    c8g.24xlarge: 3.828
 
   token_based:
     amazon.nova-micro-v1:0:
