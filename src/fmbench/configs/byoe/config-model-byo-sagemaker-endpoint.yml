@@ -108,15 +108,15 @@ inference_parameters:
 
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
-  - name: llama-3-8b-instruct-g5-2xl
-    model_id: meta-llama/Meta-Llama-3-8B-Instruct
+  - name: bring-your-own-sm-endpoint
+    model_id: # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: llama3-8b-instruct
-    ep_name: "llama-3-8b-instruct-g5-2xl-1735832330-9248743"
+    model_name: llama2-7b-f
+    ep_name: "<your-endpoint-name>"
     # if you are bringing your own endpoint and want to specify a variant name to generate utilization metrics on, 
     # mention that here
-    production_variant_name: AllTraffic
-    instance_type: "ml.g5.2xlarge"
+    production_variant_name: <your-production-variant-name> # For example, AllTraffic
+    instance_type:  "<your-instance-type>"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed
     instance_count: 1
