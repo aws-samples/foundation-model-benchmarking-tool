@@ -53,8 +53,8 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    0_setup.ipynb: no
-    1_generate_data.ipynb: yes
+    0_setup.ipynb: yes
+    1_generate_data.ipynb: no
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
     4_model_metric_analysis.ipynb: yes
@@ -108,12 +108,15 @@ inference_parameters:
 
 # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
 experiments:
-  - name: bring-your-own-sm-endpoint
-    model_id: # model id, version and image uri not needed for byo endpoint
+  - name: llama-3-8b-instruct-g5-2xl
+    model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
     model_name: llama2-7b-f
-    ep_name: "<your-endpoint-name>"
-    instance_type: "<your-instance-type>"
+    ep_name: "llama-3-8b-instruct-g5-2xl-1735832330-9248743"
+    # if you are bringing your own endpoint and want to specify a variant name to generate utilization metrics on, 
+    # mention that here
+    production_variant_name: "AllTraffic"
+    instance_type: "ml.g5.2xlarge"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed
     instance_count: 1
@@ -130,8 +133,8 @@ experiments:
 
     concurrency_levels:
     - 1
-    - 2
-    - 4
+    # - 2
+    # - 4
 
     accept_eula: true
     env:

@@ -18,6 +18,9 @@ FMBENCH_PACKAGE_NAME: str = "fmbench"
 HF_DATASET_PREFIX: str = "hf:"
 DEFAULT_IMAGE_FORMAT: str = "JPEG"
 
+# This is the default production variant name that is given to sagemaker endpoints
+DEFAULT_PRODUCTION_VARIANT_NAME: str = 'AllTraffic'
+
 # This is the ds_N default value of the number of rows to be processed from the hf dataset.
 # If this value is already given in the 'dataset' section of the config file, that will be used.
 DEFAULT_HF_DS_N_VALUE: int = 100
