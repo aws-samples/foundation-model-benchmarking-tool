@@ -111,11 +111,11 @@ experiments:
   - name: llama-3-8b-instruct-g5-2xl
     model_id: meta-llama/Meta-Llama-3-8B-Instruct
     model_version:
-    model_name: llama2-7b-f
+    model_name: llama3-8b-instruct
     ep_name: "llama-3-8b-instruct-g5-2xl-1735832330-9248743"
     # if you are bringing your own endpoint and want to specify a variant name to generate utilization metrics on, 
     # mention that here
-    production_variant_name: "AllTraffic"
+    production_variant_name: AllTraffic
     instance_type: "ml.g5.2xlarge"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed
@@ -133,8 +133,8 @@ experiments:
 
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
+    - 2
+    - 4
 
     accept_eula: true
     env:
