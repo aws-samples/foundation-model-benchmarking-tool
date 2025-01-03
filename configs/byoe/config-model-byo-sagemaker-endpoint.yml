@@ -53,7 +53,7 @@ s3_read_data:
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
-    0_setup.ipynb: no
+    0_setup.ipynb: yes
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: yes
     3_run_inference.ipynb: yes
@@ -111,11 +111,14 @@ experiments:
   - name: bring-your-own-sm-endpoint
     model_id: # model id, version and image uri not needed for byo endpoint
     model_version:
-    model_name: llama2-7b-f
+    model_name: <your-model-name>
     ep_name: "<your-endpoint-name>"
-    instance_type: "<your-instance-type>"
+    # If you are bringing your own endpoint and want to specify a custom variant name that is used to generate endpoint utilization metrics, 
+    # mention that below. If not, the production variant name defaults to 'AllTraffic'
+    production_variant_name: AllTraffic
+    instance_type:  "<your-instance-type>"
     image_uri:
-    deploy: no #setting to no since the endpoint has already been deployed
+    deploy: no # setting to no since the endpoint has already been deployed
     instance_count: 1
     deployment_script: jumpstart.py
     inference_script: sagemaker_predictor.py
