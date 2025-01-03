@@ -71,7 +71,7 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 | **Llama3.2-3b instruct**         | g5                            |                                           |                                    |
 | **Llama3.1-8b instruct**         | g5, p4d, p4de, p5, p5e, g6e, g6, inf2, trn1        | g4dn, g5, p3, inf2, trn1                     | On-demand                          |
 | **Llama3.1-70b instruct**        | p4d, p4de, p5, p5e, g6e, g5, inf2, trn1            | inf2, trn1                                 | On-demand                          |
-| **Llama3-8b instruct**           | g5, g6e, inf2, trn1                 | g4dn, g5, p3, inf2, trn1, p4d, p5e             | On-demand                          |
+| **Llama3-8b instruct**           | g5, g6e, inf2, trn1, c8g      | g4dn, g5, p3, inf2, trn1, p4d, p5e             | On-demand                          |
 | **Llama3-70b instruct**          | g5                            | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
 | **Llama2-13b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
 | **Llama2-70b chat**              |                               | g4dn, g5, p3, inf2, trn1, p4d                 | On-demand                          |
@@ -90,7 +90,8 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## 2.0.24
 
-1. ARM benchmarking support (AWS Graviton 3 Chips)
+1. ARM benchmarking support (AWS Graviton 4).
+1. Relax IAM permission requirements for Amazon SageMaker bring your own endpoint.
 
 ## 2.0.23
 

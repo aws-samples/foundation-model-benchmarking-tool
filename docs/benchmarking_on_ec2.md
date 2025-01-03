@@ -19,7 +19,7 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 - [Benchmarking on an instance type with AWS Chips and the Triton inference server](#benchmarking-on-an-instance-type-with-aws-chips-and-the-triton-inference-server)
 - [Benchmarking on an CPU instance type with AMD processors](#benchmarking-on-an-cpu-instance-type-with-amd-processors)
 - [Benchmarking on an CPU instance type with Intel processors](#benchmarking-on-an-cpu-instance-type-with-intel-processors)
-- [Benchmarking on an CPU instance type with ARM processors (Graviton 3)](#benchmarking-on-an-cpu-instance-type-with-arm-processors)
+- [Benchmarking on an CPU instance type with ARM processors (Graviton 4)](#benchmarking-on-an-cpu-instance-type-with-arm-processors)
 
 - [Benchmarking the Triton inference server](#benchmarking-the-triton-inference-server)
 - [Benchmarking models on Ollama](#benchmarking-models-on-ollama)

@@ -1,5 +1,10 @@
 # Releases
 
+## 2.0.24
+
+1. ARM benchmarking support (AWS Graviton 4).
+1. Relax IAM permission requirements for Amazon SageMaker bring your own endpoint.
+
 ## 2.0.23
 
 1. Bug fixes for Amazon SageMaker BYOE.
