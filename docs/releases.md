@@ -1,5 +1,9 @@
 # Releases
 
+## 2.0.25
+
+1. Fix bug with an alternate VariantName for SageMaker BYOE.
+
 ## 2.0.24
 
 1. ARM benchmarking support (AWS Graviton 4).
