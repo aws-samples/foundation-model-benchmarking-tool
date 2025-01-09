@@ -105,12 +105,23 @@ write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-
 # check if the tmp dir is used as an argument if local mode is set to yes. If so, then use that as the temp file directory
 # else use the default `tempfile` option
 tmp_dir = os.environ.get("TMP_DIR", tempfile.gettempdir())
+
+# check if the instance type or the tp degree are provided as command line arguments. If they are, then 
+# they will be used in formatting into the configuration file. If not, the values from the config file will be
+# used
+instance_type = os.environ.get("INSTANCE_TYPE")
+tp_degree = os.environ.get("TP_DEGREE")
+batch_size = os.environ.get("BATCH_SIZE")
+
 args = dict(region=session.region_name,
             role_arn=arn_string,
             read_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ),
             write_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE),
             write_bucket=write_bucket,
-            read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
+            read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}", 
+            instance_type=instance_type, 
+            tp_degree=tp_degree, 
+            batch_size=batch_size)
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration
