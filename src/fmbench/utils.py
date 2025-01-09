@@ -14,13 +14,13 @@ import concurrent.futures
 from fmbench import globals
 from fmbench import defaults
 from transformers import AutoTokenizer
+import importlib.resources as pkg_resources
 from typing import Union, Dict, List, Tuple
 from botocore.exceptions import NoCredentialsError
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-# utility functions
 def load_config(config_file: Union[Path, str]) -> Dict:
     """
     Load configuration from a local file or an S3 URI.
@@ -119,8 +119,46 @@ def load_config(config_file: Union[Path, str]) -> Dict:
             print(f"Error loading config from local file system: {e}")
             raise
 
-    content = content.format(**args)
-    config = yaml.safe_load(content)
+    # Format the content first
+    formatted_content = content.format(**args)
+    config = yaml.safe_load(formatted_content)
+
+    # Handle additional config files if they exist
+    if 'config_files' in config:
+        config_dir = Path(pkg_resources.files("fmbench"), "configs")
+        print(f"Found additional config files to merge from directory: {config_dir}")
+        config_files = config.pop('config_files')
+        # Merge each specified config file
+        for key, filename in config_files.items():
+            file_path = os.path.join(config_dir, filename)
+            print(f"Loading and merging config file: {file_path}")
+            try:
+                with open(file_path, 'r') as f:
+                    # Format the file content before loading as YAML
+                    file_content = f.read()
+                    formatted_content = file_content.format(**args)
+                    content = yaml.safe_load(formatted_content)
+                    if content:
+                        for key, value in content.items():
+                            if key in config and isinstance(config[key], dict) and isinstance(value, dict):
+                                # If both are dictionaries, update recursively
+                                for k, v in value.items():
+                                    if k in config[key] and isinstance(config[key][k], dict) and isinstance(v, dict):
+                                        config[key][k].update(v)
+                                    else:
+                                        config[key][k] = v
+                            else:
+                                config[key] = value
+                        print(f"Successfully merged contents from {filename}")
+                    else:
+                        print(f"Config file {filename} is empty")
+            except FileNotFoundError:
+                print(f"Config file not found: {file_path}")
+                raise
+            except yaml.YAMLError as e:
+                print(f"Error parsing YAML file {filename}: {e}")
+                raise
+    print(f"Completed merging all additional config files")
     return config
 
 

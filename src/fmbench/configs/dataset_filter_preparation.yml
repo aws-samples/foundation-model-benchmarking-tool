@@ -1,5 +1,5 @@
 # dataset related configuration
-dataset:
+datasets:
   # Iteration settings
   max_iters_per_combination: 105
   min_iters_per_combination: 5
