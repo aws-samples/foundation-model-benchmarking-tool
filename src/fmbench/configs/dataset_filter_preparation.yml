@@ -1,0 +1,49 @@
+# dataset related configuration
+dataset:
+  # Iteration settings
+  max_iters_per_combination: 105
+  min_iters_per_combination: 5
+  # if your dataset has multiple languages and it has a language
+  # field then you could filter it for a language. Similarly,
+  # you can filter your dataset to only keep prompts between
+  # a certain token length limit (the token length is determined
+  # using the tokenizer you provide in the tokenizer_prefix prefix in the
+  # read S3 bucket). Each of the array entries below create a payload file
+  # containing prompts matching the language and token length criteria.
+  filters:
+    - language: en    
+      min_length_in_tokens: 1
+      max_length_in_tokens: 500
+      payload_file: payload_en_1-500.jsonl
+    - language: en
+      min_length_in_tokens: 500
+      max_length_in_tokens: 1000
+      payload_file: payload_en_500-1000.jsonl
+    - language: en    
+      min_length_in_tokens: 1
+      max_length_in_tokens: 924
+      payload_file: payload_en_1-924.jsonl
+    - language: en
+      min_length_in_tokens: 1000
+      max_length_in_tokens: 2000
+      payload_file: payload_en_1000-2000.jsonl
+    - language: en
+      min_length_in_tokens: 2000
+      max_length_in_tokens: 3000
+      payload_file: payload_en_2000-3000.jsonl
+    - language: en
+      min_length_in_tokens: 3000
+      max_length_in_tokens: 4000
+      payload_file: payload_en_3000-4000.jsonl
+    - language: en
+      min_length_in_tokens: 3000
+      max_length_in_tokens: 3840
+      payload_file: payload_en_3000-3840.jsonl
+    - language: en
+      min_length_in_tokens: 4000
+      max_length_in_tokens: 5000
+      payload_file: payload_en_4000-5000.jsonl
+    - language: en
+      min_length_in_tokens: 5000
+      max_length_in_tokens: 6000
+      payload_file: payload_en_5000-6000.jsonl

@@ -1,0 +1,45 @@
+# AWS and SageMaker settings
+aws:
+  # AWS region, this parameter is templatized, no need to change
+  region: {region}
+  # SageMaker execution role used to run FMBench, this parameter is templatized, no need to change
+  sagemaker_execution_role: {role_arn}
+  # S3 bucket to which metrics, plots and reports would be written to
+  bucket: {write_bucket} ## add the name of your desired bucket
+
+# directory paths in the write bucket, no need to change these
+dir_paths:
+  data_prefix: data
+  prompts_prefix: prompts
+  all_prompts_file: all_prompts.csv
+  metrics_dir: metrics
+  models_dir: models
+  metadata_dir: metadata
+
+# S3 information for reading datasets, scripts and tokenizer
+s3_read_data:
+  # read bucket name, templatized, if left unchanged will default to sagemaker-fmbench-read-region-account_id
+  read_bucket: {read_bucket}
+  scripts_prefix: scripts ## add your own scripts in case you are using anything that is not on jumpstart
+  
+  # S3 prefix in the read bucket where deployment and inference scripts should be placed
+  scripts_prefix: scripts
+    
+  # deployment and inference script files to be downloaded are placed in this list
+  # only needed if you are creating a new deployment script or inference script
+  # your HuggingFace token does need to be in this list and should be called "hf_token.txt"
+  script_files:
+  - hf_token.txt
+
+  # configuration files (like this one) are placed in this prefix
+  configs_prefix: configs
+
+  # list of configuration files to download, for now only pricing.yml needs to be downloaded
+  config_files:
+  - pricing.yml
+
+  # S3 prefix for the dataset files
+  source_data_prefix: source_data
+  
+  # S3 prefix for prompt template files
+  prompt_template_dir: prompt_template

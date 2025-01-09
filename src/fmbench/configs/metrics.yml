@@ -1,0 +1,23 @@
+# These are the parameters that relate to the metric generation
+# process. 
+
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
+
+# all pricing information is in the pricing.yml file
+# this file is provided in the repo. You can add entries
+# to this file for new instance types and new Bedrock models
+pricing: pricing.yml 
+
+# Standard report generation information
+report:
+  cosine_similarity_budget: 0.3
+  accuracy_error_rate_budget: 0
+  error_rate_budget: 0
+  per_inference_request_file: per_inference_request_results.csv
+  all_metrics_file: all_metrics.csv
+  txn_count_for_showing_cost: 10000
+  v_shift_w_single_instance: 0.025
+  v_shift_w_gt_one_instance: 0.025  

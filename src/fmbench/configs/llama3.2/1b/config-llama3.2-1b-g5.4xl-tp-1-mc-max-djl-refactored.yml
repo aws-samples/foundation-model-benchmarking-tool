@@ -1,0 +1,84 @@
+general:
+  name: "llama3.2-1b-g5.4xl-tp=1-mc=max-djl-ec2"      
+  model_name: "Meta-Llama-3.2-1b-Instruct"
+
+s3_read_data:
+  # These are the files that are used to generate data on which the models of choice
+  # are benchmarked. The files in this example are directly pulled from hugging face
+  # This is the LongBench dataset (This is a standard QnA dataset).
+  source_data_files:
+  - hf:THUDM/LongBench/2wikimqa_e/test
+  - hf:THUDM/LongBench/2wikimqa/test
+  - hf:THUDM/LongBench/hotpotqa_e/test
+  - hf:THUDM/LongBench/hotpotqa/test
+  - hf:THUDM/LongBench/narrativeqa/test
+  - hf:THUDM/LongBench/triviaqa_e/test
+  - hf:THUDM/LongBench/triviaqa/test
+  tokenizer_prefix: llama3_2_tokenizer
+  prompt_template_file: prompt_template_llama3.txt
+
+# steps to run
+run_steps:
+  0_setup.ipynb: yes
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
+  3_run_inference.ipynb: yes
+  4_get_evaluations.ipynb: no
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: yes
+
+# inference parameters
+inference_parameters: 
+  ec2_djl:
+    do_sample: yes
+    temperature: 0.1
+    top_p: 0.92
+    top_k: 120  
+    max_new_tokens: 100
+
+experiment: &experiment_defaults
+    model_version:
+    ep_name: 'http://127.0.0.1:8080/invocations'
+    deploy: yes
+    deployment_script: ec2_deploy.py
+    inference_script: ec2_predictor.py
+    ec2:      
+      model_loading_timeout: 2400
+    inference_spec:
+      parameter_set: ec2_djl
+      model_copies: max
+      tp_degree: 1
+      shm_size: 12g
+      model_loading_timeout: 2400
+    concurrency_levels:
+      - 1
+      - 2
+      - 4
+      - 6
+      - 8
+ 
+experiments:
+  - <<: *experiment_defaults 
+    name: "Meta-Llama-3.2-1b-Instruct" # {provided by the user}
+    model_id: meta-llama/Llama-3.2-1b-Instruct # {provided by the user}
+    model_name: "Llama-3.2-1b-Instruct" # {provided by the user}
+    instance_type: "g5.4xlarge" # {provided by the user}
+    image_uri: 763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.29.0-lmi11.0.0-cu124
+    deployment_script: ec2_deploy.py
+    inference_script: ec2_predictor.py
+    serving.properties: | # {provided by the user}
+      engine=MPI
+      option.tensor_parallel_degree=1
+      option.max_rolling_batch_size=4
+      option.model_id=meta-llama/Llama-3.2-1b-Instruct
+      option.rolling_batch=lmi-dist
+      
+# config files that will be merged into this main
+# config file at runtime. These files contain information on the
+# infrastruction (this includes the data directories, the AWS general information, 
+# the s3 paths to where the data is stored), the dataset filteration information, 
+# and the metrics information.
+config_files:
+  infrastructure: infrastructure.yml
+  dataset: dataset_filter_preparation.yml
+  metrics: metrics.yml
