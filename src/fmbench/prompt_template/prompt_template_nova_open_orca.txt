@@ -1,0 +1,18 @@
+Task: {system_prompt}. Given the context and task, provide a response.
+
+Context information:
+
+- Context and Task will be provided below
+
+Model Instructions:
+
+- Analyze the given context carefully
+
+Response style and format requirements:
+
+- Provide maximum three sentences
+- Keep answers concise and to the point
+
+Refer to the question below.
+
+{question} 
