@@ -1,3 +1,8 @@
+# This is the dataset preparation base config file. It contains information
+# about the dataset and how you might want to filter the prompts into varying
+# prompt payloads. You can change the filters below based on the prompt filters
+# you would want to custom configure for your use case.
+
 # dataset related configuration
 datasets:
   # Iteration settings

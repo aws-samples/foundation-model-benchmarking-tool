@@ -1,5 +1,7 @@
-# These are the parameters that relate to the metric generation
-# process. 
+# This is the metrics.yml file which defines information about the metrics
+# that are used in the report generation process. This includes the model pricing
+# file, information on the model evaluation file as well as some other report generation
+# metrics.
 
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 

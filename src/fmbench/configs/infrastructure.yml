@@ -1,3 +1,10 @@
+# This is the infrastructure.yml base config file. This config file contains basic information 
+# about the AWS account such as the region, sagemaker execution role, bucket. It also contains
+# basic information that the FMBench package uses to benchmark, for example the directory
+# paths of various dataset files, prompt templates, the read data directory, etc.
+# NOTE: Nothing in this file needs to change. This file will be used in the test if mentioned within
+# your main configuration file.
+
 # AWS and SageMaker settings
 aws:
   # AWS region, this parameter is templatized, no need to change
