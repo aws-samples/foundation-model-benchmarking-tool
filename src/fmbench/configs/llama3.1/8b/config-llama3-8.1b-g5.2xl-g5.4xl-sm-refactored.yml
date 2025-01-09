@@ -14,6 +14,14 @@ s3_read_data:
   tokenizer_prefix: llama3_1_tokenizer
   prompt_template_file: prompt_template_llama3.txt
 
+datasets:
+  # dataset related configuration
+  prompt_template_keys:
+  - input
+  - context
+  ground_truth_col_key: answers
+  question_col_key: input
+
 run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: yes
