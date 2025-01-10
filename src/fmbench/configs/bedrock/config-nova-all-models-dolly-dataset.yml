@@ -31,7 +31,7 @@ s3_read_data:
     - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - hf:databricks/databricks-dolly-15k
+    - databricks/databricks-dolly-15k.jsonl 
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_nova_dolly_dataset.txt ## add your desired prompt template type
@@ -42,13 +42,12 @@ run_steps:
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
-    4_get_evaluations.ipynb: yes
-    5_model_metric_analysis.ipynb: yes
+    4_get_evaluations.ipynb: no
+    5_model_metric_analysis.ipynb: no
     6_cleanup.ipynb: no
 
 datasets:
   prompt_template_keys:
-  - context
   - instruction
   ground_truth_col_key: response
   question_col_key: instruction
@@ -65,22 +64,6 @@ datasets:
     min_length_in_tokens: 1000
     max_length_in_tokens: 2000
     payload_file: payload_en_1000-2000.jsonl
-  - language: en
-    min_length_in_tokens: 2000
-    max_length_in_tokens: 3000
-    payload_file: payload_en_2000-3000.jsonl
-  - language: en
-    min_length_in_tokens: 3000
-    max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 4000
-    max_length_in_tokens: 5000
-    payload_file: payload_en_4000-5000.jsonl
-  - language: en
-    min_length_in_tokens: 5000
-    max_length_in_tokens: 6000
-    payload_file: payload_en_5000-6000.jsonl
  
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -112,7 +95,7 @@ experiments:
   - name: amazon.nova-micro-v1:0
     model_name: amazon.nova-micro-v1:0
     ep_name: amazon.nova-micro-v1:0
-    instance_type: amazon.nova-micro-v1:0
+    instance_type: amazon.nova-micro-v1:0 # amazon.nova-micro-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -122,10 +105,6 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
@@ -142,10 +121,6 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
@@ -162,10 +137,6 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
