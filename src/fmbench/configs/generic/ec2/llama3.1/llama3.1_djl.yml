@@ -1,8 +1,5 @@
-# Generic config file for djl deployment on EC2. This can be 
-# used for any model that is deployed on djl on EC2. User provides
-# the model id, tokenizer directory name, prompt template and other
-# serving.properties in the command (tp degree, batch size) and those
-# parameters are used in this file.
+# config file for a rest endpoint supported on fmbench - 
+# this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
   # if it is auto, then retrieve the model id and the instance type/container - 
   # derive the name based on that (?)
@@ -66,14 +63,14 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: {tokenizer_dir} # llama3_1_tokenizer
+  tokenizer_prefix: llama3_1_tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: {prompt_template} # prompt_template_llama3.txt
+  prompt_template_file: prompt_template_llama3.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -128,7 +125,7 @@ datasets:
 # the price:performance analysis is only done for 1
 # dataset which is listed below as the dataset_of_interest
 metrics:
-  dataset_of_interest: en_1-500
+  dataset_of_interest: en_3000-3840
   
 # all pricing information is in the pricing.yml file
 # this file is provided in the repo. You can add entries
@@ -207,19 +204,19 @@ experiments:
     # runs are done for each combination of payload file and concurrency level
     payload_files:
     - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     # concurrency level refers to number of requests sent in parallel to an endpoint
     # the next set of requests is sent once responses for all concurrent requests have
     # been received.
     concurrency_levels:
     - 1
-    # - 2
-    # - 4
-    # - 6
-    # - 8
+    - 2
+    - 4
+    - 6
+    - 8
     
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.
