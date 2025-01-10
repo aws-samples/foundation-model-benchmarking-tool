@@ -2,7 +2,7 @@
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
   name: "llama3.1-8b-g5"      
-  model_name: "Meta-Llama-3.1-8B-Instruct"
+  model_name: {model_id}
   
 # AWS and SageMaker settings
 aws:
@@ -150,7 +150,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "Llama-3.1-8B-Instruct"
+  - name: {model_id}
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -158,10 +158,10 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
-    model_id: meta-llama/Llama-3.1-8B-Instruct # model id, version and image uri not needed for byo endpoint
-    hf_model_id: meta-llama/Llama-3.1-8B-Instruct
+    model_id: {model_id} # model id, version and image uri not needed for byo endpoint
+    hf_model_id: {model_id}
     model_version:
-    model_name: "Llama-3.1-8B-Instruct"
+    model_name: {model_id}
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:8080/invocations' 
     instance_type: {instance_type}
@@ -175,11 +175,6 @@ experiments:
     inference_script: ec2_predictor.py
     # This section defines the settings for Amazon EC2 instances
     ec2:
-      # The following line specifies the runtime and GPU settings for the instance
-      # '--runtime=nvidia' tells the container runtime to use the NVIDIA runtime
-      # '--gpus all' makes all GPUs available to the container
-      # '--shm-size 12g' sets the size of the shared memory to 12 gigabytes
-      gpu_or_neuron_setting: --gpus all --shm-size 12g
       #This setting specifies the timeout (in seconds) for loading the model. In this case, the timeout is set to 2400 seconds, which is 40 minutes. 
       # If the model takes longer than 40 minutes to load, the process will time out and fail.
       model_loading_timeout: 2400
@@ -201,7 +196,7 @@ experiments:
       engine=MPI
       option.tensor_parallel_degree={tp_degree}
       option.max_rolling_batch_size={batch_size}
-      option.model_id=meta-llama/Meta-Llama-3.1-8B-Instruct
+      option.model_id={model_id}
       option.rolling_batch=lmi-dist
     # runs are done for each combination of payload file and concurrency level
     payload_files:
