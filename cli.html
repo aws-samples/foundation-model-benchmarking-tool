@@ -8,13 +8,9 @@
       
       
       
-        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/build.html">
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/cli.html">
       
       
-        <link rel="prev" href="byo_dataset.html">
-      
-      
-        <link rel="next" href="analytics.html">
       
       
       <link rel="icon" href="website/img/favicon.png">
@@ -22,7 +18,7 @@
     
     
       
-        <title>Build FMBench - Foundation Model Benchmarking Tool (FMBench)</title>
+        <title>FMBench CLI - Foundation Model Benchmarking Tool (FMBench)</title>
       
     
     
@@ -90,7 +86,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#building-the-fmbench-python-package" class="md-skip">
+        <a href="#fmbench-cli" class="md-skip">
           Skip to content
         </a>
       
@@ -125,7 +121,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Build FMBench
+              FMBench CLI
             
           </span>
         </div>
@@ -789,19 +785,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -815,7 +809,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Advanced functionality
@@ -910,19 +904,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="build.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="build.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -931,7 +916,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1253,45 +1237,25 @@
   
 
 
-<h1 id="building-the-fmbench-python-package">Building the <code>FMBench</code> Python package<a class="headerlink" href="#building-the-fmbench-python-package" title="Permanent link">&para;</a></h1>
-<p>If you would like to build a dev version of <code>FMBench</code> for your own development and testing purposes, the following steps describe how to do that.</p>
-<ol>
-<li>
-<p>Clone the <code>FMBench</code> repo from GitHub.</p>
-</li>
-<li>
-<p>Make any code changes as needed.</p>
-</li>
-<li>
-<p>Install <a href="https://pypi.org/project/poetry/"><code>poetry</code></a>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>poetry<span class="w"> </span>mkdocs-material<span class="w"> </span>mknotebooks
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>tree
+<h1 id="fmbench-cli"><code>FMBench</code> CLI<a class="headerlink" href="#fmbench-cli" title="Permanent link">&para;</a></h1>
+<p>Here are the command line options currently supported by the <code>fmbench</code> CLI.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>usage: fmbench [-h] --config-file CONFIG_FILE [--role-arn ROLE_ARN] [--local-mode {yes,no}] [--tmp-dir TMP_DIR] [--write-bucket WRITE_BUCKET] -A [key=value]
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Run FMBench with a specified config file.
 </span></code></pre></div>
-</li>
-<li>
-<p>Change directory to the <code>FMBench</code> repo directory and run poetry build.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>poetry<span class="w"> </span>build
-</span></code></pre></div>
-</li>
-<li>
-<p>The <code>.whl</code> file is generated in the <code>dist</code> folder. Install the <code>.whl</code> in your current Python environment.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pip<span class="w"> </span>install<span class="w"> </span>dist/fmbench-X.Y.Z-py3-none-any.whl
-</span></code></pre></div>
-</li>
-<li>
-<p>Run <code>FMBench</code> as usual through the <code>FMBench</code> CLI command.</p>
-</li>
-<li>
-<p>You may have added new config files as part of your work, to make sure these files are called out in the <code>manifest.txt</code> run the following command. This command will overwrite the existing <code>manifest.txt</code> and <code>manifest.md</code> files. Both these files need to be committed to the repo. Reach out to the maintainers of this repo so that they can add new or modified config files to the blogs bucket (the CloudFormation stack would fail if a new file is added to the manifest but is not available for download through the S3 bucket).</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>python<span class="w"> </span>create_manifest.py
-</span></code></pre></div>
-</li>
-<li>
-<p>To create updated documentation run the following command. You need to be added as a contributor to the <code>FMBench</code> repo to be able to publish to the website, so this command would not work for you if you are not added as a contributor to the repo.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdocs<span class="w"> </span>gh-deploy
-</span></code></pre></div>
-</li>
-</ol>
+<p>options:<br />
+<code>-h</code>, <code>--help</code>            show this help message and exit  </p>
+<p><code>--config-file</code> CONFIG_FILE
+                        The S3 URI of your Config File  </p>
+<p><code>--role-arn</code> ROLE_ARN   (<em>Optional</em>) The ARN of the role to be used for FMBench. If an Amazon SageMaker endpoint is being deployed through FMBench then this role would also be used by that endpoint  </p>
+<p><code>--local-mode</code> {yes,no}  Specify if running in local mode or not. Options: yes, no. Default is no.  </p>
+<p><code>--tmp-dir</code> TMP_DIR    (<em>Optional</em>)  An optional tmp directory if fmbench is running in local mode.  </p>
+<p><code>--write-bucket</code> WRITE_BUCKET  Write bucket that is used for sagemaker endpoints in local mode and storing metrics in s3 mode.  </p>
+<p><code>-A</code> key=value        Specify a key value pair which will be used to replace the {key} in the given config file. The key could be anything that you have templatized<br />
+                        in the config file as <code>{key}</code> and it will be replaced with <code>value</code>. This comes in handy when using a generic configuration file and replace keys such <code>model_id</code>,<br />
+<code>tp_degree</code> etc. Note that you are not limited to pre-defined set of keys, you can put any key in the config file as <code>{key}</code> and it will get replaced with its value.<br />
+                        If there are multiple key value pairs, then simply specificy the <code>-A</code> option multiple times in the command line.  </p>
+<p>```</p>
 
 
 
