@@ -42,8 +42,8 @@ run_steps:
     1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
-    4_get_evaluations.ipynb: no
-    5_model_metric_analysis.ipynb: no
+    4_get_evaluations.ipynb: yes
+    5_model_metric_analysis.ipynb: yes
     6_cleanup.ipynb: no
 
 datasets:
@@ -72,7 +72,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_1000-2000
+  dataset_of_interest: en_500-1000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
