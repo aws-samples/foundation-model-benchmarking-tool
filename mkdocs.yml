@@ -58,6 +58,7 @@ nav:
       - Announcement: announcement.md
   - Getting started:
       - Main: gettingstarted.md
+      - CLI: cli.md
       - Features: features.md
       - Workflow: workflow.md
       - SageMaker: quickstart.md      
