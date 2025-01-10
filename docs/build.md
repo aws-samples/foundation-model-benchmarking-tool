@@ -10,6 +10,7 @@ If you would like to build a dev version of `FMBench` for your own development a
    
     ```{.bash}
     pip install poetry mkdocs-material mknotebooks
+    sudo apt-get install tree
     ```
 
 1. Change directory to the `FMBench` repo directory and run poetry build.

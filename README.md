@@ -88,6 +88,11 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.0.26
+
+1. Bug fix for missing HuggingFace token file.
+1. Config file enhancements
+
 ## 2.0.25
 
 1. Fix bug with an alternate VariantName for SageMaker BYOE.

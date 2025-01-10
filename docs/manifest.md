@@ -39,6 +39,10 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [└── embeddings/bge-base-en-v1-5-g5-g4dn-c7-embeddings.yml](configs/embeddings/bge-base-en-v1-5-g5-g4dn-c7-embeddings.yml)  
 **gemma**  
 [└── gemma/config-gemma-2b-g5.yml](configs/gemma/config-gemma-2b-g5.yml)  
+**generic**  
+**└── generic/ec2**  
+[├── generic/ec2/djl.yml](configs/generic/ec2/djl.yml)  
+[└── generic/ec2/llama3.1_djl.yml](configs/generic/ec2/llama3.1_djl.yml)  
 **llama2**  
 **├── llama2/13b**  
 [│   ├── llama2/13b/config-bedrock-sagemaker-llama2.yml](configs/llama2/13b/config-bedrock-sagemaker-llama2.yml)  

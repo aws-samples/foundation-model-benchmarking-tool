@@ -28,6 +28,8 @@ configs/embeddings/bge-base-en-v1-5-c5-embeddings.yml
 configs/embeddings/bge-base-en-v1-5-g5-embeddings.yml
 configs/embeddings/bge-base-en-v1-5-g5-g4dn-c7-embeddings.yml
 configs/gemma/config-gemma-2b-g5.yml
+configs/generic/ec2/djl.yml
+configs/generic/ec2/llama3.1_djl.yml
 configs/llama2/13b/config-bedrock-sagemaker-llama2.yml
 configs/llama2/13b/config-byo-rest-ep-llama2-13b.yml
 configs/llama2/13b/config-llama2-13b-inf2-g5-p4d.yml
