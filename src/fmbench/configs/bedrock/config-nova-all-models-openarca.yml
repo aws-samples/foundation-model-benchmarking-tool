@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-bedrock-nova-models-openorca-dataset"      
+  name: "fmbench-bedrock-nova-models-openorca-dataset-new"      
   model_name: "Nova models available in Amazon Bedrock"
   
 # AWS and SageMaker settings
@@ -31,7 +31,12 @@ s3_read_data:
     - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - hf:Open-Orca/OpenOrca
+    # This dataset is the custom open orca dataset which has the system prompt and the question columns
+    # merged. For a few rows, the system prompt is empty, so if there is a system prompt, it is appended to 
+    # the question, else only the question is used. This is done to get the true accuracy measures of the model
+    # To get this custom jsonl file, run the `Preprocess the OpenOrca Dataset` section of the `bring_your_dataset`
+    # notebook within the FMBench repository.
+    - Open-Orca/OpenOrca.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
     prompt_template_file: prompt_template_nova_open_orca.txt ## add your desired prompt template type
@@ -48,7 +53,6 @@ run_steps:
 
 datasets:
   prompt_template_keys:
-  - system_prompt
   - question
   ground_truth_col_key: response
   question_col_key: question
@@ -97,7 +101,7 @@ pricing: pricing.yml ## mention the name of the file that contains pricing infor
 inference_parameters: 
   bedrock:
     temperature: 0.1
-    max_tokens: 100
+    max_tokens: 512
     top_p: 0.92
     caching: False
     # Set use_boto3 to "no" if the model is supported by litellm and 
@@ -122,10 +126,6 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
@@ -142,10 +142,6 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
