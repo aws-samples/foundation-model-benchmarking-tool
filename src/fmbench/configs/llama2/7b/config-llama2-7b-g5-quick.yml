@@ -167,6 +167,9 @@ experiments:
     # if deploying directly from HuggingFace this would be a HuggingFace model id
     # see the DJL serving deployment script in the code repo for reference.
     model_id: meta-textgeneration-llama-2-7b-f
+    # Add the hugging face model id to load the specific tokenizer at runtime.
+    # To load this tokenizer, make sure to provide the hf_token.txt file.
+    hf_tokenizer_model_id: meta-llama/Llama-2-7b
     model_version: "3.*"
     model_name: llama2-7b-f
     ep_name: llama-2-7b-g5-xlarge
