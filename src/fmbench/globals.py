@@ -1,5 +1,6 @@
 import os
 import yaml
+import json
 import boto3
 import requests
 import tempfile
@@ -106,22 +107,23 @@ write_bucket = os.environ.get("WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-
 # else use the default `tempfile` option
 tmp_dir = os.environ.get("TMP_DIR", tempfile.gettempdir())
 
-# check if the instance type or the tp degree are provided as command line arguments. If they are, then 
-# they will be used in formatting into the configuration file. If not, the values from the config file will be
-# used
-instance_type = os.environ.get("INSTANCE_TYPE")
-tp_degree = os.environ.get("TP_DEGREE")
-batch_size = os.environ.get("BATCH_SIZE")
+# Retrieve the serialized custom parameters from the environment variable
+custom_params_str = os.environ.get('CUSTOM_PARAMS', '{}')
+try:
+    custom_params = json.loads(custom_params_str)
+except json.JSONDecodeError:
+    logging.error("Failed to decode CUSTOM_PARAMS; ensure it is valid JSON.")
+    custom_params = {}
 
 args = dict(region=session.region_name,
             role_arn=arn_string,
             read_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ),
             write_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE),
             write_bucket=write_bucket,
-            read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}", 
-            instance_type=instance_type, 
-            tp_degree=tp_degree, 
-            batch_size=batch_size)
+            read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}")
+# This updates the config file with the custom parameters that the user might provide and formats it into it.
+# For example, tp depree, instance type, batch size, etc.
+args.update(custom_params)
 CONFIG_FILE_CONTENT = CONFIG_FILE_CONTENT.format(**args)
 
 # Load the configuration

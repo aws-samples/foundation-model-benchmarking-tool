@@ -124,6 +124,13 @@ def run_notebooks(config_file: str) -> None:
     logger.info(f"FMBench has completed the benchmarking process. Check the \"results-*\" folder for results")
 
 
+def _parse_key_value(option):
+    try:
+        key, value = option.split('=', 1)
+        return key.strip(), value.strip()
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Invalid format for -A option '{option}'. Expected format is key=value.")
+
 # main function to run all of the fmbench process through a single command via this python package
 def main():
     parser = argparse.ArgumentParser(description='Run FMBench with a specified config file.')
@@ -140,21 +147,13 @@ def main():
     # instead of using the default /tmp directory
     parser.add_argument('--tmp-dir', type=str, default=None, required=False, help='An optional tmp directory if fmbench is running in local mode.')
     parser.add_argument('--write-bucket', type=str, help='Write bucket that is used for sagemaker endpoints in local mode and storing metrics in s3 mode.')
-    parser.add_argument('--instance-type', 
-                       type=str, 
-                       default=None, 
-                       required=False, 
-                       help='The instance type to use for deployment (e.g., g5.2xlarge)')
-    parser.add_argument('--tp-degree', 
-                       type=int, 
-                       default=None, 
-                       required=False, 
-                       help='Tensor Parallel degree required for model deployment')
-    parser.add_argument('--batch-size', 
-                       type=int, 
-                       default=None, 
-                       required=False, 
-                       help='Batch size required for model deployment. Uses default if not provided')
+    # Add the generic -A option that can be used multiple times. The user can now provide the tp degree, 
+    # the batch size, instance type and so on
+    parser.add_argument('-A', 
+                       action='append',
+                       type=_parse_key_value,
+                       help='Generic options in key=value format (can be used multiple times)',
+                       dest='generic_options')
 
 
     args = parser.parse_args()
@@ -167,19 +166,22 @@ def main():
     # set env var to indicate that fmbench is being run from main and not interactively via a notebook
     os.environ["INTERACTIVE_MODE_SET"] = "no"
 
-    # Set the instance type, tp degree and batch size as environment variables if
-    # provided through the command line argument
-    if args.instance_type:
-        os.environ["INSTANCE_TYPE"] = args.instance_type
-        logger.info(f"Instance type specified: {args.instance_type}")
+    # Initialize a dictionary to hold custom parameters
+    custom_params = {}
+    # Process each -A argument
+    if args.generic_options:
+        for key, value in args.generic_options:
+            custom_params[key] = value
+    custom_params_str = json.dumps(custom_params)
 
-    if args.tp_degree:
-        os.environ["TP_DEGREE"] = str(args.tp_degree)
-        logger.info(f"Tensor Parallel degree specified: {args.tp_degree}")
-    
-    if args.batch_size:
-        os.environ["BATCH_SIZE"] = str(args.batch_size)
-        logger.info(f"Tensor Parallel degree specified: {args.batch_size}")
+    # Set the serialized string as an environment variable
+    # We parse this as a custom json that gets appended into the 
+    # args dictionary regarless of what parameters the user provides
+    # so that each parameter is not separately rendered in the globals.py
+    # or utils.py file and dynamically added in the formatting process
+    # into the config file
+    os.environ['CUSTOM_PARAMS'] = custom_params_str
+    logging.info(f"Set environment variable CUSTOM_PARAMS={custom_params_str}")
 
     # set the environment variable for the local mode option
     if args.local_mode:
