@@ -124,6 +124,13 @@ def run_notebooks(config_file: str) -> None:
     logger.info(f"FMBench has completed the benchmarking process. Check the \"results-*\" folder for results")
 
 
+def _parse_key_value(option):
+    try:
+        key, value = option.split('=', 1)
+        return key.strip(), value.strip()
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"Invalid format for -A option '{option}'. Expected format is key=value.")
+
 # main function to run all of the fmbench process through a single command via this python package
 def main():
     parser = argparse.ArgumentParser(description='Run FMBench with a specified config file.')
@@ -140,6 +147,14 @@ def main():
     # instead of using the default /tmp directory
     parser.add_argument('--tmp-dir', type=str, default=None, required=False, help='An optional tmp directory if fmbench is running in local mode.')
     parser.add_argument('--write-bucket', type=str, help='Write bucket that is used for sagemaker endpoints in local mode and storing metrics in s3 mode.')
+    # Add the generic -A option that can be used multiple times. The user can now provide the tp degree, 
+    # the batch size, instance type and so on
+    parser.add_argument('-A', 
+                       action='append',
+                       type=_parse_key_value,
+                       help='Generic options in key=value format (can be used multiple times)',
+                       dest='generic_options')
+
 
     args = parser.parse_args()
     print(f"main, {args} = args")
@@ -150,6 +165,23 @@ def main():
     
     # set env var to indicate that fmbench is being run from main and not interactively via a notebook
     os.environ["INTERACTIVE_MODE_SET"] = "no"
+
+    # Initialize a dictionary to hold custom parameters
+    custom_params = {}
+    # Process each -A argument
+    if args.generic_options:
+        for key, value in args.generic_options:
+            custom_params[key] = value
+    custom_params_str = json.dumps(custom_params)
+
+    # Set the serialized string as an environment variable
+    # We parse this as a custom json that gets appended into the 
+    # args dictionary regarless of what parameters the user provides
+    # so that each parameter is not separately rendered in the globals.py
+    # or utils.py file and dynamically added in the formatting process
+    # into the config file
+    os.environ['CUSTOM_PARAMS'] = custom_params_str
+    logging.info(f"Set environment variable CUSTOM_PARAMS={custom_params_str}")
 
     # set the environment variable for the local mode option
     if args.local_mode:

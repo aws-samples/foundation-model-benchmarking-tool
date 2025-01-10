@@ -1,6 +1,7 @@
 import re
 import os
 import yaml
+import json
 import math
 import boto3
 import shutil
@@ -73,6 +74,15 @@ def load_config(config_file: Union[Path, str]) -> Dict:
     write_bucket = os.environ.get(
         "WRITE_BUCKET", f"{defaults.DEFAULT_BUCKET_WRITE}-{region_name}-{account_id}"
     )
+
+    # Retrieve the serialized custom parameters from the environment variable
+    custom_params_str = os.environ.get('CUSTOM_PARAMS', '{}')
+    try:
+        custom_params = json.loads(custom_params_str)
+    except json.JSONDecodeError:
+        logging.error("Failed to decode CUSTOM_PARAMS; ensure it is valid JSON.")
+        custom_params = {}
+
     # check if the tmp dir is used as an argument if local mode is set to yes. If so, then use that as the temp file directory
     # else use the default `tempfile` option
     tmp_dir = os.environ.get("TMP_DIR", tempfile.gettempdir())
@@ -82,9 +92,11 @@ def load_config(config_file: Union[Path, str]) -> Dict:
         read_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_READ),
         write_tmpdir=os.path.join(tmp_dir, defaults.DEFAULT_LOCAL_WRITE),
         write_bucket=write_bucket,
-        read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}",
+        read_bucket=f"{defaults.DEFAULT_BUCKET_READ}-{region_name}-{account_id}"
     )
-
+    # This updates the config file with the custom parameters that the user might provide and formats it into it.
+    # For example, tp depree, instance type, batch size, etc.
+    args.update(custom_params)
     # Check if config_file is an S3 URI
     if config_file.startswith("s3://"):
         try:
