@@ -324,22 +324,21 @@ def _get_local_object(bucket: str, key: str, decode: bool) -> str:
 def get_s3_object(bucket: str, key: str, decode="True") -> str:
     if is_read_local():
         return _get_local_object(bucket, key, decode)
-
-    key = nt_to_posix(key)
-    logger.debug(f"get_s3_object, bucket_name={bucket}, key={key}")
-
-    # Create an S3 client
-    s3_client = boto3.client("s3")
-
-    # Retrieve the object from S3
-    response = s3_client.get_object(Bucket=bucket, Key=key)
-
-    # Read the content of the file
-    if decode:
-        content = response["Body"].read().decode("utf-8")
-    else:
-        content = response["Body"].read()
-
+    try:
+        key = nt_to_posix(key)
+        logger.debug(f"get_s3_object, bucket_name={bucket}, key={key}")
+        # Create an S3 client
+        s3_client = boto3.client("s3")
+        # Retrieve the object from S3
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+        # Read the content of the file
+        if decode:
+            content = response["Body"].read().decode("utf-8")
+        else:
+            content = response["Body"].read()
+    except Exception as e:
+        logger.error(f"An error occurred while getting the object from s3: {e}")
+        content=None
     return content
 
 
