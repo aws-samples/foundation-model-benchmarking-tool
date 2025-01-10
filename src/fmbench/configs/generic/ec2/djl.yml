@@ -1,7 +1,10 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: "llama3.1-8b-g5"      
+  # if it is auto, then retrieve the model id and the instance type/container - 
+  # derive the name based on that (?)
+  # if name: name, then provide the name as -A <model-id-instance>
+  name: {results_dir}
   model_name: {model_id}
   
 # AWS and SageMaker settings
@@ -80,7 +83,7 @@ run_steps:
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
   4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: yes
+  5_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
