@@ -45,7 +45,7 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: no
+    1_generate_data.ipynb: yes
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_get_evaluations.ipynb: yes
