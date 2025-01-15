@@ -4,7 +4,7 @@
 
 Benchmarking multiple models across various configurations on Amazon EC2 used to require creating and managing multiple configuration files. Now, with parameterized config files, you can manage deployments, inference, and benchmarking with a **single configuration file** and simply change the parameters (such as the `instance type`, `tp degree`, `batch size`, `tokenizer directory`, `prompt template`, `model id`) all via the command line.
 
-This approach eliminates redundancy and streamlines benchmarking processes for models deployed via **DJL on EC2**, with support for various instances, TP degrees, and batch sizes.
+This approach eliminates redundancy and streamlines benchmarking processes for models deployed on Amazon EC2 instances across various serving stacks.
 
 ## Example: DJL Deployment Config File
 
