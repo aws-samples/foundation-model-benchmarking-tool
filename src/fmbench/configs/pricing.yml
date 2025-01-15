@@ -76,6 +76,12 @@ pricing:
     cohere.command-text-v14:
       input-per-1k-tokens: 0.0015
       output-per-1k-tokens: 0.002
+    meta.llama3-3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00072
+      output-per-1k-tokens: 0.00072
+    us.meta.llama3-3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00072
+      output-per-1k-tokens: 0.00072
     meta.llama2-13b-chat-v1:
       input-per-1k-tokens: 0.00075
       output-per-1k-tokens: 0.001
