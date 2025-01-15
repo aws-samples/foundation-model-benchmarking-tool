@@ -45,7 +45,7 @@ s3_read_data:
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
     0_setup.ipynb: yes
-    1_generate_data.ipynb: yes
+    1_generate_data.ipynb: no
     2_deploy_model.ipynb: no
     3_run_inference.ipynb: yes
     4_get_evaluations.ipynb: yes
@@ -78,15 +78,7 @@ datasets:
   - language: en
     min_length_in_tokens: 3000
     max_length_in_tokens: 4000
-    payload_file: payload_en_3000-4000.jsonl
-  - language: en
-    min_length_in_tokens: 4000
-    max_length_in_tokens: 5000
-    payload_file: payload_en_4000-5000.jsonl
-  - language: en
-    min_length_in_tokens: 5000
-    max_length_in_tokens: 6000
-    payload_file: payload_en_5000-6000.jsonl
+    payload_file: payload_en_3000-3840.jsonl
  
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -95,7 +87,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_5000-6000
+  dataset_of_interest: en_3000-3840
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -115,10 +107,10 @@ inference_parameters:
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
   # This is the NOVA micro model
-  - name: amazon.nova-micro-v1:0
-    model_name: amazon.nova-micro-v1:0
-    ep_name: amazon.nova-micro-v1:0
-    instance_type: amazon.nova-micro-v1:0
+  - name: us.amazon.nova-micro-v1:0
+    model_name: us.amazon.nova-micro-v1:0
+    ep_name: us.amazon.nova-micro-v1:0
+    instance_type: us.amazon.nova-micro-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -129,16 +121,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     env:
-  - name: amazon.nova-lite-v1:0
-    model_name: amazon.nova-lite-v1:0
-    ep_name: amazon.nova-lite-v1:0
-    instance_type: amazon.nova-lite-v1:0
+  - name: us.amazon.nova-lite-v1:0
+    model_name: us.amazon.nova-lite-v1:0
+    ep_name: us.amazon.nova-lite-v1:0
+    instance_type: us.amazon.nova-lite-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -149,16 +139,14 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     env:
-  - name: amazon.nova-pro-v1:0
-    model_name: amazon.nova-pro-v1:0
-    ep_name: amazon.nova-pro-v1:0
-    instance_type: amazon.nova-pro-v1:0
+  - name: us.amazon.nova-pro-v1:0
+    model_name: us.amazon.nova-pro-v1:0
+    ep_name: us.amazon.nova-pro-v1:0
+    instance_type: us.amazon.nova-pro-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -169,9 +157,7 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-4000.jsonl
-    - payload_en_4000-5000.jsonl
-    - payload_en_5000-6000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     env:
