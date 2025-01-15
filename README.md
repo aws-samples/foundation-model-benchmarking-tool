@@ -14,7 +14,7 @@
 </h4>
 
 
-🚨 **What's new**: Benchmark the [Amazon Nova](https://docs.aws.amazon.com/nova/latest/userguide/what-is-nova.html) models, quickstart benchmarking on Amazon EC2 with the new [FMBench orchestrator](#running-fmbench-via-the-fmbench-orchestrator) 🚨  
+🚨 **What's new**: Benchmark the [Qwen2.5-72b](https://huggingface.co/Qwen/Qwen2.5-72B) on Amazon EC2 and the newest [llama3-3-70b](https://aws.amazon.com/about-aws/whats-new/2024/12/metas-llama-3-3-70b-model-amazon-bedrock/) model on Amazon Bedrock. Use more simplified versions of configuration files, view more [here]().  
 
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
@@ -61,6 +61,8 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 | Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
+| **Llama3.3-70b instruct**        |                               |                                           | On-demand                           |
+| **Qwen2.5-72b**                  | g5, g6e                       |                                           |                                    |
 | **Amazon Nova**                  |                               |                                           | On-demand                          |
 | **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
 | **Anthropic Claude-3 Haiku**     |                               |                                           | On-demand                          |
