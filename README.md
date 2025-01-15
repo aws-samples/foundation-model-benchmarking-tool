@@ -14,7 +14,7 @@
 </h4>
 
 
-🚨 **What's new**: Benchmark the [Qwen2.5-72b](https://huggingface.co/Qwen/Qwen2.5-72B) on Amazon EC2 and the newest [llama3-3-70b](https://aws.amazon.com/about-aws/whats-new/2024/12/metas-llama-3-3-70b-model-amazon-bedrock/) model on Amazon Bedrock. Use more simplified versions of configuration files, view more [here]().  
+🚨 **What's new**: Benchmark the [Qwen2.5-72b](https://huggingface.co/Qwen/Qwen2.5-72B) on Amazon EC2 and the newest [llama3-3-70b](https://aws.amazon.com/about-aws/whats-new/2024/12/metas-llama-3-3-70b-model-amazon-bedrock/) model on Amazon Bedrock. Use more simplified versions of configuration files, view more [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/docs/simplified_config_files.md).  
 
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
