@@ -77,9 +77,9 @@ s3_read_data:
 run_steps:
   0_setup.ipynb: yes
   1_generate_data.ipynb: yes
-  2_deploy_model.ipynb: yes
+  2_deploy_model.ipynb: no
   3_train_model.ipynb: yes
-  4_run_inference.ipynb: yes
+  4_run_inference.ipynb: no
   5_model_metric_analysis.ipynb: yes
   6_cleanup.ipynb: yes
 
@@ -176,6 +176,7 @@ experiments:
     inference_script: ec2_predictor.py
     training_script: finetune_hf_optimum_neuron.py
     run_training: yes
+    training_hyperparameters:
     # This section defines the settings for Amazon EC2 instances
     ec2:
       # The following line specifies the runtime and GPU settings for the instance
