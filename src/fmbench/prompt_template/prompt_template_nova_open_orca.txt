@@ -1,0 +1,7 @@
+{question}
+
+Follow the instructions below while giving a response:
+
+1. Do not repeat the question in your response. Your response should only contain what is being asked and not the question itself.
+
+2. Analyze the task carefully and only provide the direct response to the task/question. Do not be too descriptive, only respond with what is being asked for.
