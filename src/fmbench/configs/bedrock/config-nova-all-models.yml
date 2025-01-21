@@ -87,7 +87,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_500-1000
+  dataset_of_interest: en_3000-3840
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -119,49 +119,48 @@ experiments:
     payload_files:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
-    # - payload_en_3000-3840.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
-    - 2
     env:
-  # - name: us.amazon.nova-lite-v1:0
-  #   model_name: us.amazon.nova-lite-v1:0
-  #   ep_name: us.amazon.nova-lite-v1:0
-  #   instance_type: us.amazon.nova-lite-v1:0
-  #   instance_count:
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #     parameter_set: bedrock
-  #   payload_files:
-  #   - payload_en_1-500.jsonl
-  #   - payload_en_500-1000.jsonl
-  #   - payload_en_1000-2000.jsonl
-  #   - payload_en_2000-3000.jsonl
-  #   - payload_en_3000-3840.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   env:
-  # - name: us.amazon.nova-pro-v1:0
-  #   model_name: us.amazon.nova-pro-v1:0
-  #   ep_name: us.amazon.nova-pro-v1:0
-  #   instance_type: us.amazon.nova-pro-v1:0
-  #   instance_count:
-  #   inference_script: bedrock_predictor.py
-  #   inference_spec:
-  #     split_input_and_parameters: no
-  #     parameter_set: bedrock
-  #   payload_files:
-  #   - payload_en_1-500.jsonl
-  #   - payload_en_500-1000.jsonl
-  #   - payload_en_1000-2000.jsonl
-  #   - payload_en_2000-3000.jsonl
-  #   - payload_en_3000-3840.jsonl
-  #   concurrency_levels:
-  #   - 1
-  #   env:
+  - name: us.amazon.nova-lite-v1:0
+    model_name: us.amazon.nova-lite-v1:0
+    ep_name: us.amazon.nova-lite-v1:0
+    instance_type: us.amazon.nova-lite-v1:0
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    env:
+  - name: us.amazon.nova-pro-v1:0
+    model_name: us.amazon.nova-pro-v1:0
+    ep_name: us.amazon.nova-pro-v1:0
+    instance_type: us.amazon.nova-pro-v1:0
+    instance_count:
+    inference_script: bedrock_predictor.py
+    inference_spec:
+      split_input_and_parameters: no
+      parameter_set: bedrock
+    payload_files:
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
+    - payload_en_3000-3840.jsonl
+    concurrency_levels:
+    - 1
+    env:
     
 report:
   latency_budget: 2
