@@ -46,6 +46,12 @@ pricing:
     amazon.titan-text-lite-v1:
       input-per-1k-tokens: 0.00015
       output-per-1k-tokens: 0.0002
+    us.anthropic.claude-3-5-sonnet-20241022-v2:0: 
+      input-per-1k-tokens: 0.003
+      output-per-1k-tokens: 0.015
+    anthropic.claude-3-5-sonnet-20241022-v2:0: 
+      input-per-1k-tokens: 0.003
+      output-per-1k-tokens: 0.015
     anthropic.claude-3-5-sonnet-20240620-v1:0:
       input-per-1k-tokens: 0.003
       output-per-1k-tokens: 0.015
