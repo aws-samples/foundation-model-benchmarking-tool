@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
-from fmbench.scripts.inference_containers import (djl, vllm, triton)
+from fmbench.scripts.inference_containers import (djl, vllm, triton, ollama)
 from fmbench.scripts.constants import (IS_NEURON_INSTANCE, LISTEN_PORT)
 from fmbench.scripts.prepare_for_multi_model_containers import prepare_docker_compose_yml
 
@@ -77,6 +77,8 @@ def _create_deployment_script(image_uri,
             deploy_script_content = vllm.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_TRITON:
             deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case constants.CONTAINER_TYPE_OLLAMA:
+            deploy_script_content = ollama.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case _:
             raise ValueError(f"dont know how to handle container_type={container_type}")
     script_file_path = os.path.join(directory, "deploy_model.sh")
@@ -113,7 +115,7 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
     logger.info(f"Checking deployment status at {endpoint}")
     if container_type == constants.CONTAINER_TYPE_DJL:
         data = {"inputs": "tell me a story of the little red riding hood"}
-    elif container_type == constants.CONTAINER_TYPE_VLLM:
+    elif container_type == constants.CONTAINER_TYPE_VLLM or container_type == constants.CONTAINER_TYPE_OLLAMA :
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
     elif container_type == constants.CONTAINER_TYPE_TRITON:
@@ -179,7 +181,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     match = re.search(r"http://[^:/]+:(\d+)", ep_name)
     listen_port = int(match.group(1)) if match else constants.LISTEN_PORT
     logger.info(f"ep_name={ep_name}, listen_port={listen_port}")
-    region: str = experiment_config['region']
+    region: str = experiment_config.get('region')
     privileged_mode: str = experiment_config['ec2'].get('privileged_mode', False)
     container_type: str = experiment_config['inference_spec'].get('container_type', constants.CONTAINER_TYPE_DJL)
     env = experiment_config.get('env')
