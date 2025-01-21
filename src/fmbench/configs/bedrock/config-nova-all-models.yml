@@ -87,7 +87,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_500-1000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
