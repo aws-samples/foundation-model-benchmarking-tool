@@ -64,13 +64,13 @@ model_evaluations:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
       # Information on judge 1 on the evaluation judge panel
-      - model_id: meta.llama3-70b-instruct-v1:0
+      - model_id: meta.llama3-3-70b-instruct-v1:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
         eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
-      - model_id: anthropic.claude-3-sonnet-20240229-v1:0
+      - model_id: anthropic.claude-3-5-sonnet-20241022-v2:0
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "claude_eval_prompt_templates"
