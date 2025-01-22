@@ -34,8 +34,7 @@ model_evaluations:
     # prompt templates evaluating for majority voting
     eval_instructions_dir: eval_instructions
     eval_instructions_files:
-    - eval_instructions_open_orca.txt
-    # - evaluation_instructions_majority_vote.txt
+    - evaluation_instructions_majority_vote.txt
 
   # This represents the information that is used to get the quantitative metrics 
   # from the evaluation step. This includes calculating the cosine similarity. 
