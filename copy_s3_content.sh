@@ -15,6 +15,7 @@ mkdir -p $FMBENCH_READ_DIR/llama3_1_tokenizer
 mkdir -p $FMBENCH_READ_DIR/llama3_2_tokenizer
 mkdir -p $FMBENCH_READ_DIR/mistral_tokenizer
 mkdir -p $FMBENCH_READ_DIR/qwen_tokenizer
+mkdir -p $FMBENCH_READ_DIR/deepseek_tokenizer
 wget https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/manifest.txt -P ${FMBENCH_READ_DIR}/
 
 # First create all directories from manifest
