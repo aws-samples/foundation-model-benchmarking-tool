@@ -1,6 +1,6 @@
 1. Verdict Evaluation: The "verdict" should specify whether the candidate model output is "correct" or "incorrect".
 
-2. Comparison with Ground Truth:
+2. Comparison with Ground Truth determines the correctness of the candidate model response:
    - If the ground truth has multiple acceptable options (e.g., comma-separated), the candidate model output is correct if it aligns or matches semantically with any one of the options.
    - If the ground truth has a single option, compare the candidate model output to it directly for semantic equivalence.
    - An output that does not align or match with the ground truth or any option within the ground truth is considered incorrect.
@@ -9,12 +9,9 @@
    - If the candidate model response answers the task incorrectly but matches some semantic aspect of the ground truth, it is still incorrect, as the task outcome must align with the intent.
    - If the task specifies logical steps or reasoning and the candidate fails to adhere to the sequence or logic, the verdict is incorrect.
 
-4. Context and Additional Information:
-   - Extra content is acceptable only if it maintains relevance to the task and doesn't deviate from the intended response.
-
-5. Semantic Equivalence: 
+4. Semantic Equivalence: 
   - If the task can result in multiple valid responses, then the candidate model response does not need to replicate the exact wording of the ground truth.  
   If the task is to perform something and the candidate model response does it correctly, but it is not the same as the ground truth, then the verdict is "correct". 
   - If the task to be completed can only yield one answer, and if the candidate model response does not match that, then the verdict is "incorrect".
 
-6. If a task is performed incorrectly in the candidate model output, explain the error clearly and specify how it fails to align with the ground truth.
+5. If a task is performed incorrectly in the candidate model output, explain the error clearly and specify how it fails to align with the ground truth.
