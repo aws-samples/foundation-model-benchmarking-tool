@@ -15,7 +15,9 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     script = f"""#!/bin/sh
 
         {STOP_AND_RM_CONTAINER}
-
+        # Install ollama
+        curl -fsSL https://ollama.com/install.sh | sh
+        
         #Stop ollama
         systemctl stop ollama.service
 
