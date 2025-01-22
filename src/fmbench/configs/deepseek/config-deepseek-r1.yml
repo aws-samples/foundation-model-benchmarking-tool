@@ -80,14 +80,21 @@ run_steps:
   1_generate_data.ipynb: yes
   2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
-  4_model_metric_analysis.ipynb: yes
-  5_cleanup.ipynb: no
+  4_get_evaluations.ipynb: yes
+  5_model_metric_analysis.ipynb: yes
+  6_cleanup.ipynb: yes
 
 datasets:
   # dataset related configuration
   prompt_template_keys:
   - input
   - context
+  ground_truth_col_key: answers
+  question_col_key: input
+  # maximum number of iterations per concurrency and payload size combination
+  max_iters_per_combination: 105
+  # minimum number of iterations per concurrency and payload size combination
+  min_iters_per_combination: 5
   
   # if your dataset has multiple languages and it has a language
   # field then you could filter it for a language. Similarly,
@@ -117,6 +124,11 @@ datasets:
     min_length_in_tokens: 3000
     max_length_in_tokens: 3840
     payload_file: payload_en_3000-3840.jsonl
+
+# name of the file that contains the model evaluation information
+# for example, the prompt template names, the ground truth column name (if any), 
+# LLM panelist information, inference parameters, etc.
+model_evaluations: model_eval_all_info.yml
 
 # While the tests would run on all the datasets
 # configured in the experiment entries below but 
