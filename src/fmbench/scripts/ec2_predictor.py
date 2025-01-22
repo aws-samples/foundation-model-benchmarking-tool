@@ -169,7 +169,16 @@ class EC2Predictor(FMBenchPredictor):
                 """
                 full_output = json.loads(response.text).get("response")
                 if full_output is None:
-                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")              
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
+                else:
+                    # Check if the response contains think tags - the deepseek model responds
+                    # with the think tags
+                    if "<think>" in full_output and "</think>" in full_output:
+                        # Extract everything after </think> tag
+                        pattern = r"</think>\s*(.*?)$"
+                        match = re.search(pattern, full_output, re.DOTALL)
+                        if match:
+                            full_output = match.group(1).strip()
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
 
