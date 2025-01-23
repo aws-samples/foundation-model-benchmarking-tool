@@ -172,21 +172,27 @@ class EC2Predictor(FMBenchPredictor):
                 if full_output is None:
                     logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
                 else:
-                    # Check if the response contains think tags - the deepseek model responds
-                    # with the think tags
-                    if "<think>" in full_output and "</think>" in full_output:
-                        # Extract everything after </think> tag
-                        pattern = r"</think>\s*(.*?)$"
-                        match = re.search(pattern, full_output, re.DOTALL)
-                        if match:
-                            full_output = match.group(1).strip()
-            else:
-                raise ValueError("container_type={container_type}, dont know how to handle this") 
-
-            answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
-            response_json = dict(generated_text=answer_only)
-            # counts the completion tokens for the model using the default/user provided tokenizer
-            completion_tokens = count_tokens(response_json.get("generated_text"))
+                  # Check if the response contains think tags - the deepseek model responds
+                  # with the think tags
+                  if "<think>" in full_output and "</think>" in full_output:
+                      # Store the raw output for token counting
+                      raw_output = full_output
+                      # Extract everything after </think> tag
+                      pattern = r"</think>\s*(.*?)\$"
+                      match = re.search(pattern, full_output, re.DOTALL)
+                      if match:
+                          full_output = match.group(1).strip()
+              else:
+                  raise ValueError("container_type={container_type}, dont know how to handle this") 
+              
+              answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
+              response_json = dict(generated_text=answer_only)
+              # counts the completion tokens for the model using the default/user provided tokenizer
+              if "<think>" in full_output and "</think>" in full_output:
+                  # Use the raw output (including think tags) for token counting
+                  completion_tokens = count_tokens(raw_output)
+              else:
+                  completion_tokens = count_tokens(response_json.get("generated_text"))
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
