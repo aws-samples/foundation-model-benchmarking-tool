@@ -20,25 +20,23 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
         echo "Checking for CUDA devices..."
         if command -v nvidia-smi &> /dev/null; then
             gpu_count=`nvidia-smi --list-gpus | wc -l`
-            if [ \$gpu_count -gt 0 ]; then
-                gpu_count=\$((gpu_count - 1))
-                gpus_to_enable=`seq -s, 0 \$gpu_count`
-                export CUDA_VISIBLE_DEVICES=\$gpus_to_enable
-                echo "CUDA_VISIBLE_DEVICES=\$CUDA_VISIBLE_DEVICES"
-                echo "Found and enabled \$((gpu_count + 1)) GPU(s)"
-            else
-                echo "No GPUs found"
-                export CUDA_VISIBLE_DEVICES=""
-            fi
+            gpu_count=$((gpu_count - 1))
+            gpus_to_enable=`seq -s, 0 $gpu_count`
+            export CUDA_VISIBLE_DEVICES=$gpus_to_enable
+            echo "CUDA_VISIBLE_DEVICES=$CUDA_VISIBLE_DEVICES"            
         else
             echo "nvidia-smi not found. Running in CPU mode"
-            export CUDA_VISIBLE_DEVICES=""
         fi
     
-        # Install ollama
-        curl -fsSL https://ollama.com/install.sh | sh
+        # check if ollama is already installed
+        ollama -v
+        if [ $? -ne 0 ]; then
+            echo "Ollama is not installed, going to install it now"
+            # Install ollama
+            curl -fsSL https://ollama.com/install.sh | sh            
+        fi        
         
-        #Stop ollama
+        # Stop ollama
         systemctl stop ollama.service
 
         # Pull the specified model using Ollama
