@@ -151,7 +151,7 @@ pricing: pricing.yml
 # section under experiments.
 inference_parameters: 
   ec2_ollama:
-    model: deepseek-r1:1.5b
+    model: {model_id}
     stream: false
     options:
       temperature: 0.1
