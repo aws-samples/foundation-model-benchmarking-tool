@@ -63,7 +63,7 @@ s3_read_data:
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
   # NOTE 2: place your model specific tokenizers in a prefix named as <model_name>_tokenizer
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
-  tokenizer_prefix: qwen_tokenizer
+  tokenizer_prefix: tokenizer
 
   # S3 prefix for prompt templates
   prompt_template_dir: prompt_template
