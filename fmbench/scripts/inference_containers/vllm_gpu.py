@@ -24,6 +24,8 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
         else
           echo "No process named $process_name is running"
         fi
+        # kill all processes using GPUs
+        sudo kill -9 $(nvidia-smi --query-compute-apps=pid --format=csv,noheader,nounits)
         sleep 10
         vllm serve {model_id} {cli_params} &
 
