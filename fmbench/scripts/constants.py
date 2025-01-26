@@ -3,6 +3,7 @@ from typing import List
 
 CONTAINER_TYPE_DJL: str = 'djl'
 CONTAINER_TYPE_VLLM: str = 'vllm'
+CONTAINER_TYPE_VLLM_GPU: str = 'vllm_gpu'
 CONTAINER_TYPE_TRITON: str = 'triton'
 CONTAINER_TYPE_OLLAMA: str = 'ollama'
 CONTAINER_TYPE_HUGGINGFACE: str = 'huggingface'

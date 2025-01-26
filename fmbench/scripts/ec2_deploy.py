@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
-from fmbench.scripts.inference_containers import (djl, vllm, triton, ollama)
+from fmbench.scripts.inference_containers import (djl, vllm, vllm_gpu, triton, ollama)
 from fmbench.scripts.constants import (IS_NEURON_INSTANCE, LISTEN_PORT)
 from fmbench.scripts.prepare_for_multi_model_containers import prepare_docker_compose_yml
 
@@ -75,6 +75,8 @@ def _create_deployment_script(image_uri,
             deploy_script_content = djl.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_VLLM:
             deploy_script_content = vllm.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case constants.CONTAINER_TYPE_VLLM_GPU:
+            deploy_script_content = vllm_gpu.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_TRITON:
             deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_OLLAMA:
@@ -115,7 +117,9 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
     logger.info(f"Checking deployment status at {endpoint}")
     if container_type == constants.CONTAINER_TYPE_DJL:
         data = {"inputs": "tell me a story of the little red riding hood"}
-    elif container_type == constants.CONTAINER_TYPE_VLLM or container_type == constants.CONTAINER_TYPE_OLLAMA :
+    elif container_type == constants.CONTAINER_TYPE_VLLM \
+    or container_type == constants.CONTAINER_TYPE_OLLAMA \
+    or container_type == constants.CONTAINER_TYPE_VLLM_GPU:
         data = {"model": model_id,  # Specify the model to use
                 "prompt": "tell me a story of the little red riding hood",}
     elif container_type == constants.CONTAINER_TYPE_TRITON:

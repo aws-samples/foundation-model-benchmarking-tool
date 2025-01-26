@@ -96,7 +96,7 @@ class EC2Predictor(FMBenchPredictor):
                 response.raise_for_status()
                 response_json = json.loads(response.text)
                 full_output = response_json['text_output']
-            elif container_type == constants.CONTAINER_TYPE_VLLM:
+            elif container_type == constants.CONTAINER_TYPE_VLLM or container_type == constants.CONTAINER_TYPE_VLLM_GPU:
                 # vllm uses prompt rather than input and then
                 # the code in the calling function still expects input
                 # so make a copy
