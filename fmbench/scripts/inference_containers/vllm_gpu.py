@@ -17,7 +17,7 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
         {STOP_AND_RM_CONTAINER}
         # kill any existing vllm instance to free up gpu resources
         process_name="vllm"
-        pid=$(pgrep -f "$process_name")
+        pid=$(pgrep -x "$process_name")
         if [ -n "$pid" ]; then
           echo "Killing process $process_name with PID $pid"
           kill -9 "$pid"
@@ -25,7 +25,7 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
           echo "No process named $process_name is running"
         fi
         sleep 10
-        vllm serve {model_id} {cli_params}
+        vllm serve {model_id} {cli_params} &
 
         echo "started docker run in daemon mode"
     """
