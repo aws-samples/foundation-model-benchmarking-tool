@@ -8,7 +8,7 @@ from fmbench.scripts.inference_containers.utils import (STOP_AND_RM_CONTAINER,
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory):
+def create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory, cli_params):
     """
     Script for running the docker container for the inference server
     """
@@ -25,7 +25,7 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
           echo "No process named $process_name is running"
         fi
         sleep 10
-        vllm serve {model_id}
+        vllm serve {model_id} {cli_params}
 
         echo "started docker run in daemon mode"
     """
