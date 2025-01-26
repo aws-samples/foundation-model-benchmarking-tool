@@ -148,9 +148,11 @@ You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both optio
 1. On the `fmbench-notebook` open a Terminal and run the following commands.
 
     ```{.bash}
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-    source activate fmbench_python311;
-    pip install -U fmbench
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    exec bash
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    uv pip install -U fmbench
     ```
 
 1. Now you are ready to `fmbench` with the following command line. We will use a sample config file placed in the S3 bucket by the CloudFormation stack for a quick first run.

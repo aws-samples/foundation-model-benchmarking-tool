@@ -1,4 +1,6 @@
 __pycache__/
+.fmbench_python311
+fmbench.egg-info/
 analytics/comparison.json
 site
 *.zip
