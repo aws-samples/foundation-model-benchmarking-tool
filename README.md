@@ -149,7 +149,6 @@ You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both optio
 
     ```{.bash}
     curl -LsSf https://astral.sh/uv/install.sh | sh
-    exec bash
     uv venv .fmbench_python311 --python 3.11
     source .fmbench_python311/bin/activate
     uv pip install -U fmbench
