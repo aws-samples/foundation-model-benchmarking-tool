@@ -15,19 +15,9 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     script = f"""#!/bin/sh
 
         {STOP_AND_RM_CONTAINER}
-        # kill any existing vllm instance to free up gpu resources
-        process_name="vllm"
-        pid=$(pgrep -x "$process_name")
-        if [ -n "$pid" ]; then
-          echo "Killing process $process_name with PID $pid"
-          kill -9 "$pid"
-        else
-          echo "No process named $process_name is running"
-        fi
-        # kill all processes using GPUs
-        sudo kill -9 $(nvidia-smi --query-compute-apps=pid --format=csv,noheader,nounits)
-        sleep 10
-        vllm serve {model_id} {cli_params} &
+
+        # Run the new Docker container with specified settings
+        docker run -d {privileged_str} --rm --name={FMBENCH_MODEL_CONTAINER_NAME} --runtime nvidia --gpus all --env "HF_TOKEN={hf_token}" --ipc=host -p 8000:8000 {env_str} {image_uri} --model {model_id} {cli_params}
 
         echo "started docker run in daemon mode"
     """
