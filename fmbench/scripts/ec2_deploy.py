@@ -77,7 +77,7 @@ def _create_deployment_script(image_uri,
         case constants.CONTAINER_TYPE_VLLM:
             deploy_script_content = vllm.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_VLLM_GPU:
-            deploy_script_content = vllm_gpu.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+            deploy_script_content = vllm_gpu.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory, cli_params)
         case constants.CONTAINER_TYPE_TRITON:
             deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_OLLAMA:
