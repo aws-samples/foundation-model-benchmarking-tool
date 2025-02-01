@@ -26,14 +26,11 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
 
 ## Benchmarking on an instance type with NVIDIA GPUs or AWS Chips
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`.
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `uv` on the instance which is then used to create a new virtual environment for `FMBench`.
 
     ```{.bash}
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
-    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
-    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
-    conda init  # Initialize conda, adding it to the shell  
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
     ```
 
 1. Install `docker-compose`.
@@ -45,12 +42,14 @@ The steps for benchmarking on different types of EC2 instances (GPU/CPU/Neuron) 
     docker compose version 
     ```
 
-1. Setup the `fmbench_python311` conda environment.
+1. Setup the `.fmbench_python311` Python environment.
 
     ```{.bash}
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-    source activate fmbench_python311;
-    pip install -U fmbench
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    # Add the Python environment activation and directory navigation to .bashrc
+    echo 'source $HOME/.fmbench_python311/bin/activate' >> $HOME/.bashrc
+    uv pip install -U fmbench
     ```
 
 1. Create local directory structure needed for `FMBench` and copy all publicly available dependencies from the AWS S3 bucket for `FMBench`. This is done by running the `copy_s3_content.sh` script available as part of the `FMBench` repo. **Replace `/tmp` in the command below with a different path if you want to store the config files and the `FMBench` generated data in a different directory**.
@@ -116,7 +115,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 **_As of 2024-09-26 this has been tested on a `trn1.32xlarge` instance_**
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download). (Note: **_Your EC2 instance needs to have at least 200GB of disk space for this test_**)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `uv` on the instance which is then used to create a new Python virtual environment for `FMBench`.(Note: **_Your EC2 instance needs to have at least 200GB of disk space for this test_**)
 
     ```{.bash}
     # Install Docker and Git using the YUM package manager
@@ -125,25 +124,18 @@ command below. The config file for this example can be viewed [here](src/fmbench
     # Start the Docker service
     sudo systemctl start docker
 
-    # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
-    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
-    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
-    conda init  # Initialize conda, adding it to the shell
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
     ```
 
-1. Setup the `fmbench_python311` conda environment.
+1. Setup the `.fmbench_python311` Python virtual environment.
 
     ```{.bash}
-    # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-
-    # Activate the newly created conda environment
-    source activate fmbench_python311
-
-    # Upgrade pip and install the fmbench package
-    pip install -U fmbench
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    # Add the Python environment activation and directory navigation to .bashrc
+    echo 'source $HOME/.fmbench_python311/bin/activate' >> $HOME/.bashrc
+    uv pip install -U fmbench
     ```
 
 1. First we need to build the required docker image for `triton`, and push it locally. To do this, curl the `Triton Dockerfile` and the script to build and push the triton image locally:
@@ -219,7 +211,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 **_As of 2024-08-27 this has been tested on a `m7a.16xlarge` instance_**
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `uv` on the instance which is then used to create a new Python virtual environment for `FMBench`.
 
     ```{.bash}
     # Install Docker and Git using the YUM package manager
@@ -228,25 +220,18 @@ command below. The config file for this example can be viewed [here](src/fmbench
     # Start the Docker service
     sudo systemctl start docker
 
-    # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b  # Run the Miniconda installer in batch mode (no manual intervention)
-    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
-    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
-    conda init  # Initialize conda, adding it to the shell
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
     ```
 
-1. Setup the `fmbench_python311` conda environment.
+1. Setup the `.fmbench_python311` Python virtual environment.
 
     ```{.bash}
-    # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-
-    # Activate the newly created conda environment
-    source activate fmbench_python311
-
-    # Upgrade pip and install the fmbench package
-    pip install -U fmbench
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    # Add the Python environment activation and directory navigation to .bashrc
+    echo 'source $HOME/.fmbench_python311/bin/activate' >> $HOME/.bashrc
+    uv pip install -U fmbench
     ```
 
 1. Build the `vllm` container for serving the model. 
@@ -316,7 +301,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
 **_As of 2024-08-27 this has been tested on `c5.18xlarge` and `m5.16xlarge` instances_**
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs Anaconda on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `uv` on the instance which is then used to create a new Python virtual environment for `FMBench`.
 
     ```{.bash}
     # Install Docker and Git using the YUM package manager
@@ -325,25 +310,18 @@ command below. The config file for this example can be viewed [here](src/fmbench
     # Start the Docker service
     sudo systemctl start docker
 
-    # Download the Miniconda installer for Linux
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-    bash Miniconda3-latest-Linux-x86_64.sh -b # Run the Miniconda installer in batch mode (no manual intervention)
-    rm -f Miniconda3-latest-Linux-x86_64.sh    # Remove the installer script after installation
-    eval "$(/home/$USER/miniconda3/bin/conda shell.bash hook)" # Initialize conda for bash shell
-    conda init  # Initialize conda, adding it to the shell
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
     ```
 
-1. Setup the `fmbench_python311` conda environment.
+1. Setup the `.fmbench_python311` Python virtual environment.
 
     ```{.bash}
-    # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-
-    # Activate the newly created conda environment
-    source activate fmbench_python311
-
-    # Upgrade pip and install the fmbench package
-    pip install -U fmbench
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    # Add the Python environment activation and directory navigation to .bashrc
+    echo 'source $HOME/.fmbench_python311/bin/activate' >> $HOME/.bashrc
+    uv pip install -U fmbench
     ```
 
 1. Build the `vllm` container for serving the model. 
@@ -458,7 +436,7 @@ command below. The config file for this example can be viewed [here](src/fmbench
 **_As of 12/24/2024, this has been tested on `c8g.24xlarge` with `llama 3 8b Instruct` on Ubuntu Server 24.04 LTS (HVM), SSD Volume Type_**
 
 
-1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `Docker` and `Miniconda` on the instance which is then used to create a new `conda` environment for `FMBench`. See instructions for downloading anaconda [here](https://www.anaconda.com/download)
+1. Connect to your instance using any of the options in EC2 (SSH/EC2 Connect), run the following in the EC2 terminal. This command installs `Docker` and `uv` on the instance which is then used to create a new Python virtual environment for `FMBench`.
 
     ```{.bash}
 
@@ -467,25 +445,18 @@ command below. The config file for this example can be viewed [here](src/fmbench
     sudo systemctl start docker
     sudo systemctl enable docker
 
-    wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-aarch64.sh -O /home/ubuntu/Miniconda3-latest-Linux-aarch64.sh
-    bash /home/ubuntu/Miniconda3-latest-Linux-aarch64.sh -b -p /home/ubuntu/miniconda3
-    rm /home/ubuntu/Miniconda3-latest-Linux-aarch64.sh
-
-    # Initialize conda for bash shell
-    /home/ubuntu/miniconda3/bin/conda init
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
     ```
 
-1. Setup the `fmbench_python311` conda environment.
+1. Setup the `.fmbench_python311` Python virtual environment.
 
     ```{.bash}
-    # Create a new conda environment named 'fmbench_python311' with Python 3.11 and ipykernel
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-
-    # Activate the newly created conda environment
-    source activate fmbench_python311
-
-    # Upgrade pip and install the fmbench package
-    pip install -U fmbench
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    # Add the Python environment activation and directory navigation to .bashrc
+    echo 'source $HOME/.fmbench_python311/bin/activate' >> $HOME/.bashrc
+    uv pip install -U fmbench
     ```
 
 1. Build the `vllm` container for serving the model. 

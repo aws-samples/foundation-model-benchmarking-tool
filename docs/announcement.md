@@ -1,3 +1,12 @@
+# Release 2.1 announcement
+
+We are excited to announce some major new enhancements for `FMBench`.
+
+**Deepseek-R1 support**: The distilled version of Deepseek-R1 models are now supported for both performance benchmarking and model evaluations 🎉. You can use built in support for 4 different datasets: [`LongBench`](https://huggingface.co/datasets/THUDM/LongBench), [`Dolly`](https://huggingface.co/datasets/databricks/databricks-dolly-15k), [`OpenOrca`](https://huggingface.co/datasets/Open-Orca/OpenOrca) and [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/finance-tasks/tree/refs%2Fconvert%2Fparquet/ConvFinQA). You can deploy the Deepseek-R1 distilled models on Amazon EC2, Amazon Bedrock or Amazon SageMaker.
+
+**Faster installs with `uv`**: We now use `uv` instead of `conda` for creating a Python environment and installing dependencies for `FMBench`.
+
+
 # Release 2.0 announcement
 
 We are excited to share news about a major FMBench release, we now have release 2.0 for FMBench that supports model evaluations through a panel of LLM evaluators🎉. With the recent feature additions to FMBench we are already seeing increased interest from customers and hope to reach even more customers and have an even greater impact. Check out all the latest and greatest features from FMBench on the FMBench website.
