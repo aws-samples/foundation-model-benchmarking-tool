@@ -1,8 +1,9 @@
 [build-system]
 requires = [
-    "setuptools>=42",
+    "setuptools>=61.0.0",  # This version supports newer metadata
     "wheel",
 ]
+
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -13,8 +14,11 @@ authors = [
     { name = "Amit Arora", email = "aroraai@amazon.com" },
     { name = "Madhur Prashant", email = "Madhurpt@amazon.com" }
 ]
-license = { file = "LICENSE" }
+
 readme = "README.md"
+license = { text = "MIT" }
+
+
 keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "generative-ai", "foundation-models", "llama3", "ec2", "eks"]
 requires-python = ">=3.11"
 classifiers = [
@@ -24,7 +28,6 @@ classifiers = [
 ]
 dependencies = [
    "boto3>=1.36.6",
-   "click>=8.1.8",
    "datasets>=3.2.0",
    "ec2-metadata>=2.14.0",
    "ipykernel>=6.29.5",
@@ -54,6 +57,7 @@ dependencies = [
    "torch>=2.5.1",
    "tqdm>=4.67.1",
    "transformers>=4.48.1",
+   "twine>=6.1.0",
    "typing-extensions>=4.12.2",
    "vllm>=0.6.6.post1",
    "zmq>=0.0.0",
@@ -65,4 +69,3 @@ include-package-data = true
 
 [project.scripts]
 fmbench = "fmbench.main:main"
-
