@@ -1,5 +1,5 @@
 general:
-  name: "fmbench-bedrock-nova-models"      
+  name: "fmbench-bedrock-nova-models-openorca-dataset-new"      
   model_name: "Nova models available in Amazon Bedrock"
   
 # AWS and SageMaker settings
@@ -31,16 +31,15 @@ s3_read_data:
     - pricing.yml ## mention the name of the config files that you want to be downloaded from s3 into the configs directory locally
     source_data_prefix: source_data  ## Add a source_data folder to store your raw data in an s3 path configured by you
     source_data_files:
-    - 2wikimqa_e.jsonl
-    - 2wikimqa.jsonl
-    - hotpotqa_e.jsonl
-    - hotpotqa.jsonl
-    - narrativeqa.jsonl
-    - triviaqa_e.jsonl
-    - triviaqa.jsonl
+    # This dataset is the custom open orca dataset which has the system prompt and the question columns
+    # merged. For a few rows, the system prompt is empty, so if there is a system prompt, it is appended to 
+    # the question, else only the question is used. This is done to get the true accuracy measures of the model
+    # To get this custom jsonl file, run the `Preprocess the OpenOrca Dataset` section of the `bring_your_dataset`
+    # notebook within the FMBench repository.
+    - Open-Orca/OpenOrca.jsonl
     tokenizer_prefix: tokenizer ## add the tokenizer.json and config.json from your specific tokenizer type
     prompt_template_dir: prompt_template
-    prompt_template_file: prompt_template_nova.txt ## add your desired prompt template type
+    prompt_template_file: prompt_template_nova_open_orca.txt ## add your desired prompt template type
 
 ## section that enables container to run notebooks and python scripts automatically 
 run_steps:
@@ -54,10 +53,9 @@ run_steps:
 
 datasets:
   prompt_template_keys:
-  - input
-  - context
-  ground_truth_col_key: answers
-  question_col_key: input
+  - question
+  ground_truth_col_key: response
+  question_col_key: question
   filters:
   - language: en    
     min_length_in_tokens: 1
@@ -78,7 +76,15 @@ datasets:
   - language: en
     min_length_in_tokens: 3000
     max_length_in_tokens: 4000
-    payload_file: payload_en_3000-3840.jsonl
+    payload_file: payload_en_3000-4000.jsonl
+  - language: en
+    min_length_in_tokens: 4000
+    max_length_in_tokens: 5000
+    payload_file: payload_en_4000-5000.jsonl
+  - language: en
+    min_length_in_tokens: 5000
+    max_length_in_tokens: 6000
+    payload_file: payload_en_5000-6000.jsonl
  
 # name of the file that contains the model evaluation information
 # for example, the prompt template names, the ground truth column name (if any), 
@@ -87,7 +93,7 @@ model_evaluations: model_eval_all_info.yml
 
 
 metrics:
-  dataset_of_interest: en_3000-3840
+  dataset_of_interest: en_1000-2000
 
   
 pricing: pricing.yml ## mention the name of the file that contains pricing information, within s3 or locally in the configs folder
@@ -95,22 +101,22 @@ pricing: pricing.yml ## mention the name of the file that contains pricing infor
 inference_parameters: 
   bedrock:
     temperature: 0.1
-    max_tokens: 100
+    max_tokens: 512
     top_p: 0.92
     caching: False
     # Set use_boto3 to "no" if the model is supported by litellm and 
     # the litellm API will be used to invoke the model. If the model is on
     # bedrock and is not supported by the latest version of litellm, then set
     # the parameter below to "yes" and the bedrock converseAPI will be used.
-    use_boto3: yes
+    use_boto3: no
 
 # Model configurations for mistral 7b instruct on Amazon Bedrock
 experiments:
   # This is the NOVA micro model
-  - name: us.amazon.nova-micro-v1:0
-    model_name: us.amazon.nova-micro-v1:0
-    ep_name: us.amazon.nova-micro-v1:0
-    instance_type: us.amazon.nova-micro-v1:0
+  - name: amazon.nova-micro-v1:0
+    model_name: amazon.nova-micro-v1:0
+    ep_name: amazon.nova-micro-v1:0
+    instance_type: amazon.nova-micro-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -120,15 +126,13 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     env:
-  - name: us.amazon.nova-lite-v1:0
-    model_name: us.amazon.nova-lite-v1:0
-    ep_name: us.amazon.nova-lite-v1:0
-    instance_type: us.amazon.nova-lite-v1:0
+  - name: amazon.nova-lite-v1:0
+    model_name: amazon.nova-lite-v1:0
+    ep_name: amazon.nova-lite-v1:0
+    instance_type: amazon.nova-lite-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -138,15 +142,13 @@ experiments:
     - payload_en_1-500.jsonl
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
-    - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
     concurrency_levels:
     - 1
     env:
-  - name: us.amazon.nova-pro-v1:0
-    model_name: us.amazon.nova-pro-v1:0
-    ep_name: us.amazon.nova-pro-v1:0
-    instance_type: us.amazon.nova-pro-v1:0
+  - name: amazon.nova-pro-v1:0
+    model_name: amazon.nova-pro-v1:0
+    ep_name: amazon.nova-pro-v1:0
+    instance_type: amazon.nova-pro-v1:0
     instance_count:
     inference_script: bedrock_predictor.py
     inference_spec:
@@ -157,14 +159,16 @@ experiments:
     - payload_en_500-1000.jsonl
     - payload_en_1000-2000.jsonl
     - payload_en_2000-3000.jsonl
-    - payload_en_3000-3840.jsonl
+    - payload_en_3000-4000.jsonl
+    - payload_en_4000-5000.jsonl
+    - payload_en_5000-6000.jsonl
     concurrency_levels:
     - 1
     env:
     
 report:
   latency_budget: 2
-  cost_per_10k_txn_budget: 20
+  cost_per_10k_txn_budget: 100
   error_rate_budget: 0
   per_inference_request_file: per_inference_request_results.csv
   all_metrics_file: all_metrics.csv

@@ -8,13 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/advanced.html">
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/deepseek.html">
       
       
-        <link rel="prev" href="manifest.html">
+        <link rel="prev" href="accuracy.html">
       
       
-        <link rel="next" href="byoe.html">
+        <link rel="next" href="benchmarking_on_bedrock.html">
       
       
       <link rel="icon" href="website/img/favicon.png">
@@ -22,7 +22,7 @@
     
     
       
-        <title>Main - Foundation Model Benchmarking Tool (FMBench)</title>
+        <title>Deepseek - Foundation Model Benchmarking Tool (FMBench)</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#advanced" class="md-skip">
+        <a href="#deepseek-r1" class="md-skip">
           Skip to content
         </a>
       
@@ -125,7 +125,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Main
+              Deepseek
             
           </span>
         </div>
@@ -537,17 +537,19 @@
       
   
   
+    
   
   
+  
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -561,7 +563,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Benchmarking
@@ -614,10 +616,30 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="deepseek.html" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Deepseek
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="deepseek.html" class="md-nav__link md-nav__link--active">
         
   
   <span class="md-ellipsis">
@@ -626,6 +648,35 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-deepseek-r1-distilled-models-on-amazon-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark Deepseek-R1 distilled models on Amazon EC2
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -831,19 +882,17 @@
       
   
   
-    
   
   
-  
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -857,7 +906,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             Advanced functionality
@@ -868,19 +917,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-      <a href="advanced.html" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="advanced.html" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -889,7 +929,6 @@
   
 
       </a>
-      
     </li>
   
 
@@ -1279,6 +1318,23 @@
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-deepseek-r1-distilled-models-on-amazon-ec2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmark Deepseek-R1 distilled models on Amazon EC2
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -1295,8 +1351,15 @@
   
 
 
-<h1 id="advanced">Advanced<a class="headerlink" href="#advanced" title="Permanent link">&para;</a></h1>
-<p>Beyond running <code>FMBench</code> with the configuration files provided, you may want try out bringing your own dataset or endpoint to <code>FMBench</code>.</p>
+<h1 id="deepseek-r1">DeepSeek-R1<a class="headerlink" href="#deepseek-r1" title="Permanent link">&para;</a></h1>
+<p>The distilled version of Deepseek-R1 models are now supported for both performance benchmarking and model evaluations 🎉. You can use built in support for 4 different datasets: <a href="https://huggingface.co/datasets/THUDM/LongBench"><code>LongBench</code></a>, <a href="https://huggingface.co/datasets/databricks/databricks-dolly-15k"><code>Dolly</code></a>, <a href="https://huggingface.co/datasets/Open-Orca/OpenOrca"><code>OpenOrca</code></a> and <a href="https://huggingface.co/datasets/AdaptLLM/finance-tasks/tree/refs%2Fconvert%2Fparquet/ConvFinQA"><code>ConvFinQA</code></a>. You can deploy the Deepseek-R1 distilled models on Amazon EC2, Amazon Bedrock or Amazon SageMaker.</p>
+<p>The easiest way to benchmark the DeepSeek models is through the <a href="https://github.com/awslabs/fmbench-orchestrator"><code>FMBench-orchestrator</code></a> on Amazon EC2 VMs.</p>
+<h2 id="benchmark-deepseek-r1-distilled-models-on-amazon-ec2">Benchmark Deepseek-R1 distilled models on Amazon EC2<a class="headerlink" href="#benchmark-deepseek-r1-distilled-models-on-amazon-ec2" title="Permanent link">&para;</a></h2>
+<p>👉 Make sure your account has enough service quota for vCPUs to run this benchmark. We would be using <code>g6e.xlarge</code>, <code>g6e.2xlarge</code>, <code>g6e.12xlarge</code> and <code>g6e.48xlarge</code> instances, if you do not have sufficient service quota then you can set <code>deploy: no</code> in the <code>configs/deepseek/deepseek-convfinqa.yml</code> (or other) file to disable some tests as needed.</p>
+<p>Follow instructions <a href="https://github.com/awslabs/fmbench-orchestrator?tab=readme-ov-file#install-fmbench-orchestrator-on-ec2">here</a> to install the orchestrator. Once installed you can run Deepseek-r1 benchmarking with the <a href="https://huggingface.co/datasets/AdaptLLM/finance-tasks/tree/refs%2Fconvert%2Fparquet/ConvFinQA"><code>ConvFinQA</code></a> dataset the following command:</p>
+<p><div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python main.py --config-file configs/deepseek/deepseek-convfinqa.yml
+</span></code></pre></div>
+Change the <code>--config-file</code> parameter to <a href="https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml"><code>configs/deepseek/deepseek-longbench.yml</code></a> or <a href="https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml"><code>configs/deepseek/deepseek-openorca.yml</code></a> to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on <code>g6e</code> instances, edit this file as per your requirements. </p>
 
 
 

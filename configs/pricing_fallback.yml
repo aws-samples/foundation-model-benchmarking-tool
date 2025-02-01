@@ -98,6 +98,12 @@ pricing:
     amazon.titan-text-lite-v1:
       input-per-1k-tokens: 0.00015
       output-per-1k-tokens: 0.0002
+    us.anthropic.claude-3-5-sonnet-20241022-v2:0: 
+      input-per-1k-tokens: 0.003
+      output-per-1k-tokens: 0.015
+    anthropic.claude-3-5-sonnet-20241022-v2:0: 
+      input-per-1k-tokens: 0.003
+      output-per-1k-tokens: 0.015
     anthropic.claude-3-5-sonnet-20240620-v1:0:
       input-per-1k-tokens: 0.003
       output-per-1k-tokens: 0.015
@@ -128,6 +134,12 @@ pricing:
     cohere.command-text-v14:
       input-per-1k-tokens: 0.0015
       output-per-1k-tokens: 0.002
+    meta.llama3-3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00072
+      output-per-1k-tokens: 0.00072
+    us.meta.llama3-3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00072
+      output-per-1k-tokens: 0.00072
     meta.llama2-13b-chat-v1:
       input-per-1k-tokens: 0.00075
       output-per-1k-tokens: 0.001
@@ -167,3 +179,12 @@ pricing:
     us.meta.llama3-2-90b-instruct-v1:0:
       input-per-1k-tokens: 0.00072
       output-per-1k-tokens: 0.00072
+    us.amazon.nova-micro-v1:0:
+      input-per-1k-tokens: 0.000035
+      output-per-1k-tokens: 0.00014
+    us.amazon.nova-lite-v1:0:
+      input-per-1k-tokens: 0.00006
+      output-per-1k-tokens: 0.00024
+    us.amazon.nova-pro-v1:0:
+      input-per-1k-tokens: 0.0008
+      output-per-1k-tokens: 0.0032
