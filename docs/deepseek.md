@@ -11,5 +11,5 @@ Follow instructions [here](https://github.com/awslabs/fmbench-orchestrator?tab=r
 ```{.bashrc}
 python main.py --config-file configs/deepseek/deepseek-convfinqa.yml
 ```
-Change the `--config-file` parameter to [`configs/deepseek/deepseek-longbench.yml`](https://github.com/aarora79/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml) or [`configs/deepseek/deepseek-openorca.yml`](https://github.com/aarora79/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml) to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on `g6e` instances, edit this file as per your requirements.
+Change the `--config-file` parameter to [`configs/deepseek/deepseek-longbench.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml) or [`configs/deepseek/deepseek-openorca.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml) to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on `g6e` instances, edit this file as per your requirements.
 
