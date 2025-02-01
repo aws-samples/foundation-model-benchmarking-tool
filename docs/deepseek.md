@@ -6,10 +6,12 @@ The easiest way to benchmark the DeepSeek models is through the [`FMBench-orches
 
 ## Benchmark Deepseek-R1 distilled models on Amazon EC2
 
+👉 Make sure your account has enough service quota for vCPUs to run this benchmark. We would be using `g6e.xlarge`, `g6e.2xlarge`, `g6e.12xlarge` and `g6e.48xlarge` instances, if you do not have sufficient service quota then you can set `deploy: no` in the `configs/deepseek/deepseek-convfinqa.yml` (or other) file to disable some tests as needed.
+
 Follow instructions [here](https://github.com/awslabs/fmbench-orchestrator?tab=readme-ov-file#install-fmbench-orchestrator-on-ec2) to install the orchestrator. Once installed you can run Deepseek-r1 benchmarking with the [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/finance-tasks/tree/refs%2Fconvert%2Fparquet/ConvFinQA) dataset the following command:
 
 ```{.bashrc}
 python main.py --config-file configs/deepseek/deepseek-convfinqa.yml
 ```
-Change the `--config-file` parameter to [`configs/deepseek/deepseek-longbench.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml) or [`configs/deepseek/deepseek-openorca.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml) to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on `g6e` instances, edit this file as per your requirements.
+Change the `--config-file` parameter to [`configs/deepseek/deepseek-longbench.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml) or [`configs/deepseek/deepseek-openorca.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml) to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on `g6e` instances, edit this file as per your requirements. 
 
