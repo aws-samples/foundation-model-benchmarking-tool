@@ -24,6 +24,7 @@ classifiers = [
 ]
 dependencies = [
    "boto3>=1.36.6",
+   "click>=8.1.8",
    "datasets>=3.2.0",
    "ec2-metadata>=2.14.0",
    "ipykernel>=6.29.5",
