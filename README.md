@@ -14,7 +14,7 @@
 </h4>
 
 
-🚨 **What's new**: Benchmark the [Qwen2.5-72b](https://huggingface.co/Qwen/Qwen2.5-72B) on Amazon EC2 and the newest [llama3-3-70b](https://aws.amazon.com/about-aws/whats-new/2024/12/metas-llama-3-3-70b-model-amazon-bedrock/) model on Amazon Bedrock. Use more simplified versions of configuration files, view more [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/docs/simplified_config_files.md).  
+🚨 **What's new**: Benchmarks for [Deepseek-R1](https://github.com/deepseek-ai/DeepSeek-R1) models on Amazon EC2 and Amazon SageMaker. Faster setup with `uv` for Python venv and dependency installation.  🚨
 
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
@@ -48,19 +48,12 @@ Use `FMBench` to determine model accuracy using a panel of LLM evaluators (PoLL 
 
 Configuration files are available in the [configs](./src/fmbench/configs) folder for the following models in this repo.
 
-### Llama3 on Amazon SageMaker
-
-Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/blogs/machine-learning/meta-llama-3-models-are-now-available-in-amazon-sagemaker-jumpstart/)), and you can now benchmark it using `FMBench`. Here are the config files for benchmarking `Llama3-8b-instruct` and `Llama3-70b-instruct` on `ml.p4d.24xlarge`, `ml.inf2.24xlarge` and `ml.g5.12xlarge` instances.
-
-- [Config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-instruct-g5-p4d.yml) for `Llama3-8b-instruct` on  `ml.p4d.24xlarge` and `ml.g5.12xlarge`.
-- [Config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/70b/config-llama3-70b-instruct-g5-p4d.yml) for `Llama3-70b-instruct` on  `ml.p4d.24xlarge` and `ml.g5.48xlarge`.
-- [Config file](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/configs/llama3/8b/config-llama3-8b-inf2-g5.yml) for `Llama3-8b-instruct` on  `ml.inf2.24xlarge` and `ml.g5.12xlarge`.
-
 ### Full list of benchmarked models
 
 
 | Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
+| **Deepseek-R1 distilled**        | g6e                           | g6e                                           |                            |
 | **Llama3.3-70b instruct**        |                               |                                           | On-demand                           |
 | **Qwen2.5-72b**                  | g5, g6e                       |                                           |                                    |
 | **Amazon Nova**                  |                               |                                           | On-demand                          |
@@ -90,6 +83,12 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 ## New in this release
 
+## 2.1.0
+
+1. Deepseek-R1 distilled model support using [`vllm`](https://github.com/vllm-project/vllm).
+1. Evaluate Deepseek performance with `LongBench`, `OpenOrca`, `Dolly` and [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/ConvFinQA) datasets.
+1. Replace `conda` with [`uv`](https://docs.astral.sh/uv/) for faster installs.
+
 ## 2.0.27
 
 1. Ollama end to end support
@@ -98,20 +97,6 @@ Llama3 is now available on SageMaker (read [blog post](https://aws.amazon.com/bl
 
 1. Bug fix for missing HuggingFace token file.
 1. Config file enhancements
-
-## 2.0.25
-
-1. Fix bug with an alternate VariantName for SageMaker BYOE.
-
-## 2.0.24
-
-1. ARM benchmarking support (AWS Graviton 4).
-1. Relax IAM permission requirements for Amazon SageMaker bring your own endpoint.
-
-## 2.0.23
-
-1. Bug fixes for Amazon SageMaker BYOE.
-1. Additional config files.
 
 
 [Release history](./release_history.md)
@@ -148,9 +133,11 @@ You can run `FMBench` on either a SageMaker notebook or on an EC2 VM. Both optio
 1. On the `fmbench-notebook` open a Terminal and run the following commands.
 
     ```{.bash}
-    conda create --name fmbench_python311 -y python=3.11 ipykernel
-    source activate fmbench_python311;
-    pip install -U fmbench
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+    uv venv .fmbench_python311 --python 3.11
+    source .fmbench_python311/bin/activate
+    uv pip install -U fmbench
     ```
 
 1. Now you are ready to `fmbench` with the following command line. We will use a sample config file placed in the S3 bucket by the CloudFormation stack for a quick first run.

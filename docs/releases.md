@@ -1,5 +1,20 @@
 # Releases
 
+## 2.1.0
+
+1. Deepseek-R1 distilled model support using [`vllm`](https://github.com/vllm-project/vllm).
+1. Evaluate Deepseek performance with `LongBench`, `OpenOrca`, `Dolly` and [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/ConvFinQA) datasets.
+1. Replace `conda` with [`uv`](https://docs.astral.sh/uv/) for faster installs.
+
+## 2.0.27
+
+1. Ollama end to end support
+
+## 2.0.26
+
+1. Bug fix for missing HuggingFace token file.
+1. Config file enhancements
+
 ## 2.0.25
 
 1. Fix bug with an alternate VariantName for SageMaker BYOE.

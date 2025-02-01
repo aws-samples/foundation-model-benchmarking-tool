@@ -103,6 +103,11 @@ class EC2Predictor(FMBenchPredictor):
                 payload2 = copy.deepcopy(payload)
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
+                # delete any fields related to evaluations since we dont want to send them to VLLM
+                if 'question' in payload2:
+                    del payload2['question']
+                if 'ground_truth' in payload2:
+                    del payload2['ground_truth']
                 st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload2)
                 # record the latency for the response generated

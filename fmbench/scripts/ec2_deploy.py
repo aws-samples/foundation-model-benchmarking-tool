@@ -59,7 +59,8 @@ def _create_deployment_script(image_uri,
                               model_loading_timeout,
                               env,
                               model_copies,
-                              is_neuron_instance):
+                              is_neuron_instance,
+                              cli_params):
     """
     Write a deployment script for model container
     """
@@ -76,7 +77,7 @@ def _create_deployment_script(image_uri,
         case constants.CONTAINER_TYPE_VLLM:
             deploy_script_content = vllm.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_VLLM_GPU:
-            deploy_script_content = vllm_gpu.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+            deploy_script_content = vllm_gpu.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory, cli_params)
         case constants.CONTAINER_TYPE_TRITON:
             deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_OLLAMA:
@@ -216,6 +217,7 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model_directory = _set_up(model_name, dir_path)
     is_neuron_instance = IS_NEURON_INSTANCE(experiment_config['instance_type'])
     model_copies = experiment_config['inference_spec'].get('model_copies', '1')
+    cli_params = experiment_config['inference_spec'].get('cli_params', '')
 
 
     # if this is a neuron instance and we are using the djl serving inference container
@@ -247,7 +249,8 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
                                                        model_loading_timeout,
                                                        env,
                                                        model_copies,
-                                                       is_neuron_instance)
+                                                       is_neuron_instance,
+                                                       cli_params)
 
     logger.info("Running the deployment script")
     ran_container = _run_container(deployment_script_path)

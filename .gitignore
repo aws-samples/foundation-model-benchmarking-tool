@@ -1,4 +1,7 @@
 __pycache__/
+EC2_system_metrics.csv
+.fmbench_python311
+fmbench.egg-info/
 analytics/comparison.json
 site
 *.zip

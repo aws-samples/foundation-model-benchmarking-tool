@@ -1,49 +1,67 @@
-[tool.poetry]
-name = "fmbench"
-version = "2.0.27"
-description ="Benchmark performance of **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`."
-authors = ["Amit Arora <aroraai@amazon.com>", "Madhur Prashant <Madhurpt@amazon.com>"]
-readme = "README.md"
-license = "MIT"
-repository = "https://github.com/aws-samples/foundation-model-benchmarking-tool"
-keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "generative-ai", "foundation-models", "llama3", "ec2", "eks"]
-
-[tool.poetry.dependencies]
-python = "^3.11"
-requests = "^2.32.2"
-ipywidgets = "8.1.1"
-transformers = "4.46.1"
-pandas = "2.1.4"
-datasets = "2.16.1"
-seaborn = "0.13.1"
-tomark = "0.1.4"
-jupyter = "^1.0.0"
-boto3 = "^1.34.109"
-papermill = "^2.5.0"
-pyyaml = "*"
-sagemaker = "2.223.0"
-litellm = "1.54.0"
-plotly = "5.22.0"
-kaleido = "0.2.1"
-jinja2 = "3.1.4"
-tqdm = "4.66.4"
-pydantic = "2.7.4"
-ray = "2.32.0"
-torch = "2.4"
-sentence-transformers = "3.0.1"
-ec2-metadata = "2.13.0"
-nvitop = "1.3.2"
-psutil = "5.9.8"
-
-[tool.poetry.dev-dependencies]
-
-[[tool.poetry.packages]]
-include = "fmbench"
-from = "src"
-
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = [
+    "setuptools>=42",
+    "wheel",
+]
+build-backend = "setuptools.build_meta"
 
-[tool.poetry.scripts]
-fmbench = 'fmbench.main:main'
+[project]
+name = "fmbench"
+version = "2.1.0"
+description = "Benchmark performance of **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`."
+authors = [
+    { name = "Amit Arora", email = "aroraai@amazon.com" },
+    { name = "Madhur Prashant", email = "Madhurpt@amazon.com" }
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "generative-ai", "foundation-models", "llama3", "ec2", "eks"]
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+   "boto3>=1.36.6",
+   "datasets>=3.2.0",
+   "ec2-metadata>=2.14.0",
+   "ipykernel>=6.29.5",
+   "ipywidgets>=8.1.5",
+   "jinja2>=3.1.5",
+   "jupyter>=1.1.1",
+   "jupyter-client>=8.6.3",
+   "kaleido==0.2.1",
+   "litellm>=1.59.8",
+   "mkdocs>=1.6.1",
+   "mkdocs-material>=9.5.50",
+   "mknotebooks>=0.8.0",
+   "nvitop>=1.4.1",
+   "pandas>=2.2.3",
+   "papermill>=2.6.0",
+   "pip>=24.3.1",
+   "plotly>=5.24.1",
+   "psutil>=6.1.1",
+   "pydantic>=2.10.6",
+   "pyyaml>=6.0.2",
+   "ray>=2.41.0",
+   "requests>=2.32.3",
+   "sagemaker>=2.237.3",
+   "seaborn>=0.13.2",
+   "sentence-transformers>=3.4.0",
+   "tomark>=0.1.4",
+   "torch>=2.5.1",
+   "tqdm>=4.67.1",
+   "transformers>=4.48.1",
+   "typing-extensions>=4.12.2",
+   "vllm>=0.6.6.post1",
+   "zmq>=0.0.0",
+]
+
+[tool.setuptools]
+packages = ["fmbench"]
+include-package-data = true
+
+[project.scripts]
+fmbench = "fmbench.main:main"
+
