@@ -12,7 +12,7 @@ You can now run `FMBench` on any platform where you can run a Docker container, 
 
     ```{.bash}
     # set the config file path to point to the config file of interest
-    CONFIG_FILE=https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
+    CONFIG_FILE=https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml
     docker run -v $(pwd)/fmbench:/app \
       -v /tmp/fmbench-read:/tmp/fmbench-read \
       -v /tmp/fmbench-write:/tmp/fmbench-write \

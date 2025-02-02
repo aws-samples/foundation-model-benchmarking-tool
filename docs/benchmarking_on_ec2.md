@@ -142,10 +142,10 @@ command below. The config file for this example can be viewed [here](src/fmbench
 
     ```{.bash}
     # curl the docker file for triton
-    curl -o ./Dockerfile_triton https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/Dockerfile_triton
+    curl -o ./Dockerfile_triton https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/fmbench/scripts/triton/Dockerfile_triton
 
     # curl the script that builds and pushes the triton image locally
-    curl -o build_and_push_triton.sh https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/scripts/triton/build_and_push_triton.sh
+    curl -o build_and_push_triton.sh https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/fmbench/scripts/triton/build_and_push_triton.sh
 
     # Make the triton build and push script executable, and run it
     chmod +x build_and_push_triton.sh

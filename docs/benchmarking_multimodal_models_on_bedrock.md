@@ -13,7 +13,7 @@ Before running multimodal benchmarks, ensure you have:
 To benchmark multimodal models on Amazon Bedrock, use the provided configuration files. Here's an example command:
 
 ``` {.bash}
-fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/src/fmbench/configs/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml > fmbench.log 2>&1
+fmbench --config-file https://raw.githubusercontent.com/aws-samples/foundation-model-benchmarking-tool/main/fmbench/configs/bedrock/config-llama-3-2-11b-vision-instruct-scienceqa.yml > fmbench.log 2>&1
 ```
 
 ##### **This command will**:
