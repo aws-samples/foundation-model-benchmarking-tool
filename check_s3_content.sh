@@ -24,7 +24,7 @@ do
     REMOTE_FILE=https://${BUCKET}.s3.amazonaws.com/artifacts/ML-FMBT/$i
     wget -q $REMOTE_FILE --no-check-certificate -O $TEMP_FILE
     
-    LOCAL_FILE=src/fmbench/$i
+    LOCAL_FILE=fmbench/$i
     if diff "$TEMP_FILE" "$LOCAL_FILE" -w> /dev/null; then
         #echo "The contents of the remote file and the local file are identical."
         : # noop

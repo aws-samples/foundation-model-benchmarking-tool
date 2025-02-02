@@ -87,7 +87,7 @@ def create_dir_listing_as_markdown(directory):
 def create_manifest_file(config_yml_dir):
     config_yml_files = glob.glob(os.path.join(config_yml_dir, "**/*", "*.yml"),
                                 recursive=True)
-    config_yml_files = [f.replace(os.path.join("src", "fmbench") + "/", "") for f in config_yml_files]
+    config_yml_files = [f.replace("fmbench" + "/", "") for f in config_yml_files]
     print(f"there are {len(config_yml_files)} config yml files")
 
     # append them to the base list
@@ -100,7 +100,7 @@ def create_manifest_file(config_yml_dir):
     print(f"written {written} bytes to {MANIFEST_FILE}")
 
 # all .yml files in the config directory need to be appended to the list above
-config_yml_dir = os.path.join("src", "fmbench", "configs")
+config_yml_dir = os.path.join("fmbench", "configs")
 create_manifest_file(config_yml_dir)
 
 # create the directory listing to put on the website
