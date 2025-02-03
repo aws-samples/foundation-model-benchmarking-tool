@@ -177,7 +177,7 @@ experiments:
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://localhost:8000/v1/completions' 
     instance_type: {instance_type}
-    image_uri: vllm/vllm-openai:v0.6.6.post1
+    image_uri: vllm/vllm-openai:v0.7.1
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
     deployment_script: ec2_deploy.py
