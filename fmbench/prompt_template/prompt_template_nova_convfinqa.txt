@@ -1,0 +1,9 @@
+{input}
+Think step by step first and then answer. Follow below format when responding
+Response Schema:
+<thinking>
+( your thinking goes here )
+</thinking>
+<answer>
+( your answer goes here )
+</answer>
