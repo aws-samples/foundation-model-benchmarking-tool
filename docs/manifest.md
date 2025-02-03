@@ -27,6 +27,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── bedrock/config-llama-3-2-all-models.yml](configs/bedrock/config-llama-3-2-all-models.yml)  
 [├── bedrock/config-llama-3-3-all-models-open-orca.yml](configs/bedrock/config-llama-3-3-all-models-open-orca.yml)  
 [├── bedrock/config-llama-3-3-all-models.yml](configs/bedrock/config-llama-3-3-all-models.yml)  
+[├── bedrock/config-nova-all-models-convfinqa.yml](configs/bedrock/config-nova-all-models-convfinqa.yml)  
 [├── bedrock/config-nova-all-models-dolly-dataset.yml](configs/bedrock/config-nova-all-models-dolly-dataset.yml)  
 [├── bedrock/config-nova-all-models-openarca.yml](configs/bedrock/config-nova-all-models-openarca.yml)  
 [└── bedrock/config-nova-all-models.yml](configs/bedrock/config-nova-all-models.yml)  
