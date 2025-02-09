@@ -15,8 +15,8 @@ import concurrent.futures
 from fmbench import globals
 from fmbench import defaults
 from transformers import AutoTokenizer
-from typing import Union, Dict, List, Tuple
 from botocore.exceptions import NoCredentialsError
+from typing import Union, Dict, List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -319,13 +319,15 @@ def read_from_s3(bucket_name, s3_file_path):
         return None
 
 
-def _get_local_object(bucket: str, key: str, decode: bool) -> str:
+def _get_local_object(bucket: str, key: str, decode: bool) -> Optional[str]:
     key = nt_to_posix(key)
     logger.debug(f"get_local_object, key={key}")
     if bucket == globals.config["s3_read_data"]["read_bucket"]:
         pathname = _get_local_read_path(key)
     else:
         pathname = _get_local_write_path(key)
+    if Path(pathname).is_file() is False:
+        return None
     if decode:
         return Path(pathname).read_bytes().decode("utf-8")
     else:

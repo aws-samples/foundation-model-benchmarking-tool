@@ -1,24 +1,10 @@
-Your task is to answer a question based solely on the information provided in the following text.
-Follow these guidelines strictly:
+There can be multiple question answer pairs in the context.
+As soon as you find the first question in the text below immediately stop reading any further and just answer the question.
+Always start your response with "<think>\\n" at the beginning of every output.
+Keep your thinking process short and your answers concise, do not overthink.
+Put your final answer in one line starting with Answer:
 
-1. Always start your response with "<think>\n" at the beginning of every output.
-2. Use only information explicitly stated in or directly implied by the text
-3. If the text does not contain enough information to fully answer the question, state this clearly.
-4. Do not make up or infer any information beyond what's in the text.
-5. Where possible, reference specific parts of the text to support your answer.
-6. Provide concise answers, but include all relevant information from the text.
-7. There can be multiple question answer pairs in the context. Answer the final question in the question section above after the context. 
 
-Here's the text:
-
-<text>
-{context}
-</text>
-
-And here's the question:
-
-<question>
 {input}
-</question>
 
-Please provide your answer below, adhering strictly to the guidelines above.
+{context}

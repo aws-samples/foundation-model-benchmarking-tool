@@ -20,7 +20,7 @@ license = { text = "MIT" }
 
 
 keywords = ["benchmarking", "sagemaker", "bedrock", "bring your own endpoint", "generative-ai", "foundation-models", "llama3", "ec2", "eks"]
-requires-python = ">=3.11"
+requires-python = ">=3.12,<3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",

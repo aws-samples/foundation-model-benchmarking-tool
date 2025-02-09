@@ -63,10 +63,23 @@ class EC2Predictor(FMBenchPredictor):
                 container_type = self._inference_spec.get("container_type", constants.CONTAINER_TYPE_DJL)
                 logger.debug(f"split input parameters is: {split_input_and_inference_params}, "
                              f"container_type={container_type}")
+
+            # make a copy of the original payload because we would be making changes
+            # and dont want to change the original variable since it is also used by the calling function
+            payload2 = copy.deepcopy(payload)
+
+            # delete any fields related to evaluations since we dont want to send them to VLLM
+            if 'question' in payload2:
+                del payload2['question']
+            ground_truth = None
+            if 'ground_truth' in payload2:
+                ground_truth = payload2['ground_truth']
+                del payload2['ground_truth']
+                
             # this is the POST request to the endpoint url for invocations that 
             # is given to you as you deploy a model on EC2 using the DJL serving stack
             if container_type == constants.CONTAINER_TYPE_DJL:
-                payload = payload | dict(parameters=self._inference_spec["parameters"])
+                payload2 = payload2 | dict(parameters=self._inference_spec["parameters"])
                 st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload)
                 # record the latency for the response generated
@@ -83,10 +96,10 @@ class EC2Predictor(FMBenchPredictor):
                     logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")      
             elif container_type == constants.CONTAINER_TYPE_TRITON:
                 if self._accelerator == constants.ACCELERATOR_TYPE.NEURON:
-                    triton_payload = dict(text_input=payload["inputs"],
+                    triton_payload = dict(text_input=payload2["inputs"],
                                           sampling_parameters=json.dumps(self._inference_spec["parameters"]))
                 else:
-                    triton_payload = dict(text_input=payload["inputs"]) | self._inference_spec["parameters"]
+                    triton_payload = dict(text_input=payload2["inputs"]) | self._inference_spec["parameters"]
 
                 logger.info(f"Endpoint name is: {self._endpoint_name}, triton payload is: {triton_payload}")
                 st = time.perf_counter()
@@ -97,17 +110,8 @@ class EC2Predictor(FMBenchPredictor):
                 response_json = json.loads(response.text)
                 full_output = response_json['text_output']
             elif container_type == constants.CONTAINER_TYPE_VLLM or container_type == constants.CONTAINER_TYPE_VLLM_GPU:
-                # vllm uses prompt rather than input and then
-                # the code in the calling function still expects input
-                # so make a copy
-                payload2 = copy.deepcopy(payload)
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
-                # delete any fields related to evaluations since we dont want to send them to VLLM
-                if 'question' in payload2:
-                    del payload2['question']
-                if 'ground_truth' in payload2:
-                    del payload2['ground_truth']
                 st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload2)
                 # record the latency for the response generated
@@ -145,11 +149,54 @@ class EC2Predictor(FMBenchPredictor):
                     full_output = choices[0].get("text")
                 if full_output is None:
                     logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")
-            elif container_type == constants.CONTAINER_TYPE_OLLAMA:
-                # ollama uses prompt rather than input and then
-                # the code in the calling function still expects input
-                # so make a copy
-                payload2 = copy.deepcopy(payload)
+            elif container_type == constants.CONTAINER_TYPE_LLAMA_SERVER:                
+                payload2['prompt'] = payload2.pop('inputs')
+                payload2 = payload2 | self._inference_spec["parameters"]
+                logger.debug(f"payload={payload2}")
+                st = time.perf_counter()
+                response = requests.post(self._endpoint_name, json=payload2)
+                # record the latency for the response generated
+                latency = time.perf_counter() - st
+                response.raise_for_status()
+                """
+                the output is of the form
+                {
+                    "index": 0,
+                    "content": " Well, this is a question that has been debated among scientists for many years...",
+                    "tokens": [],
+                    "id_slot": 1,
+                    "stop": true,
+                    "model": "ds",
+                    "tokens_predicted": 600,
+                    "tokens_evaluated": 6,
+                    "generation_settings": {
+                        ...
+                    },
+                    "prompt": "<｜begin▁of▁sentence｜>Is gravity a particle?",
+                    "has_new_line": true,
+                    "truncated": false,
+                    "stop_type": "limit",
+                    "stopping_word": "",
+                    "tokens_cached": 605,
+                    "timings": {
+                        "prompt_n": 6,
+                        "prompt_ms": 201.665,
+                        "prompt_per_token_ms": 33.61083333333333,
+                        "prompt_per_second": 29.752312002578535,
+                        "predicted_n": 600,
+                        "predicted_ms": 47212.818,
+                        "predicted_per_token_ms": 78.68803,
+                        "predicted_per_second": 12.708413211005539
+                    }
+                }
+                we only need the content field from this
+                """
+                full_output = json.loads(response.text).get("content")
+                if full_output is None:
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
+                else:
+                    logger.debug(f"full_output={full_output}")
+            elif container_type == constants.CONTAINER_TYPE_OLLAMA:                
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
                 st = time.perf_counter()
@@ -176,28 +223,13 @@ class EC2Predictor(FMBenchPredictor):
                 full_output = json.loads(response.text).get("response")
                 if full_output is None:
                     logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
-                else:
-                  # Check if the response contains think tags - the deepseek model responds
-                  # with the think tags
-                  if "<think>" in full_output and "</think>" in full_output:
-                      # Store the raw output for token counting
-                      raw_output = full_output
-                      # Extract everything after </think> tag
-                      pattern = r"</think>\s*(.*?)\$"
-                      match = re.search(pattern, full_output, re.DOTALL)
-                      if match:
-                          full_output = match.group(1).strip()
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
             
-            answer_only = full_output.replace(prompt, "", 1).strip('["]?\n')
+            answer_only = full_output.replace(prompt, "", 1) #.strip('["]?\n')
             response_json = dict(generated_text=answer_only)
             # counts the completion tokens for the model using the default/user provided tokenizer
-            if "<think>" in full_output and "</think>" in full_output:
-                # Use the raw output (including think tags) for token counting
-                completion_tokens = count_tokens(raw_output)
-            else:
-                completion_tokens = count_tokens(response_json.get("generated_text"))
+            completion_tokens = count_tokens(response_json.get("generated_text"))
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                          f"from predictor={self._endpoint_name}, response={response}, exception={e}")
