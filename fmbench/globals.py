@@ -374,3 +374,6 @@ Question: {input}
 Answer:
 
 """
+
+# default for cost per txn to use if it comes to be None when txn per second is zero
+COST_PER_TXN_PLACEHOLDER = 99
