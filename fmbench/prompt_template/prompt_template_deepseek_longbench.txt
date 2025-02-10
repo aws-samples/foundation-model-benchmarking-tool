@@ -1,10 +1,19 @@
+<think>
 There can be multiple question answer pairs in the context.
 As soon as you find the first question in the text below immediately stop reading any further and just answer the question.
-Always start your response with "<think>\\n" at the beginning of every output.
+Always start your response with "<think>" at the beginning of every output and think step by step.
 Keep your thinking process short and your answers concise, do not overthink.
-Put your final answer in one line starting with Answer:
+Make sure to always provide an answer, if you do not know the answer then say I do not known but never leave the answer field empty in your response.
+</think>
 
+<answer>
+Put your final answer in one line starting with the word Answer:
+</answer>
 
+Here is the text for you to work on:
+
+<text>
 {input}
 
 {context}
+</text>

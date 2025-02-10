@@ -152,7 +152,7 @@ pricing: pricing.yml
 inference_parameters: 
   ec2_llama_server:
     model: {model_id}
-    temperature: 0.6
+    temperature: 0.1
     # top_p: 0.92
     # top_k: 120  
     # max_tokens: 512
@@ -199,10 +199,10 @@ experiments:
     serving.properties: 
     # runs are done for each combination of payload file and concurrency level
     payload_files:
-    # - payload_en_1-500.jsonl
-    # - payload_en_500-1000.jsonl
-    # - payload_en_1000-2000.jsonl
-    # - payload_en_2000-3000.jsonl
+    - payload_en_1-500.jsonl
+    - payload_en_500-1000.jsonl
+    - payload_en_1000-2000.jsonl
+    - payload_en_2000-3000.jsonl
     - payload_en_3000-3840.jsonl
 
     # concurrency level refers to number of requests sent in parallel to an endpoint

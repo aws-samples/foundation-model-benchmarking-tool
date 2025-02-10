@@ -152,7 +152,7 @@ class EC2Predictor(FMBenchPredictor):
             elif container_type == constants.CONTAINER_TYPE_LLAMA_SERVER:                
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
-                logger.debug(f"payload={payload2}")
+                logger.info(f"payload={payload2}")
                 st = time.perf_counter()
                 response = requests.post(self._endpoint_name, json=payload2)
                 # record the latency for the response generated
@@ -195,7 +195,7 @@ class EC2Predictor(FMBenchPredictor):
                 if full_output is None:
                     logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
                 else:
-                    logger.debug(f"full_output={full_output}")
+                    logger.info(f"full_output={full_output}")
             elif container_type == constants.CONTAINER_TYPE_OLLAMA:                
                 payload2['prompt'] = payload2.pop('inputs')
                 payload2 = payload2 | self._inference_spec["parameters"]
