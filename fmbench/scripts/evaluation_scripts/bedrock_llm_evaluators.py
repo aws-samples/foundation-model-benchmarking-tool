@@ -54,15 +54,11 @@ class BedrockEvaluation(FMBenchEvaluation):
         Then extracts the response JSON, token counts, and computes cost.
         """
         logger.info(f"Getting evaluation for prompt: {prompt}")
-        
-        # Initialize response_json if not already done
-        if not hasattr(self, '_response_json'):
-            self._response_json = {}
-            
         os.environ["AWS_REGION_NAME"] = self._aws_region
         latency: Optional[float] = None
         completion_tokens: Optional[int] = None
         prompt_tokens: Optional[int] = None
+        llm_completion: Optional[str] = None
         
         # add logic to retry if there are throttling errors
         INITIAL_RETRY_DELAY: float = 2.0 
@@ -90,7 +86,7 @@ class BedrockEvaluation(FMBenchEvaluation):
                 if hasattr(response, 'choices') and response.choices:
                     for choice in response.choices:
                         if hasattr(choice, 'message') and choice.message and choice.message.content:
-                            self._response_json["generated_text"] = choice.message.content
+                            llm_completion = choice.message.content
                             break
                 if hasattr(response, 'usage'):
                     prompt_tokens = response.usage.prompt_tokens
@@ -111,9 +107,8 @@ class BedrockEvaluation(FMBenchEvaluation):
                 logger.error(f"Unexpected error during prediction, endpoint_name={self._endpoint_name}, "
                             f"exception={e}")
                 raise  # Re-raise unexpected exceptions
-        logger.info(f"Response json: {self._response_json}")
         return FMBenchEvaluationResponse(
-            response_json=self._response_json,
+            llm_completion=llm_completion,
             prompt_tokens=prompt_tokens,
             completion_tokens=completion_tokens,
             latency=latency)
