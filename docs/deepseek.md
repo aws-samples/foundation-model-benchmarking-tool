@@ -15,3 +15,20 @@ python main.py --config-file configs/deepseek/deepseek-convfinqa.yml
 ```
 Change the `--config-file` parameter to [`configs/deepseek/deepseek-longbench.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-longbench.yml) or [`configs/deepseek/deepseek-openorca.yml`](https://github.com/aws-samples/fmbench-orchestrator/blob/main/configs/deepseek/deepseek-openorca.yml) to use other datasets for benchmarking. These orchestrator files test various Deepseek-R1 distilled models on `g6e` instances, edit this file as per your requirements. 
 
+## Benchmark Deepseek-R1 quantized models on Amazon EC2
+
+👉 Make sure your account has enough service quota for vCPUs to run this benchmark. We would be using `g6e.12xlarge` instance for this test.
+
+
+1. Create a `g6e.12xlarge` instance and run the `DeepSeek-R1 1.58b quantized` model on this instance by following the steps 1 through 8 described [here](https://github.com/aarora79/deepseek-r1-ec2?tab=readme-ov-file#quantized-models).
+
+1. Follow steps 1 through 5 [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/benchmarking_on_ec2.html#benchmarking-on-an-instance-type-with-nvidia-gpus-or-aws-chips) to setup `FMBench` on this instance.
+
+1. Next run the following command to benchmark LongBench 
+
+    ```{.bashrc}
+    TMP_DIR=/tmp
+    fmbench --config-file $TMP_DIR/fmbench-read/configs/deepseek/config-deepseek-r1-quant1.58-longbench-byoe.yml --local-mode yes --write-bucket placeholder --tmp-dir $TMP_DIR > fmbench.log 2>&1
+    ```
+
+1. Once the run completes you should see the benchmarking results in a folder called `results-DeepSeek-R1-quant-1.58bit-g6e.12xl` present in your current directory.

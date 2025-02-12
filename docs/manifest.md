@@ -37,6 +37,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [└── byoe/config-model-byo-sagemaker-endpoint.yml](configs/byoe/config-model-byo-sagemaker-endpoint.yml)  
 **deepseek**  
 [├── deepseek/config-deepseek-r1-ollama.yml](configs/deepseek/config-deepseek-r1-ollama.yml)  
+[├── deepseek/config-deepseek-r1-quant1.58-longbench-byoe.yml](configs/deepseek/config-deepseek-r1-quant1.58-longbench-byoe.yml)  
 [├── deepseek/config-deepseek-r1-vllm-convfinqa.yml](configs/deepseek/config-deepseek-r1-vllm-convfinqa.yml)  
 [├── deepseek/config-deepseek-r1-vllm-longbench.yml](configs/deepseek/config-deepseek-r1-vllm-longbench.yml)  
 [└── deepseek/config-deepseek-r1-vllm-openorca.yml](configs/deepseek/config-deepseek-r1-vllm-openorca.yml)  

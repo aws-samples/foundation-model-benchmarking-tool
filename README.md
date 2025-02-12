@@ -83,6 +83,11 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
+## 2.1.2
+
+1. Deepseek prompt updates.
+1. Handle case for < 1 txn/minute.
+
 ## 2.1.1
 
 1. Optimized prompt templates and config files for DeepSeek-R1 and Amazon Nova for `ConvFinQA` and `LongBench` datasets.
