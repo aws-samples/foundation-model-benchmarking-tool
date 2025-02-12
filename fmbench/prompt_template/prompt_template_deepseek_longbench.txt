@@ -1,3 +1,4 @@
+<｜User｜>
 <think>
 There can be multiple question answer pairs in the context.
 As soon as you find the first question in the text below immediately stop reading any further and just answer the question.
@@ -17,3 +18,5 @@ Here is the text for you to work on:
 
 {context}
 </text>
+
+<｜Assistant｜>
