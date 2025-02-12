@@ -261,16 +261,13 @@ Resources:
                       # Retrieve the object from S3
                       if is_config:
                           logger.debug(f"found config file... updating content template: {fname}")
-                          content = content.format(
-                              region=os.environ.get("MY_AWS_REGION"),
-                              role_arn=os.environ.get("ROLE_ARN"),
-                              write_bucket=write_bucket,
-                              read_bucket=read_bucket,
-                              write_tmpdir="{write_tmpdir}",
-                              read_tmpdir="{read_tmpdir}",
-                          )
+                          content = content.replace("{region}", os.environ.get("MY_AWS_REGION"))\
+                                          .replace("{role_arn}", os.environ.get("ROLE_ARN"))\
+                                          .replace("{write_bucket}", write_bucket)\
+                                          .replace("{read_bucket}", read_bucket)\
+                                          .replace("{write_tmpdir}", "{write_tmpdir}")\
+                                          .replace("{read_tmpdir}", "{read_tmpdir}")
                           logger.info(f"Updating config file: {fname}")
-
                       s3.put_object(Bucket=read_bucket, Key=fname, Body=content)
                       logger.info(f"saving file to destination: Bucket:{read_bucket}/{key}")
                       ctr += 1
