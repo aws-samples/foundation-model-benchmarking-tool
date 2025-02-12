@@ -65,12 +65,16 @@ model_evaluations:
     judge_panel_list:
       # Information on judge 1 on the evaluation judge panel
       - model_id: us.meta.llama3-3-70b-instruct-v1:0
+        instance_type: us.meta.llama3-3-70b-instruct-v1:0
+        instance_count: 
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
         eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
       - model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
+        instance_type: us.anthropic.claude-3-5-sonnet-20241022-v2:0
+        instance_count: 
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "claude_eval_prompt_templates"
@@ -78,6 +82,8 @@ model_evaluations:
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
+        instance_type: cohere.command-r-plus-v1:0
+        instance_count: 
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
