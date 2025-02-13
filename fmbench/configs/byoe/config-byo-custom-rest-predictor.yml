@@ -1,10 +1,15 @@
-# config file for a rest endpoint supported on fmbench - 
-# this file uses a llama-2-13b-chat-hf deployed on an EKS cluster using ray serve
+# config file for a rest endpoint supported on fmbench -
+# This config file uses custom payload functionalities, and points to 
+# a "custom_rest_predictor.py" that does a request.post to an endpoint
+# url, with the model id, inference parameters and a few headers configured
+# within this config file
 general:
-  name: "byo-REST-ep"      
-  model_name: "custom-model"
+  name: "<add-your-rest-ep-model-name-here>"      
+  model_name: "<your-custom-model-name>"
   
 # AWS and SageMaker settings
+# These are placeholder values that will be substituted
+# dynamically once FMBench runs the test
 aws:
   # AWS region, this parameter is templatized, no need to change
   region: {region}
@@ -14,6 +19,9 @@ aws:
   bucket: {write_bucket} ## add the name of your desired bucket
 
 # directory paths in the write bucket, no need to change these
+# These directory paths point to the data, prompts, metrics and other
+# model and metadata information that will be stored in the FMBench write
+# bucket once the benchmarking test starts
 dir_paths:
   data_prefix: data
   prompts_prefix: prompts
@@ -41,13 +49,28 @@ s3_read_data:
   configs_prefix: configs
 
   # list of configuration files to download, for now only pricing.yml needs to be downloaded
+  # Add your custom pricing in this yml file which is located at "configs/pricing.yml" that contains
+  # instance hourly and token-based pricing. NOTE: The instance_type parameter in this config file should match
+  # the instance_type parameter in the pricing.yml file for FMBench to correctly map the values before
+  # calculating the cost to run and evaluate the models to be benchmarked.
   config_files:
   - pricing.yml
 
   # S3 prefix for the dataset files
   source_data_prefix: source_data
-  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
+  
+  # FOR HUGGING FACE DATASETS:
+  # ---------------------------
+  # FMBench now supports benchmarking models using datasets from Hugging Face with a simplified prefixing method. 
+  # To specify a Hugging Face dataset and its split, use the hf: prefix followed by the dataset identifier, subset name, and split name. 
+  # If a subset name is not provided, it defaults to default. If a split name is not provided, FMBench automatically selects the next available split at runtime.
+  # FOR CUSTOM DATASETS:
+  # ---------------------------
+  # To use custom data, convert it into JSONL format. We provide a sample notebook to help convert Hugging Face or custom datasets into JSONL and upload them to an S3 bucket used by FMBench. 
+  # Follow the steps in the https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/bring_your_own_dataset.ipynb notebook to integrate your own dataset into FMBench. 
+  # Place this JSONL file in the local fmbench-read/scripts directory in your FMBench EC2 instance or in the fmbench-read S3 bucket in the scripts directory.
   source_data_files:
+  # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
   # Format: hf:dataset-id/subset-name/split-name. Use   "default" if no subset name is provided.
   - hf:THUDM/LongBench/2wikimqa_e/test
   - hf:THUDM/LongBench/2wikimqa/test
@@ -63,12 +86,13 @@ s3_read_data:
   #         so the mistral tokenizer goes in mistral_tokenizer, Llama2 tokenizer goes in  llama2_tokenizer
   tokenizer_prefix: tokenizer
 
-  # S3 prefix for prompt templates
+  # S3 prefix for prompt templates - this does not have to be changed
   prompt_template_dir: prompt_template
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_llama3.txt
+  # If you have a custom prompt template, place the file in the local fmbench-read/scripts directory and point to it here
+  prompt_template_file: <your-prompt-template.txt>
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -88,8 +112,12 @@ run_steps:
 datasets:
   # dataset related configuration
   prompt_template_keys:
+  # <replace with the keys in your dataset. If your dataset contains another key you want inputted into the prompt, then specify that here and it will
+  # be plugged into the prompt
   - input
   - context
+  # If you want to measure model accuracy, mention the column keys in the dataset that point to the question/task and the ground truth. 
+  # This will be used by FMBench's LLM evaluators to evaluate the correctness of models to be benchmarked.
   ground_truth_col_key: answers
   question_col_key: input
   # if your dataset has multiple languages and it has a language
@@ -156,7 +184,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: "custom-model-byoe"
+  - name: "<your-model-name>"
     # model_id is interpreted in conjunction with the deployment_script, so if you
     # use a JumpStart model id then set the deployment_script to jumpstart.py.
     # if deploying directly from HuggingFace this would be a HuggingFace model id
@@ -164,7 +192,7 @@ experiments:
     model_id: # model id, version and image uri not needed for byo endpoint
     hf_tokenizer_model_id: 
     model_version:
-    model_name: "custom-model"
+    model_name: "<your-model-name>"
     # the ep_name will contain the endpoint url that is used to invoke your model and get the response
     # in this case, we use ray serve with `NousResearch/Llama-2-13b-chat-hf` model deployed on an EKS cluster.
     # the endpoint url format used in this example is "http://<NLB_DNS_NAME>/serve/infer?sentence=<PROMPT_PAYLOAD>"
@@ -176,7 +204,7 @@ experiments:
     # scripts for deploying using DJL DeepSpeed, tensorRT etc. You can also add your own.
     # See repo for details
     instance_count: 
-    deployment_script: 
+    deployment_script: # No deployment script is needed since this is a byoe configuration file
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
     # and Bedrock. You can also add your own. This is an example of a custom rest predictor
     # that does a POST request on the endpoint URL (given on line 164) with custom headers, 
@@ -188,7 +216,7 @@ experiments:
       # This parameter is specified above with custom configurations
       parameter_set: custom_rest
       # This model id is appended to the prompt as the payload is sent to the model id
-      model_id: "<custom-model>"
+      model_id: "<custom-model-id>"
       headers:
         custom_client_id: <your-custom-client-id>
         custom_authentication_token: "<your-auth-token>"  # Replace with actual token

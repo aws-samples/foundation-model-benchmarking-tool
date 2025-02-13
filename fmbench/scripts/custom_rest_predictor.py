@@ -21,13 +21,20 @@ class CustomRestPredictor(FMBenchPredictor):
     """
     This is a custom rest predictor that does a POST request on the endpoint
     specified in the configuration file with custom headers, authentication parameters
-    and the model_id.
+    and the model_id. This rest predictor can be used with custom parameters. View an 
+    example of the parameters passed in this config file: configs/byoe/config-byo-custom-rest-predictor.yml
     """
     def __init__(self,
                  endpoint_name: str,
                  inference_spec: Optional[Dict],
                  metadata: Optional[Dict]):
         try:
+            """
+            Initialize the endpoint name and the inference spec. The endpoint name here points to the
+            endpoint name in the config file, which is the endpoint url to do a request.post on. The 
+            inference spec contains the different auth, headers, inference parameters that are 
+            passed into this script from the config file.
+            """
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec 
         except Exception as e:
@@ -40,11 +47,13 @@ class CustomRestPredictor(FMBenchPredictor):
         response_json: Optional[Dict] = None
         response: Optional[str] = None
         latency: Optional[float] = None
+        # Streaming can be enabled if the model is deployed on SageMaker or Bedrock
         TTFT: Optional[float] = None
         TPOT: Optional[float] = None
         TTLT: Optional[float] = None
         prompt_tokens: Optional[int] = None
         completion_tokens: Optional[int] = None
+        # This is the generated text from the model prediction
         generated_text: Optional[str] = None
         
         try:
@@ -54,7 +63,8 @@ class CustomRestPredictor(FMBenchPredictor):
             headers = self._inference_spec.get("headers")
             model_id = self._inference_spec.get("model_id")
             # Prepare the request body - in this request body, we are providing the generation config, prompt
-            # and the model id as given in the inference spec within the FMBench config file
+            # and the model id as given in the inference spec within the FMBench config file. If the inference
+            # parameter set does not exist, then just send in the request without the inference specifications
             if inference_param_set:
                 request_body = {
                     "model_id": model_id,
@@ -66,8 +76,6 @@ class CustomRestPredictor(FMBenchPredictor):
                     "model_id": model_id,
                     "prompt": payload['inputs']
                 }
-                
-            prompt_tokens = count_tokens(payload["inputs"])
             # Start the timer to measure the latency of the prediction made to the endpoint
             st = time.perf_counter()
             # Make POST request including the headers, the request body, and the endpoint url.
@@ -82,15 +90,28 @@ class CustomRestPredictor(FMBenchPredictor):
             response_data = response.json()
             # Extract the generated text from the completions array
             if response_data.get("completions"):
+                # This is custom to the endpoint based on the completion format. This will change
+                # based on how your inference container responds to requests.
                 generated_text = response_data["completions"][0].get("text", "")
             response_json = dict(generated_text=generated_text)
             # Get completion tokens from the usage information if available
             # otherwise fall back to counting tokens
             if response_data.get("usage"):
+                # This is assuming the response data contains a usage field with prompt and input tokens
                 completion_tokens = response_data["usage"].get("completion_tokens")
                 prompt_tokens = response_data["usage"].get("prompt_tokens")
+                logger.info(f"Found 'usage' field in the response data. Prompt tokens: {prompt_tokens}, Completion tokens: {completion_tokens}")
             else:
+                # This uses the count tokens function. If you have an hf tokenizer to be used, then 
+                # place your hf_token.txt file in the fmbench-read/scripts directory and mention the 
+                # hf model id in the experiments section of the config file in the "hf_tokenizer_model_id"
+                # paramter. The count_tokens function will use that custom tokenizer. If you have a custom
+                # tokenizer, then place the "tokenizer.json" and "config.json" files in the fmbench-read/scripts
+                # directory and FMBench will use that. If none of these options are available, FMBench will use
+                # the default 750-1000 tokens tokenizer.
+                prompt_tokens = count_tokens(payload["inputs"])
                 completion_tokens = count_tokens(generated_text) 
+                logger.info(f"Using the default tokenizer to count the prompt and input tokens. Prompt tokens: {prompt_tokens}, Completion tokens: {completion_tokens}")
         except requests.exceptions.RequestException as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                         f"from predictor={self._endpoint_name}, response={response}, exception={e}")
