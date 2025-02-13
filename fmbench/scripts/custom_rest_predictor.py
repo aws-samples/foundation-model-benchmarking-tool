@@ -50,16 +50,23 @@ class CustomRestPredictor(FMBenchPredictor):
         try:
             # define the generation config, custom headers and model id from the inference spec
             # that will be used in the payload while FMBench makes predictions on the model endpoint
-            generation_config = self._inference_spec.get("parameters", {}).get("generation_config", {})
-            headers = self._inference_spec.get("headers", {})
+            inference_param_set = self._inference_spec.get("parameters")
+            headers = self._inference_spec.get("headers")
             model_id = self._inference_spec.get("model_id")
             # Prepare the request body - in this request body, we are providing the generation config, prompt
             # and the model id as given in the inference spec within the FMBench config file
-            request_body = {
-                "model_id": model_id,
-                "prompt": payload['inputs'],
-                "generation_config": generation_config
-            }
+            if inference_param_set:
+                request_body = {
+                    "model_id": model_id,
+                    "prompt": payload['inputs'],
+                } | inference_param_set
+            else:
+                logger.info(f"Using the request body without the generation_config variable")
+                request_body = {
+                    "model_id": model_id,
+                    "prompt": payload['inputs']
+                }
+                
             prompt_tokens = count_tokens(payload["inputs"])
             # Start the timer to measure the latency of the prediction made to the endpoint
             st = time.perf_counter()
