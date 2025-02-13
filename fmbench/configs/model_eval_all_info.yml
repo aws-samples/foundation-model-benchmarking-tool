@@ -63,8 +63,20 @@ model_evaluations:
   subjective_eval_info:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
+      # Bring your own judge using DeepSeek-14b on SageMaker jumpstart
+      - model_id: jumpstart-dft-deepseek-llm-r1-disti-20250213-174427
+        # Set the variable below to "yes" if you want to run the llm as a judge and "no" if not
+        run_as_judge: yes
+        instance_type: "ml.g6.12xlarge"
+        instance_count: 1
+        eval_script: sagemaker_jumpstart_evaluators.py
+        # this is the prompt template that is used in the evaluation process
+        # based on the method: majority voting
+        eval_prompt_template_dir: "deepseek_eval_prompt_templates"
+        eval_prompt_template_name: "deepseek_eval_{method_name}"
       # Information on judge 1 on the evaluation judge panel
       - model_id: us.meta.llama3-3-70b-instruct-v1:0
+        run_as_judge: yes
         instance_type: us.meta.llama3-3-70b-instruct-v1:0
         instance_count: 
         eval_script: bedrock_llm_evaluators.py
@@ -74,6 +86,7 @@ model_evaluations:
         eval_prompt_template_name: "llama3_eval_{method_name}"
       # Information on judge 2 on the evaluation judge panel
       - model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
+        run_as_judge: yes
         instance_type: us.anthropic.claude-3-5-sonnet-20241022-v2:0
         instance_count: 
         eval_script: bedrock_llm_evaluators.py
@@ -84,6 +97,7 @@ model_evaluations:
       # Information on judge 3 on the evaluation judge panel
       # We use the most powerful cohere model - cohere command R +
       - model_id: cohere.command-r-plus-v1:0
+        run_as_judge: no
         instance_type: cohere.command-r-plus-v1:0
         instance_count: 
         eval_script: bedrock_llm_evaluators.py

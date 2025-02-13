@@ -67,12 +67,6 @@ pricing:
     anthropic.claude-v2:1:
       input-per-1k-tokens: 0.008
       output-per-1k-tokens: 0.024
-    us.anthropic.claude-3-5-sonnet-20241022-v2:0:
-      input-per-1k-tokens: 0.003
-      output-per-1k-tokens: 0.015
-    anthropic.claude-3-5-sonnet-20241022-v2:0:
-      input-per-1k-tokens: 0.003
-      output-per-1k-tokens: 0.015
     cohere.command-light-text-v14:
       input-per-1k-tokens: 0.0003
       output-per-1k-tokens: 0.0006
@@ -119,9 +113,6 @@ pricing:
       input-per-1k-tokens: 0.00015
       output-per-1k-tokens: 0.00015
     us.meta.llama3-2-90b-instruct-v1:0:
-      input-per-1k-tokens: 0.00072
-      output-per-1k-tokens: 0.00072
-    us.meta.llama3-3-70b-instruct-v1:0:
       input-per-1k-tokens: 0.00072
       output-per-1k-tokens: 0.00072
     amazon.nova-micro-v1:0:

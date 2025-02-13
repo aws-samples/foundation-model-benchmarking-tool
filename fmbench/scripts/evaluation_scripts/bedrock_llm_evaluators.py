@@ -69,7 +69,6 @@ class BedrockEvaluation(FMBenchEvaluation):
             try:
                 messages = [{"content": prompt, "role": "user"}]
                 logger.info(f"Invoking {self._bedrock_model} to get inference")
-                st = time.perf_counter()
                 kwargs = {
                     "model": self._bedrock_model,
                     "model_id": model_id,
@@ -80,6 +79,7 @@ class BedrockEvaluation(FMBenchEvaluation):
                 }
                 if 'cohere' not in self._endpoint_name:
                     kwargs["top_p"] = self._top_p
+                st = time.perf_counter()
                 response = completion(**kwargs)
                 latency = time.perf_counter() - st
                 # Process response

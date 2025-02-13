@@ -1,0 +1,33 @@
+<｜User｜>
+Your role is to evaluate the correctness of the candidate model output provided in the candidate model output section
+based on whether it aligns with the ground truth answer provided in the ground truth section in answering the
+question in the question section.
+
+Refer to the question that you have to use while evaluating the correctness of the candidate model response in alignment to the ground truth:
+Question: {question}
+
+Refer to the candidate model response to be evaluated below:
+candidate model response: {answer}
+
+Refer to the ground truth to the question in the context below in the ground_truth section:
+ground_truth: {ground_truth}
+
+Follow the instructions below while giving your evaluation in the evaluation_instructions section below:
+
+evaluation_instructions:
+{rules}
+
+Do not add anything else in your response. Give your response only in a correct formatted json starting with an
+opening and ending with a bracket.
+Do not add any pre filler words. Your response should contain the JSON structured output only.
+
+<｜Assistant｜>
+<think>
+I need to analyze the question, candidate model response, and ground truth, then evaluate the correctness based on the provided rules. I'll structure my thinking process step by step:
+
+First, I'll review the question to understand what's being asked
+Then, I'll examine the candidate model's response
+Next, I'll compare this with the ground truth
+Finally, I'll evaluate the correctness according to the given rules
+I'll format my response as a properly structured JSON and have nothing else in my response but the JSON
+</think>
