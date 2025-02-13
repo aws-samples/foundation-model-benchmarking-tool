@@ -1,4 +1,6 @@
 # config file for a rest endpoint supported on fmbench - 
+# To run this configuration file, follow the steps here to deploy
+# the model first: https://github.com/madhurprash/EC2_tinyllama
 general:
   name: "byo-REST-ep-tinyllama-ollama"      
   model_name: "tinyllama-ollama"
@@ -168,7 +170,7 @@ experiments:
     # in this case, we use ray serve with `NousResearch/Llama-2-13b-chat-hf` model deployed on an EKS cluster.
     # the endpoint url format used in this example is "http://<NLB_DNS_NAME>/serve/infer?sentence=<PROMPT_PAYLOAD>"
     ep_name: 'http://localhost:8080/v2/completions' # public DNS/URL to send your request
-    instance_type: "<your-instance-type>"
+    instance_type: "g6e.xlarge"
     image_uri:
     deploy: no #setting to no since the endpoint has already been deployed on an EKS cluster
     # FMBench comes packaged with multiple deployment scripts, such as scripts for JumpStart
@@ -187,9 +189,9 @@ experiments:
       # This parameter is specified above with custom configurations
       parameter_set: custom_rest
       # This model id is appended to the prompt as the payload is sent to the model id
-      model_id: "tinyllama"
+      model_id: "tinyllama:1.1b"
       headers:
-        custom_authentication_token: "madhurauth"  # Replace with actual token
+        custom_authentication_token: "your-secret-token-here"  # Replace with actual token
         content-type: "application/json"
     # runs are done for each combination of payload file and concurrency level
     payload_files:
