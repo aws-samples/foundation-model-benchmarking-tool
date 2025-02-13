@@ -217,6 +217,9 @@ experiments:
       parameter_set: custom_rest
       # This model id is appended to the prompt as the payload is sent to the model id
       model_id: "<custom-model-id>"
+      # All key-value pairs added in this headers section are transparently
+      # passed via the POST request to the model server. You can add any custom
+      # header parameters needed for your specific implementation.
       headers:
         custom_client_id: <your-custom-client-id>
         custom_authentication_token: "<your-auth-token>"  # Replace with actual token
