@@ -54,9 +54,11 @@ class SageMakerEvaluation(FMBenchEvaluation):
         try:
             # initialize the completion
             llm_completion: Optional[str] = None
+            payload = {"inputs": prompt}
             st = time.perf_counter()
-            prediction_response = self._predictor.predict(prompt)
-            latency = time.perf_counter() - st if prediction_response.latency is None else prediction_response.latency
+            response = self._predictor.predict(payload)
+            latency = time.perf_counter() - st
+            logger.info(f"response json: {response}")
             if isinstance(response, bytes):
                 response = response.decode('utf-8')
             response_json = json.loads(response)
