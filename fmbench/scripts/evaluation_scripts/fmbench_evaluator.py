@@ -43,8 +43,7 @@ class FMBenchEvaluation(ABC):
 class FMBenchEvaluationResponse(dict):
     def __init__(self, *k, **kwargs):
         self.__dict__ = self
-        self.__dict__['response_json'] = kwargs['response_json']
+        self.__dict__['llm_completion'] = kwargs['llm_completion']
         self.__dict__['prompt_tokens'] = kwargs['prompt_tokens']
         self.__dict__['completion_tokens'] = kwargs['completion_tokens']
-        self.__dict__['total_cost'] = kwargs['total_cost']
         super().__init__(*k, **kwargs)

@@ -179,6 +179,9 @@ pricing:
     us.meta.llama3-2-90b-instruct-v1:0:
       input-per-1k-tokens: 0.00072
       output-per-1k-tokens: 0.00072
+    us.meta.llama3-3-70b-instruct-v1:0:
+      input-per-1k-tokens: 0.00072
+      output-per-1k-tokens: 0.00072
     us.amazon.nova-micro-v1:0:
       input-per-1k-tokens: 0.000035
       output-per-1k-tokens: 0.00014

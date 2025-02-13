@@ -96,7 +96,7 @@ class BedrockEvaluation(FMBenchEvaluation):
                 break
             except (RateLimitError, ClientError) as e:
                 # Retry logic for throttling errors
-                if isinstance(e, ClientError) and e.response['Error']['Code'] not in ['ThrottlingException', 'TooManyRequestsException']:
+                if isinstance(e, ClientError) and e.response['Error']['Code'] not in ['ThrottlingException', 'TooManyRequestsException', 'ServiceUnavailableException']:
                     logger.error(f"Unhandled ClientError: {str(e)}")
                     raise  # Re-raise if it's not a throttling error
                 retry_count += 1
@@ -160,3 +160,6 @@ class BedrockEvaluation(FMBenchEvaluation):
         except Exception as e:
             logger.error(f"Exception during cost calculation: {e}")
         return experiment_cost
+    
+def create_evaluator(endpoint_name: str):
+    return BedrockEvaluation(endpoint_name)

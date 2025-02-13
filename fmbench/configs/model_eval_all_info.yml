@@ -67,6 +67,7 @@ model_evaluations:
       - model_id: us.meta.llama3-3-70b-instruct-v1:0
         instance_type: us.meta.llama3-3-70b-instruct-v1:0
         instance_count: 
+        eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "llama3_eval_prompt_templates"
@@ -75,6 +76,7 @@ model_evaluations:
       - model_id: us.anthropic.claude-3-5-sonnet-20241022-v2:0
         instance_type: us.anthropic.claude-3-5-sonnet-20241022-v2:0
         instance_count: 
+        eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "claude_eval_prompt_templates"
@@ -84,6 +86,7 @@ model_evaluations:
       - model_id: cohere.command-r-plus-v1:0
         instance_type: cohere.command-r-plus-v1:0
         instance_count: 
+        eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
         eval_prompt_template_dir: "cohere_eval_prompt_templates"
