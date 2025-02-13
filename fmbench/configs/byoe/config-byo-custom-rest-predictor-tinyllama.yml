@@ -189,7 +189,7 @@ experiments:
       # This parameter is specified above with custom configurations
       parameter_set: custom_rest
       # This model id is appended to the prompt as the payload is sent to the model id
-      model_id: "tinyllama:1.1b"
+      model_id: "tinyllama"
       headers:
         custom_authentication_token: "your-secret-token-here"  # Replace with actual token
         content-type: "application/json"
