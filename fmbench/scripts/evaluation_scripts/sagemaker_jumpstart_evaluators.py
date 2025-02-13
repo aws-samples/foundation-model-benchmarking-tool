@@ -54,8 +54,13 @@ class SageMakerEvaluation(FMBenchEvaluation):
         try:
             # initialize the completion
             llm_completion: Optional[str] = None
-            payload = {"inputs": prompt}
             st = time.perf_counter()
+            payload: Dict={}
+            # Create a payload for the SageMaker Jumpstart model endpoint
+            payload['inputs']=prompt
+            print(f"self._inference_spec DEBUG: {self._inference_spec}")
+            payload = payload | dict(parameters=self._inference_spec["parameter_set"])
+            print(f"payload debug: {payload}")
             response = self._predictor.predict(payload)
             latency = time.perf_counter() - st
             logger.info(f"response json: {response}")
@@ -147,5 +152,5 @@ class SageMakerEvaluation(FMBenchEvaluation):
             logger.error(f"Exception during cost calculation: {e}")
         return experiment_cost
     
-def create_evaluator(endpoint_name: str):
-    return SageMakerEvaluation(endpoint_name)
+def create_evaluator(endpoint_name: str, inference_spec: Optional[Dict]):
+    return SageMakerEvaluation(endpoint_name, inference_spec)

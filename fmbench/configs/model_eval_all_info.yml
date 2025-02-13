@@ -56,6 +56,19 @@ model_evaluations:
     # 0.05 for example, then the answer is defined as correctly evaluated as "correct"
     incorrect_verdict_cosine_similarity_threshold: 0.40
     correct_verdict_cosine_similarity_threshold: 0.01
+  
+  # Common inference parameters used in the evaluation process
+  # We use LiteLLM for interfacing with Bedrock
+  inference_parameters:
+    bedrock:
+      temperature: 0.1
+      max_tokens: 300
+      top_p: 0.92
+      caching: False
+    sagemaker:
+      temperature: 0.1
+      max_tokens: 2048
+      
   # This represents the information that is used to get subjective evaluations on the 
   # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
   # each content from the inference step on different evaluation criteria. The information about 
@@ -69,6 +82,9 @@ model_evaluations:
         run_as_judge: yes
         instance_type: "ml.g6.12xlarge"
         instance_count: 1
+        inference_spec:
+          # this should match one of the sections in the inference_parameters section above
+          parameter_set: sagemaker
         eval_script: sagemaker_jumpstart_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
@@ -79,6 +95,9 @@ model_evaluations:
         run_as_judge: yes
         instance_type: us.meta.llama3-3-70b-instruct-v1:0
         instance_count: 
+        inference_spec:
+          # this should match one of the sections in the inference_parameters section above
+          parameter_set: bedrock
         eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
@@ -89,6 +108,9 @@ model_evaluations:
         run_as_judge: yes
         instance_type: us.anthropic.claude-3-5-sonnet-20241022-v2:0
         instance_count: 
+        inference_spec:
+          # this should match one of the sections in the inference_parameters section above
+          parameter_set: bedrock
         eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
@@ -100,6 +122,9 @@ model_evaluations:
         run_as_judge: no
         instance_type: cohere.command-r-plus-v1:0
         instance_count: 
+        inference_spec:
+          # this should match one of the sections in the inference_parameters section above
+          parameter_set: bedrock
         eval_script: bedrock_llm_evaluators.py
         # this is the prompt template that is used in the evaluation process
         # based on the method: majority voting
@@ -107,11 +132,4 @@ model_evaluations:
         eval_prompt_template_name: "cohere_eval_{method_name}"
     # number of parallel calls made asyncronously to bedrock using Ray
     run_parallel_inference_count: 5
-    # Common inference parameters used in the evaluation process
-    # We use LiteLLM for interfacing with Bedrock
-    inference_parameters:
-      temperature: 0.1
-      max_tokens: 300
-      top_p: 0.92
-      caching: False
     

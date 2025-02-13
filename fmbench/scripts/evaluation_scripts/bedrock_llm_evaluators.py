@@ -34,9 +34,11 @@ class BedrockEvaluation(FMBenchEvaluation):
     _service_name: str = SERVICE_NAME
     
     def __init__(self,
-                 endpoint_name: str):
+                 endpoint_name: str, 
+                 inference_spec: Optional[Dict] = None):
         self._endpoint_name = endpoint_name
         self._pt_model_id = None
+        self._inference_spec = inference_spec
         self._aws_region = boto3.Session().region_name
         self._bedrock_model = f"{self._service_name}/{self._endpoint_name}"
         # litellm supports the following inference params as per
@@ -161,5 +163,5 @@ class BedrockEvaluation(FMBenchEvaluation):
             logger.error(f"Exception during cost calculation: {e}")
         return experiment_cost
     
-def create_evaluator(endpoint_name: str):
+def create_evaluator(endpoint_name: str, inference_spec: Optional[Dict]):
     return BedrockEvaluation(endpoint_name)
