@@ -36,8 +36,7 @@ class SageMakerEvaluation(FMBenchEvaluation):
             # Create a SageMaker Predictor object
             self._predictor = Predictor(
                 endpoint_name=self._endpoint_name,
-                sagemaker_session=sagemaker.Session(),
-                serializer=JSONSerializer()
+                sagemaker_session=sagemaker.Session()
             )
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
@@ -58,10 +57,12 @@ class SageMakerEvaluation(FMBenchEvaluation):
             payload: Dict={}
             # Create a payload for the SageMaker Jumpstart model endpoint
             payload['inputs']=prompt
-            print(f"self._inference_spec DEBUG: {self._inference_spec}")
+            # print(f"self._inference_spec DEBUG: {self._inference_spec}")
             payload = payload | dict(parameters=self._inference_spec["parameter_set"])
             print(f"payload debug: {payload}")
-            response = self._predictor.predict(payload)
+            serialized_payload = json.dumps(payload).encode("utf-8")
+            # Pass the serialized payload (bytes) to the predictor
+            response = self._predictor.predict(serialized_payload)
             latency = time.perf_counter() - st
             logger.info(f"response json: {response}")
             if isinstance(response, bytes):

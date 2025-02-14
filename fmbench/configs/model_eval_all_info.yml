@@ -68,6 +68,8 @@ model_evaluations:
     sagemaker:
       temperature: 0.1
       max_tokens: 2048
+      Content-type: application/json
+
       
   # This represents the information that is used to get subjective evaluations on the 
   # content that is generated. It uses an LLM as a judge (that is configurable) and evaluates
