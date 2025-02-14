@@ -79,7 +79,7 @@ model_evaluations:
     # this is the judge panel list that is used in the evaluation process
     judge_panel_list:
       # Bring your own judge using DeepSeek-14b on SageMaker jumpstart
-      - model_id: jumpstart-dft-deepseek-llm-r1-disti-20250213-174427
+      - model_id: jumpstart-dft-deepseek-llm-r1-disti-20250214-155744
         # Set the variable below to "yes" if you want to run the llm as a judge and "no" if not
         run_as_judge: yes
         instance_type: "ml.g6.12xlarge"

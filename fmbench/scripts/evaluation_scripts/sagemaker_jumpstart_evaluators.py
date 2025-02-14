@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import json
 import boto3
@@ -31,18 +32,27 @@ class SageMakerEvaluation(FMBenchEvaluation):
         self._endpoint_name = endpoint_name
         self._inference_spec = inference_spec
         self._metadata = metadata
+        self._variant_name: Optional[str] = None
+        self._use_messages_api_format: Optional[bool] = None
+        if metadata is not None:
+            self._variant_name = metadata.get("variant_name")
+            self._use_messages_api_format = metadata.get("use_messages_api_format")
         # initialize a sagemaker predictor
         try:
             # Create a SageMaker Predictor object
             self._predictor = Predictor(
                 endpoint_name=self._endpoint_name,
-                sagemaker_session=sagemaker.Session()
+                sagemaker_session=sagemaker.Session(), 
+                serializer=JSONSerializer()
             )
+            logger.info(f"Initialized the sagemaker predictor for {endpoint_name}")
         except Exception as e:
             logger.error(f"create_predictor, exception occured while creating predictor "
                          f"for endpoint_name={self._endpoint_name}, exception={e}")
         logger.info(f"__init__ _predictor={self._predictor}, "
-                    f"inference_spec={self._inference_spec} ")
+                    f"_variant_name={self._variant_name}_"
+                    f"inference_spec={self._inference_spec}, "
+                    f"_use_messages_api_format={self._use_messages_api_format}")
 
     def get_llm_evaluation(self, model_id: str, prompt: str) -> FMBenchEvaluationResponse:
         """
@@ -53,47 +63,62 @@ class SageMakerEvaluation(FMBenchEvaluation):
         try:
             # initialize the completion
             llm_completion: Optional[str] = None
-            st = time.perf_counter()
+            # Initialize the payload dictionary
             payload: Dict={}
             # Create a payload for the SageMaker Jumpstart model endpoint
             payload['inputs']=prompt
             # print(f"self._inference_spec DEBUG: {self._inference_spec}")
             payload = payload | dict(parameters=self._inference_spec["parameter_set"])
-            print(f"payload debug: {payload}")
-            serialized_payload = json.dumps(payload).encode("utf-8")
+            split_input_and_inference_params = None
+            if self._inference_spec is not None:
+                split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
+            response = None
+            if split_input_and_inference_params is True:
+                response = self._predictor.predict(payload["inputs"],
+                                                   self._inference_spec["parameter_set"])
+            else:
+                if self._use_messages_api_format is True:
+                    # if needed in future add support for system prompt as well
+                    # and multiple system/user prompts but all that is not needed for now
+                    payload = {"messages": [{"role": "user",
+                                             "content": payload["inputs"]}]}
+                    # the final payload should look like this:
+                    # {
+                    #   "top_p": 0.9,
+                    #   "max_tokens": 100,
+                    #   "messages": [
+                    #     {
+                    #       "role": "user",
+                    #       "content": "this is the prompt"
+                    #     }
+                    #   ]
+                    # }
+                    payload = payload | dict(self._inference_spec["parameter_set"])
+                else:
+                    payload = payload | dict(parameters=self._inference_spec["parameter_set"])
+            logger.info(f"PAYLOAD FORMAT DEBUG: {payload}")
+            st = time.perf_counter()
             # Pass the serialized payload (bytes) to the predictor
-            response = self._predictor.predict(serialized_payload)
+            response = self._predictor.predict(payload)
             latency = time.perf_counter() - st
-            logger.info(f"response json: {response}")
             if isinstance(response, bytes):
                 response = response.decode('utf-8')
             response_json = json.loads(response)
+            logger.info(f"response json: {response_json}")
             prompt_tokens = count_tokens(prompt)
-            # we want to set the "generated_text" key in the response
-            if isinstance(response_json, list):
-                response_json = response_json[0]
-                # add a key called completion, if not there
-                if response_json.get("generated_text") is None:
-                    # look for predicted label and set that as generated text
-                    if response_json.get("predicted_label") is not None:
-                        llm_completion = response_json.get("predicted_label")
-                    else:
-                        logger.error("response_json is list but did not contain generated_text or predicted_label, dont know how to handle this")
-            elif isinstance(response_json, dict):
-                choices = response_json.get("choices")
-                if choices is not None:
-                    if isinstance(choices, list):
-                        response_json = response_json["choices"][0]["message"]
-                        if response_json.get("generated_text") is None:
-                            if response_json.get("content") is not None:
-                                llm_completion = response_json.get("content")
-                            else:
-                                logger.error(f"response_json is a dict, choices is a list, but response_json does not contain generated_text, dont know how to handle this")
-                        else:
-                            logger.error(f"response_json is a dict, choices is a list, but generated_text ia None, dont know how to handle this")
-                    else:
-                        logger.error(f"response_json is a dict, but choices is not a list but rather it is {type(choices)}, dont know how to handle this")
+            logger.info(f"prompt tokens: {prompt_tokens}")
+            response_json = response_json[0]
+            llm_completion = response_json.get("generated_text")
             completion_tokens = count_tokens(llm_completion)
+            # This regex matches the first occurrence of a substring that starts with '{' and ends with '}'.
+            # The DOTALL flag ensures that newlines are included in the match. This is done to extract out the json
+            # that the LLM evaluator is supposed to return
+            pattern = r'(\{.*\})'
+            match = re.search(pattern, llm_completion, re.DOTALL)
+            if not match:
+                raise ValueError("No JSON object found in the provided text.")
+            llm_completion = match.group(1)
+            logger.info(f"Response from the llm judge: {llm_completion}")
         except Exception as e:
             logger.error(f"Error during SageMaker evaluation, endpoint_name={self._endpoint_name}, "
                         f"exception={e}")
