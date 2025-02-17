@@ -1,4 +1,4 @@
-# Customize config files for specific use cases"
+# Customize config files for specific use cases
 
 ## Overview
 
