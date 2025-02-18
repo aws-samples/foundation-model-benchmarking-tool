@@ -44,8 +44,7 @@ def create_script(region, image_uri, model_id, model_name, env_str, privileged_s
     # The model_id and image_uri are passed in, but here we assume they are hardcoded values.
     script = f"""#!/bin/sh
 # Stop and remove any existing container with the same name
-docker stop {FMBENCH_MODEL_CONTAINER_NAME} 2>/dev/null || true
-docker rm {FMBENCH_MODEL_CONTAINER_NAME} 2>/dev/null || true
+{STOP_AND_RM_CONTAINER}
 
 echo "Pulling SGLang Docker image: {image_uri}"
 docker pull {image_uri}
