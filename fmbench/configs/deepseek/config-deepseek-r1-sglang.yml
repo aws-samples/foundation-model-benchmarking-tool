@@ -2,8 +2,8 @@
 # config file for a rest endpoint supported on fmbench - 
 # this file uses a llama-3-8b-chat-hf deployed on ec2
 general:
-  name: DeepSeek-R1-Distill-Qwen-1.5B
-  model_name: DeepSeek-R1-Distill-Qwen-1.5B
+  name: {results_dir}
+  model_name: {model_id}
   
 # AWS and SageMaker settings
 aws:
@@ -78,12 +78,12 @@ s3_read_data:
 # the same config file and the model is already deployed
 run_steps:
   0_setup.ipynb: yes
-  1_generate_data.ipynb: no
-  2_deploy_model.ipynb: no
+  1_generate_data.ipynb: yes
+  2_deploy_model.ipynb: yes
   3_run_inference.ipynb: yes
-  4_get_evaluations.ipynb: no
+  4_get_evaluations.ipynb: yes
   5_model_metric_analysis.ipynb: yes
-  6_cleanup.ipynb: yes
+  6_cleanup.ipynb: no
 
 datasets:
   # dataset related configuration
@@ -164,7 +164,7 @@ inference_parameters:
 # but different instance types, or different models, or even different hosting
 # options.
 experiments:
-  - name: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+  - name: {model_id}
     # AWS region, this parameter is templatized, no need to change
     region: {region}
     # model_id is interpreted in conjunction with the deployment_script, so if you
@@ -173,15 +173,14 @@ experiments:
     # see the DJL serving deployment script in the code repo for reference. 
     #from huggingface to grab
     hf_tokenizer_model_id: deepseek-ai/DeepSeek-R1
-    model_id: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B # model id, version and image uri not needed for byo endpoint
+    model_id: {model_id} # model id, version and image uri not needed for byo endpoint
     model_version:
-    deply: no
-    model_name: deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+    deploy: yes
+    model_name: {model_id}
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://127.0.0.1:30000/v1/chat/completions'
-    instance_type: g6e.xlarge
-    image_uri: ec2
-    deploy: yes #setting to yes to run deployment script for ec2
+    instance_type: {instance_type}
+    image_uri: lmsysorg/sglang:latest
     instance_count: 
     deployment_script: ec2_deploy.py
     # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
