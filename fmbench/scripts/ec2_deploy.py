@@ -84,7 +84,7 @@ def _create_deployment_script(image_uri,
             deploy_script_content = ollama.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_SGLANG:
             logger.info(f"Going to create the deployment script for deploying {model_id} using SGLang")
-            deploy_script_content = sglang.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+            deploy_script_content = sglang.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory, cli_params)
         case _:
             raise ValueError(f"dont know how to handle container_type={container_type}")
     script_file_path = os.path.join(directory, "deploy_model.sh")
