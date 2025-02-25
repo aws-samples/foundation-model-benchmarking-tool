@@ -1,0 +1,1796 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://foundation-model-benchmarking-tool.github.io/customize_config_files.html">
+      
+      
+      
+      
+      <link rel="icon" href="website/img/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+    
+    
+      
+        <title>Customize config files for specific use cases - Foundation Model Benchmarking Tool (FMBench)</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.a40c8224.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="css/ansi-colours.css">
+    
+      <link rel="stylesheet" href="css/jupyter-cells.css">
+    
+      <link rel="stylesheet" href="css/pandas-dataframe.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-MX1DMWF4GF"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-MX1DMWF4GF",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-MX1DMWF4GF",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#customize-config-files-for-specific-use-cases" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="Foundation Model Benchmarking Tool (FMBench)" class="md-header__button md-logo" aria-label="Foundation Model Benchmarking Tool (FMBench)" data-md-component="logo">
+      
+  <img src="img/fmbt-small.png" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Foundation Model Benchmarking Tool (FMBench)
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Customize config files for specific use cases
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="light-blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="deep-orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws-samples/foundation-model-benchmarking-tool
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="Foundation Model Benchmarking Tool (FMBench)" class="md-nav__button md-logo" aria-label="Foundation Model Benchmarking Tool (FMBench)" data-md-component="logo">
+      
+  <img src="img/fmbt-small.png" alt="logo">
+
+    </a>
+    Foundation Model Benchmarking Tool (FMBench)
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81"/></svg>
+  </div>
+  <div class="md-source__repository">
+    aws-samples/foundation-model-benchmarking-tool
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_1" id="__nav_1_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_1">
+            <span class="md-nav__icon md-icon"></span>
+            Home
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="index.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Benchmark foundation models on AWS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="announcement.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Announcement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="gettingstarted.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Main
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="cli.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CLI
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="features.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Features
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="workflow.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Workflow
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quickstart.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    SageMaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ec2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EC2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="quarto.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quarto
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Benchmarking
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Benchmarking
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Main
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="accuracy.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Model evaluations
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="deepseek.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Deepseek
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_bedrock.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bedrock
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_sagemaker.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sagemaker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_eks.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EKS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="benchmarking_on_ec2.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    EC2
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="neuron.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Neuron
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="run_as_container.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Docker
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Configs
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Configs
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="manifest.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Files
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced functionality
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced functionality
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="advanced.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Main
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byoe.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO endpoint
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byo_rest_predictor.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO REST predictor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="byo_dataset.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    BYO dataset
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="build.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Build FMBench
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="analytics.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Analytics
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="mm_copies.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Running multiple model copies
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Results
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Results
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="results.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Report
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="website.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Website
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            Releases
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="announcement.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Announcement
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="releases.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Releases
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Resources
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            Resources
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="resources.html" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resources
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fmbench-configuration-walkthrough" class="md-nav__link">
+    <span class="md-ellipsis">
+      FMBench Configuration Walkthrough
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inference-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      Inference Parameters
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Inference Parameters">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#use-custom-datasets-prompts-within-fmbench" class="md-nav__link">
+    <span class="md-ellipsis">
+      Use custom datasets &amp; prompts within FMBench
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bring-your-own-endpoint-byoe-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bring your own Endpoint (BYOE Configuration)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pricing-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pricing Information
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Model Evaluations
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#benchmarking-thresholds-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      Benchmarking Thresholds &amp; components
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Resources:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="customize-config-files-for-specific-use-cases">Customize config files for specific use cases<a class="headerlink" href="#customize-config-files-for-specific-use-cases" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>To run <code>FMBench</code>, you have to provide a configuration file. A configuration file is simple <code>yml</code> file that contains the information about the models to benchmark, dataset information, prompt templates, custom thresholds for latency, cost and accuracy and other important metrics. View an annotated config file <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/configs/llama2/7b/config-llama2-7b-g5-quick.yml">here</a>. A typical <code>FMBench</code> workflow involves either directly using an already provided config file from the <code>configs</code> folder provided in the <code>FMBench</code> <a href="https://aws-samples.github.io/foundation-model-benchmarking-tool/manifest.html">website</a> or <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs">Github repo</a> or editing an already provided config file as per your own requirements (for example, benchmarking on a different instance type, or a different inference container, or even with custom datasets and various models).</p>
+<p>In this documentation, we will do a walkthrough of the different sections that you can change within the config file based on your specific use case and requirements. <strong>We will take an example of a user who wants to create a config file for <code>NousResearch/Hermes-3-Llama-3.1-70B</code> model on a <code>trn1.32xlarge</code> EC2 instance.</strong></p>
+<p><strong><em>Note: This lab is not a hands-on lab. It is a walk through of a sample configuration file that <code>FMBench</code> uses to benchmark any Foundation Model (FM) on any AWS generative AI service and description of sections that users can tweak for their own use case.</em></strong></p>
+<p>Let's get started:</p>
+<h3 id="fmbench-configuration-walkthrough">FMBench Configuration Walkthrough<a class="headerlink" href="#fmbench-configuration-walkthrough" title="Permanent link">&para;</a></h3>
+<p>Let's take an example to walk through a sample config file. Say a user is interested in using <code>llama3-70b</code> for their <code>question-answering</code> and <code>doc-summarization</code> use cases. A couple of questions they would ask themselves before beginning the benchmarking process is: <strong><em>Which model should I use? Should it be open-source/closed-source or proprietary fine-tuned models?, What instance should I host this model on so I can get my minimum requirements for latency, cost and accuracy satisfied?, Which dataset should I use - is there an open source data that I can use as a representation of my own dataset, or can I benchmark using my custom enterprise data? How do I compute pricing? What are the ways I can evaluate my models on accuracy?</em></strong> and so on. </p>
+<p>The <code>FMBench</code> configuration file takes away the cognitive burden to figure out the answer to these questions and organizing them into parameters for <code>model id</code>, <code>instance types</code>, <code>inference containers</code>, datasets to use, and various other metrics that play a role in model performance and accuracy. The <code>FMBench</code> config file is broadly divided in the following:</p>
+<h3 id="model-information">Model Information<a class="headerlink" href="#model-information" title="Permanent link">&para;</a></h3>
+<p>To decide on which model to use, on a given instance type and container, fill out the information in the <code>experiments</code> section of the configuration file. This <code>experiments</code> section contains configuration about experiments to be run. The <code>experiments</code> section is an array so more than one experiments can be added, these could belong to the <strong>same model but different instance types, or different models, or even different hosting options</strong>. Each experiment represents model under test and the specific information associated to that model. View an example below.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nt">experiments</span><span class="p">:</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Hermes-3-Llama-3.1-70B&quot;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nt">region</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nv">region</span><span class="p p-Indicator">}</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NousResearch/Hermes-3-Llama-3.1-70B</span><span class="w"> </span><span class="c1">#model id, version and image uri not needed for byo endpoint</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="nt">hf_tokenizer_model_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">meta-llama/Llama-3.1-70B</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span><span class="nt">model_version</span><span class="p">:</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">    </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Hermes-3-Llama-3.1-70B&quot;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">    </span><span class="nt">ep_name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;http://localhost:8080/v2/models/Hermes-3-Llama-3.1-70B/generate&#39;</span><span class="w"> </span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="nt">instance_type</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;trn1.32xlarge&quot;</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">    </span><span class="nt">image_uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tritonserver-neuronx:fmbench</span><span class="w"> </span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span><span class="nt">deploy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span><span class="w"> </span><span class="c1">#setting to yes to run deployment script for ec2</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span><span class="nt">instance_count</span><span class="p">:</span><span class="w"> </span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">    </span><span class="nt">deployment_script</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec2_deploy.py</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span><span class="nt">inference_script</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec2_predictor.py</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">    </span><span class="c1"># This section defines the settings for Amazon EC2 instances</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">    </span><span class="nt">ec2</span><span class="p">:</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">    </span><span class="nt">model_loading_timeout</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10000</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="nt">inference_spec</span><span class="p">:</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span><span class="nt">parameter_set</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ec2_djl</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">    </span><span class="nt">container_type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">triton</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="c1"># For deploying a model using the triton inference container: </span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="c1"># mention the backend type, if any. Options for triton are: [djl, vllm or tensorrt]</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span><span class="nt">backend</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">djl</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">    </span><span class="c1"># how many copies of the model, 1, 2,..max</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">    </span><span class="c1"># set to 1 in the code if not configured,</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="c1"># max: FMBench figures out the max number of model containers to be run</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="c1">#      based on TP degree configured and number of neuron cores/GPUs available.</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span><span class="c1">#      For example, if TP=2, GPUs=8 then FMBench will start 4 containers and 1 load balancer,</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">    </span><span class="c1"># auto: only supported if the underlying inference container would automatically </span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">    </span><span class="c1">#       start multiple copies of the model internally based on TP degree and neuron cores/GPUs</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">    </span><span class="c1">#       available. In this case only a single container is created, no load balancer is created.</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span><span class="c1">#       The DJL serving containers supports auto.  </span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">    </span><span class="nt">model_copies</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">max</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span><span class="nt">shm_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">12g</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">    </span><span class="c1"># The model.json parameters are replaced within the model.json file</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span><span class="c1"># for the triton on vllm/djl/tensorrt options. The model.json already contains</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">    </span><span class="c1"># the tp degree and model id from above in this config file. This is a dictionary</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">    </span><span class="c1"># that contains other variables, such as max_num_seqs, dtype, max_model_len, block_size and more</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">    </span><span class="c1"># For tensorrt, the tp degree, batch size and other relevant parameters are </span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">    </span><span class="c1"># extracted directly from the inference spec.</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a><span class="w">    </span><span class="nt">container_params</span><span class="p">:</span>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">        </span><span class="c1"># tp degree is a mandatory parameter</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="w">        </span><span class="nt">tp_degree</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">        </span><span class="nt">amp</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;f16&quot;</span><span class="w"> </span><span class="c1"># and so on</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="w">        </span><span class="c1"># modify the serving properties to match your model and requirements</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a><span class="w">        </span><span class="nt">serving.properties</span><span class="p">:</span>
+</span></code></pre></div>
+<p>Here are the list of parameters that can be changed based on your use case and models you would like to benchmark:</p>
+<ul>
+<li>
+<p><strong>Model Id (<code>model_id</code>)</strong>: This is the <code>model id</code> of the model that you would like to benchmark. This can be any open source model on <code>HuggingFace</code>, a <code>SageMaker Jumpstart</code> model, a <code>Bedrock</code> model, or any Foundation Model that you would like to benchmark on <strong>any AWS generative AI service</strong>. For this specific example, the user was interested in benchmarking the fine-tuned version of <code>Llama-3.1-70B</code>, so they pointed the <code>model_id</code> to the HF model: <code>NousResearch/Hermes-3-Llama-3.1-70B</code>. You can change the <code>name</code> and the <code>model_name</code> parameter to any custom name that you would like to based on the <code>model_id</code> that you are using in the config file. </p>
+</li>
+<li>
+<p><strong>Tokenizer (<code>hf_tokenizer_model_id</code>)</strong>: If your model is a Hugging Face model, and if you would like to use that model's tokenizer, then point the <code>hf_tokenizer_model_id</code> parameter to the <code>model_id</code> on hugging face and that specific model's tokenizer will be used in the benchmarking test.</p>
+</li>
+<li>
+<p><strong>Instance Type (<code>instance_type</code>)</strong>: This is the instance type/hardware on which the model is deployed and hosted. In this case, the user was interested to deploy the model on a <code>trn1.32xlarge</code> instance, so they pointed the <code>instance_type</code> parameter to <code>trn1.32xlarge</code>. You can point this parameter to any <code>instance_type</code> that you want to deploy the model on. This can either be a <code>GPU</code>/<code>CPU</code>/<code>AWS Silicon (i.e. inf2/trn1/trn2)</code> instance. View the list of models that have been benchmarked on various instances using <code>FMBench</code> <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool?tab=readme-ov-file#full-list-of-benchmarked-models">here</a></p>
+</li>
+<li>
+<p><strong>Inference Container (<code>image_uri</code>)</strong>: If the user is interested in using a specific container of choice, they can point the <code>image_uri</code> parameter to that inference container. <code>FMBench</code> supports the <code>HF TGI</code>, <code>Triton</code>, <code>Deep Java Library</code>, <code>vLLM</code> and <code>Ollama</code> containers. This means that the user would not have to write any custom code to deploy the model or benchmark it using any of these containers that <code>FMBench</code> provides built in support for. In this case, the user was interested in benchmarking <code>NousResearch/Hermes-3-Llama-3.1-70B</code> on the <code>triton</code> inference server, so they pointed the <code>image_uri</code> to <code>tritonserver-neuronx:fmbench</code>. Users can bring their own containers and point to that within the configuration file (this would require the user to provide a custom deployment and inference script that supports the deployment and prediction format that the specific inference container supports if it is not already supported on <code>FMBench</code>). </p>
+</li>
+<li>
+<p><strong>Inference/Deployment Scripts (<code>deployment_script</code>, <code>inference_script</code>)</strong>: <code>FMBench</code> comes packaged with multiple inference and deployment scripts. These scripts will deploy models on <code>SageMaker</code>, <code>Bedrock</code>, <code>EC2</code>, <code>EKS</code>, and also support inference on those models based on their respective inference scripts. If users deploy and make inferences from a model using a format that is not already supported on <code>FMBench</code>, users can <strong>bring in custom deployment and predictor scripts</strong>. Given above is an example for a model deployed on an Amazon <code>EC2</code> instance using the <code>ec2_deploy.py</code> deployment script and make inferences on the model using the <code>ec2_predictor.py inference script.</code> To view how you can bring your own custom deployment and inference files to <code>FMBench</code> to benchmark your custom models, view <a href="https://aws-samples.github.io/foundation-model-benchmarking-tool/byo_rest_predictor.html">here</a>. An example custom inference script <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/scripts/rest_predictor.py">here</a> that is specified in <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/82fc6f08f168b9c1c2ff1d72a01b1004525708d6/fmbench/configs/llama2/13b/config-byo-rest-ep-llama2-13b.yml#L184">this</a> configuration file.</p>
+</li>
+<li>
+<p><strong>Endpoint Name (<code>ep_name</code>)</strong>: This parameter specifies the endpoint URL where the model will be accessible. In the example, it's set to <code>'http://localhost:8080/v2/models/Hermes-3-Llama-3.1-70B/generate'</code> since the model is hosted on an EC2 instance. For models deployed on <code>Bedrock</code>, the <code>ep_name</code> is the <code>Bedrock model_id</code> since that is what is used while running inferences against the model. If your model is deployed on <code>SageMaker</code>, then the endpoint name is dynamically created based on what you provide as the <code>ep_name</code> in the configuration file. If you already have a model deployed and want to use your own endpoint, you can:</p>
+<ul>
+<li>Set <code>deploy: no</code> in the experiment configuration</li>
+<li>Provide your existing <code>EC2</code> endpoint URL/SageMaker endpoint in the <code>ep_name</code> field</li>
+<li>Skip the deployment-specific parameters as they won't be needed</li>
+</ul>
+<p>For more information on bringing your own endpoint, view the documentation on it <a href="https://aws-samples.github.io/foundation-model-benchmarking-tool/byoe.html">here</a>.</p>
+</li>
+<li>
+<p><strong>Container Parameters (<code>container_params</code>/<code>serving.properties</code>)</strong>: This section allows you to configure model-specific serving parameters such as:</p>
+<ul>
+<li><code>tp_degree</code>: Tensor parallelism degree for distributed inference</li>
+<li><code>amp</code>: Automatic mixed precision settings (e.g., "f16", "bf16")</li>
+<li><code>serving.properties</code>: Additional serving configuration parameters specific to your inference container such as <code>max_rolling_batch_size</code>, <code>n_positions</code>, etc.
+These parameters are not limited and can be changed/extended based on the parameters supported by your inference container.</li>
+</ul>
+</li>
+</ul>
+<h3 id="inference-parameters">Inference Parameters<a class="headerlink" href="#inference-parameters" title="Permanent link">&para;</a></h3>
+<p>After configuring the model deployment settings, the next step is to specify how you want the model to generate responses. The inference parameters section allows you to customize the generation behavior based on your use case:
+  <div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">inference_parameters</span><span class="p">:</span><span class="w"> </span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">ec2_djl</span><span class="p">:</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nt">top_k</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span><span class="w">  </span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
+</span></code></pre></div>
+  These parameters directly affect the model's output and performance characteristics. For example:</p>
+<ul>
+<li>For a summarization use case, a user might want to set <code>max_new_tokens</code> to a higher value like <code>512</code> or <code>1024</code> to allow for comprehensive summaries of longer documents.</li>
+<li>For a quick Q&amp;A application, you might keep <code>max_new_tokens</code> lower at <code>100-200</code> to get concise responses.</li>
+<li>The <code>top_k</code> parameter controls response diversity by limiting the token selection to the k most likely next tokens.</li>
+</ul>
+<p>You can add any parameter that your <strong>inference container supports</strong>. The parameters are organized by deployment type (ec2_djl, SageMaker, bedrock, any custom parameters that you would want to set etc.) to match the <code>parameter_set</code> specified in your experiment configuration. For example, if using Bedrock's model, you would specify <code>bedrock</code> or any custom parameter set name:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nt">inference_parameters</span><span class="p">:</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">bedrock</span><span class="p">:</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="nt">temperature</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.7</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="nt">max_new_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">512</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="nt">top_p</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.9</span>
+</span></code></pre></div>
+<p>Once you have defined your inference parameters, you can point to that inference parameter spec in the experiment section as given below:</p>
+<p><code>yaml
+  # Model configurations for llama-2 7b for deploying on g5 x and 2x large instances
+experiments:
+  - name: &lt;model_name&gt;
+    model_id: # model id, version and image uri not needed for byo endpoint
+    model_version:
+    model_name: &lt;your-model-name&gt;
+    ep_name: "&lt;your-endpoint-name&gt;"
+    .
+    .
+    .
+    inference_spec:
+      parameter_set: bedrock # you can have a different inference parameter set for each experiment depending on the
+                             # model inference parameters</code> </p>
+<h4 id="use-custom-datasets-prompts-within-fmbench">Use custom datasets &amp; prompts within <code>FMBench</code><a class="headerlink" href="#use-custom-datasets-prompts-within-fmbench" title="Permanent link">&para;</a></h4>
+<p><code>FMBench</code> now supports benchmarking models using datasets from Hugging Face with a simplified prefixing method. To specify a Hugging Face dataset and its split, use the <code>hf:</code> prefix followed by the <code>dataset identifier</code>, <code>subset name</code>, and <code>split name</code>. If a <code>subset name</code> is not provided, it defaults to <code>default</code>. If a <code>split name</code> is not provided, <code>FMBench</code> automatically selects the next available split at runtime.</p>
+<ul>
+<li>
+<p>To configure your dataset in <code>FMBench</code>, add entries to <code>source_data_files</code> in your configuration file:
+    <div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">source_data_files</span><span class="p">:</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1"># Format: hf:dataset-id/subset-name/split-name</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># If no subset name is provided, use &quot;default&quot;.</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa_e/test</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/2wikimqa/test</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa_e/test</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/hotpotqa/test</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/narrativeqa/test</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa_e/test</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">hf:THUDM/LongBench/triviaqa/test</span>
+</span></code></pre></div>
+You can follow this format for any <code>text</code> or <code>image-based</code> dataset from Hugging Face. Alternatively, you can use custom datasets in <code>JSONL</code> format.</p>
+</li>
+<li>
+<p>For domain-specific or personalized benchmarking, you can use custom datasets. These datasets can be:</p>
+</li>
+<li><strong>Synthetic/Open source datasets (available on Hugging Face)</strong></li>
+<li>
+<p><strong>Proprietary data (not publicly available)</strong></p>
+</li>
+<li>
+<p>To use custom data, convert it into JSONL format. We provide a sample notebook to help convert Hugging Face or custom datasets into JSONL and upload them to an S3 bucket used by FMBench. Follow the steps in the <a href="(https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/bring_your_own_dataset.ipynb)">bring_your_own_dataset</a> notebook to integrate your own dataset into <code>FMBench</code>. Place this <code>JSONL</code> file in the local <code>fmbench-read/scripts</code> directory in your <code>FMBench</code> EC2 instance or in the <code>fmbench-read</code> S3 bucket in the <code>scripts</code> directory.</p>
+</li>
+<li>
+<p><strong>Use specific keys from the dataset in your prompts</strong>: Since <code>FMBench</code> uses <code>LongBench</code> as the dataset under test by default, it requires specific keys that contain <code>user queries</code>, <code>context</code>, or other necessary fields. To specify dataset keys, add them under <code>prompt_template_keys</code> in the <code>datasets</code> section of your configuration file:</p>
+</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">datasets</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="nt">prompt_template_keys</span><span class="p">:</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">context</span>
+</span></code></pre></div>
+<p>These keys correspond to fields in the Hugging Face dataset, as shown in the example below:</p>
+<p><img alt="hf_ds_keys" src="img/hf_ds_keys.png" /></p>
+<ul>
+<li><strong>Using a Custom Prompt Template</strong>: The specified dataset keys can be used in a custom prompt template for generating input payloads. Below is an example of a prompt template utilizing these keys:</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&lt;think&gt;
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>  There can be multiple question answer pairs in the context.
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>  As soon as you find the first question in the text below immediately stop reading any further and just answer the question.
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>  Always start your response with &quot;&lt;think&gt;&quot; at the beginning of every output and think step by step.
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>  Keep your thinking process short and your answers concise, do not overthink.
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>  Make sure to always provide an answer, if you do not know the answer then say I do not known but never leave the answer field empty in your response.
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>  &lt;/think&gt;
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>  &lt;answer&gt;
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>  Put your final answer in one line starting with the word Answer:
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>  &lt;/answer&gt;
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>  Here is the text for you to work on:
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>  &lt;text&gt;
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>  {input}
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>  {context}
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>  &lt;/text&gt;
+</span></code></pre></div>
+<ul>
+<li><strong>Adding the Prompt Template to FMBench</strong>: To use the custom prompt template, place it in the <code>fmbench-read/scripts</code> directory. <code>FMBench</code> will download and apply it during benchmarking.</li>
+</ul>
+<p><div class="language-yaml highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nt">prompt_template_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">prompt_template_llama3.txt</span>
+</span></code></pre></div>
+  By following these steps, you can seamlessly integrate Hugging Face datasets or custom data into FMBench, enabling tailored benchmarking for your use case.</p>
+<p><strong>Filtering Options</strong>: If your dataset contains multiple languages and includes a language field, you can filter it to retain only prompts in a specific language. Additionally, you can filter prompts based on token length, which is determined using the tokenizer specified in the tokenizer_prefix in the S3 bucket. The example below filters for English prompts with a token length between <code>1,000</code> and <code>2,000</code>, saving the results in a designated payload file that <code>FMBench</code> then uses in the benchmarking test. You can filter this based on your custom token length filtering preferences.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nt">datasets</span><span class="p">:</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">  </span><span class="nt">filters</span><span class="p">:</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">language</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en</span><span class="w">    </span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">      </span><span class="nt">min_length_in_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1000</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">      </span><span class="nt">max_length_in_tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">2000</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">      </span><span class="nt">payload_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">payload_en_1000-2000.jsonl</span>
+</span></code></pre></div>
+<p><strong>Metrics Configuration</strong>: Specify <code>dataset_of_interest</code> for focused performance analysis. While the tests would run on all the datasets configured in the experiment entries below but the price|performance analysis is only done for 1 dataset which is listed below as the dataset_of_interest. If a user is interested in seeing model benchmarks for prompt sizes <code>1000-2000</code> tokens, then set the <code>dataset_of_interest</code> to <code>en_1000-2000</code>. If it is a <code>summarization use case</code> and your dataset is large enough, you can add a filter to use <code>payload_en_3000-3840.jsonl</code> and set the <code>dataset_of_interest</code> to <code>en_3000-3840</code> tokens. This can be any custom value.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="nt">datasets</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">metrics</span><span class="p p-Indicator">:</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="nt">dataset_of_interest</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">en_1000-2000</span>
+</span></code></pre></div>
+<h4 id="bring-your-own-endpoint-byoe-configuration">Bring your own Endpoint (BYOE Configuration)<a class="headerlink" href="#bring-your-own-endpoint-byoe-configuration" title="Permanent link">&para;</a></h4>
+<ul>
+<li>
+<p>If you want to benchmark a model that is already deployed in your <code>infrastructure</code>/<code>SageMaker</code>/<code>EC2</code>/<code>EKS</code> or elsewhere, then you can use the <code>BYOE</code> configuration on <code>FMBench</code> to benchmark that model. As a part of this step, you can simply point the <code>ep_name</code> parameter in your configuration file to the endpoint URL or endpoint name so that <code>FMBench</code> can use it while making predictions. </p>
+</li>
+<li>
+<p>Set the <code>deploy</code> variable in the experiments section of the config file to <code>no</code> because the model does not have to be deployed since this is a <code>byoe</code> mode. Set the <code>2_deploy_model.ipynb</code> notebook in the <code>run_steps</code> section to <code>yes</code>. Even though the model is not deployed, the notebook will identify that <code>deploy</code> from the experiments section is set to <code>no</code> and just log the provided endpoint for further use.</p>
+</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">## section that enables container to run notebooks and python scripts automatically </span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nt">run_steps</span><span class="p">:</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nt">0_setup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nt">1_generate_data.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="nt">2_deploy_model.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span><span class="w"> </span><span class="c1"># Set the deploy notebook to yes. This will not deploy the model, but will identify that the `deploy` variable in the `experiments` section below is set to &#39;no&#39;, </span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">                              </span><span class="c1"># and will just log the endpoint provided for further use in the benchmarking test</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="nt">3_run_inference.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="nt">4_model_metric_analysis.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="nt">5_cleanup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="l l-Scalar l-Scalar-Plain">.</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="nt">experiments</span><span class="p">:</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bring-your-own-sm-endpoint</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">  </span><span class="nt">model_id</span><span class="p">:</span><span class="w"> </span><span class="c1"># model id, version and image uri not needed for byo endpoint</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">  </span><span class="nt">model_version</span><span class="p">:</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span><span class="w"> </span><span class="c1"># set deploy to &quot;no&quot; in the experiments section because the model does not have to be deployed since this is a byoe mode</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">  </span><span class="nt">model_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">&lt;your-model-name&gt;</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">  </span><span class="nt">ep_name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;&lt;your-endpoint-name&gt;&quot;</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">  </span><span class="nt">instance_type</span><span class="p">:</span><span class="w">  </span><span class="s">&quot;&lt;your-instance-type&gt;&quot;</span>
+</span></code></pre></div>
+<p>For more detailed information on bringing your own endpoint, refer to the <a href="https://aws-samples.github.io/foundation-model-benchmarking-tool/byoe.html">BYOE documentation</a>. </p>
+<h4 id="pricing-information">Pricing Information<a class="headerlink" href="#pricing-information" title="Permanent link">&para;</a></h4>
+<p>The pricing information is stored in the <code>pricing.yml</code> file. All pricing information in this file is based on public on-demand pricing information. This file contains <code>hourly</code> and <code>token-based</code> pricing - for example input and output tokens for Bedrock models and hourly rates for <code>SageMaker</code> or <code>EC2</code> instances. You can bring your own pricing file with your own pricing/discounts by specifying a custom file name here, or edit the existing <code>pricing.yml</code> file.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="nt">pricing</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pricing.yml</span><span class="w"> </span><span class="c1"># &lt;your-custom-pricing.yml&gt;</span>
+</span></code></pre></div>
+<p>Here is an example for hourly pricing:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nt">instance_based</span><span class="p">:</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">  </span><span class="c1"># Instance Based Pricing: SageMaker, EKS, Bedrock Provisioned Throughput, Bring your own endpoints that are priced hourly</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span><span class="c1"># SageMaker Hourly Instance Pricing</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span><span class="nt">ml.c5.xlarge</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.204</span>
+</span></code></pre></div>
+<p>Here is an example for token-based pricing:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nt">token_based</span><span class="p">:</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="c1"># Token Based Pricing: Bedrock</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="nt">anthropic.claude-3-haiku-20240307-v1:0</span><span class="p">:</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="nt">input-per-1k-tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.00025</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="nt">output-per-1k-tokens</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.00125</span>
+</span></code></pre></div>
+<h4 id="model-evaluations">Model Evaluations<a class="headerlink" href="#model-evaluations" title="Permanent link">&para;</a></h4>
+<p>Accuracy is defined as percentage of responses generated by the <code>LLM</code> that match the ground truth included in the dataset (as a separate column). In order to determine if an <code>LLM</code> generated response matches the ground truth we ask other <code>LLMs</code> called the evaluator <code>LLMs</code> to compare the <code>LLM</code> output and the ground truth and provide a verdict if the <code>LLM</code> generated ground truth is correct or not given the ground truth. Here is the <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/prompt_template/eval_criteria/claude_eval_prompt_templates/claude_eval_majority_vote.txt">link</a> to the <code>Anthropic Claude 3 Sonnet model</code> prompt being used as an evaluator (or a judge model). A combination of the <code>cosine similarity</code> and the LLM evaluator verdict decides if the <code>LLM</code> generated response is correct or incorrect. Finally, one <code>LLM</code> evaluator could be biased, could have inaccuracies so instead of relying on the judgement of a single evaluator, we rely on the majority vote of 3 different LLM evaluators. By default we use the <code>Anthropic Claude 3.5 Sonnet V2</code>, <code>Meta Llama3.3-70b Instruct</code> and the <code>Cohere Command R plus</code> model as LLM evaluators. See <strong><em>Pat Verga et al., "Replacing Judges with Juries: Evaluating LLM Generations with a Panel of Diverse Models", arXiv:2404.18796, 2024.</em></strong> for more details on using a <code>Panel of LLM Evaluators (PoLL)</code>. The following <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/configs/model_eval_all_info.yml">file</a> in the configuration file contains judge model information, prompt templates used for evaluations, inference parameters, etc. </p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># name of the file that contains the model evaluation information</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># for example, the prompt template names, the ground truth column name (if any), </span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># LLM panelist information, inference parameters, etc.</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="nt">model_evaluations</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">model_eval_all_info.yml</span>
+</span></code></pre></div>
+<p>For more information on model evaluations using <code>FMBench</code> view this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/4_get_evaluations.ipynb">notebook</a> and this <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/docs/accuracy.md">documentation</a>.</p>
+<ul>
+<li>This file contains information about metrics and the LLM judges (with their inference parameters) that will be used while evaluating candidate models. To add the evaluation step to <code>FMBench</code>, add it as a step under <code>run_steps</code> section in the configuration file (view step 4):</li>
+</ul>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nt">run_steps</span><span class="p">:</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="nt">0_setup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">    </span><span class="nt">1_generate_data.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">    </span><span class="nt">2_deploy_model.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="nt">3_run_inference.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">    </span><span class="nt">4_get_evaluations.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">    </span><span class="nt">5_model_metric_analysis.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">    </span><span class="nt">6_cleanup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
+</span></code></pre></div>
+<ul>
+<li><code>FMBench</code>'s panel of LLM judges uses the model responses and compares it to the ground truth provided in the dataset. If there is a ground truth column, replace the following parameters with the name of the column. The ground truth and question column keys can be fetched from the Hugging Face dataset or your custom dataset. View an example below:</li>
+</ul>
+<p><img alt="ground-truth-col-key" src="img/ground_truth_info.png" /></p>
+<p>Then, use the question and ground truth key from the dataset below in the configuration file. This will be used by <code>FMBench</code>'s evaluators to evaluate the correctness of models to be benchmarked.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Represents the column with the ground truth</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nt">ground_truth_col_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">answers</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="c1"># Represents the column with questions/instructions</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nt">question_col_key</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">input</span>
+</span></code></pre></div>
+<h4 id="benchmarking-thresholds-components">Benchmarking Thresholds &amp; components<a class="headerlink" href="#benchmarking-thresholds-components" title="Permanent link">&para;</a></h4>
+<p>The <code>report</code> section allows you to set specific performance thresholds and constraints for your use case. These thresholds help determine whether a model deployment configuration meets your requirements:</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">report</span><span class="p">:</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="nt">latency_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="nt">cosine_similarity_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="nt">accuracy_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="nt">accuracy_error_rate_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="nt">cost_per_10k_txn_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">200</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span><span class="nt">error_rate_budget</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span>
+</span></code></pre></div>
+<p>In this use case, the user was interested in getting responses to questions within <code>3s</code> with a cost budget of <code>$200</code> per <code>10k</code> transactions. If the user has a more real-time application, they can set the <code>latency_budget</code> to <code>1s</code> or lower to get the most optimal model serving stack that satisfies that requirement. User's can also set accuracy thresholds in their report. If they are evaluating whether model responses are accurate compared to ground truth provided in the dataset, they can set an <code>accuracy budget</code> and a <code>cosine similarity</code> budget that are paired together to determine the accuracy of a response. </p>
+<p><strong>Run Steps Configuration</strong>: The <code>FMBench</code> workflow consists of several sequential notebooks that handle different aspects of the benchmarking process, from setup to cleanup. Each step can be enabled or disabled using the <code>run_steps</code> configuration in the YAML file. While typically all steps would run in sequence, you have the flexibility to skip certain steps by setting them to <code>no</code> if you've already completed them or want to rerun specific analyses. For example, if you've already deployed your model and generated/collected inference data, you could set <code>2_deploy_model.ipynb</code> and <code>3_run_inference.ipynb</code> to <code>no</code> and only run the analysis notebooks with different parameters - this is particularly useful when you want to experiment with different performance thresholds (like adjusting latency budgets or cost constraints) without having to redeploy models or rerun inferences.</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># steps to run, usually all of these would be</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1"># set to yes so nothing needs to change here</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="c1"># you could, however, bypass some steps for example</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># set the 2_deploy_model.ipynb to no if you are re-running</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="c1"># the same config file and the model is already deployed</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="nt">run_steps</span><span class="p">:</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">    </span><span class="nt">0_setup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">    </span><span class="nt">1_generate_data.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">    </span><span class="nt">2_deploy_model.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">    </span><span class="nt">3_run_inference.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">    </span><span class="nt">4_get_evaluations.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="nt">5_model_metric_analysis.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yes</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">    </span><span class="nt">6_cleanup.ipynb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">no</span>
+</span></code></pre></div>
+<h3 id="resources">Resources:<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h3>
+<p><code>FMBench</code> provides several configuration files for benchmarking models on Bedrock, SageMaker, EC2, Bring your own endpoint, EKS, etc. These configuration files can be found on the <code>FMBench</code> Github repo <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool/tree/main/src/fmbench/configs">here</a>:</p>
+<p><img alt="config-structure" src="img/config-structure.png" /></p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M186.1 328.7c0 20.9-10.9 55.1-36.7 55.1s-36.7-34.2-36.7-55.1 10.9-55.1 36.7-55.1 36.7 34.2 36.7 55.1M480 278.2c0 31.9-3.2 65.7-17.5 95-37.9 76.6-142.1 74.8-216.7 74.8-75.8 0-186.2 2.7-225.6-74.8-14.6-29-20.2-63.1-20.2-95 0-41.9 13.9-81.5 41.5-113.6-5.2-15.8-7.7-32.4-7.7-48.8 0-21.5 4.9-32.3 14.6-51.8 45.3 0 74.3 9 108.8 36 29-6.9 58.8-10 88.7-10 27 0 54.2 2.9 80.4 9.2 34-26.7 63-35.2 107.8-35.2 9.8 19.5 14.6 30.3 14.6 51.8 0 16.4-2.6 32.7-7.7 48.2 27.5 32.4 39 72.3 39 114.2m-64.3 50.5c0-43.9-26.7-82.6-73.5-82.6-18.9 0-37 3.4-56 6-14.9 2.3-29.8 3.2-45.1 3.2-15.2 0-30.1-.9-45.1-3.2-18.7-2.6-37-6-56-6-46.8 0-73.5 38.7-73.5 82.6 0 87.8 80.4 101.3 150.4 101.3h48.2c70.3 0 150.6-13.4 150.6-101.3m-82.6-55.1c-25.8 0-36.7 34.2-36.7 55.1s10.9 55.1 36.7 55.1 36.7-34.2 36.7-55.1-10.9-55.1-36.7-55.1"/></svg>
+    </a>
+  
+    
+    
+    
+    
+      
+      
+    
+    <a href="https://github.com/aws-samples/foundation-model-benchmarking-tool" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M94.12 315.1c0 25.9-21.16 47.06-47.06 47.06S0 341 0 315.1s21.16-47.06 47.06-47.06h47.06zm23.72 0c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06v117.84c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06zm47.06-188.98c-25.9 0-47.06-21.16-47.06-47.06S139 32 164.9 32s47.06 21.16 47.06 47.06v47.06zm0 23.72c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06H47.06C21.16 243.96 0 222.8 0 196.9s21.16-47.06 47.06-47.06zm188.98 47.06c0-25.9 21.16-47.06 47.06-47.06S448 171 448 196.9s-21.16 47.06-47.06 47.06h-47.06zm-23.72 0c0 25.9-21.16 47.06-47.06 47.06s-47.06-21.16-47.06-47.06V79.06c0-25.9 21.16-47.06 47.06-47.06s47.06 21.16 47.06 47.06zM283.1 385.88c25.9 0 47.06 21.16 47.06 47.06S309 480 283.1 480s-47.06-21.16-47.06-47.06v-47.06zm0-23.72c-25.9 0-47.06-21.16-47.06-47.06s21.16-47.06 47.06-47.06h117.84c25.9 0 47.06 21.16 47.06 47.06s-21.16 47.06-47.06 47.06z"/></svg>
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": ["navigation", "content.code.copy"], "search": "assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.60a45f97.min.js"></script>
+      
+    
+  </body>
+</html>
