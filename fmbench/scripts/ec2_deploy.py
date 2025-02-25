@@ -21,9 +21,9 @@ from pathlib import Path
 from typing import Dict, Union
 from fmbench.scripts import constants
 from ec2_metadata import ec2_metadata
-from fmbench.scripts.inference_containers import (djl, vllm, vllm_gpu, triton, ollama)
 from fmbench.scripts.constants import (IS_NEURON_INSTANCE, LISTEN_PORT)
 from fmbench.scripts.prepare_for_multi_model_containers import prepare_docker_compose_yml
+from fmbench.scripts.inference_containers import (djl, vllm, vllm_gpu, triton, ollama, sglang)
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -82,6 +82,9 @@ def _create_deployment_script(image_uri,
             deploy_script_content = triton.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
         case constants.CONTAINER_TYPE_OLLAMA:
             deploy_script_content = ollama.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory)
+        case constants.CONTAINER_TYPE_SGLANG:
+            logger.info(f"Going to create the deployment script for deploying {model_id} using SGLang")
+            deploy_script_content = sglang.create_script(region, image_uri, model_id, model_name, env_str, privileged_str, hf_token, directory, cli_params)
         case _:
             raise ValueError(f"dont know how to handle container_type={container_type}")
     script_file_path = os.path.join(directory, "deploy_model.sh")
@@ -131,6 +134,17 @@ def _check_model_deployment(endpoint, model_id, container_type, model_loading_ti
                 }
         else:
             data = {"text_input": "tell me a story of the little red riding hood", "max_tokens": 50}
+    elif container_type == constants.CONTAINER_TYPE_SGLANG:
+        # this is the sglang container format to check for model deployment
+        data = {
+            "model": "default",
+            "messages": [
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": "List 3 countries and their capitals."}
+            ],
+            "temperature": float(0.1),
+            "max_tokens": int(100)
+        }
     headers = {"content-type": "application/json"}
     container_check_timeout = 60
     logger.info(f"going to check every {container_check_timeout}s for the inference endpoint to be up...")
@@ -176,8 +190,6 @@ def deploy(experiment_config: Dict, role_arn: str) -> Dict:
     model_id: str = experiment_config['model_id']
     model_name: str = Path(model_id).name
     logger.info(f"Going to deploy model: {model_name}")
-
-    ep_name: str = experiment_config['ep_name']
     # extract port number from the endpoint name
     # 8080 from "http://localhost:8080/v2/models/ensemble/generate"
     # this is the port on which either the inference container (if there

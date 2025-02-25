@@ -222,7 +222,31 @@ class EC2Predictor(FMBenchPredictor):
                 """
                 full_output = json.loads(response.text).get("response")
                 if full_output is None:
-                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"") 
+                    logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")
+            elif container_type == constants.CONTAINER_TYPE_SGLANG:
+                user_input = payload2.pop('inputs')
+                payload2 = {
+                    "model": "default",
+                    "messages": [
+                        {"role": "system", "content": "You are a helpful assistant."},
+                        {"role": "user", "content": user_input}
+                    ]
+                } | self._inference_spec["parameters"]
+
+                st = time.perf_counter()
+                response = requests.post(self._endpoint_name, json=payload2)
+                latency = time.perf_counter() - st
+                response.raise_for_status()
+
+                response_json_raw = response.json()
+                full_output = response_json_raw.get("response")
+                # 'choices' (OpenAI-style)
+                if full_output is None:
+                    choices = response_json_raw.get("choices", [])
+                    if choices:
+                        full_output = choices[0].get("message", {}).get("content", "")
+                if not full_output:
+                    logger.error(f"Failed to extract output. Response: {response.text}")
             else:
                 raise ValueError("container_type={container_type}, dont know how to handle this") 
             
