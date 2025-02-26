@@ -83,6 +83,10 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
+## 2.1.3
+
+1. SGLang support.
+
 ## 2.1.2
 
 1. Deepseek prompt updates.
@@ -98,14 +102,7 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 1. Evaluate Deepseek performance with `LongBench`, `OpenOrca`, `Dolly` and [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/ConvFinQA) datasets.
 1. Replace `conda` with [`uv`](https://docs.astral.sh/uv/) for faster installs.
 
-## 2.0.27
 
-1. Ollama end to end support
-
-## 2.0.26
-
-1. Bug fix for missing HuggingFace token file.
-1. Config file enhancements
 
 
 [Release history](./release_history.md)

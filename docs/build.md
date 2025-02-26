@@ -12,8 +12,8 @@ If you would like to build a dev version of `FMBench` for your own development a
    
     ```{.bash}
     curl -LsSf https://astral.sh/uv/install.sh | sh
-    uv venv .fmbench_python311 && source .fmbench_python311/bin/activate && uv pip sync pyproject.toml
-    export UV_PROJECT_ENVIRONMENT=.fmbench_python311
+    uv venv .fmbench_python312 && source .fmbench_python312/bin/activate && uv pip sync pyproject.toml
+    export UV_PROJECT_ENVIRONMENT=.fmbench_python312
     uv add zmq
     python -m ipykernel install --user --name=.venv --display-name="Python (uv fmbench env)"
     sudo apt-get install tree

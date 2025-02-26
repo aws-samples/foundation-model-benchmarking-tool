@@ -1,3 +1,12 @@
+## 2.0.27
+
+1. Ollama end to end support
+
+## 2.0.26
+
+1. Bug fix for missing HuggingFace token file.
+1. Config file enhancements
+
 ## 2.0.25
 
 1. Fix bug with an alternate VariantName for SageMaker BYOE.

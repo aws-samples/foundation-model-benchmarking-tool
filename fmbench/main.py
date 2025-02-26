@@ -18,9 +18,6 @@ from nbformat import NotebookNode
 logging.basicConfig(format='[%(asctime)s] p%(process)s {%(filename)s:%(lineno)d} %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create an S3 client
-s3_client = boto3.client('s3')
-
 # Function to check whether the given uri is a valid s3 uri
 def is_valid_s3_uri(s3_uri: str) -> bool:
     pattern = re.compile(r's3://[^/]+/.+')
@@ -38,6 +35,8 @@ def read_config(config_file_path: str) -> Dict:
         bucket, key = config_file_path.replace("s3://", "").split("/", 1)
 
         # Get object from S3 and load YAML
+        # Create an S3 client
+        s3_client = boto3.client('s3')
         response = s3_client.get_object(Bucket=bucket, Key=key)
         config_content = yaml.safe_load(response["Body"])
     elif is_valid_http_url(config_file_path):

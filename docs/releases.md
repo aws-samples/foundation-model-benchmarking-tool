@@ -1,8 +1,11 @@
 # Releases
+## 2.1.3
+
+1. SGLang support.
 
 ## 2.1.1
 
-1. Optimized prompt tempaltes for DeepSeek-R1 and Amazon Nova for `ConvFinQA` and `LongBench` datasets.
+1. Optimized prompt templates for DeepSeek-R1 and Amazon Nova for `ConvFinQA` and `LongBench` datasets.
 
 ## 2.1.0
 
