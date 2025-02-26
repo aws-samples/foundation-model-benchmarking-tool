@@ -166,7 +166,7 @@ You can follow this format for any `text` or `image-based` dataset from Hugging 
   - **Synthetic/Open source datasets (available on Hugging Face)**
   - **Proprietary data (not publicly available)**
 
-- To use custom data, convert it into JSONL format. We provide a sample notebook to help convert Hugging Face or custom datasets into JSONL and upload them to an S3 bucket used by FMBench. Follow the steps in the [bring_your_own_dataset]((https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/bring_your_own_dataset.ipynb)) notebook to integrate your own dataset into `FMBench`. Place this `JSONL` file in the local `fmbench-read/scripts` directory in your `FMBench` EC2 instance or in the `fmbench-read` S3 bucket in the `scripts` directory.
+- To use custom data, convert it into JSONL format. We provide a sample notebook to help convert Hugging Face or custom datasets into JSONL and upload them to an S3 bucket used by FMBench. Follow the steps in the [bring_your_own_dataset]((https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/src/fmbench/bring_your_own_dataset.ipynb)) notebook to integrate your own dataset into `FMBench`. Place these `JSONL` files in the `source_data` directory within `/tmp/fmbench-read/source_data` in your local instance. .
 
 - **Use specific keys from the dataset in your prompts**: Since `FMBench` uses `LongBench` as the dataset under test by default, it requires specific keys that contain `user queries`, `context`, or other necessary fields. To specify dataset keys, add them under `prompt_template_keys` in the `datasets` section of your configuration file:
 
@@ -205,7 +205,7 @@ You can follow this format for any `text` or `image-based` dataset from Hugging 
     </text>
   ```
 
-- **Adding the Prompt Template to FMBench**: To use the custom prompt template, place it in the `fmbench-read/scripts` directory. `FMBench` will download and apply it during benchmarking.
+- **Adding the Prompt Template to FMBench**: To use the custom prompt template, place it in the `/tmp/fmbench-read/prompt_templates` directory. `FMBench` will download and apply it during benchmarking.
 
   ``` yaml
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
@@ -238,7 +238,24 @@ You can follow this format for any `text` or `image-based` dataset from Hugging 
 
 #### Bring your own Endpoint (BYOE Configuration)
 
-- If you want to benchmark a model that is already deployed in your `infrastructure`/`SageMaker`/`EC2`/`EKS` or elsewhere, then you can use the `BYOE` configuration on `FMBench` to benchmark that model. As a part of this step, you can simply point the `ep_name` parameter in your configuration file to the endpoint URL or endpoint name so that `FMBench` can use it while making predictions. 
+- You can customize FMBench to use the BYOE mode when you want to bring an already deployed model either on AWS or your custom infrastructure.
+
+- Point the `ep_name` parameter in your configuration file to the `endpoint URL` so that `FMBench` can use it while making predictions. View [`here`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/configs/byoe/config-byo-custom-rest-predictor.yml#L199).
+  
+  ```yaml
+  ep_name: '<your-ep-url>' # public DNS/URL to send your request
+  ```
+- If you have an endpoint that has a custom inference format, then create a derived class from [FMBenchPredictor](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/scripts/fmbench_predictor.py) abstract class and provide implementation for the constructor, the `get_predictions` method and the `endpoint_name` property. Specify the name of that file in the config file next to the `inference_script` parameter [here](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/e28af9bfa524a0e54205fc50e5f717d81c8d75a9/fmbench/configs/byoe/config-byo-custom-rest-predictor.yml#L212). No deployment script is needed since you are bringing your own endpoint.
+
+  ```yaml
+  # FMBench comes packaged with multiple inference scripts, such as scripts for SageMaker
+  # and Bedrock. You can also add your own. This is an example of a custom rest predictor
+  # that does a POST request on the endpoint URL with custom headers,
+  # parameters and authentication information
+  inference_script: custom_rest_predictor.py
+  ```
+
+- Place your custom FMBench predictor (custom_rest_predictor.py) in your EC2 `/tmp/fmbench-read/scripts` directory. View an example of an inference file that you can use here: https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/scripts/custom_rest_predictor.py. 
 
 - Set the `deploy` variable in the experiments section of the config file to `no` because the model does not have to be deployed since this is a `byoe` mode. Set the `2_deploy_model.ipynb` notebook in the `run_steps` section to `yes`. Even though the model is not deployed, the notebook will identify that `deploy` from the experiments section is set to `no` and just log the provided endpoint for further use.
 
@@ -266,35 +283,32 @@ You can follow this format for any `text` or `image-based` dataset from Hugging 
     instance_type:  "<your-instance-type>"
   ```
 
-For more detailed information on bringing your own endpoint, refer to the [BYOE documentation](https://aws-samples.github.io/foundation-model-benchmarking-tool/byoe.html). 
+- Build FMBench as per instructions [here](https://aws-samples.github.io/foundation-model-benchmarking-tool/build.html). This will install a developer version of FMBench in your Python venv.
+  
+After following these steps, you will be able to run `FMBench` with your own endpoint. `FMBench` will utilize the custom `FMBench` predictor and run inferences against the endpoint. All raw inferences are saved in a `per_inference` directory and used in the report generation process. Follow the steps in the next section to bring your own dataset and prompt templates.
 
 
 #### Pricing Information
 
-The pricing information is stored in the `pricing.yml` file. All pricing information in this file is based on public on-demand pricing information. This file contains `hourly` and `token-based` pricing - for example input and output tokens for Bedrock models and hourly rates for `SageMaker` or `EC2` instances. You can bring your own pricing file with your own pricing/discounts by specifying a custom file name here, or edit the existing `pricing.yml` file.
+`FMBench` measures model performance, which translates into inference latency, token throughput and cost per transaction. The cost is determined by `FMBench` in two ways: instance based pricing or token based pricing. All pricing information is stored in a [`pricing.yml`](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/main/fmbench/configs/pricing.yml) which contains [hourly instance based pricing](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/e28af9bfa524a0e54205fc50e5f717d81c8d75a9/fmbench/configs/pricing.yml#L2) (for example Amazon EC2 instances) and [token based pricing](https://github.com/aws-samples/foundation-model-benchmarking-tool/blob/e28af9bfa524a0e54205fc50e5f717d81c8d75a9/fmbench/configs/pricing.yml#L36) (for example Amazon Bedrock). The existing file contains several prices for instances on Amazon EC2 and SageMaker. To bring your own pricing, simply specify the name of your instance type followed by the custom hourly/token-based price and FMBench will use that pricing in the benchmarking test.
 
   ```{.yaml}
   pricing: pricing.yml # <your-custom-pricing.yml>
   ```
 
-  Here is an example for hourly pricing:
+Add your pricing in the `pricing.yml` file:
 
   ```yaml
   instance_based:
-    # Instance Based Pricing: SageMaker, EKS, Bedrock Provisioned Throughput, Bring your own endpoints that are priced hourly
-    # SageMaker Hourly Instance Pricing
-    ml.c5.xlarge: 0.204
-  ```
-
-  Here is an example for token-based pricing:
-
-  ```yaml
+    your-custom-instance-type: <your-pricing>
   token_based:
-    # Token Based Pricing: Bedrock
-    anthropic.claude-3-haiku-20240307-v1:0:
-      input-per-1k-tokens: 0.00025
-      output-per-1k-tokens: 0.00125
+    <your-model-id>:
+      input-per-1k-tokens: <custom price per 1k input tokens>
+      output-per-1k-tokens: <custom price per 1k output tokens>
   ```
+
+**Note**: Make sure the instance type specified in your `FMBench` config file matches the instance type specified in the `pricing.yml` file so that FMBench can correctly map the cost during the test. Place the pricing.yml file in the `/tmp/fmbench-read/configs` directory.
+
 
 
 #### Model Evaluations
