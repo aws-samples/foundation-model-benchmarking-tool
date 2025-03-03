@@ -64,9 +64,31 @@ class OpenAIPredictor(FMBenchPredictor):
             self._endpoint_name: str = endpoint_name
             self._inference_spec: Dict = inference_spec
             self._accelerator = get_accelerator_type()
+            self._container_type = None
             # Start collecting EC2 metrics. This will be called once.
             collect_ec2_metrics()
-            
+            self._temperature = 0.1
+            self._max_tokens = 100
+            self._top_p = 0.9
+            # not used for now but kept as placeholders for future
+            self._stream = None
+            self._start = None
+            self._stop = None
+            # override these defaults if there is an inference spec provided
+            if inference_spec:
+                parameters: Optional[Dict] = inference_spec.get('parameters')
+                if parameters:
+                    self._temperature = parameters.get('temperature', self._temperature)
+                    self._max_tokens = parameters.get('max_tokens', self._max_tokens)
+                    self._top_p = parameters.get('top_p', self._top_p)
+                    self._stream = inference_spec.get("stream", self._stream)
+                    self._stop = inference_spec.get("stop_token", self._stop)
+                    self._start = inference_spec.get("start_token", self._start)
+            self._response_json = {}   
+            logger.info(f"__init__, _model_name={self._endpoint_name},"
+                        f"_temperature={self._temperature} "
+                        f"_max_tokens={self._max_tokens}, _top_p={self._top_p} "
+                        f"_stream={self._stream}, _stop={self._stop}, _start={self._start}")
         except Exception as e:
             logger.error(f"create_predictor, exception occurred while creating predictor "
                         f"for endpoint_name={endpoint_name}, exception={e}")
@@ -104,6 +126,7 @@ class OpenAIPredictor(FMBenchPredictor):
         prompt: str = payload['inputs']
         prompt_tokens = count_tokens(payload['inputs'])
 
+        self._container_type = container_type
         
         if container_type == constants.CONTAINER_TYPE_OPENAI:
                 self._platform = 'openai'
@@ -120,43 +143,39 @@ class OpenAIPredictor(FMBenchPredictor):
                     raise ValueError("OpenAI API key not found in environment or /tmp/fmbench-read")
                     
                 litellm.api_key = api_key
-            else:
-                # Any other endpoint is basically platform + model name concatenated together
-                self._model_name = container_type + "/" + endpoint_name
+        else:
+            # Any other endpoint is basically platform + model name concatenated together
+            self._model_name = container_type + "/" + endpoint_name
         try:
             # Prepare the payload
-            split_input_and_inference_params: Optional[bool] = None
-            if self._inference_spec is not None:
-                split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
-                container_type = self._inference_spec.get("container_type", constants.CONTAINER_TYPE_DJL)
-                logger.debug(f"split input parameters is: {split_input_and_inference_params}, "
-                             f"container_type={container_type}")
-            # Add any additional parameters from inference_spec
-            params = self._inference_spec.get("parameters", {})
-            
-            # Start latency timer
+            payload2 = copy.deepcopy(payload)
+
+            # delete any fields related to evaluations since we dont want to send them to VLLM
+            if 'question' in payload2:
+                del payload2['question']
+            ground_truth = None
+            if 'ground_truth' in payload2:
+                ground_truth = payload2['ground_truth']
+                del payload2['ground_truth']
+            payload2['prompt'] = payload2.pop('inputs')
+            payload2 = payload2 | self._inference_spec["parameters"]
             st = time.perf_counter()
-            
-            # Make the API call using litellm
-            # For Ollama and vLLM, we use the specific model format
-            model = (
-                f"ollama/{self._model_name}" if self._platform == 'ollama'
-                else f"vllm/{self._model_name}" if self._platform == 'vllm'
-                else self._model_name
-            )
-            
             response = litellm.completion(
-                model=model,
+                model=self._model_name,
                 messages=messages,
                 **params
             )
             
             # Record latency
             latency = time.perf_counter() - st
-
+            response.raise_for_status()
             # Extract the generated text
-            generated_text = response.choices[0].message.content
-            response_json = {"generated_text": generated_text}
+            full_output = None
+            choices = json.loads(response.text).get("choices")
+            if choices is not None:
+                full_output = choices[0].get("text")
+            if full_output is None:
+                logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")
 
             # Get token counts from the response
             # Note: Some platforms might not provide token counts
@@ -213,41 +232,30 @@ class OpenAIPredictor(FMBenchPredictor):
         return self._endpoint_name
 
     def calculate_cost(self,
-                      instance_type: str,
-                      instance_count: int,
-                      pricing: Dict,
-                      duration: float,
-                      prompt_tokens: int,
-                      completion_tokens: int) -> float:
-        """Calculate the cost of the API call based on token usage.
-
-        OpenAI charges based on the number of tokens used, with different rates for
-        input (prompt) and output (completion) tokens. The rates vary by model.
-
-        Args:
-            instance_type (str): Not used for OpenAI
-            instance_count (int): Not used for OpenAI
-            pricing (Dict): Dictionary containing token-based pricing information
-            duration (float): Not used for OpenAI
-            prompt_tokens (int): Number of tokens in the input prompt
-            completion_tokens (int): Number of tokens in the model's response
-
-        Returns:
-            float: Total cost in USD, or None if calculation fails
+                       instance_type: str,
+                       instance_count: int,
+                       pricing: Dict,
+                       duration: float,
+                       prompt_tokens: int,
+                       completion_tokens: int) -> float:
+        """Represents the function to calculate the cost for Bedrock experiments.
+        instance_type represents the model name
         """
+
+        # Initializing all cost variables
         experiment_cost: Optional[float] = None
+        input_token_cost: Optional[float] = None
+        output_token_cost: Optional[float] = None
         try:
-            token_based_pricing = pricing['pricing']['token_based']
-            model_pricing = token_based_pricing.get(self._endpoint_name, {})
-            
-            input_cost_per_1k = model_pricing.get('input_cost_per_1k', 0)
-            output_cost_per_1k = model_pricing.get('output_cost_per_1k', 0)
-            
-            input_cost = (prompt_tokens / 1000) * input_cost_per_1k
-            output_cost = (completion_tokens / 1000) * output_cost_per_1k
-            
-            experiment_cost = input_cost + output_cost
-            
+            logger.info("calculate_cost, calculating cost with PT pricing")
+            instance_based_pricing = pricing['pricing']['instance_based']
+            hourly_rate = instance_based_pricing.get(instance_type, None)
+            # calculating the experiment cost for instance based pricing
+            duration_in_hours_ceil = math.ceil(duration/3600)
+            experiment_cost = hourly_rate * duration_in_hours_ceil
+            logger.info(f"instance_type={instance_type}, hourly_rate={hourly_rate}, "
+                        f"duration_in_hours_ceil={duration_in_hours_ceil}, experiment_cost={experiment_cost}")
+
         except Exception as e:
             logger.error(f"exception occurred during experiment cost calculation, exception={e}")
         return experiment_cost
