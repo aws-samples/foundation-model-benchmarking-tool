@@ -1,19 +1,27 @@
 import os
+import re
 import json
 import copy
 import time
+import math
 import stat
-import logging
 import litellm
+import logging
+import requests
+import tempfile
+import subprocess
 import pandas as pd
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, Optional
 from fmbench.scripts import constants
 from fmbench.utils import count_tokens
+from fmbench.scripts.ec2_metrics import collect_ec2_metrics, stop_collect
 from fmbench.scripts.inference_containers.utils import get_accelerator_type
 from fmbench.scripts.fmbench_predictor import (FMBenchPredictor,
-                                             FMBenchPredictionResponse)
+                                               FMBenchPredictionResponse)
+from fmbench.scripts.inference_containers.utils import (STOP_AND_RM_CONTAINER,
+                                                        FMBENCH_MODEL_CONTAINER_NAME)
 
 # set a logger
 logging.basicConfig(level=logging.INFO)
@@ -61,7 +69,9 @@ class OpenAIPredictor(FMBenchPredictor):
             Exception: For other initialization errors
         """
         try:
+            self.concatenated_model_name: str = None
             self._endpoint_name: str = endpoint_name
+            self._model_name: str = None
             self._inference_spec: Dict = inference_spec
             self._accelerator = get_accelerator_type()
             self._container_type = None
@@ -78,6 +88,7 @@ class OpenAIPredictor(FMBenchPredictor):
             if inference_spec:
                 parameters: Optional[Dict] = inference_spec.get('parameters')
                 if parameters:
+                    self._model_name = parameters.get('model', self._model_name)
                     self._temperature = parameters.get('temperature', self._temperature)
                     self._max_tokens = parameters.get('max_tokens', self._max_tokens)
                     self._top_p = parameters.get('top_p', self._top_p)
@@ -85,13 +96,13 @@ class OpenAIPredictor(FMBenchPredictor):
                     self._stop = inference_spec.get("stop_token", self._stop)
                     self._start = inference_spec.get("start_token", self._start)
             self._response_json = {}   
-            logger.info(f"__init__, _model_name={self._endpoint_name},"
+            logger.info(f"__init__,"
                         f"_temperature={self._temperature} "
                         f"_max_tokens={self._max_tokens}, _top_p={self._top_p} "
                         f"_stream={self._stream}, _stop={self._stop}, _start={self._start}")
         except Exception as e:
             logger.error(f"create_predictor, exception occurred while creating predictor "
-                        f"for endpoint_name={endpoint_name}, exception={e}")
+                        f"for endpoint_name={self._endpoint_name}, exception={e}")
         logger.info(f"_endpoint_name={self._endpoint_name}, _inference_spec={self._inference_spec}")
 
     def get_prediction(self, payload: Dict) -> FMBenchPredictionResponse:
@@ -126,27 +137,45 @@ class OpenAIPredictor(FMBenchPredictor):
         prompt: str = payload['inputs']
         prompt_tokens = count_tokens(payload['inputs'])
 
-        self._container_type = container_type
+        try:            
+            split_input_and_inference_params: Optional[bool] = None
+            if self._inference_spec is not None:
+                split_input_and_inference_params = self._inference_spec.get("split_input_and_parameters")
+                self._container_type = self._inference_spec.get("container_type", constants.CONTAINER_TYPE_OPENAI)
+                logger.debug(f"split input parameters is: {split_input_and_inference_params}, "
+                             f"container_type={container_type}")
         
-        if container_type == constants.CONTAINER_TYPE_OPENAI:
-                self._platform = 'openai'
-                self._model_name = endpoint_name
-                # Try to get OpenAI API key from environment variable first
-                api_key = os.environ.get("OPENAI_API_KEY")
-                # If not in environment, try to read from file
-                if not api_key:
-                    api_key_path = Path("/tmp/fmbench-read/openai_api_key.txt")
-                    if api_key_path.exists():
-                        api_key = api_key_path.read_text().strip()
-                
-                if not api_key:
-                    raise ValueError("OpenAI API key not found in environment or /tmp/fmbench-read")
+            if self._container_type == constants.CONTAINER_TYPE_OPENAI:
+                    self._platform = 'openai'
+                    self.concatenated_model_name = self._model_name
+                    # Try to get OpenAI API key from environment variable first
+                    api_key = os.environ.get("OPENAI_API_KEY")
+                    # If not in environment, try to read from file
+                    if not api_key:
+                        api_key_path = Path("/tmp/fmbench-read/openai_api_key.txt")
+                        if api_key_path.exists():
+                            api_key = api_key_path.read_text().strip()
                     
-                litellm.api_key = api_key
-        else:
-            # Any other endpoint is basically platform + model name concatenated together
-            self._model_name = container_type + "/" + endpoint_name
-        try:
+                    if not api_key:
+                        raise ValueError("OpenAI API key not found in environment or /tmp/fmbench-read")
+                        
+                    litellm.api_key = api_key
+            else:
+                # Any other endpoint is basically platform + model name concatenated together
+                self.concatenated_model_name = f"hosted_vllm/{self._model_name}"
+                logger.info(f"using model name: {self.concatenated_model_name}")
+
+            # Handling to remove anything after port in endpoint name
+            #Basically if the endpoint name is http://localhost:8000/v1/completions
+            #Then we want to remove the /v1/completions part
+            # Extract base URL by keeping only protocol, host and port
+            # Keep http://host:port and optionally /v1, remove chat/completions
+            base_url_match = re.match(r'(http://[^:]+:\d+(?:/v1)?)', self._endpoint_name)
+            if base_url_match:
+                self._endpoint_name = base_url_match.group(1)
+            else:
+                raise ValueError(f"Invalid endpoint URL format: {self._endpoint_name}. Expected format: http://host:port[/v1]")
+            logger.info(f"endpoint name after standardizing: {self._endpoint_name}")
             # Prepare the payload
             payload2 = copy.deepcopy(payload)
 
@@ -157,25 +186,27 @@ class OpenAIPredictor(FMBenchPredictor):
             if 'ground_truth' in payload2:
                 ground_truth = payload2['ground_truth']
                 del payload2['ground_truth']
-            payload2['prompt'] = payload2.pop('inputs')
-            payload2 = payload2 | self._inference_spec["parameters"]
+            payload2 = payload2['inputs']
             st = time.perf_counter()
             response = litellm.completion(
-                model=self._model_name,
-                messages=messages,
-                **params
+                model=self.concatenated_model_name,
+                api_base=self._endpoint_name,
+                messages=[{"content": payload2,
+                            "role": "user"}],
+                temperature=self._temperature,
+                max_tokens=self._max_tokens,
+                top_p=self._top_p
             )
             
             # Record latency
             latency = time.perf_counter() - st
-            response.raise_for_status()
             # Extract the generated text
-            full_output = None
-            choices = json.loads(response.text).get("choices")
-            if choices is not None:
-                full_output = choices[0].get("text")
-            if full_output is None:
-                logger.error(f"failed to extract output from response text, response text = \"{response.text}\"")
+            for choice in response.choices:
+            # Extract the message and the message's content from LiteLLM
+                if choice.message and choice.message.content:
+                    # Extract the response from the dict
+                    self._response_json["generated_text"] = choice.message.content
+                    break
 
             # Get token counts from the response
             # Note: Some platforms might not provide token counts
@@ -185,13 +216,13 @@ class OpenAIPredictor(FMBenchPredictor):
             except AttributeError:
                 # If token counts aren't available, try to estimate them
                 prompt_tokens = count_tokens(prompt)
-                completion_tokens = count_tokens(generated_text)
+                completion_tokens = count_tokens(response_json["generated_text"])
 
         except Exception as e:
             logger.error(f"get_prediction, exception occurred while getting prediction for payload={payload} "
                         f"from predictor={self._endpoint_name}, response={response}, exception={e}")
 
-        return FMBenchPredictionResponse(response_json=response_json,
+        return FMBenchPredictionResponse(response_json=self._response_json,
                                        latency=latency,
                                        time_to_first_token=TTFT,
                                        time_per_output_token=TPOT,
