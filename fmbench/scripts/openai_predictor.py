@@ -1,3 +1,9 @@
+"""OpenAI Predictor module for FMBench.
+
+This module provides a unified interface for interacting with various LLM platforms
+through LiteLLM. It supports OpenAI API models, Ollama models, and vLLM served models.
+"""
+
 import os
 import re
 import json
@@ -50,6 +56,13 @@ class OpenAIPredictor(FMBenchPredictor):
         _inference_spec (Dict): Specification for inference parameters like temperature, max_tokens
         _accelerator (str): Type of accelerator (used for local deployments)
         _platform (str): The platform being used (openai, ollama, or vllm)
+        _temperature (float): Sampling temperature for generation
+        _max_tokens (int): Maximum number of tokens to generate
+        _top_p (float): Top-p sampling parameter
+        _stream (bool): Whether to stream responses
+        _start (str): Start token for generation
+        _stop (str): Stop token for generation
+        _response_json (Dict): Storage for model responses
     """
 
     def __init__(self,
@@ -112,17 +125,23 @@ class OpenAIPredictor(FMBenchPredictor):
         Tracks various metrics like latency and token counts.
 
         Args:
-            payload (Dict): Dictionary containing the input prompt under 'inputs' key
+            payload (Dict): Dictionary containing:
+                - inputs (str): The input prompt
+                - question (str, optional): Question for evaluation
+                - ground_truth (str, optional): Ground truth for evaluation
 
         Returns:
             FMBenchPredictionResponse: Object containing:
                 - response_json: Dictionary with generated text
                 - latency: Total API call time in seconds
-                - time_to_first_token: Not implemented for API-based models
-                - time_per_output_token: Not implemented for API-based models
-                - time_to_last_token: Not implemented for API-based models
-                - completion_tokens: Number of tokens in the response
-                - prompt_tokens: Number of tokens in the input
+                - time_to_first_token: Time to first token (not implemented)
+                - time_per_output_token: Time per token (not implemented)
+                - time_to_last_token: Time to last token (not implemented)
+                - completion_tokens: Number of tokens in response
+                - prompt_tokens: Number of tokens in input
+
+        Raises:
+            Exception: If API call fails or response processing fails
         """
         response_json: Optional[Dict] = None
         response: Optional[str] = None
@@ -162,12 +181,13 @@ class OpenAIPredictor(FMBenchPredictor):
                     litellm.api_key = api_key
             else:
                 # Any other endpoint is basically platform + model name concatenated together
-                self.concatenated_model_name = f"hosted_vllm/{self._model_name}"
+                self.concatenated_model_name = f"openai/{self._model_name}"
+                api_key = "placeholder"
                 logger.info(f"using model name: {self.concatenated_model_name}")
 
-            # Handling to remove anything after port in endpoint name
+            # 
             #Basically if the endpoint name is http://localhost:8000/v1/completions
-            #Then we want to remove the /v1/completions part
+            #Then we want to remove the completions part
             # Extract base URL by keeping only protocol, host and port
             # Keep http://host:port and optionally /v1, remove chat/completions
             base_url_match = re.match(r'(http://[^:]+:\d+(?:/v1)?)', self._endpoint_name)
@@ -191,6 +211,7 @@ class OpenAIPredictor(FMBenchPredictor):
             response = litellm.completion(
                 model=self.concatenated_model_name,
                 api_base=self._endpoint_name,
+                api_key=api_key,
                 messages=[{"content": payload2,
                             "role": "user"}],
                 temperature=self._temperature,
@@ -231,8 +252,15 @@ class OpenAIPredictor(FMBenchPredictor):
                                        prompt_tokens=prompt_tokens)
     
     def shutdown(self) -> None:
-        """Represents the function to shutdown the predictor
-           cleanup the endpooint/container/other resources
+        """Shutdown the predictor and cleanup resources.
+
+        This method:
+        1. Stops EC2 metrics collection
+        2. Creates and executes a cleanup script
+        3. Removes any containers or endpoints
+
+        The cleanup script is created in a temporary directory and executed
+        with appropriate permissions.
         """
         # Stop collecting EC2 metrics either when the model container is stopped and removed, 
         # or once the benchmarking test has completed 
@@ -258,7 +286,7 @@ class OpenAIPredictor(FMBenchPredictor):
         """Get the endpoint name.
 
         Returns:
-            str: The name of the OpenAI model being used
+            str: The name of the OpenAI compatible endpoint being used
         """
         return self._endpoint_name
 
@@ -269,8 +297,22 @@ class OpenAIPredictor(FMBenchPredictor):
                        duration: float,
                        prompt_tokens: int,
                        completion_tokens: int) -> float:
-        """Represents the function to calculate the cost for Bedrock experiments.
-        instance_type represents the model name
+        """Calculate the cost for model usage based on instance time.
+
+        Args:
+            instance_type (str): The type/name of the instance/model
+            instance_count (int): Number of instances used
+            pricing (Dict): Pricing configuration dictionary
+            duration (float): Duration of usage in seconds
+            prompt_tokens (int): Number of input tokens
+            completion_tokens (int): Number of output tokens
+
+        Returns:
+            float: Total cost of the experiment based on instance hours
+
+        Notes:
+            - Rounds up duration to nearest hour
+            - Uses instance-based pricing from pricing configuration
         """
 
         # Initializing all cost variables
@@ -295,16 +337,21 @@ class OpenAIPredictor(FMBenchPredictor):
                 start_time: datetime,
                 end_time: datetime,
                 period: int = 60) -> pd.DataFrame:
-        """
-        Retrieves EC2 system metrics from the CSV file generated during metric collection.
+        """Retrieve EC2 system metrics for a specified time period.
 
         Args:
-            start_time (datetime): Start time of metrics collection
-            end_time (datetime): End time of metrics collection
-            period (int): Sampling period in seconds (default 60)
-        
+            start_time (datetime): Start time for metrics collection
+            end_time (datetime): End time for metrics collection
+            period (int, optional): Sampling period in seconds. Defaults to 60.
+
         Returns:
-            pd.DataFrame: DataFrame containing system metrics
+            pd.DataFrame: DataFrame containing system metrics with columns:
+                - timestamp: Time of measurement
+                - [various system metrics columns]
+
+        Notes:
+            - Reads metrics from CSV file generated during collection
+            - Returns None if metrics file not found
         """
         try:
             filtered_metrics: Optional[pd.DataFrame] = None
@@ -321,30 +368,43 @@ class OpenAIPredictor(FMBenchPredictor):
 
     @property
     def inference_parameters(self) -> Dict:
-        """Get the inference parameters.
+        """Get the inference parameters configuration.
 
         Returns:
-            Dict: Dictionary of parameters used for inference (temperature, max_tokens, etc.)
+            Dict: Dictionary containing inference parameters including:
+                - temperature
+                - max_tokens
+                - top_p
+                - other model-specific parameters
         """
         return self._inference_spec.get("parameters")
     
     @property
     def platform_type(self) -> Dict:
-        """The inference parameters property."""
+        """Get the platform type.
+
+        Returns:
+            Dict: Platform type constant (EC2)
+        """
         return constants.PLATFORM_EC2
 
 
 def create_predictor(endpoint_name: str, inference_spec: Optional[Dict], metadata: Optional[Dict]):
-    """Create an OpenAI predictor instance.
+    """Create and configure an OpenAI predictor instance.
 
-    Factory function to create and return a configured OpenAI predictor.
+    Factory function to instantiate and set up a predictor with the specified
+    configuration.
 
     Args:
-        endpoint_name (str): Name of the OpenAI model to use
-        inference_spec (Optional[Dict]): Dictionary of inference parameters
-        metadata (Optional[Dict]): Additional metadata (not used)
+        endpoint_name (str): Name/URL of the model endpoint
+        inference_spec (Optional[Dict]): Model inference parameters
+        metadata (Optional[Dict]): Additional configuration metadata
 
     Returns:
-        OpenAIPredictor: Configured predictor instance
+        OpenAIPredictor: Configured predictor instance ready for use
+
+    Notes:
+        - Handles configuration for OpenAI, Ollama, and vLLM models
+        - Sets up API keys and endpoints automatically
     """
     return OpenAIPredictor(endpoint_name, inference_spec, metadata) 
