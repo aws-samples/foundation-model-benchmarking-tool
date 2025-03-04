@@ -59,7 +59,6 @@ dependencies = [
    "transformers>=4.48.1",
    "twine>=6.1.0",
    "typing-extensions>=4.12.2",
-   "vllm>=0.6.6.post1",
    "zmq>=0.0.0",
 ]
 
