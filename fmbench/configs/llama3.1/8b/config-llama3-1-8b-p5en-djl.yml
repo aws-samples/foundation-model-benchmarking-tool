@@ -104,6 +104,7 @@ experiments:
     instance_type: "ml.p5en.48xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.31.0-lmi13.0.0-cu124'
     deploy: yes
+    bucket: {write_bucket}
     instance_count: 1
     deployment_script: deploy_w_djl_serving.py
     inference_script: sagemaker_predictor.py
