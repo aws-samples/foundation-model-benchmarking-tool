@@ -93,13 +93,14 @@ inference_parameters:
     return_full_text: False
 
 experiments:
- 
   - name: llama-3-1-8b-instruct-p5en-48xlarge
     model_id: meta-llama/Llama-3.1-8B-Instruct
     hf_tokenizer_model_id: meta-llama/Llama-3.1-8B-Instruct
     model_version: "*"
     model_name: Llama-3-1-8B-Instruct
     ep_name: Llama-3-1-8B-Instruct
+    download_from_hf_place_in_s3: yes
+    model_s3_path: s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
     instance_type: "ml.p5en.48xlarge"
     image_uri: '763104351884.dkr.ecr.{region}.amazonaws.com/djl-inference:0.31.0-lmi13.0.0-cu124'
     deploy: yes
@@ -112,7 +113,7 @@ experiments:
       engine=MPI
       option.tensor_parallel_degree=2
       option.max_rolling_batch_size=4
-      option.model_id=meta-llama/Llama-3.1-8B-Instruct
+      option.model_id=s3://{write_bucket}/meta-llama/Llama-3.1-8B-Instruct
       option.rolling_batch=lmi-dist
     payload_files:
     - payload_en_1-500.jsonl
