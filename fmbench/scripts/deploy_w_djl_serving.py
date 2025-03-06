@@ -39,10 +39,14 @@ s3_client = boto3.client('s3')
 # session/account specific variables
 sess = sagemaker.session.Session()
 # Define the location of your s3 prefix for model artifacts
-region: str =sess._region_name
+region: str = sess._region_name
 
 # bucket to house model artifacts
-default_bucket = sess.default_bucket()
+try:
+    default_bucket = sess.default_bucket()
+except Exception as e:
+    logger.error(f"exception occured while getting default_bucket, exception={e}")
+    default_bucket = None
 
 # Define your account id
 account_id: str = sess.account_id()
