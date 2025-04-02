@@ -1,4 +1,10 @@
 # Releases
+
+## 2.1.4
+
+1. `Llama3.1-8b` config file for `p5en` instance type.
+1. Remove `vllm` from `pyproject.toml`.
+
 ## 2.1.3
 
 1. SGLang support.

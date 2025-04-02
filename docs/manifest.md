@@ -189,6 +189,7 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [├── llama3.1/8b/config-ec2-llama3-1-8b-tp-8-mc-auto-p5.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-tp-8-mc-auto-p5.yml)  
 [├── llama3.1/8b/config-ec2-llama3-1-8b-trn1-32xl-deploy-ec2-tp32-bs8.yml](configs/llama3.1/8b/config-ec2-llama3-1-8b-trn1-32xl-deploy-ec2-tp32-bs8.yml)  
 [├── llama3.1/8b/config-llama3-1-8b-g5.12xlarge-djl-lmi-sm.yml](configs/llama3.1/8b/config-llama3-1-8b-g5.12xlarge-djl-lmi-sm.yml)  
+[├── llama3.1/8b/config-llama3-1-8b-p5en-djl.yml](configs/llama3.1/8b/config-llama3-1-8b-p5en-djl.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.12xl-tp-2-mc-auto-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.12xl-tp-2-mc-auto-ec2.yml)  
 [├── llama3.1/8b/config-llama3.1-8b-g5.12xl-tp-2-mc-max-ec2.yml](configs/llama3.1/8b/config-llama3.1-8b-g5.12xl-tp-2-mc-max-ec2.yml)  

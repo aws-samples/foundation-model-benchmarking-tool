@@ -83,6 +83,11 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
+## 2.1.4
+
+1. `Llama3.1-8b` config file for `p5en` instance type.
+1. Remove `vllm` from `pyproject.toml`.
+
 ## 2.1.3
 
 1. SGLang support.
@@ -95,13 +100,6 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 ## 2.1.1
 
 1. Optimized prompt templates and config files for DeepSeek-R1 and Amazon Nova for `ConvFinQA` and `LongBench` datasets.
-
-## 2.1.0
-
-1. Deepseek-R1 distilled model support using [`vllm`](https://github.com/vllm-project/vllm).
-1. Evaluate Deepseek performance with `LongBench`, `OpenOrca`, `Dolly` and [`ConvFinQA`](https://huggingface.co/datasets/AdaptLLM/ConvFinQA) datasets.
-1. Replace `conda` with [`uv`](https://docs.astral.sh/uv/) for faster installs.
-
 
 
 
