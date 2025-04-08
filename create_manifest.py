@@ -23,6 +23,7 @@ BASE_FILE_LIST: List[str] = ["prompt_template/.keep",
                              "configs/pricing.yml",
                              "configs/pricing_fallback.yml",
                              # add new datasets here
+                             "source_data/OpenOrca.jsonl"
                              "source_data/2wikimqa_e.jsonl",
                              "source_data/2wikimqa.jsonl",
                              "source_data/hotpotqa_e.jsonl",

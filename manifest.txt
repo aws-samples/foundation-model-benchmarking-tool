@@ -208,6 +208,8 @@ configs/llama3/8b/config-llama3-8b-trn1.yml
 configs/llama3/8b/llama3-8b-inf2-24xl-byoe-g5-12xl.yml
 configs/llama3/8b/llama3-8b-inf2-48xl-byoe-g5-24xl.yml
 configs/llama3/8b/llama3-8b-trn1-32xl-byoe-g5-24xl.yml
+configs/llama4/config-llama4-scout-17b-g6e-longbench-vllm.yml
+configs/llama4/config-llama4-scout-17b-g6e-openorca-vllm.yml
 configs/mistral/config-mistral-7b-eks-inf2.yml
 configs/mistral/config-mistral-7b-tgi-g5.yml
 configs/mistral/config-mistral-7b-trn1-32xl-triton.yml
@@ -239,9 +241,10 @@ phi_tokenizer/.keep
 prompt_template/.keep
 scripts/.keep
 source_data/2wikimqa.jsonl
-source_data/2wikimqa_e.jsonl
 source_data/500_token_prompts_synthetic_data.jsonl
 source_data/LICENSE.txt
+source_data/OpenOrca.jsonl
+source_data/2wikimqa_e.jsonl
 source_data/THIRD_PARTY_LICENSES.txt
 source_data/hotpotqa.jsonl
 source_data/hotpotqa_e.jsonl
