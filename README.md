@@ -14,7 +14,7 @@
 </h4>
 
 
-🚨 **What's new**: Benchmarks for [Llama-4](https://ai.meta.com/blog/llama-4-multimodal-intelligence/) models. 🚨
+🚨 **What's new**: Benchmarks for [Llama-4](https://ai.meta.com/blog/llama-4-multimodal-intelligence/) models on Amazon EC2. 🚨
 
 `FMBench` is a Python package for running performance benchmarks and accuracy for **any Foundation Model (FM)** deployed on **any AWS Generative AI service**, be it **Amazon SageMaker**, **Amazon Bedrock**, **Amazon EKS**, or **Amazon EC2**. The FMs could be deployed on these platforms either directly through `FMbench`, or, if they are already deployed then also they could be benchmarked through the **Bring your own endpoint** mode supported by `FMBench`. 
 
