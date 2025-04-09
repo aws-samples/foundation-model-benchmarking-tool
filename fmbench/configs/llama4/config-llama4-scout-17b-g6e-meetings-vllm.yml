@@ -49,7 +49,7 @@ s3_read_data:
   source_data_prefix: source_data
   # list of dataset files, the list below is from the LongBench dataset https://huggingface.co/datasets/THUDM/LongBench
   source_data_files:
-  - meetings.jsonl
+  - meeting_minutes.jsonl
 
   # S3 prefix for the tokenizer to be used with the models
   # NOTE 1: the same tokenizer is used with all the models being tested through a config file
