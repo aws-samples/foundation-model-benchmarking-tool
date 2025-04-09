@@ -54,7 +54,6 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 | Model                           | Amazon EC2                     | Amazon SageMaker                           | Amazon Bedrock                     |
 |:--------------------------------|:-------------------------------|:-------------------------------------------|:-----------------------------------|
 | **Deepseek-R1 distilled**        | g6e                           | g6e                                           |                            |
-| **Llama3.3-70b instruct**        |                               |                                           | On-demand                           |
 | **Qwen2.5-72b**                  | g5, g6e                       |                                           |                                    |
 | **Amazon Nova**                  |                               |                                           | On-demand                          |
 | **Anthropic Claude-3 Sonnet**    |                               |                                           | On-demand, provisioned             |
@@ -62,6 +61,8 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 | **Mistral-7b-instruct**          | inf2, trn1                     | g4dn, g5, p3, p4d, p5                       | On-demand                          |
 | **Mistral-7b-AWQ**               |                               | p5                                        |                                    |
 | **Mixtral-8x7b-instruct**        |                               |                                           | On-demand                          |
+| **Llama-4-Scout-17B-16E-Instruct**        |            g6e                   |                                           |                           |
+| **Llama3.3-70b instruct**        |                               |                                           | On-demand                           |
 | **Llama3.2-1b instruct**         | g5                            |                                           |                                    |
 | **Llama3.2-3b instruct**         | g5                            |                                           |                                    |
 | **Llama3.1-8b instruct**         | g5, p4d, p4de, p5, p5e, g6e, g6, inf2, trn1        | g4dn, g5, p3, inf2, trn1                     | On-demand                          |
