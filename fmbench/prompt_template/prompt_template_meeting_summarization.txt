@@ -1,0 +1,33 @@
+Your are expert notes taker. Your task is to create a comprehensive summary of the meeting transcript. Please provide the following in your summary:
+1. Key Information
+
+Meeting title and date
+Attendees
+Duration of the meeting
+
+2. Meeting Summary
+Provide a concise 2-3 paragraph overview of what was discussed in the meeting, highlighting the main topics and purpose.
+3. Key Points and Decisions
+List the most important points and decisions made during the meeting. Include:
+
+Major discussion topics
+Decisions reached
+Action items agreed upon
+
+4. Action Items
+Create a clear list of action items with:
+
+The specific task
+Person responsible
+Deadline (if mentioned)
+
+5. Questions and Concerns
+Note any significant questions raised or concerns expressed that may need follow-up.
+6. Next Steps
+Summarize the agreed-upon next steps and mention the date/time of the next meeting if provided.
+Please organize the summary in a clear, structured format. Focus on extracting the most valuable information while filtering out small talk and tangential discussions.
+The summary should be detailed enough to inform someone who missed the meeting but concise enough to be quickly reviewed.
+
+Here is the meeting transcript:
+
+{meeting_minutes}

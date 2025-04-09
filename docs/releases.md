@@ -1,5 +1,9 @@
 # Releases
 
+## 2.1.5
+
+1. `Llama-4-Scout-17B-16E` config file for `g6e.48xlarge` instance type using `vLLM`.
+
 ## 2.1.4
 
 1. `Llama3.1-8b` config file for `p5en` instance type.

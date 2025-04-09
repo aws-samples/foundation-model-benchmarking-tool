@@ -236,6 +236,10 @@ Here is a listing of the various configuration files available out-of-the-box wi
 [│   └── llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml](configs/llama3.2/1b/config-llama3.2-1b-m7i-12xlarge-ec2.yml)  
 **└── llama3.2/3b**  
 [└── llama3.2/3b/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml](configs/llama3.2/3b/config-llama3.2-3b-g5.4xl-tp-1-mc-max-djl-ec2.yml)  
+**llama4**  
+[├── llama4/config-llama4-scout-17b-g6e-longbench-vllm.yml](configs/llama4/config-llama4-scout-17b-g6e-longbench-vllm.yml)  
+[├── llama4/config-llama4-scout-17b-g6e-meetings-vllm.yml](configs/llama4/config-llama4-scout-17b-g6e-meetings-vllm.yml)  
+[└── llama4/config-llama4-scout-17b-g6e-openorca-vllm.yml](configs/llama4/config-llama4-scout-17b-g6e-openorca-vllm.yml)  
 **mistral**  
 [├── mistral/config-mistral-7b-eks-inf2.yml](configs/mistral/config-mistral-7b-eks-inf2.yml)  
 [├── mistral/config-mistral-7b-tgi-g5.yml](configs/mistral/config-mistral-7b-tgi-g5.yml)  
