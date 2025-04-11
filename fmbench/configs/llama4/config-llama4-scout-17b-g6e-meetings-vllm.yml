@@ -62,7 +62,7 @@ s3_read_data:
 
   # prompt template to use, NOTE: same prompt template gets used for all models being tested through a config file
   # the FMBench repo already contains a bunch of prompt templates so review those first before creating a new one
-  prompt_template_file: prompt_template_meeting_summarization.txt
+  prompt_template_file: prompt_template_llama3_meeting_summarization.txt
 
 # steps to run, usually all of these would be
 # set to yes so nothing needs to change here
@@ -82,7 +82,7 @@ datasets:
   # dataset related configuration
   prompt_template_keys:
   - meeting_minutes
-  ground_truth_col_key: summary
+  ground_truth_col_key: #summary
   question_col_key: meeting_minutes
   # maximum number of iterations per concurrency and payload size combination
   max_iters_per_combination: 105
@@ -148,7 +148,7 @@ inference_parameters:
     temperature: 0.1
     top_p: 0.92
     top_k: 120  
-    max_tokens: 100
+    max_tokens: 256
 
 # Configuration for experiments to be run. The experiments section is an array
 # so more than one experiments can be added, these could belong to the same model
@@ -169,7 +169,7 @@ experiments:
     model_name: meta-llama/Llama-4-Scout-17B-16E-Instruct
     # this can be changed to the IP address of your specific EC2 instance where the model is hosted
     ep_name: 'http://localhost:8000/v1/completions' 
-    instance_type: g6e.12xlarge
+    instance_type: g6e.48xlarge
     image_uri: vllm/vllm-openai:v0.8.3 #vllm/vllm-openai:v0.8.3
     deploy: yes #setting to yes to run deployment script for ec2
     instance_count: 
@@ -203,9 +203,9 @@ experiments:
     # been received.
     concurrency_levels:
     - 1
-    #- 2
-    # - 3
-    #- 4
+    - 2
+    - 3
+    - 4
     
     # Environment variables to be passed to the container
     # this is not a fixed list, you can add more parameters as applicable.

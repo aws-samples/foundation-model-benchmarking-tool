@@ -84,6 +84,10 @@ Configuration files are available in the [configs](./src/fmbench/configs) folder
 
 ## New in this release
 
+## 2.1.6
+
+1. Add a synthetic dataset for meeting summarization, config file for benchmarking `Llama-4-Scout-17B-16E` using this dataset.
+
 ## 2.1.5
 
 1. `Llama-4-Scout-17B-16E` config file for `g6e.48xlarge` instance type using `vLLM`.
